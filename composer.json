@@ -1,0 +1,39 @@
+{
+  "name": "glushkovds/simflex",
+  "description": "Core for Simflex",
+  "keywords": [
+    "php",
+    "simplex-core",
+    "simplex-cms"
+  ],
+  "homepage": "https://github.com/glushkovds/simflex",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Denis Glushkov",
+      "email": "amkarovec@gmail.com",
+      "homepage": "https://github.com/glushkovds"
+    },
+    {
+      "name": "pf",
+      "homepage": "https://rpgclub.me"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "ext-gd": "*",
+    "ext-pdo": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Simflex\\": "src"
+    }
+  }
+}
+
