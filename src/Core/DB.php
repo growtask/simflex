@@ -5,8 +5,6 @@ namespace Simflex\Core;
 use Simflex\Core\Container;
 use Simflex\Core\DB\Adapter;
 use Simflex\Core\User;
-use function Simflex\Core\imDev;
-use const Simflex\Core\SF_LOCATION;
 
 /**
  * Class DB

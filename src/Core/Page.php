@@ -5,7 +5,6 @@ namespace Simflex\Core;
 
 use Simflex\Core\Core;
 use Simflex\Core\DB;
-use const Simflex\Core\SF_LOCATION;
 
 class Page
 {

@@ -3,7 +3,7 @@
 use Simflex\Admin\Page;
 
 //PlugJQuery::jquery();
-\App\Plugins\Jquery\Jquery::fancybox();
+//\App\Plugins\Jquery\Jquery::fancybox();
 \Simflex\Admin\Plugins\Alert\Alert::init();
 
 // GLOBAL MANDATORY STYLES
@@ -30,7 +30,7 @@ Page::coreJs('/theme/js/default.js');
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>Simplex Admin 2.0</title>
+        <title>Simflex Admin</title>
 
         <?php \Simflex\Admin\Page::meta() ?>
 
@@ -41,7 +41,7 @@ Page::coreJs('/theme/js/default.js');
 
         <div class="logo">
             <a href="/admin/">
-                <span>Simplex</span> Admin
+                <span>Simflex</span> Admin
             </a>
         </div>
 
@@ -108,7 +108,7 @@ Page::coreJs('/theme/js/default.js');
         </div>
 
         <div class="copyright">
-            2015 - <?php echo date('Y') ?> &copy; Simplex Admin 2.0
+            2015 - <?php echo date('Y') ?> &copy; Simflex Admin
         </div>
 
     </body>
