@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB;
@@ -12,16 +13,28 @@ class Table extends ElementBase
     /** @var \Simflex\Core\DB\Schema\Params\TableParams */
     protected $params;
 
+    /** @var \Simflex\Core\DB\Schema\Params\TableParams */
+    protected $oldParams;
+
     /** @var \Simflex\Core\DB\Schema\Element[] */
     protected $elements = [];
 
+    /** @var \Simflex\Core\DB\Schema\Element[] */
+    protected $oldElements = [];
+
     protected $isExisting;
+    protected $dropQueue = [];
 
     public function __construct(string $name, bool $isExisting = false)
     {
         $this->params = new TableParams();
         $this->name = $name;
         $this->isExisting = $isExisting;
+
+        if ($isExisting) {
+            $this->oldParams = $this->params;
+            $this->oldElements = $this->elements;
+        }
     }
 
     // ------------ BUILDER ------------ //
@@ -114,6 +127,45 @@ class Table extends ElementBase
         return $const;
     }
 
+    /**
+     * Drops a column
+     *
+     * @param string|array $name Column name(s)
+     * @return $this
+     */
+    public function dropColumns($name): Table
+    {
+        if (is_array($name)) {
+            $this->dropQueue += $name;
+        } else {
+            $this->dropQueue[] = $name;
+        }
+
+        return $this;
+    }
+
+    // ------------ HELPERS ------------ //
+
+    public function integer(string $name, ?int $length = null): Column
+    {
+        return $this->addColumn($name, 'int', $length);
+    }
+
+    public function string(string $name, ?int $length = 255): Column
+    {
+        return $this->addColumn($name, 'varchar', $length);
+    }
+
+    public function text(string $name): Column
+    {
+        return $this->addColumn($name, 'text');
+    }
+
+    public function boolean(string $name): Column
+    {
+        return $this->addColumn($name, 'tinyint', 1);
+    }
+
     // ------------ UTIL ------------ //
 
     /**
@@ -140,6 +192,81 @@ class Table extends ElementBase
             throw new \Exception('Table cannot be empty');
         }
 
+        return $this->isExisting ? $this->alterToString() : $this->createToString();
+    }
+
+    private function alterToString(): string
+    {
+        $sql = 'ALTER TABLE ' . DB::wrapName($this->name) . ' ';
+        $firstCmd = true;
+
+        // drop columns
+        foreach ($this->dropQueue as $col) {
+            if (!$firstCmd) {
+                $sql .= ', ';
+            }
+
+            $sql .= 'DROP COLUMN ' . DB::wrapName($col);
+            $firstCmd = false;
+        }
+
+        /** @var \Simflex\Core\DB\Schema\Element[] $toMod */
+        $toMod = [];
+
+        /** @var \Simflex\Core\DB\Schema\Element[] $toMod */
+        $toAdd = [];
+
+        foreach ($this->params as $p) {
+            if (!($p instanceof Column)) {
+                continue;
+            }
+
+            $found = false;
+            foreach ($this->oldParams as $op) {
+                if (!($op instanceof Column)) {
+                    continue;
+                }
+
+                if ($p->getName() == $op->getName()) {
+                    $found = true;
+                    if (!$p->compare($op)) {
+                        $toMod[] = $p;
+                    }
+
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $toAdd[] = $p;
+            }
+        }
+
+        // modify old ones
+        foreach ($toMod as $col) {
+            if (!$firstCmd) {
+                $sql .= ', ';
+            }
+
+            $sql .= 'MODIFY COLUMN ' . $col->toString();
+            $firstCmd = false;
+        }
+
+        // add new ones
+        foreach ($toAdd as $col) {
+            if (!$firstCmd) {
+                $sql .= ', ';
+            }
+
+            $sql .= 'ADD COLUMN ' . $col->toString();
+            $firstCmd = false;
+        }
+
+        return $sql;
+    }
+
+    private function createToString(): string
+    {
         $sql = 'CREATE ';
 
         if ($this->params->temporary) {

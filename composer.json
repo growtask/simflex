@@ -1,6 +1,8 @@
 {
   "name": "glushkovds/simflex",
   "description": "Core for Simflex",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "keywords": [
     "php",
     "simplex-core",

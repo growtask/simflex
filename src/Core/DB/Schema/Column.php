@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB;
@@ -8,7 +9,7 @@ use Simflex\Core\DB\Schema\TableElementBase;
 
 class Column extends TableElementBase
 {
-    /** @var \Simflex\Core\DB\Schema\Params\ColumnParams  */
+    /** @var \Simflex\Core\DB\Schema\Params\ColumnParams */
     protected $params;
     protected $type = '';
 
@@ -17,6 +18,11 @@ class Column extends TableElementBase
         $this->name = $name;
         $this->params = new ColumnParams();
         $this->table = $table;
+    }
+
+    public function compare(Column $other): bool
+    {
+        return $this->params->compare($other->params) && $this->name == $other->name && $this->type == $other->type;
     }
 
     // ------------ BUILDER ------------ //

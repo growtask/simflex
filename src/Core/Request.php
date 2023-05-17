@@ -39,8 +39,12 @@ class Request
         }
 
         // parse and compose URL
-        $urlData = parse_url($_SERVER['REQUEST_URI']);
-        $this->urlPath = $urlData['path'];
+        $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path']);
+    }
+
+    public function setPath(string $path)
+    {
+        $this->urlPath = $path;
         $this->urlParts = array_slice(explode('/', $this->urlPath), 1);
         $this->serverInfo = $_SERVER;
     }

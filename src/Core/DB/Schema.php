@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\DB;
 
 use Simflex\Core\Container;
@@ -19,6 +20,8 @@ class Schema
     /** @var \Simflex\Core\DB\Schema\Table[] Tables that have been created while this object is alive */
     protected $sessionCreated = [];
 
+    protected $awaitingAlter = [];
+
     public function __construct()
     {
         $this->reload();
@@ -28,21 +31,55 @@ class Schema
     public function reload()
     {
         $dbName = Container::getConfig()::$db_name;
-
-        // TODO: load full table structure
-
         $this->tables = [];
 
-        $tables = DB::query('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?', [$dbName]);
+        $tables = DB::query(
+            'select TABLE_NAME, AUTO_INCREMENT from information_schema.TABLES where TABLE_SCHEMA = ?',
+            [$dbName]
+        );
         while ($table = DB::fetch($tables)) {
             $tableName = $table['TABLE_NAME'];
-            $this->tables[$tableName] = $this->loadTable($tableName);
+            $tab = $this->tables[$tableName] = $this->loadTable($tableName);
+            if ($table['AUTO_INCREMENT']) {
+                $tab->autoIncrement($table['AUTO_INCREMENT']);
+            }
         }
     }
 
     protected function loadTable(string $name): Table
     {
         $table = new Table($name, true);
+
+        $columns = DB::query('select * from information_schema.COLUMNS where TABLE_NAME = ? and TABLE_SCHEMA = ?', [
+            $name,
+            Container::getConfig()::$db_name
+        ]);
+
+        while ($col = DB::fetch($columns)) {
+            $c = $table->addColumn(
+                $col['COLUMN_NAME'],
+                $col['DATA_TYPE'],
+                $col['CHARACTER_MAXIMUM_LENGTH'] ?? $col['NUMERIC_PRECISION'] + 1
+            );
+
+            if ($col['COLUMN_DEFAULT']) {
+                $c->setDefault($col['COLUMN_DEFAULT']);
+            }
+
+            if ($col['COLUMN_KEY'] == 'PRI') {
+                $c->primaryKey();
+            }
+
+            if (strpos($col['EXTRA'], 'auto_increment') !== false) {
+                $c->autoIncrement();
+            }
+
+            $c->comment($col['COLUMN_COMMENT']);
+            $c->setNull($col['IS_NULLABLE'] == 'YES');
+        }
+
+        // TODO: load constraints
+
         return $table;
     }
 
@@ -77,6 +114,17 @@ class Schema
         }
 
         $this->awaitingDelete[] = $this->tables[$name];
+    }
+
+    public function table(string $name, callable $fn)
+    {
+        if (!$this->hasTable($name)) {
+            $this->createTable($name, $fn);
+        } else {
+            $fn($this->tables[$name]);
+            $this->awaitingCreate[] = $this->tables[$name];
+            $this->awaitingAlter[] = $name;
+        }
     }
 
     // ------------ EXECUTION ------------ //
@@ -138,14 +186,17 @@ class Schema
             }
 
             // if everything went smooth, let's check if that table was already made
-            $params = $table->getParams();
-            if (!$params->ifNotExists || $params->ifNotExists && !$this->hasTable($table->getName())) {
-                $this->sessionCreated[] = $table;
+            if (!in_array($table->getName(), $this->awaitingAlter)) {
+                $params = $table->getParams();
+                if (!$params->ifNotExists || $params->ifNotExists && !$this->hasTable($table->getName())) {
+                    $this->sessionCreated[] = $table;
+                }
             }
         }
 
-        // clear pool
+        // clear pools
         $this->awaitingCreate = [];
+        $this->awaitingAlter = [];
         return true;
     }
 }

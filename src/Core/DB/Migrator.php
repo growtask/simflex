@@ -98,7 +98,8 @@ class Migrator extends ConsoleBase
             }
 
             $schema = new Schema();
-            if (!$class->up($schema)) {
+            $class->up($schema);
+            if (!$schema->commit()) {
                 $dbError = DB::error();
                 $schema->rollback();
 
@@ -112,7 +113,8 @@ class Migrator extends ConsoleBase
 
             $dbMigration = new Migration();
             if (!$dbMigration->insert(['file' => $migration])) {
-                if (!$class->down($schema)) {
+                $class->down($schema);
+                if (!$schema->commit()) {
                     Alert::error('FATAL: failed to down migration ' . $migration . ' after DB failure');
                     Alert::text(DB::error());
                     return;
@@ -151,14 +153,16 @@ class Migrator extends ConsoleBase
             }
 
             $schema = new Schema();
-            if (!$class->down($schema)) {
+            $class->down($schema);
+            if (!$schema->commit()) {
                 Alert::error('Failed to down migration ' . $migration['file']);
                 Alert::text(DB::error());
                 return;
             }
 
             if (!$migration->delete()) {
-                if (!$class->up($schema)) {
+                $class->up($schema);
+                if (!$schema->commit()) {
                     $dbError = DB::error();
                     $schema->rollback();
 
@@ -185,5 +189,30 @@ class Migrator extends ConsoleBase
     {
         $this->down($steps);
         $this->up($steps);
+    }
+
+    public function create($name)
+    {
+        $template = "<?php
+
+use \Simflex\Core\DB\Schema;
+
+return new class implements \Simflex\Core\DB\Migration
+{
+    public function up(Schema \$s)
+    {
+    
+    }
+    
+    public function down(Schema \$s)
+    {
+    
+    }
+};";
+
+        $fileName = date('Y_m_d') . '_' . $name . '.php';
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/database/migrations/' . $fileName, $template);
+
+        Alert::success('Created new migration ' . $fileName);
     }
 }
