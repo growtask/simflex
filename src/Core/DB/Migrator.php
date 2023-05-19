@@ -193,25 +193,8 @@ class Migrator extends ConsoleBase
 
     public function create($name)
     {
-        $template = "<?php
-
-use \Simflex\Core\DB\Schema;
-
-return new class implements \Simflex\Core\DB\Migration
-{
-    public function up(Schema \$s)
-    {
-    
-    }
-    
-    public function down(Schema \$s)
-    {
-    
-    }
-};";
-
         $fileName = date('Y_m_d') . '_' . $name . '.php';
-        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/database/migrations/' . $fileName, $template);
+        copy(__DIR__ . '/migration_template.php', $_SERVER['DOCUMENT_ROOT'] . '/database/migrations/' . $fileName);
 
         Alert::success('Created new migration ' . $fileName);
     }

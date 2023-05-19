@@ -136,7 +136,7 @@ class Table extends ElementBase
     public function dropColumns($name): Table
     {
         if (is_array($name)) {
-            $this->dropQueue += $name;
+            $this->dropQueue = array_unique(array_merge($this->dropQueue, $name));
         } else {
             $this->dropQueue[] = $name;
         }
@@ -148,22 +148,22 @@ class Table extends ElementBase
 
     public function integer(string $name, ?int $length = null): Column
     {
-        return $this->addColumn($name, 'int', $length);
+        return $this->addColumn($name, Column::TYPE_INT, $length);
     }
 
     public function string(string $name, ?int $length = 255): Column
     {
-        return $this->addColumn($name, 'varchar', $length);
+        return $this->addColumn($name, Column::TYPE_VARCHAR, $length);
     }
 
     public function text(string $name): Column
     {
-        return $this->addColumn($name, 'text');
+        return $this->addColumn($name, Column::TYPE_TEXT);
     }
 
     public function boolean(string $name): Column
     {
-        return $this->addColumn($name, 'tinyint', 1);
+        return $this->addColumn($name, Column::TYPE_TINYINT, 1);
     }
 
     // ------------ UTIL ------------ //

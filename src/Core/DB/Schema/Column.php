@@ -13,6 +13,12 @@ class Column extends TableElementBase
     protected $params;
     protected $type = '';
 
+    public const TYPE_INT = 'int';
+
+    public const TYPE_TINYINT = 'tinyint';
+    public const TYPE_VARCHAR = 'varchar';
+    public const TYPE_TEXT = 'text';
+
     public function __construct(string $name, ?Table $table = null)
     {
         $this->name = $name;
