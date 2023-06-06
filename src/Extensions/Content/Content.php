@@ -41,6 +41,22 @@ class Content extends ComponentBase
         return json_decode($from['params'][$param] ?? '{"v":[]}', true)['v'] ?: [];
     }
 
+    protected static function getRootsByTemplateId(int $id): array
+    {
+        $query = ModelContent::findAdv()->where([
+            'pid' => 0,
+            'active' => 1,
+            'template_id' => $id,
+        ]);
+
+        $children = $query->all();
+        foreach ($children as $child) {
+            $child['params'] = unserialize($child['params']);
+        }
+
+        return $children;
+    }
+
     protected static function getChildrenById(int $id, int $except = 0): array
     {
         $query = ModelContent::findAdv()->where([
