@@ -27,7 +27,7 @@ class TinyImageManager
      *
      * @return TinyImageManager
      */
-    function TinyImageManager()
+    public function __construct()
     {
         error_reporting(E_ALL);
         ob_start("ob_gzhandler");
@@ -717,6 +717,7 @@ class TinyImageManager
     function GetThumb($dir, $md5, $filename, $mode, $width = 100, $height = 100)
     {
         $path = realpath(DIR_ROOT . '/' . $dir);
+        return $dir . '/' . $filename;
         if (is_file($path . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg')) return $dir . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg';
 
         $isfile = (strpos($dir, DIR_FILES) === 0 ? true : false);
@@ -848,6 +849,6 @@ class TinyImageManager
 
 }
 
-$letsGo = new TinyImageManager();
 
+$letsGo = new TinyImageManager();
 ?>

@@ -133,6 +133,21 @@ class Base
         $fieldName = DB::escape(@$_GET['field_name']);
         $keyName = DB::escape(@$_GET['key_name']);
         $keyValue = (int)@$_GET['key_value'];
+        if (!isset($this->fields[$fieldName])) {
+            // must be custom thing.
+            // TODO: do this properly!
+            $data = DB::result('SELECT params FROM `' . $this->table . "` WHERE $keyName = $keyValue");
+            if (!$data) {
+                exit(json_encode(['success' => false]));
+            }
+
+            $data = unserialize($data['params']);
+            $data[$fieldName] = '';
+            $data = serialize($data);
+
+            DB::query("UPDATE $this->table SET params = ? WHERE $keyName = $keyValue", [$data]);
+            exit(json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue]));
+        }
         $field = $this->fields[$fieldName];
         $q = "select $field->name from `$this->table` where $keyName = $keyValue";
         $row = DB::result($q);

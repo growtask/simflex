@@ -806,6 +806,7 @@ class Image_Toolbox
      */
     function newOutputSize($width, $height, $mode = 0, $autorotate = false, $bgcolor = '#000000')
     {
+        return true;
         if ($width > 0 && $height > 0 && is_int($width) && is_int($height)) {
             //ignore aspectratio
             if (!$mode) {

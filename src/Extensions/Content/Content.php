@@ -43,13 +43,13 @@ class Content extends ComponentBase
 
     protected static function getRootsByTemplateId(int $id): array
     {
-        $query = ModelContent::findAdv()->where([
-            'pid' => 0,
-            'active' => 1,
-            'template_id' => $id,
-        ]);
+        $q = DB::query('SELECT * FROM content WHERE IFNULL(pid, 0) = 0 AND active = 1 AND template_id = ?', [$id]);
 
-        $children = $query->all();
+        $children = [];
+        while ($r = DB::fetch($q)) {
+            $children[] = $r;
+        }
+
         foreach ($children as $child) {
             $child['params'] = unserialize($child['params']);
         }
@@ -57,7 +57,7 @@ class Content extends ComponentBase
         return $children;
     }
 
-    protected static function getChildrenById(int $id, int $except = 0): array
+    protected static function getChildrenById(int $id, int $except = 0, bool $noOrder = false): array
     {
         $query = ModelContent::findAdv()->where([
             'pid' => $id,
@@ -68,7 +68,7 @@ class Content extends ComponentBase
             $query = $query->andWhere('content_id != ' . $except);
         }
 
-        $children = $query->orderBy('title ASC')->all();
+        $children = $query->orderBy(($noOrder ? 'content_id ' : 'title ') . 'ASC')->all();
         foreach ($children as $child) {
             $child['params'] = unserialize($child['params']);
         }
@@ -211,14 +211,19 @@ class Content extends ComponentBase
                 $hasPrev = $page > 0;
                 $hasNext = $page < $pages - 1;
 
+                $order = 'content_id';
+                if (Container::getRequest()->getPath() == '/blog/') {
+                    $order = 'date';
+                }
+
                 $q = "SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
                             ' AND ',
                             $searchStr
                         )) : '');
                 if (isset($_GET['mob'])) {
-                    $q .= " ORDER BY date DESC LIMIT " . (($page + 1) * $pageCount);
+                    $q .= " ORDER BY $order DESC LIMIT " . (($page + 1) * $pageCount);
                 } else {
-                    $q .= " ORDER BY date DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
+                    $q .= " ORDER BY $order DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
                 }
                 $q = DB::query($q);
                 $children = [];
