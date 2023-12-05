@@ -6,6 +6,7 @@ class ColumnParams
 {
     public $isNull = true;
     public $default = null;
+    public $defaultSet = false;
     public $autoIncrement = false;
     public $comment = '';
     public $collate = '';
@@ -16,6 +17,7 @@ class ColumnParams
         return
             $this->isNull == $other->isNull &&
             $this->default == $other->default &&
+            $this->defaultSet == $other->defaultSet &&
             $this->autoIncrement == $other->autoIncrement &&
             $this->comment == $other->comment &&
             $this->collate == $other->collate &&

@@ -46,15 +46,20 @@ class File
     {
         if (is_uploaded_file($_FILES[$fileName]['tmp_name'])) {
             $mas = array();
-            if (preg_match('@\.([a-z0-9]{1,10})$@i', $_FILES[$fileName]['name'], $mas)) {
+            $ext = explode('.', $_FILES[$fileName]['name']);
+            $ext = $ext[count($ext) - 1];
                 //$this->name = str_replace('.'.$mas[1], '', $_FILES[$fileName]['name']);
-                if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $mas[1])) {
-                    $this->type = $mas[1];
+                if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $ext)) {
+                    $this->type = $ext;
                     return true;
                 }
-            }
         }
         return false;
+    }
+
+    public function save()
+    {
+
     }
 
     public function getName()

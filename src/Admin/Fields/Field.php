@@ -25,6 +25,7 @@ class Field
      */
     public $fk = false;
     public $width = 0;
+    public $widthMob = 0;
     public $isVisible = true;
     public $link = '';
     public $isnull = false;
@@ -43,7 +44,10 @@ class Field
     public $onchange = '';
     protected $tree = array();
     public $value = '';
+    public $pkValue = '';
     protected $pid;
+
+    protected $isNumeric = false;
 
     /**
      *
@@ -58,13 +62,19 @@ class Field
         $this->table = $row['table'];
         $this->help = (string)@$row['help'];
         $this->placeholder = (string)@$row['placeholder'];
+
         if (isset($row['params']) && is_string($row['params'])) {
             $row['params'] = unserialize($row['params']);
         }
+
         $params = isset($row['params']['main']) ? $row['params']['main'] : array();
         $this->params = $params;
 
         $this->setWidth(@$params['width']);
+
+        if ($params['width_mob'] ?? '') {
+            $this->widthMob = (double)$params['width_mob'];
+        }
 
         if (!empty($params['pk'])) {
             $this->pk = (bool)$params['pk'];
@@ -160,11 +170,12 @@ class Field
 
     public function input($value)
     {
-        $ret = '<input class="form-control" type="text" name="' . $this->inputName() . '" value="' . htmlspecialchars($value)
-            . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
-            . ($this->readonly ? ' readonly' : '') . ' />' . "\n";
-//        help выводится в tpl
-        return $ret;
+        return '<div class="form-control form-control--sm">
+                                    <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"
+                                    ' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
+            . ($this->readonly ? ' readonly' : '') . '
+                                        type="text" class="form-control__input">
+                                </div>';
     }
 
     public function inputName()
@@ -182,7 +193,7 @@ class Field
         if ($simple) {
             return $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
         }
-        return $this->e2n && $_POST[$this->name] === '' ? 'NULL' : "'" . DB::escape($_POST[$this->name]) . "'";
+        return $this->e2n && $_POST[$this->name] === '' ? null : $_POST[$this->name];
     }
 
     public function check()
@@ -197,11 +208,12 @@ class Field
     public function show($row)
     {
         $value = $row[$this->name . ($this->fk ? '_label' : '')];
-        if ($this->pk) {
-            echo '<a href="javascript:openModal(\'?action=showDetail&id=' . htmlspecialchars($value)
-                . '\',function(){$(\'.modal-dialog\').addClass(\'modal-wide\');})">' . $value . '</a>';
+
+        if ($this->name == 'name') {
+            echo '<a href="?action=form&'.$this->tablePk.'='.$this->pkValue.'" class="table__row-' . $this->name . '">' . $value . '</a>';
         } else {
-            echo $value;
+            $isNumericReal = $this->isNumeric || ((string)intval($value) == $value);
+            echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
         }
     }
 
@@ -230,8 +242,10 @@ class Field
     {
         if ($this->filter) {
             $inExtra = $this->width == 0;
-            echo '<input type="text" class="form-control" name="filter[' . $this->name . ']" placeholder="'
-                . ($inExtra ? htmlspecialchars($this->label) : '') . '" value="' . htmlspecialchars($value) . '" />';
+            echo ' <div class="form-control form-control--sm">
+                        <input class="form-control__input" name="filter[' . $this->name . ']" placeholder="'
+                . ($inExtra ? htmlspecialchars($this->label) : '') . '" value="' . htmlspecialchars($value) . '" type="text" />
+                    </div>';
         }
     }
 

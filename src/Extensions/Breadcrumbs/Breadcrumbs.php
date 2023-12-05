@@ -9,6 +9,7 @@ class Breadcrumbs extends ModuleBase
 {
     protected static $arr = array();
     protected $crumbs = array();
+    protected static $skip = [];
 
     protected function content()
     {
@@ -49,7 +50,12 @@ class Breadcrumbs extends ModuleBase
 
     public static function get(): array
     {
-        return array_reverse(self::$arr);
+        $arr = array_reverse(self::$arr);
+        foreach (self::$skip as $s) {
+            unset($arr[$s]);
+        }
+
+        return $arr;
     }
 
     public static function getLast(): array
@@ -57,8 +63,15 @@ class Breadcrumbs extends ModuleBase
         return self::$arr[array_key_first(self::$arr)] ?? [];
     }
 
+    public static function remove($link)
+    {
+        self::$skip[] = md5($link);
+    }
+
     public static function add($name, $link)
     {
-        self::$arr[md5($link)] = ['name' => $name, 'link' => $link];
+        if (!isset(self::$arr[md5($link)])) {
+            self::$arr[md5($link)] = ['name' => $name, 'link' => $link];
+        }
     }
 }

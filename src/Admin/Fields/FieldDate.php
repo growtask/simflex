@@ -33,8 +33,10 @@ class FieldDate extends Field
         if (!$this->readonly) {
             $classes[] = "form-datepicker";
         }
-        return '<input class="' . implode(' ', $classes) . '" type="text" name="' . $this->inputName() . '" value="' . $value . '"' . ($this->readonly ? ' readonly' : '') . ' />';
-    }
+        return '<div id="calendar" class="form-control form-control--sm">
+                                    <input value="'.date('Y-m-d', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="date" class="form-control__input">
+                                </div>';
+     }
 
     public function getPOST($simple = false, $group = null)
     {
@@ -45,13 +47,15 @@ class FieldDate extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4}$@', $value)) {
             $value = substr($value, -4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2);
         }
-        return $this->e2n && $value === '' ? 'NULL' : "'" . DB::escape($value) . "'";
+        return $this->e2n && $value === '' ? NULL : "" . DB::escape($value) . "";
     }
 
     public function show($row)
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
-        echo $value;
+        $isNumericReal = false;
+        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
+
     }
 
 }

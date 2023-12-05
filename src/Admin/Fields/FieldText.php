@@ -38,15 +38,10 @@ class FieldText extends Field
 
     public function input($value)
     {
-        if ($this->readonly) {
-            return '<textarea class="form-control sf-editor-readonly" rows="4" cols="20"'
-                . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
-                . ' readonly>' . htmlspecialchars($value) . '</textarea>';
-        }
-        return '<textarea class="form-control' . ($this->editor ? ' sf-editor-' . $this->editor : '')
-            . '" name="' . $this->inputName() . '" rows="4" cols="20"'
-            . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
-            . '>' . htmlspecialchars($value) . '</textarea>';
+        return '<div class="form-control form-control--sm">
+                                    <textarea class="form-control__textarea '.($this->readonly ? ' sf-editor-readonly' : ''). ($this->editor ? ' sf-editor-' . $this->editor : '').'" placeholder="' . $this->placeholder . '"
+                                        name="' . $this->inputName() . '">' . htmlspecialchars($value) . '</textarea>
+                                </div>';
     }
 
 }

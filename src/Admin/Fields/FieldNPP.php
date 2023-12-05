@@ -14,17 +14,38 @@ class FieldNPP extends Field
     {
         $value = $row[$this->name];
         $pkValue = $row[$this->tablePk];
-        echo '<div class="npp-show-field">';
-        echo '<a href="?action=change_npp&field=' . $this->name . '&' . $this->tablePk . '=' . $pkValue . '&down"><i class="fa  fa-caret-down"></i></a>&nbsp; ';
-        echo $value;
-        echo ' &nbsp;<a href="?action=change_npp&field=' . $this->name . '&' . $this->tablePk . '=' . $pkValue . '&up"><i class="fa fa-caret-up"></i></a>';
-        echo '</div>';
+
+        echo <<<DATA
+<div class="table__row-quantity form-control">
+                            <div class="form-control__quantity" data-npp="$pkValue" data-content="$this->tablePk">
+                                <a href="?action=change_npp&field=$this->name&$this->tablePk=$pkValue&up" class="form-control__quantity-minus">
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect y="6" width="2" height="10" rx="1" transform="rotate(-90 0 6)"
+                                            fill="white" />
+                                    </svg>
+                                </a>
+                                <input type="text" value="$value" class="form-control__quantity-input" />
+                                <a href="?action=change_npp&field=$this->name&$this->tablePk=$pkValue&down" class="form-control__quantity-plus">
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="4" width="2" height="10" rx="1" fill="white" />
+                                        <rect y="6" width="2" height="10" rx="1" transform="rotate(-90 0 6)"
+                                            fill="white" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+DATA;
     }
 
     public function input($value)
     {
-        if (class_exists('AdminBase')) {
-            if (AdminBase::$isAdd) {
+        if (!isset($_REQUEST[$this->tablePk])) {
+            // TODO: make it nice
+            if ($this->table == 'catalog_product') {
+                $value = 1;
+            } else {
                 $where = array();
                 if ($filter = @$_SESSION[$this->table]['filter']) {
                     foreach ($filter as $fname => $fval) {
@@ -33,11 +54,15 @@ class FieldNPP extends Field
                         }
                     }
                 }
-                $q = "SELECT MAX($this->name) FROM $this->table" . (count($where) ? ' WHERE ' . implode(' AND ', $where) : '');
+                $q = "SELECT MAX($this->name) FROM $this->table" . (count($where) ? ' WHERE ' . implode(
+                            ' AND ',
+                            $where
+                        ) : '');
                 $max = DB::result($q, 0);
                 $value = $max + 1;
             }
         }
+
         return parent::input($value);
     }
     

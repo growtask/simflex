@@ -4,6 +4,7 @@ namespace Simflex\Extensions\Content;
 
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Container;
+use Simflex\Core\Profiler;
 use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
 use Simflex\Core\Core;
 use Simflex\Core\DB;
@@ -19,9 +20,9 @@ use Simflex\Extensions\Content\Model\ModelContent;
 class Content extends ComponentBase
 {
 
-    public function &get(): ?ModelContent
+    public function &get($path = ''): ?ModelContent
     {
-        if ($content = ModelContent::findOne(['path' => Container::getRequest()->getPath(), 'active' => 1])) {
+        if ($content = ModelContent::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
         }
         return $content;
@@ -41,24 +42,9 @@ class Content extends ComponentBase
         return json_decode($from['params'][$param] ?? '{"v":[]}', true)['v'] ?: [];
     }
 
-    protected static function getRootsByTemplateId(int $id): array
+    protected static function getChildrenById(int $id, int $except = 0, string $sort = 'title ASC'): array
     {
-        $q = DB::query('SELECT * FROM content WHERE IFNULL(pid, 0) = 0 AND active = 1 AND template_id = ?', [$id]);
-
-        $children = [];
-        while ($r = DB::fetch($q)) {
-            $children[] = $r;
-        }
-
-        foreach ($children as $child) {
-            $child['params'] = unserialize($child['params']);
-        }
-
-        return $children;
-    }
-
-    protected static function getChildrenById(int $id, int $except = 0, bool $noOrder = false): array
-    {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         $query = ModelContent::findAdv()->where([
             'pid' => $id,
             'active' => 1
@@ -68,16 +54,18 @@ class Content extends ComponentBase
             $query = $query->andWhere('content_id != ' . $except);
         }
 
-        $children = $query->orderBy(($noOrder ? 'content_id ' : 'title ') . 'ASC')->all();
+        $children = $query->orderBy($sort)->all();
         foreach ($children as $child) {
             $child['params'] = unserialize($child['params']);
         }
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $children;
     }
 
     protected static function getChildrenSorted(int $id, string $sort, int $except = 0): array
     {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'pid' => $id,
             'active' => 1
@@ -98,11 +86,13 @@ class Content extends ComponentBase
             return $a['params'][$sort] > $b['params'][$sort] ? 1 : -1;
         });
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $children;
     }
 
     protected static function getChildrenByPath(string $path): array
     {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'path' => $path,
             'active' => 1
@@ -112,11 +102,13 @@ class Content extends ComponentBase
             $child['params'] = unserialize($child['params']);
         }
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $children;
     }
 
     protected static function getChildrenConditional(string $path, array $cond): array
     {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
         $res = ModelContent::findAdv()->where([
             'active' => 1,
@@ -135,11 +127,13 @@ class Content extends ComponentBase
             $children[] = $c;
         }
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $children;
     }
 
     protected function getChildren(string $path, int $max = 10, array $s = [], int $ignore = 0): array
     {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         $searchStr = [];
         foreach ($s as $v) {
             if (!trim($v)) {
@@ -163,11 +157,14 @@ class Content extends ComponentBase
             $children[] = $c;
         }
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $children;
     }
 
     protected function content()
     {
+        Profiler::traceStart($this, __FUNCTION__);
+
         $content = $this->get();
 
         $link = Container::getRequest()->getPath();
@@ -211,19 +208,14 @@ class Content extends ComponentBase
                 $hasPrev = $page > 0;
                 $hasNext = $page < $pages - 1;
 
-                $order = 'content_id';
-                if (Container::getRequest()->getPath() == '/blog/') {
-                    $order = 'date';
-                }
-
                 $q = "SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
                             ' AND ',
                             $searchStr
                         )) : '');
                 if (isset($_GET['mob'])) {
-                    $q .= " ORDER BY $order DESC LIMIT " . (($page + 1) * $pageCount);
+                    $q .= " ORDER BY date DESC LIMIT " . (($page + 1) * $pageCount);
                 } else {
-                    $q .= " ORDER BY $order DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
+                    $q .= " ORDER BY date DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
                 }
                 $q = DB::query($q);
                 $children = [];
@@ -239,12 +231,17 @@ class Content extends ComponentBase
             if ($link == '/404') {
                 http_response_code(404);
             } else {
+                Profiler::traceEnd($this, __FUNCTION__);
                 header('Location: /404');
                 exit;
             }
 
+            // load home here to avoid issues with templater
+            $content = $this->get('/');
             include self::findTemplateFile('base/404.tpl');
         }
+
+        Profiler::traceEnd($this, __FUNCTION__);
     }
 
     protected function breadcrumbs($content)

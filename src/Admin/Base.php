@@ -3,6 +3,7 @@
 namespace Simflex\Admin;
 
 use Simflex\Admin\DBWhere;
+use Simflex\Admin\Fields\FieldMultiKey;
 use Simflex\Admin\PlugTime;
 use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldDateTime;
@@ -20,7 +21,10 @@ use Simflex\Admin\Plugins\Pagecontrol\Pagecontrol;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Fields\FieldInt;
+use Simflex\Core\File;
+use Simflex\Core\Image;
 use Simflex\Core\Service;
+use Simflex\Core\Time;
 use Simflex\Core\User;
 
 class Base
@@ -42,13 +46,14 @@ class Base
     protected $isHierarchy = false;
     protected $params = array('left' => array(), 'right' => array());
     protected $where = array();
+    protected $whereOr = array();
     protected $where_sys = array();
     protected $order = '';
     protected $order2 = '';
     protected $desc = 0;
     protected $errors = array();
     protected $p = 0;
-    protected $p_on = 50;
+    protected $p_on = 20;
     protected $p_count = 0;
     protected $is_filter = false;
     static protected $is_init = false;
@@ -61,7 +66,11 @@ class Base
         'bool' => ['method' => 'bool'],
         'change_enum' => ['method' => 'changeENUM'],
         'change_npp' => ['method' => 'changeNPP'],
-        'delete_field' => ['method' => 'deleteField']
+        'delete_field' => ['method' => 'deleteField'],
+        'upload_img' => ['method' => 'uploadImg'],
+        'upload_file' => ['method' => 'uploadFile'],
+        'showDetail' => ['method' => 'showDetail'],
+        'searchTags' => ['method' => 'searchTags'],
     ];
     protected $row = false;
     public static $currentWhere = '';
@@ -74,6 +83,10 @@ class Base
     protected $canEditGroup = false;
     protected $canDelete = false;
     public $title = '';
+    public $selectAll = false;
+    public $selectAdditional = [];
+    public $extraRight = '';
+    public $extraLeft = '';
 
     /**
      * Количество кнопок у каждой строки в списке записей (метод show). Влияет на ширину колонки
@@ -131,8 +144,8 @@ class Base
     protected function deleteField()
     {
         $fieldName = DB::escape(@$_GET['field_name']);
-        $keyName = DB::escape(@$_GET['key_name']);
-        $keyValue = (int)@$_GET['key_value'];
+        $keyName = $this->pk->name;
+        $keyValue = (int)$_REQUEST[$keyName];
         if (!isset($this->fields[$fieldName])) {
             // must be custom thing.
             // TODO: do this properly!
@@ -156,12 +169,52 @@ class Base
             $q = "UPDATE " . $this->table . " SET " . $field->name . "='' WHERE $keyName = $keyValue";
             $success = DB::query($q);
         }
-        echo json_encode(['success' => $success]);
+        echo json_encode(['success' => !!$success]);
+    }
+
+    public function uploadImg()
+    {
+        $img = new Image($_REQUEST['path']);
+        $img->loadPost('img');
+        $name = $img->getName();
+        $img->save();
+
+        return die($name);
+    }
+
+    public function uploadFile()
+    {
+        $f = new File();
+        $f->loadPost('file');
+        $name = $f->getName();
+        $f->save();
+
+        return die($name);
+    }
+
+    public function searchTags()
+    {
+        /** @var Field $field */
+        $field = $this->fields[$_REQUEST['name']];
+
+        $q = DB::query("select {$this->pk->name}, {$field->params['name']} from {$this->table} where {$field->params['name']} like ? limit 50", [
+            '%' . $_REQUEST['text'] . '%'
+        ]);
+
+        $out = [];
+        while ($r = DB::fetch($q)) {
+            $out[] = ['id' => $r[$this->pk->name], 'name' => $r[$field->params['name']]];
+        }
+
+        exit(json_encode($out,  JSON_UNESCAPED_UNICODE));
     }
 
     public function content()
     {
         $row = Core::menuCurItem();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            actlog('User ' . User::$login . '; data = ' . implode(', ', array_keys($_POST)));
+        }
 
         if ($row['model']) {
             $this->initTable();
@@ -213,7 +266,7 @@ class Base
             }
         }
         echo count($rows) ? '</div>' : '';
-        echo '<div class="clearfix"></div>' . "\n";
+//        echo '<div class="clearfix"></div>' . "\n";
     }
 
     protected function beforeChangeENUM($field, $row, $newValue)
@@ -253,8 +306,7 @@ class Base
         $this->afterChangeENUM($field, $row, $newValue, $success);
 
         if ($withRedirect) {
-            header('location: ./');
-            exit;
+            exit(json_encode(['success' => true]));
         }
     }
 
@@ -269,10 +321,18 @@ class Base
             Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", './');
         }
 
-        $inc = isset($_GET['up']) ? '-1' : '+1';
-        $id = (int)$_REQUEST[$this->pk->name];
-        $q = "UPDATE `$this->table` SET `$field` = `$field` $inc WHERE {$this->pk->name} = $id";
-        DB::query($q);
+        if (isset($_GET['val'])) {
+            $inc = (int)$_GET['val'];
+            $id = (int)$_REQUEST[$this->pk->name];
+            $q = "UPDATE `$this->table` SET `$field` = $inc WHERE {$this->pk->name} = $id";
+            DB::query($q);
+        } else {
+            $inc = isset($_GET['up']) ? '-1' : '+1';
+            $id = (int)$_REQUEST[$this->pk->name];
+            $q = "UPDATE `$this->table` SET `$field` = `$field` $inc WHERE {$this->pk->name} = $id";
+            DB::query($q);
+        }
+
         header('location: ./');
         exit;
     }
@@ -317,8 +377,12 @@ class Base
                 }
             }
         }
-        $ret = "SELECT " . join(', ', $ar);
-//        echo $ret;
+
+        foreach ($this->selectAdditional as $i) {
+            $ar[] = $i;
+        }
+
+        $ret = "SELECT " . ($this->selectAll ? '*' : join(', ', $ar));
         return $ret;
     }
 
@@ -389,10 +453,21 @@ class Base
                     $this->isHierarchy = false;
                     if ($field instanceof FieldDateTime) {
                         $this->where[] = '' . $this->table . '.' . $field->name . " like '"
-                            . PlugTime::mysql($_SESSION[$this->table]['filter'][$field->name]) . "%'";
+                            . Time::mysql($_SESSION[$this->table]['filter'][$field->name]) . "%'";
+                    } elseif ($field instanceof FieldMultiKey) {
+                        $fval = DB::escape($_SESSION[$this->table]['filter'][$field->name]);
+                        $this->where[] = "(select count(*) from {$field->params['table_relations']} rls
+                         where $this->table.{$this->pk->name} = rls.{$this->pk->name} and rls.{$field->params['key']} = $fval) > 0";
                     } else {
                         $fval = DB::escape($_SESSION[$this->table]['filter'][$field->name]);
-                        $this->where[] = "$this->table.$field->name " . (strpos($fval, '%') === false ? '=' : 'like') . " '$fval'";
+                        if ($field instanceof FieldString) {
+                            $this->where[] = "$this->table.$field->name like '%$fval%'";
+                        } else {
+                            $this->where[] = "$this->table.$field->name " . (strpos(
+                                    $fval,
+                                    '%'
+                                ) === false ? '=' : 'like') . " '$fval'";
+                        }
                     }
                 }
             }
@@ -402,6 +477,7 @@ class Base
     public function show()
     {
         $this->prepareWhere();
+
 
         $q = $this->getQueryCount();
         $cnt = DB::result($q, 'cnt');
@@ -483,6 +559,7 @@ class Base
             $pkName = '';
             foreach ($fields as $field) {
 //                echo $field['params'];
+
                 $field['params'] = unserialize($field['params']);
                 if (!empty($field['params']['main']['filter'])) {
                     $this->is_filter = true;
@@ -490,6 +567,7 @@ class Base
                 if (!empty($field['params']['main']['pk'])) {
                     $pkName = $field['name'];
                 }
+
                 $this->addField(Helper::create($field));
             }
 
@@ -651,11 +729,12 @@ class Base
             $q = "SELECT $field val FROM `" . $this->table . "` WHERE " . $this->pk->name . "=" . $pk;
             $row = DB::result($q);
             if (isset($row['val'])) {
-                echo $row['val'] ? 'Да' : 'Нет';
-                return;
+                echo $row['val'] ? '1' : '0';
+                return $row['val'];
             }
         }
         echo 'error';
+        return -1;
     }
 
     public function form()
@@ -710,18 +789,23 @@ class Base
             $q = "SELECT * FROM `" . $this->table . "` WHERE " . join(' AND ', $where);
             if ($rrow = DB::result($q)) {
                 $row = $rrow;
-                $title = 'Редактировать запись №' . $pk;
-                $rowName = '';
-                if (isset($row['title'])) {
-                    $rowName = $row['title'];
-                } elseif (isset($row['name'])) {
-                    $rowName = $row['name'];
-                } elseif (isset($row['label'])) {
-                    $rowName = $row['label'];
-                }
-                if ($rowName) {
-                    mb_strlen($rowName, 'utf8') > 50 ? $rowName = mb_substr($rowName, 0, 47, 'utf8') . '...' : null;
-                    $title .= ' &mdash; &laquo;' . $rowName . '&raquo;';
+                if ($this->title) {
+                    $title = $this->title;
+                } else {
+                    $title = 'Редактировать запись №' . $pk;
+                    $rowName = '';
+
+                    if (isset($row['title'])) {
+                        $rowName = $row['title'];
+                    } elseif (isset($row['name'])) {
+                        $rowName = $row['name'];
+                    } elseif (isset($row['label'])) {
+                        $rowName = $row['label'];
+                    }
+                    if ($rowName) {
+                        mb_strlen($rowName, 'utf8') > 50 ? $rowName = mb_substr($rowName, 0, 47, 'utf8') . '...' : null;
+                        $title .= ' &mdash; &laquo;' . $rowName . '&raquo;';
+                    }
                 }
             } else {
                 Alert::error('Ошибка! Запись не найдена или недостаточно прав для редактирования.', './');
@@ -804,6 +888,10 @@ class Base
             }
         }
 
+        if ($this->table == 'content_template_param' && !$this->params['right']) {
+            $this->params['right'] = [1];
+        }
+
         if (Core::$isAjax) {
             if (!empty($_REQUEST['field']) && isset($this->fields[$_REQUEST['field']]) && $pk) {
                 $field = $this->fields[$_REQUEST['field']];
@@ -819,8 +907,11 @@ class Base
             $params = unserialize($row['params']);
         }
 
+        $this->formBeforeOutput($row);
         include dirname(__FILE__) . '/Base/tpl/form.tpl';
     }
+
+    protected function formBeforeOutput(&$row) {}
 
     /**
      * Вывод html-кода для ввода данных на форме
@@ -830,7 +921,7 @@ class Base
      */
     protected function formFieldInput($field, $row)
     {
-        return $field->input(@$row[$field->name]);
+        return $field->input($field->value ?: @$row[$field->name]);
     }
 
     /**
@@ -841,9 +932,47 @@ class Base
         include 'Base/tpl/show.actions.tpl';
     }
 
-    public function rowActions($row)
+    public function rowActions($row, $i)
     {
         include 'Base/tpl/show.actions.row.tpl';
+    }
+
+    public function searchInt()
+    {
+        $text = DB::escape($_REQUEST['text']);
+        $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
+        $field = $this->fields[$name];
+        if (!($field instanceof FieldInt) || !$field->params['is_fk']) {
+            return [];
+        }
+
+        $out = [];
+        $q = DB::query("select `{$field->params['fk_key']}` as id, `{$field->params['fk_label']}` as name from 
+                                      `{$field->params['fk_table']}` where {$field->params['fk_label']} like '%$text%' limit 50");
+        while ($r = DB::fetch($q)) {
+            $out[] = $r;
+        }
+
+        exit(json_encode($out, JSON_UNESCAPED_UNICODE));
+    }
+
+    public function searchMultiKey()
+    {
+        $text = DB::escape($_REQUEST['text']);
+        $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
+        $field = $this->fields[$name];
+        if (!($field instanceof FieldMultiKey)) {
+            return [];
+        }
+
+        $out = [];
+        $q = DB::query("select `{$field->params['key']}` as id, `{$field->params['key_alias']}` as name from 
+                                      `{$field->params['table_values']}` where {$field->params['key_alias']} like '%$text%' limit 50");
+        while ($r = DB::fetch($q)) {
+            $out[] = $r;
+        }
+
+        exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
     public function copy()
@@ -1006,7 +1135,7 @@ class Base
             $q = $isInsert ? $this->getQueryInsert() : $this->getQueryUpdate();
 //            echo $q;die;
 
-            DB::query($q);
+            DB::query($q[0], $q[1]);
             if (DB::errno()) {
                 $this->errors[] = "Введенные данные некорректны";
                 $this->errors[] = DB::error();
@@ -1095,6 +1224,7 @@ class Base
     protected function getQueryInsert()
     {
         $keys = $values = array();
+        $vals = [];
         foreach ($this->fields as $field) {
             if ($field->isVirtual) {
                 $field->getPOST();
@@ -1108,16 +1238,17 @@ class Base
                 }
             }
             if ($atq) {
-                $keys[] = $field->name;
+                $keys[] = DB::wrapName($field->name);
                 if ($field->name == 'params') {
                     $params = $this->getParams();
                     $post = "'" . DB::escape(serialize($params)) . "'";
                 }
-                $values[] = $post;
+                $vals[] = $post;
+                $values[] = '?';
             }
         }
         $q = "INSERT INTO `" . $this->table . "` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
-        return $q;
+        return [$q, $vals];
     }
 
     protected function getQueryUpdate()
@@ -1126,17 +1257,20 @@ class Base
         $row = DB::result($q);
 
         $q = "UPDATE `" . $this->table . "` SET";
+        $vals = [];
         foreach ($this->fields as $field) {
             if ($field->isVirtual) {
                 $field->getPOST();
             } elseif (!$field->readonly) {
                 if ($field->name == 'params') {
                     $params = $this->getParams();
-                    $q .= " " . $field->name . "='" . DB::escape(serialize($params)) . "',";
+                    $q .= " " . DB::wrapName($field->name) . "=?,";
+                    $vals[] = serialize($params);
                 } elseif ($field instanceof FieldPassword) {
                     $value = $field->getPOST();
                     if ($value) {
-                        $q .= " " . $field->name . "=" . $value . ",";
+                        $q .= " " . DB::wrapName($field->name) . "=?,";
+                        $vals[] = $value;
                     }
                 } elseif ($field instanceof FieldDateTime) {
                     $cinfo = DB::columnInfo($this->table, $field->name);
@@ -1144,16 +1278,19 @@ class Base
                     if (empty($cinfo['Extra'])) {
                         $value = $field->getPOST();
                         if ($value) {
-                            $q .= " " . $field->name . "=" . $value . ",";
+                            $q .= " " . DB::wrapName($field->name) . "=?,";
+                            $vals[] = $value;
                         }
                     }
                 } elseif ($field instanceof FieldFile) {
                     if ($value = trim($field->getPOST(), "'")) {
-                        $q .= " `" . $field->name . "`='" . $value . "',";
+                        $q .= " `" . $field->name . "`=?,";
+                        $vals[] = $value;
                     }
                 } else {
                     $value = $field->getPOST();
-                    $q .= " " . $field->name . "=" . $value . ",";
+                    $q .= " " . DB::wrapName($field->name) . "=?,";
+                    $vals[] = $value;
                 }
             }
         }
@@ -1164,7 +1301,8 @@ class Base
           die();
          *
          */
-        return $q;
+
+        return [$q, $vals];
     }
 
     protected function getParams()
@@ -1304,11 +1442,17 @@ class Base
     }
 
 
+    protected function showDetailExtra($row)
+    {
+
+    }
+
     public function showDetail()
     {
         $id = (int)@$_GET['id'];
         $row = $this->showDetailGetRow($id);
         include $this->showDetailGetTpl();
+        exit;
     }
 
     /**

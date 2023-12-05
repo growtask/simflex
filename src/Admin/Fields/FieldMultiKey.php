@@ -25,19 +25,64 @@ class FieldMultiKey extends Field
         if ($value) {
             $fields[] = "(select count(*) from {$this->params['table_relations']} where $this->tablePk = $value and {$this->params['key']} = t.{$this->params['key']}) checked";
         }
+
+        // bro!
+        if ($this->table == 'catalog_product') {
+            $fields[] = 'pid';
+        }
+
         $q = "SELECT " . implode(', ', $fields) . " FROM {$this->params['table_values']} t";
         $rows = DB::assoc($q);
-        echo '<div class="checkbox-list">';
-        foreach ($rows as $row) {
-            echo '<label class="checkbox-inline"><input type="checkbox" name="' . $this->name . '[' . $row[(string)$this->params['key']] . ']" value="' . $row[(string)$this->params['key']] . '"' . (!empty($row['checked']) ? ' checked' : '') . ' /> ' . $row[(string)$this->params['key_alias']] . '</label>';
+
+        $valReal = [];
+        foreach ($rows as &$row) {
+            // remove this hack as well
+            if ($this->table == 'catalog_product' && $row['pid']) {
+                $par = DB::result('select name from catalog_category where category_id = ?', 0, [$row['pid']]);
+                if ($par) {
+                    $row['name'] .= ' (' . $par . ')';
+                }
+            }
+
+            if ($row['checked']) {
+                $valReal[] = $row[(string)$this->params['key']];
+            }
         }
-        echo '</div>';
+
+        $valReal = implode(',', $valReal);
+
+        echo '<div class="form-control__tags" data-readonly="true">
+                                                <input class="form-control__tags-value" value="'.$valReal.'" type="hidden" name="'.$this->name.'">
+                                                <ul class="form-control__tags-list">
+                                                    <input type="text" class="form-control__tags-input">
+                                                </ul>
+                                                <div class="form-control__tags-popup list1">
+                                                    <div class="list1__wrapper">
+                                                        <ul class="list1__items">
+';
+
+for ($i = 0; $i < count($rows); ++$i) {
+            echo '<li data-value="'.$rows[$i][(string)$this->params['key']].'" class="list1__item">'.$rows[$i][(string)$this->params['key_alias']].'</li>';
+}
+
+        echo ' </ul>
+                                                    </div>
+                                                </div>
+                                            </div>';
+
+//
+//
+//        echo '<div class="checkbox-list">';
+//        foreach ($rows as $row) {
+//            echo '<label class="checkbox-inline"><input type="checkbox" name="' . $this->name . '[' . $row[(string)$this->params['key']] . ']" value="' . $row[(string)$this->params['key']] . '"' . (!empty($row['checked']) ? ' checked' : '') . ' /> ' . $row[(string)$this->params['key_alias']] . '</label>';
+//        }
+//        echo '</div>';
     }
 
     public function getPOST($simple = false, $group = null)
     {
         $pkValue = (int)@$_REQUEST[$this->tablePk];
-        $values = isset($_POST[$this->name]) ? $_POST[$this->name] : array();
+        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : array();
         $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
         DB::query($q);
         foreach ($values as $value) {
@@ -70,7 +115,56 @@ class FieldMultiKey extends Field
                 self::$buffer[$key] = implode(', ', array_keys($keyAliases));
             }
         }
-        echo (string)@self::$buffer[$pkValue];
+
+        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-text">' . (string)@self::$buffer[$pkValue] . '</div>';
+    }
+
+    public function filter($value)
+    {
+        $value = DB::escape($value);
+
+        if ($this->table == 'catalog_product') {
+            // a dumb hack again...
+            $q = DB::query(
+                "select {$this->params['key_alias']}, pid from {$this->params['table_values']} where {$this->params['key']} = $value"
+            );
+        } else {
+            $q = DB::query(
+                "select {$this->params['key_alias']} from {$this->params['table_values']} where {$this->params['key']} = $value"
+            );
+        }
+        $r = DB::fetch($q);
+
+        // one more hack
+        if ($this->table == 'catalog_product') {
+            if ($r['pid']) {
+                $par = DB::result('select name from catalog_category where category_id = ?', 0, [$r['pid']]);
+                if ($par) {
+                    $r['name'] .= ' (' . $par . ')';
+                }
+            }
+        }
+
+        echo <<<HTML
+<div class="form-control form-control--sm">
+    <div class="form-control__dropdown" data-action="searchMultiKey" data-ajax="true">
+        <div class="form-control__dropdown-top">
+            <input class="form-control__dropdown-input" value="$value" type="hidden" name="filter[{$this->name}]" >
+            <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
+            <div class="form-control__dropdown-current">—</div>
+            <button class="form-control__dropdown-toggle" type="button">
+                <svg viewBox="0 0 24 24">
+                    <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                </svg>
+            </button>
+        </div>
+        <div class="form-control__dropdown-list">
+            <div data-value="{$value}" class="form-control__dropdown-item">{$r[$this->params['key_alias']]}</div>
+        </div>
+    </div>
+</div>
+HTML;
+
     }
 
     public function selectQueryField()
