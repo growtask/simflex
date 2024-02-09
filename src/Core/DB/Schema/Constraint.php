@@ -10,7 +10,7 @@ class Constraint extends ElementBase
     /** @var \Simflex\Core\DB\Schema\Params\ConstraintParams */
     protected $params;
 
-    public function __construct(string $name)
+    public function __construct(string $name = '')
     {
         $this->name = $name;
         $this->params = new ConstraintParams();
@@ -28,6 +28,10 @@ class Constraint extends ElementBase
     {
         if (!is_array($column)) {
             $column = [$column];
+        }
+
+        if (!$this->name) {
+            $this->name = crc32(microtime()) . '_' . $column[0] . '_pk';
         }
 
         $this->params->isUnique = $this->params->isForeign = false;
@@ -48,6 +52,10 @@ class Constraint extends ElementBase
     {
         if (!is_array($column)) {
             $column = [$column];
+        }
+
+        if (!$this->name) {
+            $this->name = crc32(microtime()) . '_' . $column[0] . '_uq';
         }
 
         $this->params->isPrimary = $this->params->isForeign = false;
@@ -77,6 +85,10 @@ class Constraint extends ElementBase
             }
         } else {
             $columns = $referenceColumns = [$colToReference];
+        }
+
+        if (!$this->name) {
+            $this->name = crc32(microtime()) . '_' . $columns[0] . '_' . $referenceColumns[0] . '_fk';
         }
 
         $this->params->isUnique = $this->params->isPrimary = false;

@@ -30,7 +30,10 @@ class FieldDateTime extends Field
         if (!$this->readonly) {
             $classes[] = "form-datetimepicker";
         }
-        return '<input class="' . implode(' ', $classes) . '" type="text" name="' . $this->inputName() . '" value="' . $value . '"' . ($this->readonly ? ' readonly' : '') . ' />';
+
+        return '<div id="calendar" class="form-control form-control--sm">
+                                    <input value="'.date('Y-m-d H:i:s', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="datetime-local" class="form-control__input">
+                                </div>';
     }
 
     public function getPOST($simple = false, $group = null)
@@ -42,13 +45,16 @@ class FieldDateTime extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}.[0-9]{2}$@', $value)) {
             $value = substr($value, 6, 4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2) . ' ' . substr($value, 11, 2) . ':' . substr($value, 14, 2) . ':00';
         }
-        return $this->e2n && $value === '' ? 'NULL' : "'" . DB::escape($value) . "'";
+        return $this->e2n && $value === '' ? 'NULL' : "" . DB::escape($value) . "";
     }
 
     public function show($row)
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
-        echo $value;
+        $isNumericReal = false;
+        $value = str_replace(' ', '<br/>', $value);
+        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
+
     }
 
 }

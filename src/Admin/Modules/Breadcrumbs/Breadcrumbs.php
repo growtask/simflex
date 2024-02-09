@@ -13,15 +13,16 @@ class Breadcrumbs extends ModuleBase
     public function content()
     {
         $crumbs = Container::getCore()::crumbs();
-
-        if (count($crumbs) > 0) {
-            $links = array();
-            $cnt = count($crumbs);
-            foreach ($crumbs as $i => $row) {
-                $links[] = '<a href="' . $row['link'] . '">' . $row['name'] . '</a>';
-            }
-            include dirname(__FILE__) . '/tpl/crumbs.tpl';
-        }
+        include 'tpl/crumbs.tpl';
+//
+//        if (count($crumbs) > 0) {
+//            $links = array();
+//            $cnt = count($crumbs);
+//            foreach ($crumbs as $i => $row) {
+//                $links[] = '<a href="' . $row['link'] . '">' . $row['name'] . '</a>';
+//            }
+//            include dirname(__FILE__) . '/tpl/crumbs.tpl';
+//        }
     }
 
 }

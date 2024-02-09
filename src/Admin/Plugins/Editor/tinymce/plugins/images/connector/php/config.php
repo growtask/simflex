@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 'on');
+ini_set('display_errors', 'off');
 //Корневая директория сайта
 define('DIR_ROOT',		$_SERVER['DOCUMENT_ROOT']);
 //Директория с изображениями (относительно корневой)

@@ -25,7 +25,9 @@ class DB
     protected static function db()
     {
         if (!isset(static::$db)) {
+            Profiler::traceStart(__CLASS__, __FUNCTION__);
             static::connect();
+            Profiler::traceEnd(__CLASS__, __FUNCTION__);
         }
         return static::$db;
     }
@@ -82,9 +84,14 @@ class DB
      */
     public static function &query(string $q, array $params = [])
     {
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
+
         $execTime = microtime(1);
 
+        Profiler::traceStart(__CLASS__, $q, 'db');
         $result = static::db()->query($q, $params);
+        Profiler::traceEnd(__CLASS__, $q, 'db');
+
         if (static::db()->errno()) {
             static::logError($q);
         }
@@ -97,6 +104,7 @@ class DB
             ];
         }
 
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $result;
     }
 

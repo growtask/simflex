@@ -25,6 +25,7 @@ class Resolver
                 $uris[] = $path;
             }
         }
+
         foreach (array_reverse($uris) as $path) {
             if ($route =& $routes[$path]) {
                 return static::makeRoute($route);

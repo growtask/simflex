@@ -23,15 +23,16 @@ class FieldDouble extends Field
 
     public function input($value)
     {
-        $ret = '<input class="form-control" type="text" name="' . $this->inputName() . '" value="' . $this->doubleFormat($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . ' />' . "\n";
-//        help выводится в tpl
-        return $ret;
+        return '<div class="form-control form-control--sm">
+                                    <input name="' . $this->inputName() . '" value="' . $this->doubleFormat($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
+                                        type="text" class="form-control__input">
+                                </div>';
     }
 
     public function show($row)
     {
         $value = $this->doubleFormat($row[$this->name], true);
-        echo '<span style="white-space: nowrap">' . $value . '</span>';
+        echo '<div class="table__row-'.$this->name.' '.($this->fk ? 'table__row-id' : '').' table__row-text">'.$value.'</div>';
     }
 
     public function getPOST($simple = false, $group = null)

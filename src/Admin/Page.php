@@ -8,8 +8,11 @@ use Simflex\Admin\Base\Component;
 use Simflex\Admin\Base\ModuleItem;
 use Simflex\Admin\Base\Struct;
 use Simflex\Admin\Core;
+use Simflex\Admin\Modules\Account\Account;
 use Simflex\Admin\Notify\Collection;
+use Simflex\Core\Container;
 use Simflex\Core\DB;
+use Simflex\Core\Request;
 use Simflex\Core\User;
 
 class Page
@@ -66,8 +69,15 @@ class Page
             self::$driver = new $extDriverClass();
         }
 
+        if (!Container::getRequest()) {
+            Container::set('request', new Request());
+        }
+
         if (!self::$driver) {
-            if (in_array($menuCurModel, array('struct_param', 'struct_data', 'module_param', 'struct_table', 'content_template_param'))) {
+            // todo: lol fix this
+            if (Container::getRequest()->getPath() == '/admin/account/') {
+                self::$driver = new Account([]);
+            } elseif (in_array($menuCurModel, array('struct_param', 'struct_data', 'module_param', 'struct_table', 'content_template_param'))) {
                 self::$driver = new Struct();
             } elseif (in_array($menuCurModel, array('module_item'))) {
                 self::$driver = new ModuleItem();

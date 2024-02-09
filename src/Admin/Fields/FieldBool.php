@@ -13,19 +13,32 @@ class FieldBool extends FieldInt
 
     public function input($value)
     {
-        return '<span class="sf-bool-span"><input type="checkbox" name="' . $this->inputName() . '" value="1" ' . ($value ? 'checked="checked"' : '') . ($this->readonly ? ' readonly' : '') . ' /></span>';
-    }
+        return '<div class="form-control">
+                                    <label class="form-control__switch">
+                                        <input class="form-control__switch-check" type="checkbox" name="' . $this->inputName() . '" value="1" ' . ($value ? 'checked="checked"' : '') . ($this->readonly ? ' readonly' : '') . ' />
+                                        <div class="form-control__switch-slider"></div>
+                                    </label>
+                                </div>';
+         }
 
     public function getPOST($simple = false, $group = null)
     {
         $postValue = $group === null ? @ $_POST[$this->name] : @ $_POST[$group][$this->name];
-        return $this->e2n && empty($postValue) ? 'NULL' : (isset($postValue) ? 1 : 0);
+        return $this->e2n && empty($postValue) ? 0 : (isset($postValue) ? 1 : 0);
     }
 
     public function show($row)
     {
         $value = $row[$this->name];
-        echo '<div style="text-align:center"><a class="sff-bool" href="javascript:;">', $value ? 'Да' : 'Нет', '</a></div>';
+        $checked = $value ? 'checked' : '';
+        echo <<<DATA
+<div class="form-control">
+                            <label class="form-control__switch" data-autoupdate>
+                                <input class="form-control__switch-check" $checked type="checkbox" />
+                                <div class="form-control__switch-slider"></div>
+                            </label>
+                        </div>
+DATA;
     }
 
     public function showDetail($row)
@@ -37,19 +50,24 @@ class FieldBool extends FieldInt
     public function filter($value)
     {
         if ($this->filter) {
-            echo '
-                <div data-toggle="buttons" class="btn-group" style="margin: 0 -4px">
-                    <label class="btn btn-default btn-xs' . ($value === '1' ? ' active' : '') . '">
-                        <input type="radio" name="filter[' . $this->name . ']" value="1" class="toggle"' . ($value === '1' ? ' checked' : '') . ' onchange="submit()">Да
-                    </label>
-                    <label class="btn btn-default btn-xs' . ($value === '0' ? ' active' : '') . '">
-                        <input type="radio" name="filter[' . $this->name . ']" value="0" class="toggle"' . ($value === '0' ? ' checked' : '') . ' onchange="submit()">Нет
-                    </label>
-                    <label class="btn btn-default btn-xs' . ($value === '' ? ' active' : '') . '">
-                        <input type="radio" name="filter[' . $this->name . ']" value="" class="toggle"' . ($value === '' ? ' checked' : '') . ' onchange="submit()">-
-                    </label>
-                </div>
-            ';
+            echo '<div class="form-control form-control--sm">
+                        <div class="form-control__dropdown">
+                            <div class="form-control__dropdown-top">
+                                <input class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="filter[' . $this->name . ']" >
+                                <div class="form-control__dropdown-current">—</div>
+                                <button type="button" class="form-control__dropdown-toggle">
+                                    <svg viewBox="0 0 24 24">
+                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="form-control__dropdown-list">
+                                <div data-value="1" class="form-control__dropdown-item">Да</div>
+                                <div data-value="0" class="form-control__dropdown-item">Нет</div>
+                                <div data-value="" class="form-control__dropdown-item">—</div> 
+                            </div>
+                        </div>
+                    </div>';
         }
     }
 

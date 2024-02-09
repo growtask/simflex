@@ -63,6 +63,7 @@ class Core
         }
 
         if (static::uri(1) == 'login') {
+            actlog('Logging in ' . $_REQUEST['login']['login'] ?? '');
             Auth::login(
                 $_REQUEST['login']['login'] ?? null,
                 $_REQUEST['login']['password'] ?? null,

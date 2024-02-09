@@ -47,6 +47,6 @@ class Bootstrap
             new CookieMiddleware(),
         ]))->process();
         Container::set('user', null);
-        Container::getUserLegacy()::logout2();
+        //Container::getUserLegacy()::logout2();
     }
 }

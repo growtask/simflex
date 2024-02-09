@@ -2,292 +2,109 @@
 
 use Simflex\Admin\Page;
 
-//PlugJQuery::jquery();
-//\App\Plugins\Jquery\Jquery::fancybox();
 \Simflex\Admin\Plugins\Alert\Alert::init();
 
-// GLOBAL MANDATORY STYLES
-Page::css('//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=cyrillic,latin');
-Page::coreCss('/theme/css/global/font-awesome.min.css');
-Page::coreCss('/theme/css/global/simple-line-icons.min.css');
-Page::coreCss('/theme/css/global/bootstrap.min.css');
-Page::coreCss('/theme/css/global/uniform.default.css');
-
-// THEME STYLES
-Page::coreCss('/theme/css/conquer/style-conquer.css');
-Page::coreCss('/theme/css/conquer/style.css');
-Page::coreCss('/theme/css/conquer/style-responsive.css');
-Page::coreCss('/theme/css/conquer/default.css');
-
-// CORE PLUGINS
-Page::coreCss('/theme/css/conquer/default.css');
-Page::coreJs('/theme/js/conquer/jquery-1.11.0.min.js', 0);
-Page::coreJs('/theme/js/conquer/jquery-migrate-1.2.1.min.js', 0);
-Page::coreJs('/theme/js/conquer/bootstrap.min.js');
-Page::coreJs('/theme/js/conquer/bootstrap-hover-dropdown.min.js');
-Page::coreJs('/theme/js/conquer/jquery.uniform.min.js');
-Page::coreJs('/theme/js/conquer/app.js');
-Page::coreJs('/theme/js/conquer/form-components.js');
-
-Page::css('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
-Page::js('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js');
-
 Page::js('/theme/default/js/cookie.js');
-Page::coreJs('/theme/js/default.js');
-Page::coreJs('/theme/js/bootup.js');
 Page::coreJs('/theme/js/table.js');
-Page::coreCss('/theme/css/default.css');
+Page::coreJs('/theme/js/vtable.js');
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <title>
-        <?php echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
-        <?php echo \Simflex\Admin\Core::siteParam('site_name') ?> |
-        Simflex Admin
-    </title>
 
-    <?php Page::meta() ?>
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="<?= asset('css/styles.min.css') ?>" />
+        <link rel="shortcut icon" href="<?= asset('img/favicon.ico') ?>" type="image/x-icon">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script   src="https://code.jquery.com/jquery-3.7.0.min.js"   integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="   crossorigin="anonymous"></script>
+        <script src="https://cdn.tiny.cloud/1/1xg2o2utn8wcz706ywlb0eyva4j4yg31zqzm9po4no1dc2jl/tinymce/6/tinymce.min.js"
+                referrerpolicy="origin"></script>
 
-    <?php \App\Plugins\Frontend\Frontend::output(); ?>
-</head>
+        <noscript>
+            <style>
+                /**
+                  * Reinstate scrolling for non-JS clients
+                  */
+                .simplebar-content-wrapper {
+                    scrollbar-width: auto;
+                    -ms-overflow-style: auto;
+                }
 
+                .simplebar-content-wrapper::-webkit-scrollbar,
+                .simplebar-hide-scrollbar::-webkit-scrollbar {
+                    display: initial;
+                    width: initial;
+                    height: initial;
+                }
+            </style>
+        </noscript>
 
-<body class="page-header-fixed">
+        <title>
+            <?php
+            echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
+            <?php
+            echo \Simflex\Admin\Core::siteParam('site_name') ?> |
+                                                                Simflex Admin </title>
 
+        <?php
+        Page::meta() ?>
+    </head>
 
-<div class="header navbar navbar-fixed-top">
-    <div class="header-inner">
-        <div class="page-logo">
-            <a href="/admin/">
-                <span>Simflex</span>&nbsp;Admin
-            </a>
-        </div>
-
-        <a href="javascript:;" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <img src="<?= \Simflex\Admin\Core::webVendorPath() ?>/theme/img/menu-toggler.png" alt=""/>
-        </a>
-
-        <ul class="nav navbar-nav pull-right">
-
-            <?php // SFAdminPage::notifications() ?>
-
-            <!-- END NOTIFICATION DROPDOWN -->
-            <?php /*
-                      <!-- BEGIN TODO DROPDOWN -->
-                      <li class="dropdown" id="header_task_bar">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                      <i class="icon-calendar"></i>
-                      <span class="badge badge-warning">
-                      5 </span>
-                      </a>
-                      <ul class="dropdown-menu extended tasks">
-                      <li>
-                      <p>
-                      You have 12 pending tasks
-                      </p>
-                      </li>
-                      <li>
-                      <ul class="dropdown-menu-list scroller" style="height: 250px;">
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      New release v1.2 </span>
-                      <span class="percent">
-                      30% </span>
-                      </span>
-                      <span class="progress">
-                      <span style="width: 40%;" class="progress-bar progress-bar-success" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      40% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      Application deployment </span>
-                      <span class="percent">
-                      65% </span>
-                      </span>
-                      <span class="progress progress-striped">
-                      <span style="width: 65%;" class="progress-bar progress-bar-danger" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      65% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      Mobile app release </span>
-                      <span class="percent">
-                      98% </span>
-                      </span>
-                      <span class="progress">
-                      <span style="width: 98%;" class="progress-bar progress-bar-success" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      98% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      Database migration </span>
-                      <span class="percent">
-                      10% </span>
-                      </span>
-                      <span class="progress progress-striped">
-                      <span style="width: 10%;" class="progress-bar progress-bar-warning" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      10% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      Web server upgrade </span>
-                      <span class="percent">
-                      58% </span>
-                      </span>
-                      <span class="progress progress-striped">
-                      <span style="width: 58%;" class="progress-bar progress-bar-info" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      58% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      Mobile development </span>
-                      <span class="percent">
-                      85% </span>
-                      </span>
-                      <span class="progress progress-striped">
-                      <span style="width: 85%;" class="progress-bar progress-bar-success" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      85% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      <li>
-                      <a href="#">
-                      <span class="task">
-                      <span class="desc">
-                      New UI release </span>
-                      <span class="percent">
-                      18% </span>
-                      </span>
-                      <span class="progress progress-striped">
-                      <span style="width: 18%;" class="progress-bar progress-bar-important" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only">
-                      18% Complete </span>
-                      </span>
-                      </span>
-                      </a>
-                      </li>
-                      </ul>
-                      </li>
-                      <li class="external">
-                      <a href="#">See all tasks <i class="fa fa-angle-right"></i></a>
-                      </li>
-                      </ul>
-                      </li>
-                      <!-- END TODO DROPDOWN -->
-                     */ ?>
-            <li class="devider">
-                &nbsp;
-            </li>
-            <!-- BEGIN USER LOGIN DROPDOWN -->
-            <li class="dropdown user">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
-                   data-close-others="true">
-                    <span class="username"> <?php echo \Simflex\Core\User::$login ?> </span>
-                    <i class="fa fa-angle-down"></i>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="/admin/account/"><i class="fa fa-user"></i> Аккаунт</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="/admin/logout/"><i class="fa fa-key"></i> Выйти</a>
-                    </li>
-                </ul>
-            </li>
-            <!-- END USER LOGIN DROPDOWN -->
-        </ul>
-        <!-- END TOP NAVIGATION MENU -->
-    </div>
-    <!-- END TOP NAVIGATION BAR -->
-</div>
-<!-- END HEADER -->
-<div class="clearfix">
-</div>
-<!-- BEGIN CONTAINER -->
-<div class="page-container">
-
-    <?php Page::position('menu') ?>
-
-    <!-- BEGIN CONTENT -->
-    <div class="page-content-wrapper">
-        <div class="page-content">
-
-            <!--                    <h3 class="page-title">
-                    <?php echo \Simflex\Admin\Core::menuCurItem('name') ?> <small></small>
-                                        </h3>-->
-            <div class="page-bar">
-                <?php Page::position('breadcrumbs') ?>
+    <body>
+        <div class="container">
+            <?php include 'partial/header.tpl'; ?>
+            <div class="layout">
+                <?php include 'partial/sidebar.tpl'; ?>
+                <div class="layout__content">
+                    <?php Page::content(); ?>
+                </div>
             </div>
-
-            <?php \Simflex\Admin\Plugins\Alert\Alert::output() ?>
-
-            <?php Page::position('content-before') ?>
-            <?php Page::content() ?>
-
+            <?php include 'modals/mobilebar.tpl'; ?>
         </div>
-    </div>
 
-    <!-- END CONTENT -->
-</div>
-<!-- END CONTAINER -->
-<!-- BEGIN FOOTER -->
-<div class="footer">
-    <div class="footer-inner">
-        2015 - <?php echo date('Y') ?> &copy; Simflex Admin
-    </div>
-    <div class="footer-tools">
-                <span class="go-top">
-                    <i class="fa fa-angle-up"></i>
-                </span>
-    </div>
-</div>
+        <?php include 'modals/sidebar.tpl'; ?>
+        <?php include 'modals/delete.tpl'; ?>
+        <?php include 'modals/account.tpl'; ?>
+        <?php include 'modals/help.tpl'; ?>
+        <?php include 'modals/info.tpl'; ?>
+        <?php include 'modals/context.tpl'; ?>
+        <?php include 'modals/point.tpl'; ?>
 
+        <iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= $_SERVER['HTTP_HOST']?>" frameborder="0"></iframe>
 
-<?php Page::position('absolute') ?>
+        <script>
+            document.querySelectorAll('.modal-help-open').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    let frameToRemove = document.getElementById("iframe-help");
+                    frameToRemove.style = 'position: absolute; top: 50%; left: 50%; width: 100%; transform: translate(-50%, -50%); height: 100%; z-index: 1000;';
+                })
+            })
 
+            window.addEventListener("message", function (event) {
+                let frameToRemove = document.getElementById("iframe-help");
 
+                if (event.data === 'close-iframe') {
+                    if (frameToRemove) {
+                        // frameToRemove.parentNode.removeChild(frameToRemove);
+                        frameToRemove.style = 'display: none';
+                        document.body.style.overflow = "inherit";
+                    }
+                }
+                else if (event.data === 'success') {
+                    frameToRemove.style = 'display: none';
+                    const modalSuccess = document.querySelector('.modal-context');
+                    modalSuccess.classList.add('modal-context--active');
+                    const modalSuccessTitle = modalSuccess.querySelector('.modal-context__title');
+                    modalSuccessTitle.innerHTML = 'Заявка успешно отправлена';
+                }
 
-<?php // DB::debug($GLOBALS['time_start']);  ?>
-</body>
+            });
+        </script>
+
+        <script src="<?= asset('js/app.min.js'); ?>"></script>
+        <script src="<?= asset('js/extra.js'); ?>"></script>
+    </body>
 </html>

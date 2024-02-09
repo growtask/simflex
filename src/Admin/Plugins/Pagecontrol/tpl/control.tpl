@@ -1,38 +1,77 @@
-<div class="plug-pagecontrol">
-  <?php if($this->p==0) :?>
-  <span class="plug-pagecontrol-left">←</span>
-  <?php else :?>
-  <a class="plug-pagecontrol-left" href="<?php echo str_replace('{p}', $this->p-1, $this->link)?>">←</a>
-  <?php endif;?>
+<div class="table__pagination">
+    <div class="table__pagination-text">Показаны записи: с    <?=$this->p*$this->p_on+1?> по <?=min(array($this->count, $this->p*$this->p_on+$this->p_on))?> из <?=$this->count?></div>
+    <div class="table__pagination-text-mobile">с <?=$this->p*$this->p_on+1?> по <?=min(array($this->count, $this->p*$this->p_on+$this->p_on))?> из <?=$this->count?></div>
+    <div class="table__pagination-btns">
+        <?php if($this->p!=0): ?>
+        <a href="<?=str_replace('{p}', $this->p - 1, $this->link)?>" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
+            <svg viewBox="0 0 24 24">
+                <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#chevron-mini"></use>
+            </svg>
+        </a>
+        <?php endif; ?>
+        <?php if($this->p_count > $this->p_count_max): ?>
+        <?php $i=0; ?>
+            <?php if (!$this->p): ?>
+            <button class="BtnSecondaryMonoXs">1</button>
+        <?php else: ?>
+            <a href="<?=str_replace('{p}', 0, $this->link)?>" class="BtnOutlineMonoXs">1</a>
+        <?php endif; ?>
 
-  <?php
-  if($this->p_count > $this->p_count_max) {
+                    <?php if ($since > 1): ?>
+                <button class="BtnIconOutlineNoneXs table__pagination-btns-mobile-next">
+                    ...
+                </button>
+            <?php endif; ?>
 
-    $i=0;
-    echo $this->p==$i ? '<span>'.($i+1).'</span>' : '<a href="'.str_replace('{p}', $i, $this->link).'">'.($i+1).'</a>';
-    if($since>1) {
-      echo '<i>...</i>';
-    }
-    for($i=$since;$i<=$till;$i++) {
-      echo $i==$this->p ? '<span>'.($i+1).'</span>' : '<a href="'.str_replace('{p}', $i, $this->link).'">'.($i+1).'</a>';
-    }
-    if($till<$this->p_count-2) {
-      echo '<i>...</i>';
-    }
+        <?php for($i=$since;$i<=$till;$i++): ?>
+                    <?php if ($i == $this->p): ?>
+                <button class="BtnSecondaryMonoXs"><?=$i+1?></button>
+                    <?php else: ?>
+                <a href="<?=str_replace('{p}', $i, $this->link)?>" class="BtnOutlineMonoXs"><?=$i+1?></a>
+                    <?php endif; ?>
+        <?php endfor; ?>
 
-    $i=$this->p_count-1;
-    echo $this->p==$i ? '<span>'.($i+1).'</span>' : '<a href="'.str_replace('{p}', $i, $this->link).'">'.($i+1).'</a>';
-  } else {
-    for($i=0;$i<$this->p_count;$i++) {
-      echo $i==$this->p ? '<span>'.($i+1).'</span>' : '<a href="'.str_replace('{p}', $i, $this->link).'">'.($i+1).'</a>';
-    }
-  }
-  ?>
-  
-  <?php if($this->p >= $this->p_count-1) :?>
-  <span class="plug-pagecontrol-left">→</span>
-  <?php else :?>
-  <a class="plug-pagecontrol-right" href="<?php echo str_replace('{p}', $this->p+1, $this->link)?>">→</a>
-  <?php endif;?>
+            <?php if($till<$this->p_count-2): ?>
+                <button class="BtnIconOutlineNoneXs table__pagination-btns-mobile-next">
+                    ...
+                </button>
+            <?php endif; ?>
+
+        <?php $i=$this->p_count-1;?>
+        <?php if ($i == $this->p): ?>
+                <button class="BtnSecondaryMonoXs"><?=$i+1?></button>
+        <?php else: ?>
+            <a href="<?=str_replace('{p}', $i, $this->link)?>" class="BtnOutlineMonoXs"><?=$i+1?></a>
+        <?php endif; ?>
+        <?php else: ?>
+            <?php for($i=0;$i<$this->p_count;$i++): ?>
+                <?php if ($i == $this->p): ?>
+                    <button class="BtnSecondaryMonoXs"><?=$i+1?></button>
+                <?php else: ?>
+                    <a href="<?=str_replace('{p}', $i, $this->link)?>" class="BtnOutlineMonoXs"><?=$i+1?></a>
+                <?php endif; ?>
+            <?php endfor; ?>
+        <?php endif; ?>
+        <?php if($this->p < $this->p_count-1) :?>
+        <a href="<?=str_replace('{p}', $this->p + 1, $this->link)?>" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
+            <svg viewBox="0 0 24 24">
+                <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#chevron-mini"></use>
+            </svg>
+        </a>
+        <?php endif; ?>
+
+    </div>
+    <div class="table__pagination-btns-mobile">
+        <a href="<?=str_replace('{p}', $this->p - 1, $this->link)?>" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
+            <svg viewBox="0 0 24 24">
+                <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#chevron-mini"></use>
+            </svg>
+        </a>
+        <span class="table__pagination-btns-mobile-text"><?=$this->p+1?></span>
+        <a href="<?=str_replace('{p}', $this->p + 1, $this->link)?>" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
+            <svg viewBox="0 0 24 24">
+                <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#chevron-mini"></use>
+            </svg>
+        </a>
+    </div>
 </div>
-

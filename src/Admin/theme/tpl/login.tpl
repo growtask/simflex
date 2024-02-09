@@ -1,115 +1,80 @@
-<?php
-
-use Simflex\Admin\Page;
-
-//PlugJQuery::jquery();
-//\App\Plugins\Jquery\Jquery::fancybox();
-\Simflex\Admin\Plugins\Alert\Alert::init();
-
-// GLOBAL MANDATORY STYLES
-Page::css('//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all');
-Page::coreCss('/theme/css/global/font-awesome.min.css');
-Page::coreCss('/theme/css/global/simple-line-icons.min.css');
-Page::coreCss('/theme/css/global/bootstrap.min.css');
-Page::coreCss('/theme/css/global/uniform.default.css');
-
-// THEME STYLES
-Page::coreCss('/theme/css/conquer/style-conquer.css');
-Page::coreCss('/theme/css/conquer/style.css');
-Page::coreCss('/theme/css/conquer/style-responsive.css');
-Page::coreCss('/theme/css/conquer/plugins.css');
-Page::coreCss('/theme/css/conquer/default.css');
-Page::coreCss('/theme/css/conquer/login.css');
-
-Page::coreCss('/theme/css/default.css');
-Page::coreJs('/theme/js/conquer/jquery-1.11.0.min.js', 0);
-Page::coreJs('/theme/js/conquer/jquery-migrate-1.2.1.min.js', 0);
-Page::coreJs('/theme/js/default.js');
-
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="<?=asset('css/styles.min.css');?>" />
+
         <title>Simflex Admin</title>
-
-        <?php \Simflex\Admin\Page::meta() ?>
-
     </head>
-
-
-    <body class="login">
-
-        <div class="logo">
-            <a href="/admin/">
-                <span>Simflex</span> Admin
-            </a>
-        </div>
-
-        <div class="content">
-            <!-- BEGIN LOGIN FORM -->
-            <form method="post" action="/admin/login/?r=<?php echo urlencode($back) ?>" class="login-form" style="display: block;">
-                <h3 class="form-title">Вход в панель управления</h3>
-                <div class="alert alert-danger display-hide">
-                    <button data-close="alert" class="close"></button>
-                    <span>
-                        Enter any username and password. </span>
+    <body>
+        <div class="container">
+            <div class="login">
+                <div class="login__logo">
+                    <img class="login__logo-img" src="<?=asset('img/logo.svg')?>" alt="" />
                 </div>
-                <div class="form-group">
-                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                    <label class="control-label visible-ie8 visible-ie9">Логин</label>
-                    <div class="input-icon">
-                        <i class="fa fa-user"></i>
-                        <input type="text" name="login[login]" placeholder="Логин" autocomplete="off" class="form-control placeholder-no-fix" />
+                <form class="form login-form" action="/admin/login/?r=<?php echo urlencode($back) ?>">
+                    <div class="login-form__text">
+                        <h4 class="login-form__title">Вход в панель управления</h4>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label visible-ie8 visible-ie9">Пароль</label>
-                    <div class="input-icon">
-                        <i class="fa fa-lock"></i>
-                        <input type="password" name="login[password]" placeholder="Пароль" autocomplete="off" class="form-control placeholder-no-fix" />
+                    <div class="login-form__fields">
+                        <div class="form-control form-control--sm form-control--login">
+                            <input placeholder="Логин" name="login[login]" type="text" class="form-control__input" />
+                        </div>
+                        <div class="form-control form-control--sm form-control--pass">
+                            <input placeholder="Пароль" name="login[password]" type="password" class="form-control__input" />
+                            <a href="#" class="form-control-show-pass"></a>
+                        </div>
                     </div>
-                </div>
-                <div class="form-actions">
-                    <label class="checkbox">
-                        <input type="checkbox" value="1" name="login[remember]" /> Запомнить меня
+                    <label class="login-form__bid">
+                        <div class="form-control">
+                            <input type="checkbox" name="login[remember]" checked class="form-control__checkbox" />
+                        </div>
+                        <div class="login-form__bid-text">Запомнить меня</div>
                     </label>
-                    <button class="btn btn-info pull-right" type="submit" name="login[submit]"> Вход </button>
-                </div>
-                <div class="forget-password hidden">
-                    <h4>Забыли пароль?</h4>
-                    <p>
-                        Не беспокойтесть, нажмите <a id="forget-password" href="javascript:;">здесь</a>
-                        чтобы восстановить свой пароль.
-                    </p>
-                </div>
-            </form>
-            <!-- END LOGIN FORM -->
-            
-            <!-- BEGIN FORGOT PASSWORD FORM -->
-            <form method="post" action="index.html" class="forget-form" novalidate="novalidate" style="display: none;">
-                <h3>Forget Password ?</h3>
-                <p>
-                    Enter your e-mail address below to reset your password.
-                </p>
-                <div class="form-group">
-                    <div class="input-icon">
-                        <i class="fa fa-envelope"></i>
-                        <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+                    <div class="login-form__btns">
+                        <button class="BtnPrimarySm" type="submit">Войти</button>
+                        <button class="BtnOutlineMonoSm modal-restore-pass" type="button">Не помню пароль</button>
                     </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-default" id="back-btn" type="button">
-                        <i class="m-icon-swapleft"></i> Back </button>
-                    <button class="btn btn-info pull-right" type="submit">
-                        Submit </button>
-                </div>
-            </form>
-            <!-- END FORGOT PASSWORD FORM -->
+                </form>
+                <div class="login__text">Simflex CMS ver <?=SF_VERSION?> <?=SF_VERSION_DATE?></div>
+            </div>
         </div>
 
-        <div class="copyright">
-            2015 - <?php echo date('Y') ?> &copy; Simflex Admin
-        </div>
+        <?php include 'modals/context.tpl'; ?>
 
+        <iframe id="iframe-login" src="https://growtask.ru/remoteform.php?tpl=pass&ws=https://<?= $_SERVER['HTTP_HOST']?>" frameborder="0"></iframe>
+
+        <script>
+
+            document.querySelectorAll('.modal-restore-pass').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    let frameToRemove = document.getElementById("iframe-login");
+                    frameToRemove.style = 'position: absolute; top: 50%; left: 50%; width: 100%; transform: translate(-50%, -50%); height: 100%; z-index: 1000;';
+                })
+            })
+
+            window.addEventListener("message", function (event) {
+                let frameToRemove = document.getElementById("iframe-login");
+
+                if (event.data === 'close-iframe') {
+                    if (frameToRemove) {
+                        frameToRemove.style = 'display: none';
+                        document.body.style.overflow = "inherit";
+                    }
+                }
+                else if (event.data === 'success') {
+                    frameToRemove.style = 'display: none';
+                    const modalSuccess = document.querySelector('.modal-context');
+                    modalSuccess.classList.add('modal-context--active');
+                    const modalSuccessTitle = modalSuccess.querySelector('.modal-context__title');
+                    modalSuccessTitle.innerHTML = 'Заявка успешно отправлена';
+                }
+
+            });
+        </script>
+
+        <script src="<?=asset('js/app.min.js')?>"></script>
     </body>
 </html>

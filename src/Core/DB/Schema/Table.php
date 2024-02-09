@@ -30,11 +30,16 @@ class Table extends ElementBase
         $this->params = new TableParams();
         $this->name = $name;
         $this->isExisting = $isExisting;
+    }
 
-        if ($isExisting) {
-            $this->oldParams = $this->params;
-            $this->oldElements = $this->elements;
+    public function keepParams()
+    {
+        if (!$this->isExisting) {
+            return;
         }
+
+        $this->oldParams = $this->params;
+        $this->oldElements = $this->elements;
     }
 
     // ------------ BUILDER ------------ //
@@ -106,7 +111,7 @@ class Table extends ElementBase
      */
     public function addColumn(string $name, string $type, ?int $length = null): Column
     {
-        $col = new Column($name);
+        $col = new Column($name, $this);
         $col->dataType($type, $length);
 
         $this->elements[$name] = $col;
@@ -119,11 +124,11 @@ class Table extends ElementBase
      * @param string $name Constraint symbol name
      * @return \Simflex\Core\DB\Schema\Constraint
      */
-    public function addConstraint(string $name): Constraint
+    public function addConstraint(string $name = ''): Constraint
     {
         $const = new Constraint($name);
 
-        $this->elements[$name] = $const;
+        $this->elements[$name ?: md5(microtime())] = $const;
         return $const;
     }
 
@@ -146,6 +151,11 @@ class Table extends ElementBase
 
     // ------------ HELPERS ------------ //
 
+    public function id(string $name): Column
+    {
+        return $this->integer($name)->primaryKey()->autoIncrement();
+    }
+
     public function integer(string $name, ?int $length = null): Column
     {
         return $this->addColumn($name, Column::TYPE_INT, $length);
@@ -164,6 +174,32 @@ class Table extends ElementBase
     public function boolean(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_TINYINT, 1);
+    }
+
+    public function price(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_DECIMAL . '(10,2)');
+    }
+
+    public function date(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_DATE);
+    }
+
+    public function dateTime(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_DATE_TIME);
+    }
+
+    public function enum(string $name, array $items): Column
+    {
+        return $this->addColumn(
+            $name, Column::TYPE_ENUM . '(' . implode(
+                ',',
+                array_map(function ($i) {
+                    return "'$i'";
+                }, $items)) . ')'
+            );
     }
 
     // ------------ UTIL ------------ //
@@ -216,13 +252,13 @@ class Table extends ElementBase
         /** @var \Simflex\Core\DB\Schema\Element[] $toMod */
         $toAdd = [];
 
-        foreach ($this->params as $p) {
+        foreach ($this->elements as $p) {
             if (!($p instanceof Column)) {
                 continue;
             }
 
             $found = false;
-            foreach ($this->oldParams as $op) {
+            foreach ($this->oldElements as $op) {
                 if (!($op instanceof Column)) {
                     continue;
                 }
@@ -242,6 +278,8 @@ class Table extends ElementBase
             }
         }
 
+        $firstCmd = true;
+
         // modify old ones
         foreach ($toMod as $col) {
             if (!$firstCmd) {
@@ -251,6 +289,8 @@ class Table extends ElementBase
             $sql .= 'MODIFY COLUMN ' . $col->toString();
             $firstCmd = false;
         }
+
+        $firstCmd = true;
 
         // add new ones
         foreach ($toAdd as $col) {

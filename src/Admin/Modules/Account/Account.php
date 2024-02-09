@@ -12,7 +12,6 @@ class Account extends ModuleBase
 
     public function content()
     {
-
         if (count($data = DB::escape($_POST))) {
             $set = array("email = '{$data['email']}', name = '{$data['name']}'");
             if ($data['password']) {

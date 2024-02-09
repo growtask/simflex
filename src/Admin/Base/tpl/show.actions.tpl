@@ -1,21 +1,34 @@
 <?php if ($this->canAdd): ?>
-    <a class="btn btn-primary" href="?action=form">
-        <i class="fa fa-plus"></i>
-        <span class="hidden-480"> Добавить </span>
+    <a href="?action=form" class="BtnPrimarySm BtnIconLeft">
+        <svg class="notification__close-icon" fill="#ffffff" viewBox="0 0 24 24">
+            <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#plus"></use>
+        </svg>
+        Добавить
     </a>
 <?php endif ?>
 <?php if ($this->canEdit && $this->canEditGroup): ?>
-    <button class="btn btn-success action-with-select" href="javascript:;" onclick="editRows()" disabled="">
-        <i class="fa fa-edit"></i> Редактировать
+    <button disabled id="btn-control-edit" class="BtnSecondaryMonoSm BtnIconLeft action-with-select" onclick="editRows()">
+        <svg class="notification__close-icon" stroke="#ffffff" fill="none"
+             viewBox="0 0 24 24">
+            <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#edit"></use>
+        </svg>
+        Редактировать
     </button>
 <?php endif ?>
 <?php if ($this->canAdd && $this->canCopy): ?>
-    <button class="btn btn-success action-with-select" href="javascript:;" onclick="copyRows()" disabled="">
-        <i class="fa fa-copy"></i> Копировать
+    <button disabled id="btn-control-copy" class="BtnSecondaryMonoSm BtnIconLeft action-with-select"  onclick="copyRows()">
+        <svg class="notification__close-icon" stroke="#ffffff" fill="none"
+             viewBox="0 0 24 24">
+            <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#copy"></use>
+        </svg>
+        Копировать
     </button>
 <?php endif ?>
 <?php if ($this->canDelete): ?>
-    <button class="btn btn-danger action-with-select" href="#delete-dialog" data-toggle="modal" disabled="">
-        <i class="fa fa-times"></i> Удалить
+    <button disabled id="btn-control-delete" class="BtnSecondarySm BtnIconLeft action-with-select" onclick="deleteRowsForce()" href="#delete-dialog" data-toggle="modal">
+        <svg class="notification__close-icon" fill="#ffffff" viewBox="0 0 24 24">
+            <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#close"></use>
+        </svg>
+        Удалить
     </button>
 <?php endif ?>

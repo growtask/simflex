@@ -58,6 +58,10 @@ class Image extends File
                     imageAlphaBlending($this->img, false);
                     imageSaveAlpha($this->img, true);
                     break;
+                case 'image/svg+xml':
+                    $this->type = 'svg';
+                    $this->img = file_get_contents($_FILES[$fileName]['tmp_name']);
+                    break;
             }
         }
     }
@@ -70,6 +74,10 @@ class Image extends File
             $this->type = 'gif';
         } elseif ($this->type == IMAGETYPE_PNG) {
             $this->type = 'png';
+        } elseif ($this->type == IMAGETYPE_WEBP) {
+            $this->type = 'webp';
+        }  elseif ($this->type == IMAGETYPE_SVG) {
+            $this->type = 'svg';
         }
     }
 
