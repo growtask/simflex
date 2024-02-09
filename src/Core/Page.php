@@ -25,16 +25,23 @@ class Page
     protected static $meta_raw = '';
     public static $showAside = false;
 
+    public static $override = [
+        'description' => '',
+        'keywords' => '',
+        'title' => '',
+        'uses_meta' => false,
+    ];
+
     public static function init()
     {
         $com = Core::getComponent();
 
         $q = "
-            select t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params, t2.postexec
-            from module_item t1
-            join module t2 on t2.module_id=t1.module_id and t2.type = 'site'
-            where t1.active=1
-            order by t1.npp, t1.item_id
+            SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params, t2.postexec
+            FROM module_item t1
+            JOIN module t2 ON t2.module_id=t1.module_id and t2.type = 'site'
+            WHERE t1.active=1
+            ORDER BY t1.npp, t1.item_id
         ";
         $rows = DB::assoc($q);
         $curmenu = Core::menuCurItem();
@@ -183,36 +190,23 @@ class Page
 
     public static function title()
     {
-        return str_replace(
-                '<br/>',
-                '',
-                htmlspecialchars(self::$seo_title)
-            ) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
+        return str_replace('<br/>', '', htmlspecialchars(self::$seo_title)) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
     }
 
-    public static function meta(bool $outputJs = true)
+    public static function meta()
     {
-        echo '<title>', str_replace(
-            '<br/>',
-            '',
-            htmlspecialchars(self::$seo_title)
-        ), self::$seo_title ? ' | ' : '', Core::siteParam('site_name'), '</title>', "\r\n";
-        echo self::$seo_description ? '<meta name="description" content="' . htmlspecialchars(
-                self::$seo_description
-            ) . '" />' . "\r\n" : '';
-        echo self::$seo_keywords ? '<meta name="keywords" content="' . htmlspecialchars(
-                self::$seo_keywords
-            ) . '" />' . "\r\n" : '';
+        $title = self::$override['title'] ?: self::$seo_title;
+        $sname = (!self::$override['uses_meta'] ? ' | ' : '') .  (!self::$override['uses_meta'] ? Core::siteParam('site_name') : '');
+        echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
         echo self::$seo_metatags ? self::$seo_metatags . "\r\n" : '';
         self::metaCSS();
 
-        if ($outputJs) {
-            self::metaJS();
-        }
+        // self::metaJS();
 
         echo self::$meta_raw;
 
         echo '<meta charset="utf-8">', "\r\n";
+
     }
 
     public static function metaCSS()
@@ -237,6 +231,7 @@ class Page
                 if ($std && strpos($css, 'http') === false) {
                     $css = "http://$sub$std$css";
                 }
+                echo '<link type="text/css" rel="preload" as="style" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
                 echo '<link type="text/css" rel="stylesheet" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
             }
         }
@@ -246,7 +241,7 @@ class Page
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'js.' : '';
-        $v = (int)Core::siteParam('static_version');
+        $v = env('JS_VER');
         $hasCache = (bool)Core::siteParam('static_cache');
         if ($hasCache && $cacheStr = Core::siteParam('static_cache_js')) {
             $cache = array_filter(array_map('trim', explode("\n", $cacheStr)));
@@ -259,7 +254,7 @@ class Page
         foreach (self::$js as $js_arr) {
             foreach ($js_arr as $js) {
                 if (is_array($js) && 'inline' === (string)@$js['type']) {
-                    echo '<script type="text/javascript">', $js['value'], '</script>', "\r\n";
+                    echo '<script type="text/javascript" defer>', $js['value'], '</script>', "\r\n";
                     continue;
                 }
                 if ($hasCache && isset($cache[trim($js)])) {
@@ -268,10 +263,7 @@ class Page
                 if ($std && strpos($js, 'http') === false) {
                     $js = "http://$sub$std$js";
                 }
-                echo '<script type="text/javascript" src="', $js, $v && strpos(
-                    $js,
-                    'http'
-                ) === false ? '?v=' . $v : '', '"></script>', "\r\n";
+                echo '<script type="text/javascript" defer src="', $js, $v && strpos($js, 'http') === false ? '?v=' . $v : '', '"></script>', "\r\n";
             }
         }
     }

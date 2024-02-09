@@ -11,7 +11,7 @@ class Pagecontrol
     private $count = 0;
     private $link = '?p={p}';
     private $p_on_show = false;
-    public $p_count_max = 11;
+    public $p_count_max = 7;
 
     public function __construct($p, $p_on, $count, $link = '?p={p}', $p_on_show = false)
     {
@@ -46,9 +46,6 @@ class Pagecontrol
             }
 
             include dirname(__FILE__) . '/tpl/control.tpl';
-        }
-        if ($this->count > 0) {
-            include dirname(__FILE__) . '/tpl/info.tpl';
         }
     }
 

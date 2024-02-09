@@ -119,6 +119,18 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
     }
 
     /**
+     * Test if row exists
+     *
+     * @param int $id Model ID
+     * @return bool True if found
+     * @throws \Exception
+     */
+    public static function exists(int $id): bool
+    {
+        return !!static::findAdv()->select('count(*)')->where([static::$primaryKeyName => $id])->fetchScalar();
+    }
+
+    /**
      *
      * @param string|array|Where $where
      * @return  static|null
@@ -241,7 +253,10 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
             $uData = $this->data;
             unset($uData[static::$primaryKeyName]);
             $set = static::prepareSet($uData);
-            $q = "UPDATE " . static::$table . " SET " . implode(', ', $set) . " WHERE `" . static::$primaryKeyName . "` = $this->id";
+            $q = "UPDATE " . static::$table . " SET " . implode(
+                    ', ',
+                    $set
+                ) . " WHERE `" . static::$primaryKeyName . "` = $this->id";
             $result = $this->query($q);
             if ($result) {
                 $this->reload();
@@ -367,7 +382,6 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
 
     protected function afterInsert($success)
     {
-
     }
 
     protected function beforeUpdate()
@@ -378,7 +392,6 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
 
     protected function afterUpdate($success)
     {
-
     }
 
     protected function beforeDelete()
@@ -388,7 +401,6 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
 
     protected function afterDelete($success, array $oldData)
     {
-
     }
 
     protected function beforeSave()
@@ -398,7 +410,6 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
 
     protected function afterSave($success)
     {
-
     }
 
     public function offsetSet($offset, $value)

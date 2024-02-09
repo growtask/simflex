@@ -91,7 +91,6 @@ class Alert {
         self::echoSpecified($page, "success");
         self::echoSpecified($page, "warning");
         self::echoSpecified($page, "info");
-        echo "\n" . '<div class="alert-buffer"></div>' . "\n";
     }
 
     /**
@@ -141,6 +140,14 @@ class Alert {
                 $txt = "<ul><li>" . implode("</li><li>", self::$s[$page][$section]) . "</li></ul>";
             }
             if ($txt) {
+                switch ($section) {
+                    case 'success': $type = 'success'; $title = 'Успешно!'; break;
+                    case 'danger': $type = 'error'; $title = 'Ошибка!'; break;
+                    case 'warning': $type = 'notice'; $title = 'Внимание!'; break;
+                    case 'info':
+                    default: $type = 'info'; $title = 'Информация'; break;
+                }
+
                 include dirname(__FILE__) . '/alert.tpl';
                 self::$s[$page][$section] = array();
             }

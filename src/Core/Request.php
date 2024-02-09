@@ -9,6 +9,7 @@ class Request
     protected $headers;
     protected $getParams;
     protected $postParams;
+    protected $reqParams;
     protected $cookies;
     protected $files;
     protected $requestBody;
@@ -27,6 +28,7 @@ class Request
         $this->requestMethod = $_SERVER['REQUEST_METHOD'];
         $this->getParams = $_GET;
         $this->postParams = $_POST;
+        $this->reqParams = $_REQUEST;
         $this->cookies = $_COOKIE;
         $this->files = $_FILES;
         $this->requestBody = file_get_contents('php://input');
@@ -39,7 +41,7 @@ class Request
         }
 
         // parse and compose URL
-        $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path']);
+        $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path'] ?? '/');
     }
 
     public function setPath(string $path)
@@ -70,6 +72,15 @@ class Request
     public function getUrlParts(): array
     {
         return $this->urlParts;
+    }
+
+    /**
+     * Returns last part of URL path
+     * @return string  Last part of URL path
+     */
+    public function getUrlLastPart(): string
+    {
+        return $this->urlParts[count($this->urlParts) - 2] ?? '/';
     }
 
     /**
@@ -105,9 +116,9 @@ class Request
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function get($k = null)
+    public function get($k = null, $default = null)
     {
-        return $k ? ($this->getParams[$k] ?? null) : $this->getParams;
+        return $k ? ($this->getParams[$k] ?? $default) : $this->getParams;
     }
 
     /**
@@ -116,9 +127,20 @@ class Request
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function post($k = null)
+    public function post($k = null, $default = null)
     {
-        return $k ? ($this->postParams[$k] ?? null) : $this->postParams;
+        return $k ? ($this->postParams[$k] ?? $default) : $this->postParams;
+    }
+
+    /**
+     * Gets REQUEST parameters
+     *
+     * @param mixed|null $k
+     * @return array|mixed|null
+     */
+    public function request($k = null, $default = null)
+    {
+        return $k ? ($this->reqParams[$k] ?? $default) : $this->reqParams;
     }
 
     /**
@@ -127,9 +149,9 @@ class Request
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function cookie($k = null)
+    public function cookie($k = null, $default = null)
     {
-        return $k ? ($this->cookies[$k] ?? null) : $this->cookies;
+        return $k ? ($this->cookies[$k] ?? $default) : $this->cookies;
     }
 
     /**

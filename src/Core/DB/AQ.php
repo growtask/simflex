@@ -17,6 +17,7 @@ class AQ
 
     protected $select = '*';
     protected $from;
+    protected $fromAlias;
     /** @var JoinClause[] */
     protected $join = [];
     protected $where = '';
@@ -25,6 +26,7 @@ class AQ
     protected $asArray = false;
     /** @var ModelBase|null */
     protected $modelClass;
+    protected $custom;
 
     /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
     protected $scalarColumn = null;
@@ -54,9 +56,16 @@ class AQ
      * @param string $table
      * @return $this
      */
-    public function from($table)
+    public function from($table, $alias = '')
     {
         $this->from = $table;
+        $this->fromAlias = $alias;
+        return $this;
+    }
+
+    public function fromAlias($alias)
+    {
+        $this->fromAlias = $alias;
         return $this;
     }
 
@@ -101,6 +110,12 @@ class AQ
         return $this;
     }
 
+    public function custom($cst)
+    {
+        $this->custom = $cst;
+        return $this;
+    }
+
     /**
      * @param string $class
      * @return $this
@@ -137,7 +152,7 @@ class AQ
             throw new \Exception('Bad from statement');
         }
         $q[] = 'SELECT ' . $this->getSelect();
-        $q[] = "FROM `$this->from`";
+        $q[] = "FROM `$this->from`" . ($this->fromAlias ? (' ' . $this->fromAlias) : '');
         foreach ($this->join as $join) {
             $q[] = $join->toSql($this->from);
         }
@@ -148,6 +163,7 @@ class AQ
         if ($limit = (string)$this->limit) {
             $q[] = 'LIMIT ' . DB::escape($limit);
         }
+        $q[] = $this->custom;
         return implode(' ', $q);
     }
 

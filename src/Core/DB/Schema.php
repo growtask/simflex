@@ -78,8 +78,9 @@ class Schema
             $c->setNull($col['IS_NULLABLE'] == 'YES');
         }
 
-        // TODO: load constraints
+        $table->keepParams();
 
+        // TODO: load constraints
         return $table;
     }
 
@@ -113,7 +114,7 @@ class Schema
             throw new \Exception('Table ' . $name . ' does not exist');
         }
 
-        $this->awaitingDelete[] = $this->tables[$name];
+        $this->awaitingDelete[] = $this->tables[$name]  ?? $this->sessionCreated[$name];
     }
 
     public function table(string $name, callable $fn)
@@ -189,7 +190,7 @@ class Schema
             if (!in_array($table->getName(), $this->awaitingAlter)) {
                 $params = $table->getParams();
                 if (!$params->ifNotExists || $params->ifNotExists && !$this->hasTable($table->getName())) {
-                    $this->sessionCreated[] = $table;
+                    $this->sessionCreated[$table->getName()] = $table;
                 }
             }
         }

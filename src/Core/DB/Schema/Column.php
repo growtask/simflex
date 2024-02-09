@@ -18,6 +18,10 @@ class Column extends TableElementBase
     public const TYPE_TINYINT = 'tinyint';
     public const TYPE_VARCHAR = 'varchar';
     public const TYPE_TEXT = 'text';
+    public const TYPE_DECIMAL = 'decimal';
+    public const TYPE_ENUM = 'enum';
+    public const TYPE_DATE = 'date';
+    public const TYPE_DATE_TIME = 'datetime';
 
     public function __construct(string $name, ?Table $table = null)
     {
@@ -59,6 +63,7 @@ class Column extends TableElementBase
     public function setDefault($default): self
     {
         $this->params->default = $default;
+        $this->params->defaultSet = true;
         return $this;
     }
 
@@ -84,6 +89,15 @@ class Column extends TableElementBase
     public function primaryKey(): self
     {
         $this->params->isPrimaryKey = true;
+        return $this;
+    }
+
+    public function foreignKey(string $table, $other = '')
+    {
+        $this->table->addConstraint()->foreignKey(
+            $table,
+            is_array($other) ? $other : [$this->name => $other ?: $this->name]
+        );
         return $this;
     }
 
@@ -116,7 +130,7 @@ class Column extends TableElementBase
         $sql = DB::wrapName($this->name) . ' ' . $this->type . ' ';
         $sql .= $this->params->isNull ? 'NULL ' : 'NOT NULL ';
 
-        if ($this->params->default) {
+        if ($this->params->defaultSet) {
             $sql .= 'DEFAULT '
                 . (is_string($this->params->default) ? DB::wrapString($this->params->default) : $this->params->default);
         }

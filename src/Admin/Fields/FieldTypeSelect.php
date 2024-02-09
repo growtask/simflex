@@ -26,6 +26,6 @@ class FieldTypeSelect extends Field
             }
         }
 
-        return "'" . DB::escape(implode(',', $data)) . "'";
+        return "" . DB::escape(implode(',', $data)) . "";
     }
 }
