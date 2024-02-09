@@ -181,6 +181,16 @@ class Table extends ElementBase
         return $this->addColumn($name, Column::TYPE_DECIMAL . '(10,2)');
     }
 
+    public function date(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_DATE);
+    }
+
+    public function dateTime(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_DATE_TIME);
+    }
+
     public function enum(string $name, array $items): Column
     {
         return $this->addColumn(

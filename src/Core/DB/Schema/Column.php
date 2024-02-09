@@ -20,6 +20,8 @@ class Column extends TableElementBase
     public const TYPE_TEXT = 'text';
     public const TYPE_DECIMAL = 'decimal';
     public const TYPE_ENUM = 'enum';
+    public const TYPE_DATE = 'date';
+    public const TYPE_DATE_TIME = 'datetime';
 
     public function __construct(string $name, ?Table $table = null)
     {

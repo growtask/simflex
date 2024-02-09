@@ -52,7 +52,7 @@ class FieldDate extends Field
 
     public function show($row)
     {
-        $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
+        $value = $row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '';
         $isNumericReal = false;
         echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
 

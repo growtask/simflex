@@ -63,6 +63,12 @@ class AQ
         return $this;
     }
 
+    public function fromAlias($alias)
+    {
+        $this->fromAlias = $alias;
+        return $this;
+    }
+
     /**
      * @param string|array|Where $where
      * @return $this

@@ -1,36 +1,3 @@
-class Loader {
-    constructor(selector) {
-        this.selector = document.querySelector(selector);
-
-        this.selector.style = 'position: relative';
-
-        this.loader = document.createElement('div');
-        this.loader.classList.add('loader');
-        this.loader.style = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2';
-
-        this.overlay = document.createElement('div');
-        this.overlay.style = `
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.6);
-        `;
-    }
-
-    mount() {
-        this.selector.insertAdjacentElement('afterbegin', this.overlay);
-        this.selector.insertAdjacentElement('afterbegin', this.loader);
-    }
-
-    unmount() {
-        this.loader.remove();
-        this.overlay.remove();
-    }
-}
-
 const VTableEditor = {
     loaders: {},
     currentPage: {},

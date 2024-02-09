@@ -207,7 +207,7 @@ class Field
 
     public function show($row)
     {
-        $value = $row[$this->name . ($this->fk ? '_label' : '')];
+        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
 
         if ($this->name == 'name') {
             echo '<a href="?action=form&'.$this->tablePk.'='.$this->pkValue.'" class="table__row-' . $this->name . '">' . $value . '</a>';
@@ -224,7 +224,7 @@ class Field
      */
     public function showDetail($row)
     {
-        $value = $row[$this->name . ($this->fk ? '_label' : '')];
+        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
         return $value;
     }
 
