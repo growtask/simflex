@@ -21,17 +21,17 @@ class FieldMultiKey extends Field
     public function input($value)
     {
         $fields = array("*");
+
         $value = (int)@$_GET[$this->tablePk];
+        if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
+            $this->tablePk = 'link_id';
+        }
+
         if ($value) {
             $fields[] = "(select count(*) from {$this->params['table_relations']} where $this->tablePk = $value and {$this->params['key']} = t.{$this->params['key']}) checked";
         }
 
-        // bro!
-        if ($this->table == 'catalog_product') {
-            $fields[] = 'pid';
-        }
-
-        $q = "SELECT " . implode(', ', $fields) . " FROM {$this->params['table_values']} t";
+        $q = "SELECT " . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
         $rows = DB::assoc($q);
 
         $valReal = [];
@@ -82,14 +82,20 @@ for ($i = 0; $i < count($rows); ++$i) {
     public function getPOST($simple = false, $group = null)
     {
         $pkValue = (int)@$_REQUEST[$this->tablePk];
+        if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
+            $this->tablePk = 'link_id';
+        }
+
         $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : array();
         $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
         DB::query($q);
+
         foreach ($values as $value) {
             $value = (int)$value;
             $q = "INSERT INTO {$this->params['table_relations']} set $this->tablePk = $pkValue, {$this->params['key']} = $value";
             DB::query($q);
         }
+
         return '';
     }
 

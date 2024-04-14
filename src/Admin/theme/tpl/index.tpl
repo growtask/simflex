@@ -12,99 +12,109 @@ Page::coreJs('/theme/js/vtable.js');
 
 <!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="<?= asset('css/styles.min.css') ?>" />
-        <link rel="shortcut icon" href="<?= asset('img/favicon.ico') ?>" type="image/x-icon">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-        <script   src="https://code.jquery.com/jquery-3.7.0.min.js"   integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="   crossorigin="anonymous"></script>
-        <script src="https://cdn.tiny.cloud/1/1xg2o2utn8wcz706ywlb0eyva4j4yg31zqzm9po4no1dc2jl/tinymce/6/tinymce.min.js"
-                referrerpolicy="origin"></script>
+    <link rel="stylesheet" href="<?= asset('css/styles.min.css') ?>"/>
+    <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
+    <link rel="shortcut icon" href="<?= asset('img/favicon.ico') ?>" type="image/x-icon">
 
-        <noscript>
-            <style>
-                /**
-                  * Reinstate scrolling for non-JS clients
-                  */
-                .simplebar-content-wrapper {
-                    scrollbar-width: auto;
-                    -ms-overflow-style: auto;
-                }
+    <link rel="stylesheet" href="/vendor/growtask/simflex-file-manager/src/assets/css/styles.css"/>
+    <script src="https://cdn.sn9.ru/js/jquery/3.7.1/jquery.min.js"></script>
 
-                .simplebar-content-wrapper::-webkit-scrollbar,
-                .simplebar-hide-scrollbar::-webkit-scrollbar {
-                    display: initial;
-                    width: initial;
-                    height: initial;
-                }
-            </style>
-        </noscript>
+    <noscript>
+        <style>
+            /**
+              * Reinstate scrolling for non-JS clients
+              */
+            .simplebar-content-wrapper {
+                scrollbar-width: auto;
+                -ms-overflow-style: auto;
+            }
 
-        <title>
-            <?php
-            echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
-            <?php
-            echo \Simflex\Admin\Core::siteParam('site_name') ?> |
-                                                                Simflex Admin </title>
+            .simplebar-content-wrapper::-webkit-scrollbar,
+            .simplebar-hide-scrollbar::-webkit-scrollbar {
+                display: initial;
+                width: initial;
+                height: initial;
+            }
+        </style>
+    </noscript>
 
+    <title>
         <?php
-        Page::meta() ?>
-    </head>
+        echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
+        Simflex Admin </title>
 
-    <body>
-        <div class="container">
-            <?php include 'partial/header.tpl'; ?>
-            <div class="layout">
-                <?php include 'partial/sidebar.tpl'; ?>
-                <div class="layout__content">
-                    <?php Page::content(); ?>
-                </div>
-            </div>
-            <?php include 'modals/mobilebar.tpl'; ?>
+    <?php
+    Page::meta() ?>
+</head>
+
+<body>
+<div class="container">
+    <?php include 'partial/header.tpl'; ?>
+    <div class="layout">
+        <?php include 'partial/sidebar.tpl'; ?>
+        <div class="layout__content">
+            <?php Page::content(); ?>
         </div>
+    </div>
+    <?php include 'modals/mobilebar.tpl'; ?>
+</div>
 
-        <?php include 'modals/sidebar.tpl'; ?>
-        <?php include 'modals/delete.tpl'; ?>
-        <?php include 'modals/account.tpl'; ?>
-        <?php include 'modals/help.tpl'; ?>
-        <?php include 'modals/info.tpl'; ?>
-        <?php include 'modals/context.tpl'; ?>
-        <?php include 'modals/point.tpl'; ?>
+<?php include 'modals/sidebar.tpl'; ?>
+<?php include 'modals/delete.tpl'; ?>
+<?php include 'modals/account.tpl'; ?>
+<?php include 'modals/help.tpl'; ?>
+<?php include 'modals/info.tpl'; ?>
+<?php include 'modals/context.tpl'; ?>
+<?php include 'modals/point.tpl'; ?>
 
-        <iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= $_SERVER['HTTP_HOST']?>" frameborder="0"></iframe>
+<div class="f-manager-mgr">
+    <?php include SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/tpl/index.tpl'; ?>
+</div>
 
-        <script>
-            document.querySelectorAll('.modal-help-open').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    let frameToRemove = document.getElementById("iframe-help");
-                    frameToRemove.style = 'position: absolute; top: 50%; left: 50%; width: 100%; transform: translate(-50%, -50%); height: 100%; z-index: 1000;';
-                })
-            })
+<iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= $_SERVER['HTTP_HOST'] ?>"
+        frameborder="0"></iframe>
 
-            window.addEventListener("message", function (event) {
-                let frameToRemove = document.getElementById("iframe-help");
+<script>
+    document.querySelectorAll('.modal-help-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+            let frameToRemove = document.getElementById("iframe-help");
+            frameToRemove.style = 'position: absolute; top: 50%; left: 50%; width: 100%; transform: translate(-50%, -50%); height: 100%; z-index: 1000;';
+        })
+    })
 
-                if (event.data === 'close-iframe') {
-                    if (frameToRemove) {
-                        // frameToRemove.parentNode.removeChild(frameToRemove);
-                        frameToRemove.style = 'display: none';
-                        document.body.style.overflow = "inherit";
-                    }
-                }
-                else if (event.data === 'success') {
-                    frameToRemove.style = 'display: none';
-                    const modalSuccess = document.querySelector('.modal-context');
-                    modalSuccess.classList.add('modal-context--active');
-                    const modalSuccessTitle = modalSuccess.querySelector('.modal-context__title');
-                    modalSuccessTitle.innerHTML = 'Заявка успешно отправлена';
-                }
+    window.addEventListener("message", function (event) {
+        let frameToRemove = document.getElementById("iframe-help");
 
-            });
-        </script>
+        if (event.data === 'close-iframe') {
+            if (frameToRemove) {
+                // frameToRemove.parentNode.removeChild(frameToRemove);
+                frameToRemove.style = 'display: none';
+                document.body.style.overflow = "inherit";
+            }
+        } else if (event.data === 'success') {
+            frameToRemove.style = 'display: none';
+            const modalSuccess = document.querySelector('.modal-context');
+            modalSuccess.classList.add('modal-context--active');
+            const modalSuccessTitle = modalSuccess.querySelector('.modal-context__title');
+            modalSuccessTitle.innerHTML = 'Заявка успешно отправлена';
+        }
 
-        <script src="<?= asset('js/app.min.js'); ?>"></script>
-        <script src="<?= asset('js/extra.js'); ?>"></script>
-    </body>
+    });
+</script>
+
+<script src="<?= asset('js/app.min.js'); ?>"></script>
+<script src="<?= asset('js/extra.js'); ?>"></script>
+
+<script src="/vendor/growtask/simflex-file-manager/src/assets/js/app.js"></script>
+<script>
+    fileManager.assetsDir = '/vendor/growtask/simflex-file-manager/src/assets';
+    fileManager.rootDir = '/uf';
+    fileManager.apiBase = '/fm.php';
+</script>
+</body>
 </html>

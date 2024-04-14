@@ -1,3 +1,36 @@
+class Loader {
+    constructor(selector) {
+        this.selector = document.querySelector(selector);
+
+        this.selector.style = 'position: relative';
+
+        this.loader = document.createElement('div');
+        this.loader.classList.add('loader');
+        this.loader.style = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2';
+
+        this.overlay = document.createElement('div');
+        this.overlay.style = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.6);
+        `;
+    }
+
+    mount() {
+        this.selector.insertAdjacentElement('afterbegin', this.overlay);
+        this.selector.insertAdjacentElement('afterbegin', this.loader);
+    }
+
+    unmount() {
+        this.loader.remove();
+        this.overlay.remove();
+    }
+}
+
 const VTableEditor = {
     loaders: {},
     currentPage: {},
@@ -126,7 +159,9 @@ const VTableEditor = {
 
                 let extra = '';
                 if (aj) {
-                    extra = `data-action="searchProducts" data-ajax="true"`;
+                    const vvv = this._findById(val.v, r);
+                    const id = vvv ? (vvv.__rm_id ?? 0) : 0;
+                    extra = `data-action="${col.e.replace('AJAX:', '')}" data-ajax="true" data-id="${id}"`;
                 }
 
                 input += `<div class="data-point">
@@ -386,7 +421,11 @@ const VTableEditor = {
         for (const k of s) {
             if (k.n.startsWith('__')) continue;
             if (!this._isValAnImage(id, k)) {
-                valdata += `<td class="table__body-item"><div class="table__row-text">${val[k.n]}</div></td>`;
+                let v = val[k.n];
+                if (v.toString().endsWith('.00')) {
+                    v = v.substring(0, v.length - 3);
+                }
+                valdata += `<td class="table__body-item"><div class="table__row-text">${v}</div></td>`;
             } else {
                 valdata += `<td class="table__body-item"><div class="table__body-item-img"><img src="${val[k.n]}" /></div></td>`;
             }

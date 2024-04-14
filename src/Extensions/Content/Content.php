@@ -20,7 +20,7 @@ use Simflex\Extensions\Content\Model\ModelContent;
 class Content extends ComponentBase
 {
 
-    public function &get($path = ''): ?ModelContent
+    public function get($path = ''): ?ModelContent
     {
         if ($content = ModelContent::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
             $content['params'] = unserialize($content['params']);

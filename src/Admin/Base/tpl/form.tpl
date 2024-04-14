@@ -7,6 +7,8 @@ $rightPortletsHTML = ob_get_clean();
 $showRightCol |= (bool)$rightPortletsHTML;
 $artificial = false;
 $artificialGroups = [];
+$artLeft = false;
+$artLeftArr = [];
 ?>
 
 <form class="layout__content" method="post" action="?action=save" enctype="multipart/form-data">
@@ -44,7 +46,8 @@ $artificialGroups = [];
                     </div>
                     <div class="content__head-right">
                         <div class="content__head-btns content__head-btns--hidden-desktop">
-                            <button name="submit_apply" type="submit" class="content__btn-save BtnPrimarySm BtnIconLeft">
+                            <button name="submit_apply" type="submit"
+                                    class="content__btn-save BtnPrimarySm BtnIconLeft">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 12L10 17L19 8"
@@ -55,7 +58,8 @@ $artificialGroups = [];
                                 </svg>
                                 Сохранить
                             </button>
-                            <button name="submit_save" type="submit" class="content__btn-save-exit BtnSecondaryMonoSm BtnIconLeft">
+                            <button name="submit_save" type="submit"
+                                    class="content__btn-save-exit BtnSecondaryMonoSm BtnIconLeft">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 12L10 17L19 8" stroke="#ffffff" stroke-width="2"
@@ -101,8 +105,10 @@ $artificialGroups = [];
             </div>
 
             <div class="content__body" data-simplebar>
-                <?php \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
-                <?php if (count($this->errors)): ?>
+                <?php
+                \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
+                <?php
+                if (count($this->errors)): ?>
                     <div class="content__notification notification notification--active notification--error">
                         <div class="notification__inner">
                             <div class="notification__top">
@@ -117,7 +123,8 @@ $artificialGroups = [];
                                 </button>
                             </div>
                             <div class="notification__text">
-                                <?php echo '<ul>';
+                                <?php
+                                echo '<ul>';
                                 foreach ($this->errors as $error) {
                                     if (is_array($error)) {
                                         foreach ($error as $e) {
@@ -131,29 +138,43 @@ $artificialGroups = [];
                             </div>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php
+                endif; ?>
 
-                <?php foreach ($this->fields as $field): ?>
-                <?php $showRightCol = ($field->params['pos'] == 'right') || $showRightCol;
-                $artificial = ($field->params['pos'] == 'right') || $artificial;
-                if ($field->params['pos'] == 'right' && !$field->hidden) {
-                    $artificialGroups[$field->params['pos_group']][] = $field;
-                }
-                ?>
-                    <?php if (!$field->hidden && $field->params['pos'] != 'right'): ?>
+                <?php
+                foreach ($this->fields as $field): ?>
+                    <?php
+                    $showRightCol = ($field->params['pos'] == 'right') || $showRightCol;
+                    $artificial = ($field->params['pos'] == 'right') || $artificial;
+                    if ($field->params['pos'] == 'right' && !$field->hidden) {
+                        $artificialGroups[$field->params['pos_group']][] = $field;
+                    }
+                    $artLeft = (($field->params['pos'] ?: 'left') == 'left' && $field->params['pos_group']) || $artLeft;
+                    if (($field->params['pos'] ?: 'left') == 'left' && !$field->hidden && $field->params['pos_group']) {
+                        $artLeftArr[$field->params['pos_group']][] = $field;
+                    }
+                    ?>
+                    <?php
+                    if (!$field->hidden && $field->params['pos'] != 'right' && !$field->params['pos_group']): ?>
 
-                        <div for="" class="data-point <?=$isGroup?'data-point--copy':''?>">
+                        <div for="" class="data-point <?= $isGroup ? 'data-point--copy' : '' ?>">
                             <span class="data-point__text"><?= $field->label ?></span>
-                            <?php if ($isGroup): ?>
-                            <input type="checkbox" name="set[<?= $field->name ?>]" id="" class="form-control__checkbox">
-                        <?php endif; ?>
+                            <?php
+                            if ($isGroup): ?>
+                                <input type="checkbox" name="set[<?= $field->name ?>]" id=""
+                                       class="form-control__checkbox">
+                            <?php
+                            endif; ?>
                             <?= $this->formFieldInput($field, $row); ?>
                         </div>
-                    <?php endif ?>
-                <?php endforeach ?>
+                    <?php
+                    endif ?>
+                <?php
+                endforeach ?>
 
                 <div id="params-left" class="data-point">
-                    <?php if (count($this->params['left'])) : ?>
+                    <?php
+                    if (count($this->params['left']) || $artLeft) : ?>
                         <?php
                         $hasWithoutGroup = false;
                         foreach ($this->params['left'] as $param) {
@@ -166,50 +187,104 @@ $artificialGroups = [];
                         <?php
                         $paramGroups = [];
                         foreach ($this->params['left'] as $param) {
-                            if (!isset($param['field'])) continue;
+                            if (!isset($param['field'])) {
+                                continue;
+                            }
                             $paramGroups[$param['group_name'] ?: 'Параметры'][] = $param;
                         }
 
                         ?>
-                        <?php if ($hasWithoutGroup && $paramGroups): ?>
-                            <?php foreach ($paramGroups as $groupName => $groupParams): ?>
+                        <?php
+                        if ($hasWithoutGroup && $paramGroups): ?>
+                            <?php
+                            foreach ($paramGroups as $groupName => $groupParams): ?>
                                 <div class="data2">
                                     <div class="data2__head">
-                                        <h4 class="data2__title"><?php echo $groupName ?></h4>
+                                        <h4 class="data2__title"><?php
+                                            echo $groupName ?></h4>
                                     </div>
                                     <div class="data2__content">
-                                        <?php foreach ($groupParams as $param): ?>
-                                            <?php if (isset($param['field'])): ?>
-                                                <?php $field = $param['field'] ?>
-                                                <?php \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
-                                                <?php include 'form.field.tpl' ?>
-                                            <?php endif ?>
-                                        <?php endforeach ?>
+                                        <?php
+                                        foreach ($groupParams as $param): ?>
+                                            <?php
+                                            if (isset($param['field'])): ?>
+                                                <?php
+                                                $field = $param['field'] ?>
+                                                <?php
+                                                \Simflex\Admin\Fields\Field::setFieldValue(
+                                                    $field,
+                                                    $group,
+                                                    $params,
+                                                    $row
+                                                ) ?>
+                                                <?php
+                                                include 'form.field.tpl' ?>
+                                            <?php
+                                            endif ?>
+                                        <?php
+                                        endforeach ?>
                                     </div>
                                 </div>
-                            <?php endforeach ?>
-                        <?php endif ?>
-                        <?php foreach ($this->params['left'] as $group): ?>
-                            <?php if (count($group['fields'])): ?>
+                            <?php
+                            endforeach ?>
+                        <?php
+                        endif ?>
+                        <?php
+                        foreach ($artLeftArr as $group => $fs): ?>
+                            <?php
+                            if (count($fs)): ?>
                                 <div class="data2">
                                     <div class="data2__head">
-                                        <h4 class="data2__title"><?php echo $group['label'] ?></h4>
+                                        <h4 class="data2__title"><?php
+                                            echo $group ?></h4>
                                     </div>
                                     <div class="data2__content">
-                                        <?php foreach ($group['fields'] as $field): ?>
-                                            <?php \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
-                                            <?php include 'form.field.tpl' ?>
-                                        <?php endforeach ?>
+                                        <?php
+                                        foreach ($fs as $field): ?>
+                                            <?php
+                                            $field->value = $row[$field->name]; ?>
+                                            <?php
+                                            include 'form.field.tpl' ?>
+                                        <?php
+                                        endforeach ?>
                                     </div>
                                 </div>
-                            <?php endif ?>
-                        <?php endforeach ?>
-                    <?php endif; ?>
+                            <?php
+                            endif ?>
+                        <?php
+                        endforeach ?>
+                        <?php
+                        foreach ($this->params['left'] as $group): ?>
+                            <?php
+                            if (count($group['fields'])): ?>
+                                <div class="data2">
+                                    <div class="data2__head">
+                                        <h4 class="data2__title"><?php
+                                            echo $group['label'] ?></h4>
+                                    </div>
+                                    <div class="data2__content">
+                                        <?php
+                                        foreach ($group['fields'] as $field): ?>
+                                            <?php
+                                            \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
+                                            <?php
+                                            include 'form.field.tpl' ?>
+                                        <?php
+                                        endforeach ?>
+                                    </div>
+                                </div>
+                            <?php
+                            endif ?>
+                        <?php
+                        endforeach ?>
+                    <?php
+                    endif; ?>
 
                 </div>
 
                 <?= $this->extraLeft ?>
-                <?php $this->portlets('left') ?>
+                <?php
+                $this->portlets('left') ?>
             </div>
             <div class="content__btns">
                 <button name="submit_apply" type="submit" class="content__btn-save BtnPrimarySm BtnIconLeft">
@@ -241,7 +316,8 @@ $artificialGroups = [];
                 <!--                    <button class="form-control__dropdown-toggle">-->
                 <!--                        <svg stroke="none" fill="#0D0D0D" viewBox="0 0 24 24">-->
                 <!--                            <use xlink:href="-->
-                <?php //=asset('img/icons/svg-defs.svg')?><!--#chevron-mini"></use>-->
+                <?php
+                //=asset('img/icons/svg-defs.svg')?><!--#chevron-mini"></use>-->
                 <!--                        </svg>-->
                 <!--                    </button>-->
                 <!--                </div>-->
@@ -257,43 +333,54 @@ $artificialGroups = [];
             </div>
         </div>
 
-<!--        <div aria-hidden="true" role="basic" tabindex="-1" id="modal-ajax" class="modal fade">-->
-<!--            <div class="modal-dialog">-->
-<!--                <div class="modal-content">-->
-<!--                    <div style="text-align: center; padding: 50px 0">-->
-<!--                        <img class="loading" alt="" src="/admin/theme/img/ajax-modal-loading.gif">-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <!--        <div aria-hidden="true" role="basic" tabindex="-1" id="modal-ajax" class="modal fade">-->
+        <!--            <div class="modal-dialog">-->
+        <!--                <div class="modal-content">-->
+        <!--                    <div style="text-align: center; padding: 50px 0">-->
+        <!--                        <img class="loading" alt="" src="/admin/theme/img/ajax-modal-loading.gif">-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
     </div>
-    <?php if ($showRightCol || $this->extraRight): ?>
+    <?php
+    if ($showRightCol || $this->extraRight): ?>
         <div class="content content--right">
             <div class="content__inner">
                 <div class="content__body" data-simplebar>
-                    <?php if ($artificial): ?>
-                    <?php foreach ($artificialGroups as $g=>$fs): ?>
-                        <div class="data3">
-                            <div class="data3__head">
-                                <div class="data3__title"><?=$g?:'Параметры'?></div>
-                            </div>
-                            <div class="data3__content">
-                                <?php foreach ($fs as $field): ?>
+                    <?php
+                    if ($artificial): ?>
+                        <?php
+                        foreach ($artificialGroups as $g => $fs): ?>
+                            <div class="data3">
+                                <div class="data3__head">
+                                    <div class="data3__title"><?= $g ?: 'Параметры' ?></div>
+                                </div>
+                                <div class="data3__content">
+                                    <?php
+                                    foreach ($fs as $field): ?>
 
-                                        <div for="" class="data-point <?=$isGroup?'data-point--copy':''?>">
+                                        <div for="" class="data-point <?= $isGroup ? 'data-point--copy' : '' ?>">
                                             <span class="data-point__text"><?= $field->label ?></span>
-                                            <?php if ($isGroup): ?>
-                                                <input type="checkbox" name="set[<?= $field->name ?>]" id="" class="form-control__checkbox">
-                                            <?php endif; ?>
+                                            <?php
+                                            if ($isGroup): ?>
+                                                <input type="checkbox" name="set[<?= $field->name ?>]" id=""
+                                                       class="form-control__checkbox">
+                                            <?php
+                                            endif; ?>
                                             <?= $this->formFieldInput($field, $row); ?>
                                         </div>
-                                <?php endforeach ?>
+                                    <?php
+                                    endforeach ?>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-                    <?php if (count($this->params['right'])): ?>
+                        <?php
+                        endforeach; ?>
+                    <?php
+                    endif; ?>
+                    <?php
+                    if (count($this->params['right'])): ?>
                         <?php
                         $group = null;
                         $hasWithoutGroup = false;
@@ -304,44 +391,68 @@ $artificialGroups = [];
                             }
                         }
                         ?>
-                        <?php if ($hasWithoutGroup): ?>
+                        <?php
+                        if ($hasWithoutGroup): ?>
                             <div class="data3">
                                 <div class="data3__head">
                                     <div class="data3__title">Параметры</div>
                                 </div>
                                 <div class="data3__content">
-                                    <?php foreach ($this->params['right'] as $param): ?>
-                                        <?php if (isset($param['field'])): ?>
-                                            <?php $field = $param['field'] ?>
-                                            <?php @\Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
-                                            <?php include 'form.field.tpl' ?>
-                                        <?php endif ?>
-                                    <?php endforeach ?>
+                                    <?php
+                                    foreach ($this->params['right'] as $param): ?>
+                                        <?php
+                                        if (isset($param['field'])): ?>
+                                            <?php
+                                            $field = $param['field'] ?>
+                                            <?php
+                                            @\Simflex\Admin\Fields\Field::setFieldValue(
+                                                $field,
+                                                $group,
+                                                $params,
+                                                $row
+                                            ) ?>
+                                            <?php
+                                            include 'form.field.tpl' ?>
+                                        <?php
+                                        endif ?>
+                                    <?php
+                                    endforeach ?>
                                 </div>
                             </div>
-                        <?php endif ?>
-                        <?php foreach ($this->params['right'] as $group): ?>
-                            <?php if (count($group['fields'])): ?>
+                        <?php
+                        endif ?>
+                        <?php
+                        foreach ($this->params['right'] as $group): ?>
+                            <?php
+                            if (count($group['fields'] ?? [])): ?>
                                 <div class="data3">
                                     <div class="data3__head">
                                         <div class="data3__title"><?= $group['label'] ?></div>
                                     </div>
                                     <div class="data3__content">
-                                        <?php foreach ($group['fields'] as $field): ?>
-                                            <?php \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
-                                            <?php include 'form.field.tpl' ?>
-                                        <?php endforeach ?>
+                                        <?php
+                                        foreach ($group['fields'] as $field): ?>
+                                            <?php
+                                            \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
+                                            <?php
+                                            include 'form.field.tpl' ?>
+                                        <?php
+                                        endforeach ?>
                                     </div>
                                 </div>
-                            <?php endif ?>
-                        <?php endforeach ?>
+                            <?php
+                            endif ?>
+                        <?php
+                        endforeach ?>
                         <div class="ajax-params">
                         </div>
-                    <?php endif ?>
+                    <?php
+                    endif ?>
                     <?= $rightPortletsHTML ?>
                     <?= $this->extraRight ?>
                 </div>
             </div>
         </div>
-    <?php endif ?>
+    <?php
+    endif ?>
 </form>

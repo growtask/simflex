@@ -102,6 +102,7 @@ class Migrator extends ConsoleBase
             if (!$schema->commit()) {
                 Alert::error('Failed to up migration ' . $migration);
                 Alert::text(DB::error());
+                Alert::text('Query: ' . DB::getLastQuery());
 
                 $schema->rollback();
                 return;

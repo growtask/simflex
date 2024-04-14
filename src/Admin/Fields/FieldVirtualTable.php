@@ -59,6 +59,12 @@ class FieldVirtualTable extends Field
                     $r[$k] = $d[0];
                     $r['__rm_id'] = $d[1];
                 }
+
+                if (str_starts_with($v, 'RMJ:')) {
+                    $d = explode(';;', substr($v, 4));
+                    $r[$k] = $d[0];
+                    $r['__rmj_id'] = $d[1];
+                }
             }
 
             $vv[] = $r;

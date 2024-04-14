@@ -79,15 +79,17 @@ class FieldInt extends Field
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             $sel = DB::fetch($sel);
 
+            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
+
             $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
                             <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" onchange="'.$this->onchange.'" value="'.(!$value ? '' : $value).'" type="hidden" name="' . $this->name . '" >
+                                <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '" >
                                <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
-                                <div class="form-control__dropdown-current">'.$sel['name'].'</div>
+                                <div class="form-control__dropdown-current">' . $sel['name'] . '</div>
                                 <button type="button" class="form-control__dropdown-toggle">
                                     <svg viewBox="0 0 24 24">
-                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
+                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
                                     </svg>
                                 </button>
                             </div>
@@ -95,7 +97,22 @@ class FieldInt extends Field
                                            
                                         ';
 
-            $select .= '<div data-value="'.$sel['id'].'" class="form-control__dropdown-item">'.$sel['name'].'</div>';
+            $tempSel = '';
+
+            $hasId = false;
+            foreach ($items as $r) {
+                if ($r['id'] == $sel['id']) {
+                    $hasId = true;
+                }
+
+                $tempSel .= '<div data-value="' . $r['id'] . '" class="form-control__dropdown-item">' . $r['name'] . '</div>';
+            }
+
+            if (!$hasId) {
+                $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
+            }
+
+            $select .= $tempSel;
 
 //            foreach ($list as $id=>$row) {
 //                $select .= '<div data-value="'.$id.'" class="form-control__dropdown-item">'. str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $row['tree_level']) . $row['label'] .'</div>';
@@ -111,7 +128,7 @@ class FieldInt extends Field
                                     <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
                                         type="text" class="form-control__input">
                                 </div>';
-        }
+    }
 
     public function getPOST($simple = false, $group = null)
     {
@@ -131,15 +148,15 @@ class FieldInt extends Field
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             $sel = DB::fetch($sel);
 
-            $select =  '<div class="form-control form-control--sm">
+            $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
                             <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="filter[' . $this->name . ']" >
+                                <input class="form-control__dropdown-input" value="' . $value . '" type="hidden" name="filter[' . $this->name . ']" >
                                 <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
                                 <div class="form-control__dropdown-current">—</div>
                                 <button class="form-control__dropdown-toggle" type="button">
                                     <svg viewBox="0 0 24 24">
-                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
+                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
                                     </svg>
                                 </button>
                             </div>
@@ -151,7 +168,7 @@ class FieldInt extends Field
 //            if ($this->isnull) {
 //                $select .= '<div data-value="null" class="form-control__dropdown-item">NULL</div>';
 //            }
-            $select .= '<div data-value="'.$sel['id'].'" class="form-control__dropdown-item">'.$sel['name'].'</div>';
+            $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
 
 
             $select .= '</div>

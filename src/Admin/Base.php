@@ -108,11 +108,6 @@ class Base
             $this->ids = $_POST['group_ids'];
         }
 
-        $this->p = &$_SESSION[$this->table]['p'];
-        if (!isset($this->p)) {
-            $this->p = 0;
-        }
-
         $this->initTableName();
         $this->initTableData();
 
@@ -266,7 +261,6 @@ class Base
             }
         }
         echo count($rows) ? '</div>' : '';
-//        echo '<div class="clearfix"></div>' . "\n";
     }
 
     protected function beforeChangeENUM($field, $row, $newValue)
@@ -440,6 +434,13 @@ class Base
         return $q;
     }
 
+    protected function filterReset()
+    {
+        $_SESSION[$this->table] = [];
+        header('Location: ./');
+        exit;
+    }
+
     protected function prepareWhere()
     {
         foreach ($this->fields as $field) {
@@ -448,7 +449,6 @@ class Base
             if ($_SESSION[$this->table]['filter'][$field->name] !== '') {
                 if ($_SESSION[$this->table]['filter'][$field->name] === 'null') {
                     $this->where[] = '' . $this->table . '.' . $field->name . " IS NULL";
-//                } elseif (!($this->pid && $field->name == $this->pid->name)) {
                 } else {
                     $this->isHierarchy = false;
                     if ($field instanceof FieldDateTime) {
@@ -496,7 +496,6 @@ class Base
         $pagecontrol = new Pagecontrol($this->p, $this->p_on, $cnt);
 
         $q = $this->getQuerySelect();
-//        echo $q;
         $r = DB::query($q);
         $rows = array();
         if ($this->isHierarchy) {
@@ -514,8 +513,6 @@ class Base
             }
             $id_start = isset($_SESSION[$this->table]['filter'][$this->pid->name]) ? (int)$_SESSION[$this->table]['filter'][$this->pid->name] : 0;
             $list = Service::tree2list($tree, $id_start);
-//            print_r($tree);
-//            print_r($list);
             foreach ($list as $l) {
                 if ($l['tree_level']) {
                     $l[$tree_name] = '<div style="padding-left:' . (25 * $l['tree_level']) . 'px">' . $l[$tree_name] . '</div>';
@@ -558,8 +555,6 @@ class Base
             $fields = DB::assoc($q);
             $pkName = '';
             foreach ($fields as $field) {
-//                echo $field['params'];
-
                 $field['params'] = unserialize($field['params']);
                 if (!empty($field['params']['main']['filter'])) {
                     $this->is_filter = true;
@@ -939,7 +934,7 @@ class Base
 
     public function searchInt()
     {
-        $text = DB::escape($_REQUEST['text']);
+        $text = trim(DB::escape($_REQUEST['text']));
         $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
         $field = $this->fields[$name];
         if (!($field instanceof FieldInt) || !$field->params['is_fk']) {

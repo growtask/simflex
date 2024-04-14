@@ -1,6 +1,6 @@
 const TableEditor = {
     // -------- PUBLIC --------
-    init: function(id) {
+    init: function (id) {
         const val = this._loadValue(id);
 
         // setup columns
@@ -25,6 +25,7 @@ const TableEditor = {
         const cmbs = [];
         const imgs = [];
 
+        let hasEds = false;
         for (const col of val.s) {
             const cv = r != null ? val.v[r][col.n] : col.v;
             if (col.t.startsWith('editor')) {
@@ -32,22 +33,22 @@ const TableEditor = {
                 <label class="modal-point__data-label">
                     ${col.l}
                     <div class="form-control form-control--sm">
-                    <textarea class="form-control__textarea" name="${col.n}" id="te-${col.n}" placeholder="${col.l}" rows="5">${cv}</textarea>
+                    <textarea class="form-control__textarea js-editor" name="${col.n}" id="te-${col.n}" placeholder="${col.l}" rows="5">${cv}</textarea>
                     </div>
                 </label>`;
-            }
-            else if (col.t.startsWith('image')) {
+                hasEds = true;
+            } else if (col.t.startsWith('image')) {
                 input += `
 <div class="modal-point__data-label">
                     ${col.l}
 <label class="form-control">
                                     <div class="form-control__file" id="img-${col.n}">
-                                        <img src="${ cv }" onerror="this.src = '/vendor/glushkovds/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
+                                        <img src="${cv}" onerror="this.src = '/vendor/glushkovds/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
                                         <div class="form-control__file-area-wrapper drop-area">
                                             <div class="form-control__file-area">
                                                 <input type="file" name="" accept="image/*"
                                                     class="form-control__file-input">
-                                                    <input type="hidden" data-path="/content/" name="${ col.n }" value="${ cv }" />
+                                                    <input type="hidden" data-path="/content/" name="${col.n}" value="${cv}" />
                                                 <div class="form-control__file-progressbar progressbar">
                                                     <div class="progressbar__bg">
                                                         <div class="progressbar__progress"></div>
@@ -88,17 +89,59 @@ const TableEditor = {
                                 </label></div>
                 `;
                 imgs.push(col.n);
-            }
-            else if (col.t.startsWith('file')) {
+            } else if (col.t.startsWith('file')) {
                 input += `
-<label class="modal-point__data-label">
-    ${col.l}
-    <p id="te-${col.n}-file">${cv}</p>
-    <input type="file" data-val="${cv}" class="form-control" name="${col.n}" id="te-${col.n}" onchange="TableEditor.onUpdateFile('${id}', '${col.n}', this)">
-</label>
+<div class="modal-point__data-label">
+                    ${col.l}
+<label class="form-control">
+${cv}
+                                    <div class="form-control__file" id="img-${col.n}">
+                                       <div class="form-control__file-area-wrapper drop-area">
+                                            <div class="form-control__file-area">
+                                                <input type="file" name=""
+                                                    class="form-control__file-input">
+                                                    <input type="hidden" data-path="/content/" name="${col.n}" value="${cv}" />
+                                                <div class="form-control__file-progressbar progressbar">
+                                                    <div class="progressbar__bg">
+                                                        <div class="progressbar__progress"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-control__file-head">
+                                                    <div class="form-control__file-title">Перетащите или загрузите файл
+                                                    </div>
+                                                    <div class="form-control__file-size"></div>
+                                                </div>
+                                                <div class="form-control__file-btns">
+                                                    <div
+                                                        class="form-control__file-btn btn-file-upload BtnPrimarySm BtnIconLeft">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M21 15V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V15M17 8L12 3M12 3L7 8M12 3V15"
+                                                                stroke="white" stroke-width="2" stroke-linecap="round"
+                                                                stroke-linejoin="round" />
+                                                        </svg>
+                                                        Загрузить
+                                                    </div>
+                                                    <button type="button"
+                                                        class="form-control__file-btn btn-file-reset BtnSecondarySm BtnIconLeft">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path style="fill: #ffffff !important" fill-rule="evenodd"
+                                                                clip-rule="evenodd"
+                                                                d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"
+                                                                fill="#ffffff" />
+                                                        </svg>
+                                                        Удалить
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label></div>
                 `;
-            }
-            else if (col.t.startsWith('combo')) {
+                imgs.push(col.n);
+            } else if (col.t.startsWith('combo')) {
                 input += `<div class="data-point">
     ${col.l}
 <div class="form-control form-control--sm">
@@ -169,8 +212,50 @@ const TableEditor = {
         for (const c of imgs) {
             window.initializeFileInput(`img-${c}`);
         }
+
+        if (hasEds) {
+            const tinyInit = () => {
+                tinymce.remove('.js-editor');
+                tinymce.init({
+                    selector: '.js-editor',
+                    language: 'ru',
+                    plugins: 'fm lists table link emoticons code media',
+                    menu: {
+                        file: {
+                            items: ''
+                        },
+                        view: {
+                            items: ''
+                        },
+                        insert: {
+                            title: 'Insert',
+                            items: 'hr fm media'
+                        },
+                        format: {
+                            items: ''
+                        }
+                    },
+                    toolbar: 'undo redo | blocks | bold italic strikethrough | numlist bullist table link emoticons fm | code'
+                });
+            };
+
+            if (typeof tinymce === 'undefined') {
+                const scr = document.createElement('script');
+                scr.src = '/vendor/glushkovds/simflex/src/Admin/Plugins/Editor/tinymce/tinymce.min.js';
+                scr.addEventListener('load', () => {
+                    tinyInit();
+                });
+                document.body.appendChild(scr);
+            } else {
+                tinyInit();
+            }
+        }
     },
     onRowSave: function (id, r) {
+        if (typeof tinymce !== 'undefined') {
+            tinymce.triggerSave();
+        }
+
         const val = this._loadValue(id);
         const form = document.querySelector(`form[data-teid="${id}"]`);
         const data = new FormData(form);
@@ -180,7 +265,7 @@ const TableEditor = {
             // if (vvv.type === 'file') {
             //     row[col.n] = vvv.dataset.val;
             // } else {
-                row[col.n] = data.get(col.n);
+            row[col.n] = data.get(col.n);
             // }
         }
 
@@ -206,7 +291,7 @@ const TableEditor = {
         window.closePointModal();
     },
 
-    onRowDeleteRequest: function(id, r) {
+    onRowDeleteRequest: function (id, r) {
         const mdl = document.querySelector('.modal-delete__btns');
         // <button class="BtnSecondarySm" onclick="TableEditor.onRowDelete('${id}', ${r})">Удалить</button>
 
@@ -301,10 +386,10 @@ const TableEditor = {
 
     // -------- PRIVATE --------
     _openModal: function (content) {
-                        const mdl = document.querySelector('.modal-point__inner .modal-point__data');
-                        mdl.innerHTML = content;
+        const mdl = document.querySelector('.modal-point__inner .modal-point__data');
+        mdl.innerHTML = content;
 
-                        window.openPointModal();
+        window.openPointModal();
     },
 
     _typeToHtml: function (type) {
@@ -357,7 +442,7 @@ const TableEditor = {
             if (!this._isValAnImage(id, k)) {
                 valdata += `<td class="table__body-item"><div class="table__row-text">${val[k]}</div></td>`;
             } else {
-                    valdata += `<td class="table__body-item"><div class="table__body-item-img"><img src="${val[k]}" /></div></td>`;
+                valdata += `<td class="table__body-item"><div class="table__body-item-img"><img src="${val[k]}" /></div></td>`;
             }
         }
 
