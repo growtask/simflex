@@ -155,7 +155,7 @@ class Field
 //            $p = true;
 //        }
         $value = '';
-        if ($group['name']) {
+        if (is_array($group) && $group['name']) {
             $value = isset($params[$group['name']]) && array_key_exists($field->name, $params[$group['name']])
                 ? $params[$group['name']][$field->name]
                 : $field->defaultValue;
@@ -170,6 +170,7 @@ class Field
 
     public function input($value)
     {
+        $value = $this->value ?: $value;
         return '<div class="form-control form-control--sm">
                                     <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"
                                     ' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
@@ -185,6 +186,7 @@ class Field
 
     public function inputHidden($value)
     {
+        $value = $this->value ?: $value;
         return '<input type="hidden" name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '" />';
     }
 
@@ -207,10 +209,11 @@ class Field
 
     public function show($row)
     {
-        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
+        $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
+        $value = strip_tags($value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
-            echo '<a href="?action=form&'.$this->tablePk.'='.$this->pkValue.'" class="table__row-' . $this->name . '">' . $value . '</a>';
+            echo '<a href="?action=form&' . $this->tablePk . '=' . $this->pkValue . '" class="table__row-' . $this->name . '">' . $value . '</a>';
         } else {
             $isNumericReal = $this->isNumeric || ((string)intval($value) == $value);
             echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';

@@ -15,6 +15,26 @@ class Str
         ));
     }
 
+    public static function sizeToStr(string $path)
+    {
+        $fileSize = filesize($_SERVER['DOCUMENT_ROOT'] . $path);
+        $sizeDenom = 'б';
+        if ($fileSize > 1024) {
+            $fileSize /= 1024;
+            $sizeDenom = 'кб';
+        }
+        if ($fileSize > 1024) {
+            $fileSize /= 1024;
+            $sizeDenom = 'мб';
+        }
+        if ($fileSize > 1024) {
+            $fileSize /= 1024;
+            $sizeDenom = 'гб';
+        }
+
+        return round($fileSize) . $sizeDenom;
+    }
+
     /**
      * @param $string
      * @return string

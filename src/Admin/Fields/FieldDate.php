@@ -28,7 +28,7 @@ class FieldDate extends Field
 
     public function input($value)
     {
-        $value = \Simflex\Core\Time::normal($value); //substr($value, 8, 2) . '.' . substr($value, 5, 2) . '.' . substr($value, 0, 4);
+        $value = \Simflex\Core\Time::normal($value ?: time()); //substr($value, 8, 2) . '.' . substr($value, 5, 2) . '.' . substr($value, 0, 4);
         $classes = array("form-control");
         if (!$this->readonly) {
             $classes[] = "form-datepicker";

@@ -30,7 +30,7 @@ class MySQL implements Adapter
         $cfg = Container::getConfig();
         $host = $cfg::$db_host;
         $database = $cfg::$db_name;
-        $this->db = new PDO("mysql:host=$host;dbname=$database", $cfg::$db_user, $cfg::$db_pass);
+        $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg::$db_user, $cfg::$db_pass);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, Container::getConfig()::$mysqlErrorMode);
         return true;
     }

@@ -11808,7 +11808,7 @@ object svg {
     align-items: center;
     border-radius: 0.625vw;
     min-height: 2.9166666667vw;
-    z-index: 10;
+    /*z-index: 10;*/
 }
 
 @media screen and (max-width: 1401px) {

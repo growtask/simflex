@@ -278,8 +278,6 @@ class Table extends ElementBase
             }
         }
 
-        $firstCmd = true;
-
         // modify old ones
         foreach ($toMod as $col) {
             if (!$firstCmd) {
@@ -289,8 +287,6 @@ class Table extends ElementBase
             $sql .= 'MODIFY COLUMN ' . $col->toString();
             $firstCmd = false;
         }
-
-        $firstCmd = true;
 
         // add new ones
         foreach ($toAdd as $col) {

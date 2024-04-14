@@ -68,7 +68,7 @@ class FieldRelation extends Field
                                           (p.{$this->params['left']} = {$id} and p.{$this->params['right']} = t.{$this->tablePk})) > 0";
 
         $q = DB::query($q);
-
+        
         while ($r = DB::fetch($q)) {
             $existing[] = $r[$this->tablePk];
         }

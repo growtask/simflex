@@ -142,6 +142,15 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
     }
 
     /**
+     * @return static[]
+     * @throws \Exception
+     */
+    public static function all(): array
+    {
+        return self::findAdv()->all();
+    }
+
+    /**
      * Заполнить модель данными
      * @param array $data
      * @return $this
@@ -210,12 +219,17 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
         if ($this->beforeInsert()) {
             $set = [];
             foreach ($this->data as $key => $value) {
+                // skip virtual keys
+                if (method_exists(static::class, 'offsetGet' . $key)) {
+                    continue;
+                }
+
                 $set[] = "`$key` = " . self::prepareValue($value);
             }
             $ignore = $flags & static::FLAG_IGNORE ? ' IGNORE' : '';
             $q = "INSERT$ignore INTO " . static::$table . " SET " . implode(', ', $set);
             if ($result = $this->query($q)) {
-                $this->id = DB::insertId();
+                $this->id = $this->{static::$primaryKeyName} = DB::insertId();
             }
         }
         $this->afterInsert($result);
@@ -274,6 +288,11 @@ abstract class ModelBase implements \ArrayAccess, \JsonSerializable
     {
         $set = [];
         foreach ($data as $key => $value) {
+            // skip virtual keys
+            if (method_exists(static::class, 'offsetGet' . $key)) {
+                continue;
+            }
+
             $set[] = "`$key` = " . static::prepareValue($value);
         }
         return $set;

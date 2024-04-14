@@ -27,6 +27,7 @@ class AQ
     /** @var ModelBase|null */
     protected $modelClass;
     protected $custom;
+    protected $prefix;
 
     /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
     protected $scalarColumn = null;
@@ -116,6 +117,12 @@ class AQ
         return $this;
     }
 
+    public function prefix($pf)
+    {
+        $this->prefix = $pf;
+        return $this;
+    }
+
     /**
      * @param string $class
      * @return $this
@@ -150,6 +157,9 @@ class AQ
         }
         if (empty($this->from) || !is_string($this->from)) {
             throw new \Exception('Bad from statement');
+        }
+        if ($pf = $this->prefix) {
+            $q[] = $pf;
         }
         $q[] = 'SELECT ' . $this->getSelect();
         $q[] = "FROM `$this->from`" . ($this->fromAlias ? (' ' . $this->fromAlias) : '');
@@ -206,7 +216,7 @@ class AQ
         $q = $this->build();
         $r = DB::query($q);
         $row = DB::fetch($r);
-        if (is_int($column)) {
+        if ($row && is_int($column)) {
             $row = array_values($row);
         }
         if ($row && !array_key_exists($column, $row)) {

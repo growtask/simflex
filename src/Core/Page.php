@@ -199,6 +199,7 @@ class Page
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') .  (!self::$override['uses_meta'] ? Core::siteParam('site_name') : '');
         echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
         echo self::$seo_metatags ? self::$seo_metatags . "\r\n" : '';
+
         self::metaCSS();
 
         // self::metaJS();
