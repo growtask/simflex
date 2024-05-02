@@ -7,6 +7,7 @@ use Simflex\Core\DB;
 use Simflex\Core\DB\JoinClause;
 use Simflex\Core\DB\Where;
 use Simflex\Core\ModelBase;
+use Simflex\Core\Profiler;
 
 /**
  * Class AQ
@@ -28,6 +29,7 @@ class AQ
     protected $modelClass;
     protected $custom;
     protected $prefix;
+    protected $binding = [];
 
     /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
     protected $scalarColumn = null;
@@ -123,6 +125,12 @@ class AQ
         return $this;
     }
 
+    public function bind(array $items)
+    {
+        $this->binding = $items;
+        return $this;
+    }
+
     /**
      * @param string $class
      * @return $this
@@ -214,7 +222,7 @@ class AQ
     public function fetchScalar($column = 0)
     {
         $q = $this->build();
-        $r = DB::query($q);
+        $r = DB::query($q, $this->binding);
         $row = DB::fetch($r);
         if ($row && is_int($column)) {
             $row = array_values($row);
@@ -232,9 +240,14 @@ class AQ
      */
     public function fetchOne()
     {
+        Profiler::traceStart($this, __FUNCTION__);
+
         $q = $this->build();
-        $r = DB::query($q);
+        $r = DB::query($q, $this->binding);
         $row = DB::fetch($r);
+
+        Profiler::traceEnd($this, __FUNCTION__);
+
         if (!$row) {
             return null;
         }
@@ -254,12 +267,13 @@ class AQ
      */
     public function all($assocKey = null)
     {
+        Profiler::traceStart($this, __FUNCTION__);
 
         if ((is_bool($assocKey) || !$this->asArray && !$this->scalarColumn) && empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
         }
         $q = $this->build();
-        $r = DB::query($q);
+        $r = DB::query($q, $this->binding);
         $result = [];
         $counter = 0;
         while ($row = DB::fetch($r)) {
@@ -301,6 +315,8 @@ class AQ
             }
             $counter++;
         }
+
+        Profiler::traceEnd($this, __FUNCTION__);
         return $result;
     }
 
