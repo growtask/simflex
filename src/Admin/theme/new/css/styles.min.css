@@ -8243,6 +8243,17 @@ object svg {
     gap: 0.4166666667vw;
 }
 
+.data-point__help {
+    color: #8a8c91;
+    font-weight: 400;
+    font-size: 0.625vw;
+}
+
+.data-point__title {
+    display: flex;
+    flex-direction: column;
+}
+
 .data-point--copy {
     position: relative;
 }

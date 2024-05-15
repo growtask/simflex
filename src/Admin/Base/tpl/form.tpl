@@ -158,7 +158,10 @@ $artLeftArr = [];
                     if (!$field->hidden && $field->params['pos'] != 'right' && !$field->params['pos_group']): ?>
 
                         <div for="" class="data-point <?= $isGroup ? 'data-point--copy' : '' ?>">
-                            <span class="data-point__text"><?= $field->label ?></span>
+                            <div class="data-point__title">
+                                <span class="data-point__text"><?= $field->label ?></span>
+                                <span class="data-point__help"><?= $field->help ?></span>
+                            </div>
                             <?php
                             if ($isGroup): ?>
                                 <input type="checkbox" name="set[<?= $field->name ?>]" id=""
@@ -200,7 +203,8 @@ $artLeftArr = [];
                             foreach ($paramGroups as $groupName => $groupParams): ?>
                                 <div class="data2">
                                     <div class="data2__head">
-                                        <h4 class="data2__title"><?php
+                                        <h4 id="<?= $groupName ?>" class="data2__title"><?php
+                                            $this->blocks[] = $groupName;
                                             echo $groupName ?></h4>
                                     </div>
                                     <div class="data2__content">
@@ -235,7 +239,8 @@ $artLeftArr = [];
                             if (count($fs)): ?>
                                 <div class="data2">
                                     <div class="data2__head">
-                                        <h4 class="data2__title"><?php
+                                        <h4 id="<?= $group ?>" class="data2__title"><?php
+                                            $this->blocks[] = $group;
                                             echo $group ?></h4>
                                     </div>
                                     <div class="data2__content">
@@ -259,7 +264,8 @@ $artLeftArr = [];
                             if (count($group['fields'])): ?>
                                 <div class="data2">
                                     <div class="data2__head">
-                                        <h4 class="data2__title"><?php
+                                        <h4 id="<?= $group['label'] ?>" class="data2__title"><?php
+                                            $this->blocks[] = $group['label'];
                                             echo $group['label'] ?></h4>
                                     </div>
                                     <div class="data2__content">
@@ -309,27 +315,32 @@ $artLeftArr = [];
                     </svg>
                     Отмена
                 </a>
-                <!--        <div class="form-control form-control--sm">-->
-                <!--            <div class="form-control__dropdown">-->
-                <!--                <div class="form-control__dropdown-top">-->
-                <!--                    <div class="form-control__dropdown-current">Название шаблона</div>-->
-                <!--                    <button class="form-control__dropdown-toggle">-->
-                <!--                        <svg stroke="none" fill="#0D0D0D" viewBox="0 0 24 24">-->
-                <!--                            <use xlink:href="-->
                 <?php
-                //=asset('img/icons/svg-defs.svg')?><!--#chevron-mini"></use>-->
-                <!--                        </svg>-->
-                <!--                    </button>-->
-                <!--                </div>-->
-                <!--                <div class="form-control__dropdown-list">-->
-                <!--                    <div class="form-control__dropdown-item">Шаблон 1</div>-->
-                <!--                    <div class="form-control__dropdown-item">Шаблон 2</div>-->
-                <!--                    <div class="form-control__dropdown-item">Шаблон 3</div>-->
-                <!--                    <div class="form-control__dropdown-item">Шаблон 4</div>-->
-                <!--                    <div class="form-control__dropdown-item">Шаблон 5</div>-->
-                <!--                </div>-->
-                <!--            </div>-->
-                <!--        </div>-->
+                if ($this->blocks): ?>
+                    <!--                    <div class="form-control form-control--sm">-->
+                    <!--                        <div class="form-control__dropdown">-->
+                    <!--                            <div class="form-control__dropdown-top">-->
+                    <!--                                <div class="form-control__dropdown-current">Переход к блоку</div>-->
+                    <!--                                <button class="form-control__dropdown-toggle">-->
+                    <!--                                    <svg stroke="none" fill="#0D0D0D" viewBox="0 0 24 24">-->
+                    <!--                                        <use xlink:href="-->
+                    <!--                --><?php
+                    //= asset('img/icons/svg-defs.svg') ?><!--#chevron-mini"></use>-->
+                    <!--                                    </svg>-->
+                    <!--                                </button>-->
+                    <!--                            </div>-->
+                    <!--                            <div class="form-control__dropdown-list">-->
+                    <!--                                --><?php
+//                                foreach ($this->blocks as $b): ?>
+                    <!--                                    <div class="form-control__dropdown-item">--><?php
+                    //= $b ?><!--</div>-->
+                    <!--                                --><?php
+//                                endforeach; ?>
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                <?php
+                endif; ?>
             </div>
         </div>
 
@@ -352,17 +363,28 @@ $artLeftArr = [];
                     <?php
                     if ($artificial): ?>
                         <?php
-                        foreach ($artificialGroups as $g => $fs): ?>
+                        foreach (
+                            $artificialGroups
+
+                            as $g => $fs
+                        ): ?>
                             <div class="data3">
                                 <div class="data3__head">
                                     <div class="data3__title"><?= $g ?: 'Параметры' ?></div>
                                 </div>
                                 <div class="data3__content">
                                     <?php
-                                    foreach ($fs as $field): ?>
+                                    foreach (
+                                        $fs
+
+                                        as $field
+                                    ): ?>
 
                                         <div for="" class="data-point <?= $isGroup ? 'data-point--copy' : '' ?>">
-                                            <span class="data-point__text"><?= $field->label ?></span>
+                                            <div class="data-point__title">
+                                                <span class="data-point__text"><?= $field->label ?></span>
+                                                <span class="data-point__help"><?= $field->help ?></span>
+                                            </div>
                                             <?php
                                             if ($isGroup): ?>
                                                 <input type="checkbox" name="set[<?= $field->name ?>]" id=""
