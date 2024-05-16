@@ -2,15 +2,15 @@
 
 namespace Simflex\Core\Events;
 
-use Simflex\Core\DependencyInjection;
+use Simflex\Core\DI\Injector;
 
 trait GroupEvents
 {
     public function onEvent(Event $event)
     {
-        $eventName = $event->getName();
+        $eventName = 'on' . ucfirst($event->getName());
         if (method_exists($this, $eventName)) {
-            $this->$eventName($event, ...DependencyInjection::resolveMethod($this, $eventName, $event->getParams()));
+            $this->$eventName(...Injector::resolveMethod($this, $eventName, $event, ...$event->getParams()));
         }
     }
 }

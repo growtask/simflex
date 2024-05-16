@@ -1,21 +1,21 @@
 <?php
 
-namespace Simflex\Core;
+namespace Simflex\Core\DI;
 
-use Simflex\Core\DI\DIException;
+use Simflex\Core\Container;
 
-class DependencyInjection
+class Injector
 {
     /**
      * Shortcut for resolving dependencies for a class constructor
      *
-     * @param string $target Class name
+     * @param object|string $target Class name
      * @param array ...$params Additional parameters
      * @return array Resolved dependencies
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
      * @throws \ReflectionException
      */
-    public static function resolveClass(string $target, array ...$params): array
+    public static function resolveClass($target, ...$params): array
     {
         $ref = new \ReflectionClass($target);
 
@@ -31,14 +31,14 @@ class DependencyInjection
     /**
      * Shortcut for resolving dependencies for a method of a class
      *
-     * @param string $target Target class name
+     * @param object|string $target Target class name
      * @param string $method Method name
      * @param array ...$params Additional parameters
      * @return array Resolved dependencies
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
      * @throws \ReflectionException
      */
-    public static function resolveMethod(string $target, string $method, array ...$params): array
+    public static function resolveMethod($target, string $method, ...$params): array
     {
         $ref = new \ReflectionClass($target);
         $md = $ref->getMethod($method);
@@ -58,7 +58,7 @@ class DependencyInjection
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
      * @throws \ReflectionException
      */
-    public static function resolve(\ReflectionFunctionAbstract $fn, array ...$params): array
+    public static function resolve(\ReflectionFunctionAbstract $fn, ...$params): array
     {
         $added = [];
         $args = [];
