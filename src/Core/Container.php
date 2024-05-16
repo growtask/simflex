@@ -19,6 +19,7 @@ use Simflex\Core\User;
  * @method static \Simflex\Core\Response getResponse
  * @method static User getUserLegacy
  * @method static Factory getFactory
+ * @method static EventManager getEvents
  */
 class Container
 {
