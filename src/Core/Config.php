@@ -26,4 +26,5 @@ class Config
 
     public static $routesFile = SF_CORE_ROOT_PATH . '/routes.php';
     public static $eventsFile = SF_CORE_ROOT_PATH . '/events.php';
+    public static $servicesFile = SF_CORE_ROOT_PATH . '/services.php';
 }
