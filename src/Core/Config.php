@@ -25,4 +25,5 @@ class Config
     public static $mysqlErrorMode = 0; // PDO::ERRMODE_SILENT
 
     public static $routesFile = SF_CORE_ROOT_PATH . '/routes.php';
+    public static $eventsFile = SF_CORE_ROOT_PATH . '/events.php';
 }

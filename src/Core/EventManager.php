@@ -2,9 +2,16 @@
 
 namespace Simflex\Core;
 
-class EventManager
+use Simflex\Core\Events\Event;
+
+class EventManager implements \Simflex\Core\DI\Service
 {
     protected array $listeners = [];
+
+    public static function getServiceName(): string
+    {
+        return 'events';
+    }
 
     /**
      * Subscribes a listener to an event
@@ -57,9 +64,9 @@ class EventManager
      */
     public function dispatch(Event $event)
     {
-        $eventName = $event->getName();
-        if (isset($this->listeners[$eventName])) {
-            foreach ($this->listeners[$eventName] as $listener) {
+        $subject = $event->getSubject();
+        if (isset($this->listeners[$subject])) {
+            foreach ($this->listeners[$subject] as $listener) {
                 $listener->onEvent($event);
             }
         }
