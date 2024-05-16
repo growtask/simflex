@@ -15,7 +15,7 @@ class Injector
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
      * @throws \ReflectionException
      */
-    public static function resolveClass($target, ...$params): array
+    public static function resolveClass(object|string $target, ...$params): array
     {
         $ref = new \ReflectionClass($target);
 
@@ -38,7 +38,7 @@ class Injector
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
      * @throws \ReflectionException
      */
-    public static function resolveMethod($target, string $method, ...$params): array
+    public static function resolveMethod(object|string $target, string $method, ...$params): array
     {
         $ref = new \ReflectionClass($target);
         $md = $ref->getMethod($method);
