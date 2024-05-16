@@ -1,7 +1,8 @@
 <?php
+
 namespace Simflex\Core;
 
-class Request
+class Request implements \Simflex\Core\DI\Service
 {
     protected $isHttps;
     protected $host;
@@ -16,6 +17,11 @@ class Request
     protected $urlPath;
     protected $urlParts;
     protected $serverInfo = [];
+
+    public static function getServiceName(): string
+    {
+        return 'request';
+    }
 
     /**
      * Request constructor.

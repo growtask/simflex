@@ -1,7 +1,7 @@
 <?php
 namespace Simflex\Core;
 
-abstract class Response
+abstract class Response implements \Simflex\Core\DI\Service
 {
     protected $statusCode = 200;
     protected $cookies = [];
@@ -9,6 +9,11 @@ abstract class Response
 
     public function __construct()
     {
+    }
+
+    public static function getServiceName(): string
+    {
+        return 'response';
     }
 
     /**

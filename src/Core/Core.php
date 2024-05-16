@@ -26,7 +26,6 @@ class Core
 
     private function __construct()
     {
-
     }
 
     public static function init()
@@ -150,7 +149,6 @@ class Core
 
     public static function siteParam($key = false, $defultValue = null)
     {
-
         if (!self::$site_params) {
             $q = "SELECT alias, value FROM settings";
             $rows = DB::assoc($q);
@@ -180,7 +178,6 @@ class Core
 
     public static function getComponentAPI()
     {
-
         $class = '';
         $path = '/';
         $i = 0;

@@ -1,9 +1,15 @@
 <?php
+
 namespace Simflex\Core;
 
-class Factory
+class Factory implements \Simflex\Core\DI\Service
 {
     protected array $overrides = [];
+
+    public static function getServiceName(): string
+    {
+        return 'factory';
+    }
 
     public function override(string $class, string $override): void
     {
