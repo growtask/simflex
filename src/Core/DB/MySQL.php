@@ -2,6 +2,7 @@
 
 namespace Simflex\Core\DB;
 
+use DebugBar\DataCollector\PDO\TraceablePDO;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -31,6 +32,12 @@ class MySQL implements Adapter
         $host = $cfg::$db_host;
         $database = $cfg::$db_name;
         $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg::$db_user, $cfg::$db_pass);
+
+        if ($cfg::$devMode) {
+            $this->db = new TraceablePDO($this->db);
+            Container::get('debugbar')->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->db));
+        }
+
         $this->db->setAttribute(PDO::ATTR_ERRMODE, Container::getConfig()::$mysqlErrorMode);
         return true;
     }
