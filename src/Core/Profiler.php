@@ -1,126 +1,58 @@
 <?php
+
 namespace Simflex\Core;
+
+use DebugBar\DataCollector\TimeDataCollector;
+use JetBrains\PhpStorm\Deprecated;
 
 class Profiler
 {
-    protected static $startTime = 0;
-    protected static $trace = [];
-    protected static $traceOrd = [];
-    public static $traceStack = [];
-
+    #[Deprecated(reason: 'Starts automatically, no need to invoke this function.')]
     public static function start()
     {
-        if (!env('PROFILER')) {
+    }
+
+    public static function traceStart($obj, string $func, #[Deprecated] string $type = '')
+    {
+        if (!Container::getConfig()::$devMode) {
             return;
         }
 
-        self::$startTime = microtime(true);
+        if (!is_string($obj)) {
+            $obj = get_class($obj);
+        }
+
+        /** @var TimeDataCollector $time */
+        $time = Container::get('debugbar')->getTime();
+        $time->startMeasure($obj . '::' . $func, $obj . '::' . $func);
     }
 
-    public static function traceSingle($obj, string $func, string $type = 'echo')
+    public static function traceEnd($obj = '', string $func = '', #[Deprecated] string $type = '')
     {
-        self::traceStart($obj, $func, $type);
-        self::traceEnd($obj, $func, $type);
-    }
-
-    public static function traceStart($obj, string $func, string $type = 'function')
-    {
-        if (!env('PROFILER')) {
+        if (!Container::getConfig()::$devMode) {
             return;
         }
 
-        $data = [
-            'type' => $type,
-            'func' => $func,
-            'obj' => is_object($obj) ? get_class($obj) : $obj,
-            'time' => microtime(true),
-        ];
-
-        $id = md5($func . '.' . $type . '.' . microtime());
-        if (!count(self::$traceStack)) {
-            self::$trace[$id]['start'] = $data;
-            self::$trace[$id]['stack'] = [];
-        } else {
-            $stack = null;
-            foreach (self::$traceStack as $tr) {
-                if (!$stack) {
-                    $stack = &self::$trace[$tr]['stack'];
-                } else {
-                    $stack = &$stack[$tr]['stack'];
-                }
-            }
-
-            $stack[$id]['start'] = $data;
-            $stack[$id]['stack'] = [];
+        if (!$obj || !$func) {
+            throw new \Exception('Profiler::traceEnd() requires 2 arguments');
         }
 
-        array_push(self::$traceStack, $id);
+        if (!is_string($obj)) {
+            $obj = get_class($obj);
+        }
+
+        /** @var TimeDataCollector $time */
+        $time = Container::get('debugbar')->getTime();
+        $time->stopMeasure($obj . '::' . $func);
     }
 
-    public static function traceEnd($obj = '', string $func = '', string $type = 'function')
-    {
-        if (!env('PROFILER')) {
-            return;
-        }
-
-        $data = [
-            'time' => microtime(true),
-        ];
-
-        $id = array_pop(self::$traceStack);
-        if (!count(self::$traceStack)) {
-            self::$trace[$id]['end'] = $data;
-        } else {
-            $stack = null;
-            foreach (self::$traceStack as $tr) {
-                if (!$stack) {
-                    $stack = &self::$trace[$tr]['stack'];
-                } else {
-                    $stack = &$stack[$tr]['stack'];
-                }
-            }
-
-            $stack[$id]['end'] = $data;
-        }
-    }
-
+    #[Deprecated(reason: 'Automatic output')]
     private static function outputArr($arr, $i = 0)
     {
-        foreach ($arr as $id=>$v) {
-            $tr = $v['start'];
-            $trE = $v['end'];
-
-            echo str_repeat("\t", $i);
-            echo '-> ';
-
-            if ($tr['type'] == 'function') {
-                echo $tr['obj'] . '::' . $tr['func'];
-            } else {
-                echo 'QUERY: "' . $tr['func'] . '"';
-            }
-
-            echo "\t";
-            echo 'exec time: ' . number_format($trE['time'] - $tr['time'], 3) . ' sec';
-            echo "\n";
-
-            if ($v['stack']) {
-                self::outputArr($v['stack'], $i + 1);
-            }
-        }
     }
 
+    #[Deprecated(reason: 'Automatic output')]
     public static function output()
     {
-        if (!env('PROFILER')) {
-            return;
-        }
-
-        echo '<pre>';
-
-        $totalTime = microtime(true) - self::$startTime;
-
-        echo 'Total execution time: ' . number_format($totalTime, 3) . ' sec' . "\n\n";
-        self::outputArr(self::$trace);
-        echo '</pre>';
     }
 }

@@ -85,12 +85,8 @@ class DB
     public static function &query(string $q, array $params = [])
     {
         Profiler::traceStart(__CLASS__, __FUNCTION__);
-
         $execTime = microtime(1);
-
-        Profiler::traceStart(__CLASS__, $q, 'db');
         $result = static::db()->query($q, $params);
-        Profiler::traceEnd(__CLASS__, $q, 'db');
 
         static::$lastQuery = $q;
 
