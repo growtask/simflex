@@ -26,7 +26,10 @@
     "php": ">=7.4.0",
     "ext-gd": "*",
     "ext-pdo": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "psr/log": "*",
+    "maximebf/debugbar": "1.22.*",
+    "filp/whoops": "2.15.*"
   },
   "require-dev": {
   },
