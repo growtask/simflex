@@ -13,6 +13,7 @@ class Config
     public static $db_logErrors = false;
     public static $component_default = 'ComContent';
     public static $theme = 'default';
+    public static $devMode = false;
 
     public static $subdomainOneSession = false;
 

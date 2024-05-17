@@ -190,13 +190,19 @@ class Page
 
     public static function title()
     {
-        return str_replace('<br/>', '', htmlspecialchars(self::$seo_title)) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
+        return str_replace(
+                '<br/>',
+                '',
+                htmlspecialchars(self::$seo_title)
+            ) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
     }
 
     public static function meta()
     {
         $title = self::$override['title'] ?: self::$seo_title;
-        $sname = (!self::$override['uses_meta'] ? ' | ' : '') .  (!self::$override['uses_meta'] ? Core::siteParam('site_name') : '');
+        $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
+                'site_name'
+            ) : '');
         echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
         echo self::$seo_metatags ? self::$seo_metatags . "\r\n" : '';
 
@@ -208,6 +214,9 @@ class Page
 
         echo '<meta charset="utf-8">', "\r\n";
 
+        if (Container::getConfig()::$devMode) {
+            Container::get('debugbar')->renderHead();
+        }
     }
 
     public static function metaCSS()
@@ -264,8 +273,15 @@ class Page
                 if ($std && strpos($js, 'http') === false) {
                     $js = "http://$sub$std$js";
                 }
-                echo '<script type="text/javascript" defer src="', $js, $v && strpos($js, 'http') === false ? '?v=' . $v : '', '"></script>', "\r\n";
+                echo '<script type="text/javascript" defer src="', $js, $v && strpos(
+                    $js,
+                    'http'
+                ) === false ? '?v=' . $v : '', '"></script>', "\r\n";
             }
+        }
+
+        if (Container::getConfig()::$devMode) {
+            Container::get('debugbar')->render();
         }
     }
 
