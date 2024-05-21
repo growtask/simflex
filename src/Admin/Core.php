@@ -67,7 +67,7 @@ class Core
             Auth::login(
                 $_REQUEST['login']['login'] ?? null,
                 $_REQUEST['login']['password'] ?? null,
-                isset($_POST['login']['remember']),
+                isset($_REQUEST['login']['remember']),
                 $_REQUEST['r'] ?? '/admin/'
             );
         } elseif (static::uri(1) == 'logout') {
