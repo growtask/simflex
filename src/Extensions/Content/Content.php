@@ -28,12 +28,13 @@ class Content extends ComponentBase
         return $content;
     }
 
-    public static function getStatic($alias)
+    public static function getStatic($path = '')
     {
-        $q = "SELECT * FROM content WHERE active=1 AND alias = '$alias'";
-        if ($content = DB::result($q)) {
+        $path = $path ?: Container::getRequest()->getPath();
+        if ($content = ModelContent::findOne(['active' => 1, 'path' => $path])) {
             $content['params'] = unserialize($content['params']);
         }
+
         return $content;
     }
 

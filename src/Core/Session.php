@@ -17,6 +17,18 @@ class Session
 
         return static::$data[$key] ?? null;
     }
+    
+    public static function getAll()
+    {
+        if (!static::$init) {
+            session_start();
+            static::$data = $_SESSION;
+            session_write_close();
+            static::$init = true;
+        }
+
+        return static::$data;
+    }
 
     public static function set($key, $value)
     {

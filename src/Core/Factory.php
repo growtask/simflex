@@ -25,7 +25,7 @@ class Factory implements \Simflex\Core\DI\Service
         return $class;
     }
 
-    public function create(string $class, array $params = [])
+    public function create(string $class, ...$params)
     {
         if (isset($this->overrides[$class])) {
             $class = $this->overrides[$class];

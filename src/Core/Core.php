@@ -4,6 +4,7 @@ namespace Simflex\Core;
 
 use Simflex\Core\Container;
 use Simflex\Core\DB;
+use Simflex\Core\DI\Injector;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
 use Simflex\Core\Page;
@@ -173,7 +174,7 @@ class Core
             ->setMenuByLink(self::$menu_by_link) // for deprecated routing by menu database table
             ->resolve(Container::getConfig()::$routesFile);
         $componentClass = $route->getComponentClassName();
-        return new $componentClass();
+        return new $componentClass(...Injector::resolveClass($componentClass));
     }
 
     public static function getComponentAPI()
