@@ -4,6 +4,7 @@
 namespace Simflex\Auth\Auth;
 
 
+use JetBrains\PhpStorm\Deprecated;
 use Simflex\Core\Models\User;
 
 class Chain extends \Simflex\Core\Middleware\Chain
@@ -17,6 +18,7 @@ class Chain extends \Simflex\Core\Middleware\Chain
      * @param string $class subclass of Simflex\Core\Models\User
      * @return $this
      */
+    #[Deprecated('Use Factory override instead')]
     public function setUserModelClass($class)
     {
         if ($class && !is_subclass_of($class, User::class)) {

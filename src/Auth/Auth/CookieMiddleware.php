@@ -3,6 +3,7 @@
 namespace Simflex\Auth\Auth;
 
 use Simflex\Auth\CookieTokenBag;
+use Simflex\Core\Container;
 use Simflex\Core\Models\User;
 use Simflex\Auth\Models\UserAuth;
 
@@ -23,7 +24,7 @@ class CookieMiddleware extends BaseMiddleware
             $modelAuth = UserAuth::findByToken($token);
             if ($modelAuth) {
                 /** @var User $user */
-                $user = new $this->userModelClass($modelAuth['user_id']);
+                $user = Container::getFactory()->create($this->userModelClass, $modelAuth['user_id']);
                 if ($user->getId()) {
                     $cookies->prolong();
                     return $next($user);

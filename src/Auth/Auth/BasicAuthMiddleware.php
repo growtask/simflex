@@ -3,6 +3,8 @@
 
 namespace Simflex\Auth\Auth;
 
+use Simflex\Core\Container;
+
 class BasicAuthMiddleware extends BaseMiddleware
 {
 
@@ -17,7 +19,7 @@ class BasicAuthMiddleware extends BaseMiddleware
         $login = $_SERVER['PHP_AUTH_USER'] ?? null;
         $pass = $_SERVER['PHP_AUTH_PW'] ?? null;
         if ($login && $pass) {
-            $user = $this->userModelClass::findOne(['login' => $login, 'password' => md5($pass)]);
+            $user = Container::getFactory()->getStatic($this->userModelClass)::findOne(['login' => $login, 'password' => md5($pass)]);
             if ($user) {
                 return $next($user);
             }
