@@ -205,4 +205,9 @@ class Request implements \Simflex\Core\DI\Service
     {
         return $this->serverInfo;
     }
+
+    public function getBody(): string
+    {
+        return $this->requestBody;
+    }
 }
