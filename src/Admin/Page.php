@@ -198,6 +198,10 @@ class Page
                 echo '<script type="text/javascript" src="', $js, '"></script>', "\r\n";
             }
         }
+
+        if (Container::getConfig()::$devMode) {
+            Container::get('debugbar')->renderHead();
+        }
     }
 
     public static function notifications()

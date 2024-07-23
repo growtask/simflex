@@ -26,6 +26,7 @@ class Auth
         if (empty($login) || empty($password)) {
             return;
         }
+
         $successLogin = false;
         if (strpos($redirect, '//') !== false) {
             $redirect = '/';
@@ -57,6 +58,7 @@ class Auth
         if (!$successLogin) {
             Log::a('login_attempt', "Логин: {$login}");
         }
+
         header("Location: $redirect");
         exit;
     }

@@ -7,7 +7,9 @@ use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\OpenHandler;
 use DebugBar\StandardDebugBar;
+use DebugBar\Storage\FileStorage;
 use Simflex\Core\Container;
 use Simflex\Core\DI\Service;
 

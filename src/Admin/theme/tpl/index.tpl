@@ -1,6 +1,7 @@
 <?php
 
 use Simflex\Admin\Page;
+use Simflex\Core\Container;
 
 \Simflex\Admin\Plugins\Alert\Alert::init();
 
@@ -54,26 +55,38 @@ Page::coreJs('/theme/js/vtable.js');
 
 <body>
 <div class="container">
-    <?php include 'partial/header.tpl'; ?>
+    <?php
+    include 'partial/header.tpl'; ?>
     <div class="layout">
-        <?php include 'partial/sidebar.tpl'; ?>
+        <?php
+        include 'partial/sidebar.tpl'; ?>
         <div class="layout__content">
-            <?php Page::content(); ?>
+            <?php
+            Page::content(); ?>
         </div>
     </div>
-    <?php include 'modals/mobilebar.tpl'; ?>
+    <?php
+    include 'modals/mobilebar.tpl'; ?>
 </div>
 
-<?php include 'modals/sidebar.tpl'; ?>
-<?php include 'modals/delete.tpl'; ?>
-<?php include 'modals/account.tpl'; ?>
-<?php include 'modals/help.tpl'; ?>
-<?php include 'modals/info.tpl'; ?>
-<?php include 'modals/context.tpl'; ?>
-<?php include 'modals/point.tpl'; ?>
+<?php
+include 'modals/sidebar.tpl'; ?>
+<?php
+include 'modals/delete.tpl'; ?>
+<?php
+include 'modals/account.tpl'; ?>
+<?php
+include 'modals/help.tpl'; ?>
+<?php
+include 'modals/info.tpl'; ?>
+<?php
+include 'modals/context.tpl'; ?>
+<?php
+include 'modals/point.tpl'; ?>
 
 <div class="f-manager-mgr">
-    <?php include SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/tpl/index.tpl'; ?>
+    <?php
+    include SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/tpl/index.tpl'; ?>
 </div>
 
 <iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= $_SERVER['HTTP_HOST'] ?>"
@@ -116,5 +129,11 @@ Page::coreJs('/theme/js/vtable.js');
     fileManager.rootDir = '/uf';
     fileManager.apiBase = '/fm.php';
 </script>
+
+<?php
+if (Container::getConfig()::$devMode) {
+    Container::get('debugbar')->render();
+}
+?>
 </body>
 </html>
