@@ -33,7 +33,7 @@ class MySQL implements Adapter
         $database = $cfg::$db_name;
         $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg::$db_user, $cfg::$db_pass);
 
-        if ($cfg::$devMode) {
+        if (SF_LOCATION != SF_LOCATION_CLI && $cfg::$devMode) {
             $this->db = new TraceablePDO($this->db);
             Container::get('debugbar')->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->db));
         }
