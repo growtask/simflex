@@ -214,7 +214,7 @@ class Page
 
         echo '<meta charset="utf-8">', "\r\n";
 
-        if (Container::getConfig()::$devMode) {
+        if (Container::getConfig()->devMode) {
             Container::get('debugbar')->renderHead();
         }
     }
@@ -280,7 +280,7 @@ class Page
             }
         }
 
-        if (Container::getConfig()::$devMode) {
+        if (Container::getConfig()->devMode) {
             Container::get('debugbar')->render();
         }
     }

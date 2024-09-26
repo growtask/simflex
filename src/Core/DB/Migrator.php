@@ -2,17 +2,19 @@
 
 namespace Simflex\Core\DB;
 
+use Exception;
 use ReflectionClass;
-use Simflex\Core\Alert\Console\Alert;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\Help;
 use Simflex\Core\ConsoleBase;
 use Simflex\Core\DB;
 use Simflex\Core\DB\Migration as MigrationInterface;
+use Simflex\Core\Log;
 use Simflex\Core\Models\Migration as Migration;
-use Simflex\Core\DB\Schema;
 
 class Migrator extends ConsoleBase
 {
-    protected $migrationFiles = [];
+    protected array $migrationFiles = [];
 
     public function __construct()
     {
@@ -28,6 +30,11 @@ class Migrator extends ConsoleBase
         }
     }
 
+    /**
+     * Get new migrations
+     * @param array $list List of completed migrations
+     * @return array List of new migrations
+     */
     protected function getNewMigrations(array $list): array
     {
         $files = [];
@@ -47,6 +54,11 @@ class Migrator extends ConsoleBase
         return array_diff($files, $migrations);
     }
 
+    /**
+     * Attempts to get migration object
+     * @param string $name Migration name
+     * @return \Simflex\Core\DB\Migration|null
+     */
     protected function getMigrationObject(string $name): ?MigrationInterface
     {
         try {
@@ -54,23 +66,30 @@ class Migrator extends ConsoleBase
 
             $reflection = new ReflectionClass($class);
             if (!$reflection->implementsInterface(MigrationInterface::class)) {
-                Alert::error('Migration ' . $name . ' should implement Migration interface');
+                Log::error('Migration {name} should implement Migration interface', ['name' => $name]);
                 return null;
             }
 
             return $class;
         } catch (\Throwable $ex) {
-            Alert::error('FATAL: ' . $ex->getMessage());
+            Log::critical(
+                'Failed to load migration {name} ({exception})',
+                ['name' => $name, 'exception' => $ex->getMessage()]
+            );
             return null;
         }
     }
 
     /**
-     * @param int|string $steps
-     * @throws \Exception
+     * Ups the migrations
+     * @param string $steps Amount of steps to go
+     * @return void
+     * @throws Exception
      */
-    public function up($steps = 'all')
-    {
+    #[Command('Up migrations')]
+    public function up(
+        #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = 'all'
+    ): void {
         // find migrations that were not processed yet
         $list = Migration::findAdv()
             ->asArray()
@@ -78,7 +97,7 @@ class Migrator extends ConsoleBase
 
         $migrations = $this->getNewMigrations($list);
         if (empty($migrations)) {
-            Alert::success('No new migrations');
+            Log::notice('No new migrations');
             return;
         }
 
@@ -100,9 +119,9 @@ class Migrator extends ConsoleBase
             $schema = new Schema();
             $class->up($schema);
             if (!$schema->commit()) {
-                Alert::error('Failed to up migration ' . $migration);
-                Alert::text(DB::error());
-                Alert::text('Query: ' . DB::getLastQuery());
+                Log::critical('Failed to up migration {migration}', ['migration' => $migration]);
+                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                );
 
                 $schema->rollback();
                 return;
@@ -115,27 +134,29 @@ class Migrator extends ConsoleBase
             if (!$dbMigration->insert(['file' => $migration])) {
                 $class->down($schema);
                 if (!$schema->commit()) {
-                    Alert::error('FATAL: failed to down migration ' . $migration . ' after DB failure');
-                    Alert::text(DB::error());
+                    Log::emergency('Failed to down migration {migration} after DB failure', ['migration' => $migration]
+                    );
                     return;
                 }
 
-                Alert::error('Failed to remember migration ' . $migration);
+                Log::critical('Failed to remember migration {migration}', ['migration' => $migration]);
                 return;
             }
 
-            Alert::text('Migration ' . $migration . ' is up!');
+            Log::notice('Migration {migration} is up', ['migration' => $migration]);
         }
-
-        Alert::success('Up is done!');
     }
 
     /**
-     * @param int|string $steps
-     * @throws \Exception
+     * Downs the migrations
+     * @param string $steps
+     * @return void
+     * @throws Exception
      */
-    public function down($steps = 1)
-    {
+    #[Command('Down migrations')]
+    public function down(
+        #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = '1'
+    ): void {
         $list = Migration::findAdv()
             ->orderBy('`id` DESC');
 
@@ -155,47 +176,86 @@ class Migrator extends ConsoleBase
             $schema = new Schema();
             $class->down($schema);
             if (!$schema->commit()) {
-                Alert::error('Failed to down migration ' . $migration['file']);
-                Alert::text(DB::error());
+                Log::critical('Failed to down migration {migration}', ['migration' => $migration->file]);
+                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                );
                 return;
             }
 
             if (!$migration->delete()) {
                 $class->up($schema);
                 if (!$schema->commit()) {
-                    $dbError = DB::error();
                     $schema->rollback();
 
-                    Alert::error('FATAL: Failed to up migration ' . $migration['file'] . 'after DB failure');
-                    Alert::text($dbError);
+                    Log::emergency('Failed to up migration {name} after DB failure', ['name' => $migration->file]);
                     return;
                 }
 
-                Alert::error('Failed to forget migration ' . $migration['file']);
+                Log::critical('Failed to forget migration {migration}', ['migration' => $migration->file]);
                 return;
             }
 
-            Alert::text('Migration ' . $migration['file'] . ' is down!');
+            Log::notice('Migration {migration} is down', ['migration' => $migration->file]);
         }
-
-        Alert::success('Down is done!');
     }
 
     /**
-     * @param int|string $steps
-     * @throws \Exception
+     * Refreshes the migrations
+     * @param string $steps
+     * @return void
+     * @throws Exception
      */
-    public function refresh($steps = 1)
-    {
+    #[Command('Refresh migrations')]
+    public function refresh(
+        #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = '1'
+    ): void {
         $this->down($steps);
         $this->up($steps);
     }
 
-    public function create($name)
+    /**
+     * Creates a new migration
+     * @param string $name
+     * @return void
+     */
+    #[Command('Create new migration')]
+    public function create(#[Help('Migration name')] string $name): void
     {
         $fileName = date('Y_m_d') . '_' . $name . '.php';
-        copy(__DIR__ . '/migration_template.php', $_SERVER['DOCUMENT_ROOT'] . '/database/migrations/' . $fileName);
+        copy(__DIR__ . '/migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
 
-        Alert::success('Created new migration ' . $fileName);
+        Log::notice('Created new migration {name}', ['name' => $fileName]);
+    }
+
+    /**
+     * Seeds the database
+     * @return void
+     * @throws Exception
+     */
+    #[Command('Seed database')]
+    public function seed(): void
+    {
+        $list = Migration::findAdv()
+            ->where('seeded = 0')
+            ->all();
+
+        /** @var Migration $migration */
+        foreach ($list as $migration) {
+            /** @var \Simflex\Core\DB\Migration $class */
+            $class = $this->getMigrationObject($migration->file);
+            if (!$class) {
+                Log::critical('Invalid class on migration {migration}', ['migration' => $migration->file]);
+                return;
+            }
+
+            if (method_exists($class, 'seed')) {
+                $class->seed();
+            }
+
+            $migration->seeded = 1;
+            $migration->save();
+
+            Log::notice('Migration {migration} is seeded', ['migration' => $migration->file]);
+        }
     }
 }

@@ -27,7 +27,14 @@ const TableEditor = {
 
         let hasEds = false;
         for (const col of val.s) {
-            const cv = r != null ? val.v[r][col.n] : col.v;
+            let cv = r != null ? val.v[r][col.n] : col.v;
+            if (cv == '$DATE$') {
+                const date = new Date();
+                const leadingZero = num => num < 10 ? `0${num}` : `${num}`;
+
+                cv = `${leadingZero(date.getDate())}.${leadingZero(date.getMonth() + 1)}.${date.getFullYear()}`;
+            }
+
             if (col.t.startsWith('editor')) {
                 input += `
                 <label class="modal-point__data-label">

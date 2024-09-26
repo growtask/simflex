@@ -131,7 +131,7 @@ include 'modals/point.tpl'; ?>
 </script>
 
 <?php
-if (Container::getConfig()::$devMode) {
+if (Container::getConfig()->devMode) {
     Container::get('debugbar')->render();
 }
 ?>

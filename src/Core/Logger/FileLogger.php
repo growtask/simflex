@@ -3,14 +3,14 @@
 namespace Simflex\Core\Logger;
 
 use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
 use Simflex\Core\Container;
 
 class FileLogger extends AbstractLogger
 {
     protected function getFilePath(): ?string
     {
-        $config = Container::getConfig();
-        if (!is_dir($rootDir = empty($config::$logPath) ? __DIR__ . '../log' : $config::$logPath)) {
+        if (!is_dir($rootDir = Container::getConfig()->logPath)) {
             if (!@mkdir($rootDir, 0700, true)) {
                 return null;
             }
@@ -40,6 +40,10 @@ class FileLogger extends AbstractLogger
 
     public function log($level, string|\Stringable $message, array $context = []): void
     {
+        if ($level == LogLevel::DEBUG && !Container::getConfig()->devMode) {
+            return;
+        }
+
         $filePath = $this->getFilePath();
         if (!$filePath) {
             return;
