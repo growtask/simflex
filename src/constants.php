@@ -7,7 +7,7 @@ const SF_LOCATION_API = 'api';
 
 const SF_CORE_ROOT_PATH = __DIR__;
 
-const SF_VERSION = '3.2.0';             // core version.feature version.patch version
-const SF_VERSION_DATE = '17.05.2024';   // publish date
+const SF_VERSION = '3.3.0';             // core version.feature version.patch version
+const SF_VERSION_DATE = '26.09.2024';   // publish date
 
 const IMAGETYPE_SVG = 'svg';
