@@ -2,7 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Container;
 use Simflex\Core\DB\Adapter;
 use Simflex\Core\User;
 
@@ -39,15 +38,8 @@ class DB
      */
     private static function create(): Adapter
     {
-        /** @noinspection PhpUndefinedVariableInspection */
-        switch (Container::getConfig()::$db_type) {
-            case 'mysql':
-                return new \Simflex\Core\DB\MySQL();
-            case 'mysqli':
-                return new \Simflex\Core\DB\MySQLi();
-            default:
-                die("<b>Error! Unknown Database type.</b>");
-        }
+        $class = Container::getConfig()->db['adapter'];
+        return new $class;
     }
 
     /**

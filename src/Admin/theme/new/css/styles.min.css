@@ -4679,6 +4679,11 @@ object svg {
     border-color: #1975f7;
 }
 
+.form-control__dropdown.disabled {
+    background-color: #dfe4eb;
+    border-color: #dfe4eb;
+}
+
 .form-control__dropdown-top {
     position: relative;
     cursor: pointer;
@@ -15059,6 +15064,21 @@ object svg {
     font-size: 0.7291666667vw;
     color: #343434;
     width: 100%;
+}
+
+.form-control__dropdown-text:disabled {
+    background-color: #dfe4eb;
+    border-color: #dfe4eb;
+}
+
+.form-control__dropdown-text:-moz-read-only {
+    background-color: #dfe4eb;
+    border-color: #dfe4eb;
+}
+
+.form-control__dropdown-text:read-only {
+    background-color: #dfe4eb;
+    border-color: #dfe4eb;
 }
 
 @media screen and (max-width: 1401px) {
