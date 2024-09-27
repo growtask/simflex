@@ -4,19 +4,19 @@ namespace Simflex\Core;
 
 class Request implements \Simflex\Core\DI\Service
 {
-    protected $isHttps;
-    protected $host;
-    protected $requestMethod;
-    protected $headers;
-    protected $getParams;
-    protected $postParams;
-    protected $reqParams;
-    protected $cookies;
-    protected $files;
-    protected $requestBody;
-    protected $urlPath;
-    protected $urlParts;
-    protected $serverInfo = [];
+    protected bool $isHttps;
+    protected string $host;
+    protected string $requestMethod;
+    protected array $headers;
+    protected array $getParams;
+    protected array $postParams;
+    protected array $reqParams;
+    protected array $cookies;
+    protected array $files;
+    protected string $requestBody;
+    protected string $urlPath;
+    protected array $urlParts;
+    protected array $serverInfo = [];
 
     public static function getServiceName(): string
     {
@@ -40,7 +40,7 @@ class Request implements \Simflex\Core\DI\Service
         $this->requestBody = file_get_contents('php://input');
 
         foreach ($_SERVER as $key => $value) {
-            if (strpos($key, 'HTTP_') === 0) {
+            if (str_starts_with($key, 'HTTP_')) {
                 // convert HTTP_X_X to x-x
                 $this->headers[strtolower(str_replace('_', '-', substr($key, 5)))] = $value;
             }
@@ -50,7 +50,7 @@ class Request implements \Simflex\Core\DI\Service
         $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path'] ?? '/');
     }
 
-    public function setPath(string $path)
+    public function setPath(string $path): void
     {
         $this->urlPath = $path;
         $this->urlParts = array_slice(explode('/', $this->urlPath), 1);
@@ -122,7 +122,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function get($k = null, $default = null)
+    public function get(int|string|null $k = null, mixed $default = null): mixed
     {
         return $k ? ($this->getParams[$k] ?? $default) : $this->getParams;
     }
@@ -133,7 +133,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function post($k = null, $default = null)
+    public function post(int|string|null $k = null, mixed $default = null): mixed
     {
         return $k ? ($this->postParams[$k] ?? $default) : $this->postParams;
     }
@@ -144,7 +144,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function request($k = null, $default = null)
+    public function request(int|string|null $k = null, mixed $default = null): mixed
     {
         return $k ? ($this->reqParams[$k] ?? $default) : $this->reqParams;
     }
@@ -155,7 +155,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function cookie($k = null, $default = null)
+    public function cookie(int|string|null $k = null, mixed $default = null): mixed
     {
         return $k ? ($this->cookies[$k] ?? $default) : $this->cookies;
     }
@@ -166,7 +166,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param mixed|null $k
      * @return array|mixed|null
      */
-    public function file($k = null)
+    public function file(int|string|null $k = null): mixed
     {
         return $k ? ($this->files[$k] ?? null) : $this->files;
     }
@@ -177,7 +177,7 @@ class Request implements \Simflex\Core\DI\Service
      * @param string|null $k
      * @return mixed|null
      */
-    public function header(?string $k = null)
+    public function header(?string $k = null): mixed
     {
         return $k ? ($this->headers[strtolower($k)] ?? null) : $this->headers;
     }

@@ -39,7 +39,7 @@
                         <button class="BtnOutlineMonoSm modal-restore-pass" type="button">Не помню пароль</button>
                     </div>
                 </form>
-                <div class="login__text">Simflex CMS ver <?=SF_VERSION?> <?=SF_VERSION_DATE?></div>
+                <div class="login__text">Simflex CMS v<?= getSimflexVersion() ?></div>
             </div>
         </div>
 

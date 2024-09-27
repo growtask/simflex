@@ -105,7 +105,7 @@
             endforeach; ?>
         </div>
         <div class="sidebar-modal__bottom">
-            <div class="sidebar-modal__bottom-text">Simflex CMS ver <?=SF_VERSION?> <?=SF_VERSION_DATE?></div>
+            <div class="sidebar-modal__bottom-text">Simflex CMS v<?= getSimflexVersion() ?></div>
             <button class="BtnSecondaryMonoSm modal-help-open">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path

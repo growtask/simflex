@@ -11,7 +11,7 @@
         </div>
         <?php \Simflex\Admin\Page::position('menu'); ?>
         <div class="sidebar__bottom">
-            <p class="sidebar__bottom-text">Simflex CMS ver <?=SF_VERSION?> <?=SF_VERSION_DATE?></p>
+            <p class="sidebar__bottom-text">Simflex CMS v<?= getSimflexVersion() ?></p>
             <button class="sidebar__bottom-btn modal-help-open BtnSecondaryMonoSm">
                 <svg viewBox="0 0 24 24">
                     <use xlink:href="<?=asset('img/icons/svg-defs.svg')?>#phone"></use>
