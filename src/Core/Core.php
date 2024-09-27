@@ -148,6 +148,18 @@ class Core
         return $path ? $path : '/';
     }
 
+    /**
+     * Get setting value by alias
+     *
+     * Can interpolate values from array, example:
+     * `value (k = 'greeting') = 'Hello {name}'`, then
+     * `Core::siteParam('greeting', 'Hello {name}', ['name' => 'John'])` equals to `'Hello John'`
+     *
+     * @param string|bool $key false to get all settings, otherwise alias
+     * @param mixed $defultValue Default value if setting not found
+     * @param array $interp Array of values to interpolate
+     * @return array|bool|string|string[] Value of setting
+     */
     public static function siteParam($key = false, $defultValue = null, array $interp = [])
     {
         if (!self::$site_params) {

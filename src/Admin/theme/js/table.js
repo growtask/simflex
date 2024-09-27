@@ -50,7 +50,7 @@ const TableEditor = {
                     ${col.l}
 <label class="form-control">
                                     <div class="form-control__file" id="img-${col.n}">
-                                        <img src="${cv}" onerror="this.src = '/vendor/glushkovds/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
+                                        <img src="${cv}" onerror="this.src = '/vendor/growtask/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
                                         <div class="form-control__file-area-wrapper drop-area">
                                             <div class="form-control__file-area">
                                                 <input type="file" name="" accept="image/*"
@@ -158,7 +158,7 @@ ${cv}
                                 <div class="form-control__dropdown-current">—</div>
                                 <button class="form-control__dropdown-toggle" type="button">
                                     <svg viewBox="0 0 24 24">
-                                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                                     </svg>
                                 </button>
                             </div>
@@ -248,7 +248,7 @@ ${cv}
 
             if (typeof tinymce === 'undefined') {
                 const scr = document.createElement('script');
-                scr.src = '/vendor/glushkovds/simflex/src/Admin/Plugins/Editor/tinymce/tinymce.min.js';
+                scr.src = '/vendor/growtask/simflex/src/Admin/Plugins/Editor/tinymce/tinymce.min.js';
                 scr.addEventListener('load', () => {
                     tinyInit();
                 });

@@ -12,7 +12,7 @@ use Simflex\Core\Models\Cron;
 use Simflex\Core\Models\CronLog;
 use Simflex\Core\Time;
 
-class CronBootstrap
+class Cron
 {
     /**
      * @var array|Cron[]

@@ -15,7 +15,7 @@ use Simflex\Core\Log;
 /**
  * CLI command bootstrapper
  */
-class CliBootstrap
+class Cli
 {
     /**
      * @var array|mixed List of all available providers
