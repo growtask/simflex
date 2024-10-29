@@ -235,7 +235,7 @@ class AQ
 
     /**
      * @param int|string $column
-     * @return ModelBase|null
+     * @return array|ModelBase|null
      * @throws \Exception
      */
     public function fetchOne()

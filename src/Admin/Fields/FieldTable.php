@@ -7,6 +7,12 @@ use Simflex\Core\Container;
 
 class FieldTable extends Field
 {
+    public const TYPE_TEXT = 'text';
+    public const TYPE_COMBO = 'combo';
+    public const TYPE_EDITOR = 'editor';
+    public const TYPE_IMAGE = 'image';
+    public const TYPE_FILE = 'file';
+
     public const STRUCT_VALUE = [
         [
             'n' => 'n',
@@ -44,6 +50,27 @@ class FieldTable extends Field
             'e' => '',
         ],
     ];
+
+    public static function makeStruct(
+        string $name,
+        string $type,
+        string $label,
+        string $value = '',
+        string $extra = ''
+    ): array {
+        return [
+            'n' => $name,
+            't' => $type,
+            'l' => $label,
+            'v' => $value,
+            'e' => $extra,
+        ];
+    }
+
+    public static function makeValue(array $struct, array $values): string
+    {
+        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE);
+    }
 
     public function input($value)
     {
