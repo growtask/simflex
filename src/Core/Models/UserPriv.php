@@ -2,13 +2,18 @@
 
 namespace Simflex\Core\Models;
 
+use Exception;
 use Simflex\Core\DB\Where;
 use Simflex\Core\ModelBase;
 
 /**
  * Class UserPriv
- * @package Simflex\Core\Models
- * @property string $name;
+ *
+ * @property int priv_id
+ * @property bool active
+ * @property int npp
+ * @property string name
+ * @property string comment
  */
 class UserPriv extends ModelBase
 {
@@ -16,18 +21,20 @@ class UserPriv extends ModelBase
     protected static $primaryKeyName = 'priv_id';
 
     /**
-     * @param string $name
-     * @param bool $onlyActive
-     * @return UserPriv|null
-     * @throws \Exception
+     * Find user priv by name
+     *
+     * @param string $name Name of user priv
+     * @param bool $onlyActive Select only active user priv
+     * @return UserPriv|null User priv model
+     * @throws Exception
      */
-    public static function byName(string $name, bool $onlyActive = true)
+    public static function byName(string $name, bool $onlyActive = true): ?UserPriv
     {
         $where = new Where(['name' => $name]);
         if ($onlyActive) {
             $where['active'] = true;
         }
+
         return static::findOne($where);
     }
-
 }

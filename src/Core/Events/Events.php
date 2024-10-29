@@ -25,13 +25,17 @@ enum Events
 
     /**
      * Called before page output is modified
-     * Arguments: string $data - unmodified page content
+     *
+     * Arguments:
+     *  - string $data - unmodified page content
      */
     case PrePrepareOutput;
 
     /**
      * Called after page output is modified
-     * Arguments: string $data - possibly modified page content
+     *
+     * Arguments:
+     *  - string $data - possibly modified page content
      */
     case PostPrepareOutput;
 
@@ -64,4 +68,88 @@ enum Events
      * Called after logger init
      */
     case PostLoggerInit;
+
+    /**
+     * Called before model's data is filled
+     *
+     * Arguments:
+     *  - mixed $model - model instance
+     */
+    case PreModelFill;
+
+    /**
+     * Called after model's data is filled
+     *
+     * Arguments:
+     *  - mixed $model - model instance
+     */
+    case PostModelFill;
+
+    /**
+     * Called before model is saved
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     */
+    case PreModelSave;
+
+    /**
+     * Called after model is saved
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     * - bool $result - save result
+     */
+    case PostModelSave;
+
+    /**
+     * Called before model is inserted
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     */
+    case PreModelInsert;
+
+    /**
+     * Called after model is inserted
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     * - bool $result - insert result
+     */
+    case PostModelInsert;
+
+    /**
+     * Called before model is updated
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     */
+    case PreModelUpdate;
+
+    /**
+     * Called after model is updated
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     * - bool $result - update result
+     */
+    case PostModelUpdate;
+
+    /**
+     * Called before model is deleted
+     *
+     * Arguments:
+     * - mixed $model - model instance
+     */
+    case PreModelDelete;
+
+    /**
+     * Called after model is deleted
+     *
+     * Arguments:
+     * - array $oldData - old model data
+     * - bool $result - delete result
+     */
+    case PostModelDelete;
 }
