@@ -6,11 +6,15 @@ use ArrayAccess;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
+use ReflectionClass;
 use Simflex\Core\DB\AQ;
 use Simflex\Core\DB\Where;
 use Simflex\Core\Events\Event;
 use Simflex\Core\Events\Events;
 use Simflex\Core\Helpers\Str;
+use Simflex\Core\Models\Attrib\FieldMany;
+use Simflex\Core\Models\Attrib\FieldOne;
+use Simflex\Core\Models\Enums\Relation;
 
 /**
  * Class ModelBase
@@ -37,6 +41,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * @var array Model data before update
      */
     protected array $dataBeforeUpdate = [];
+
+    /**
+     * @var array Relation cache
+     */
+    protected array $relations = [];
 
     /**
      * @var string Table name
@@ -88,8 +97,30 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     public function __construct(?int $id = null)
     {
+        $this->loadRelations();
         if ($id) {
             $this->load($id);
+        }
+    }
+
+    /**
+     * Loads relations from reflection to local cache for speed
+     * @return void
+     */
+    protected function loadRelations(): void
+    {
+        $class = new ReflectionClass($this);
+        foreach ($class->getAttributes() as $attribute)
+        {
+            if ($attribute->getName() == FieldOne::class) {
+                /** @var FieldOne $attrib */
+                $attrib = $attribute->newInstance();
+                $this->relations[$attrib->name] = ['type' => Relation::One, 'model' => $attrib->model];
+            } elseif ($attribute->getName() == FieldMany::class) {
+                /** @var FieldMany $attrib */
+                $attrib = $attribute->newInstance();
+                $this->relations[$attrib->name] = ['type' => Relation::Many, 'model' => $attrib->model];
+            }
         }
     }
 
@@ -617,6 +648,15 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         if ($this->id && !isset($this->data[$offset])) {
             if ($maybe = ($this->data[Str::toUnderscore($offset)] ?? null)) {
                 return $maybe;
+            }
+
+            // if got the auto relation, load here!
+            if (isset($this->relations[$offset])) {
+                $rel = $this->relations[$offset];
+                $relClass = $rel['model'];
+                $relKey = $relClass::$primaryKeyName;
+
+                $this->data[$offset] = $relClass::{$rel['type'] == Relation::One ? 'findOne' : 'find'}([$relKey => $this->{$relKey}]);
             }
 
             if (method_exists($this, $method = 'offsetGet' . $offset)) {
