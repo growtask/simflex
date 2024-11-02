@@ -8,6 +8,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 use ReflectionClass;
 use Simflex\Core\DB\AQ;
+use Simflex\Core\DB\Expr;
 use Simflex\Core\DB\Where;
 use Simflex\Core\Events\Event;
 use Simflex\Core\Events\Events;
@@ -26,6 +27,15 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 {
     const FLAG_IGNORE = 1 << 0;
     const FLAG_SKIP_VIRTUAL = 1 << 1;
+
+    /**
+     * @var array For debugging purposes. Logs inserts, deletions and updates.
+     */
+    public static array $stats = [
+        'inserted' => 0,
+        'updated' => 0,
+        'deleted' => 0,
+    ];
 
     /**
      * @var int|null Model ID
@@ -110,8 +120,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     protected function loadRelations(): void
     {
         $class = new ReflectionClass($this);
-        foreach ($class->getAttributes() as $attribute)
-        {
+        foreach ($class->getAttributes() as $attribute) {
             if ($attribute->getName() == FieldOne::class) {
                 /** @var FieldOne $attrib */
                 $attrib = $attribute->newInstance();
@@ -218,7 +227,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     public static function findOne(string|array|Where $where, bool $returnModelIfNotFound = false): ?static
     {
-        $row = static::findAdv()->andWhere($where)->limit(1)->fetchOne();
+        $row = static::findAdv()->where($where)->limit(1)->fetchOne();
         return $row ?? ($returnModelIfNotFound ? new static : null);
     }
 
@@ -310,16 +319,27 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 }
 
                 $keys[] = $key;
-                $values[] = $value;
+                $values[] = is_bool($value) ? ($value ? 1 : 0) : $value;
             }
 
             // build insert query
             $ignore = $flags & self::FLAG_IGNORE ? ' ignore ' : '';
             $query = "insert $ignore into " . static::getTableName(true) . ' (';
             $query .= implode(', ', array_map(fn($key) => DB::wrapName($key), $keys)) . ') values (';
-            $query .= implode(', ', array_map(fn($value) => '?', $values)) . ')';
+            $query .= implode(
+                    ', ',
+                    array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
+                ) . ')';
 
-            if ($result = $this->query($query, $values)) {
+            // fix bindings to remove Expr statements
+            $bind = [];
+            foreach ($values as $value) {
+                if (!($value instanceof Expr)) {
+                    $bind[] = $value;
+                }
+            }
+
+            if ($result = $this->query($query, $bind)) {
                 $this->id = $this->{static::$primaryKeyName} = DB::insertId();
             }
         }
@@ -554,6 +574,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     protected function afterInsert(bool $success): void
     {
+        if ($success) {
+            ++self::$stats['inserted'];
+        }
     }
 
     /**
@@ -575,6 +598,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     protected function afterUpdate(bool $success): void
     {
+        if ($success) {
+            ++self::$stats['updated'];
+        }
     }
 
     /**
@@ -596,6 +622,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     protected function afterDelete(bool $success, array $oldData): void
     {
+        if ($success) {
+            ++self::$stats['deleted'];
+        }
     }
 
     /**
@@ -656,7 +685,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 $relClass = $rel['model'];
                 $relKey = $relClass::$primaryKeyName;
 
-                $this->data[$offset] = $relClass::{$rel['type'] == Relation::One ? 'findOne' : 'find'}([$relKey => $this->{$relKey}]);
+                $this->data[$offset] = $relClass::{$rel['type'] == Relation::One ? 'findOne' : 'find'}(
+                    [$relKey => $this->{$relKey}]
+                );
             }
 
             if (method_exists($this, $method = 'offsetGet' . $offset)) {

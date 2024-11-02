@@ -4,14 +4,11 @@ namespace Simflex\Core\Models;
 use Simflex\Core\ModelBase;
 
 /**
- * Class Migration
- * @package Simflex\Core\Models
- *
  * @property int id
  * @property string file
  */
-class Migration extends ModelBase
+class Seeder extends ModelBase
 {
-    protected static $table = 'migration';
+    protected static $table = 'seeder';
     protected static $primaryKeyName = 'id';
 }

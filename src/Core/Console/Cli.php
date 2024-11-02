@@ -116,14 +116,20 @@ class Cli
             $lastIdx = 0;
             foreach ($this->method->getParameters() as $param) {
                 $lowerName = strtolower($param->getName());
+
+                try {
+                    $default = $param->getDefaultValue();
+                } catch (Exception) {
+                }
+
                 if (isset($args[$lowerName])) {
                     $argList[] = $args[$lowerName];
                 } elseif (isset($args[$lastIdx])) {
                     $argList[] = $args[$lastIdx++];
-                } elseif ($default = $param->getDefaultValue()) {
+                } elseif (isset($default)) {
                     $argList[] = $default;
                 } else {
-                    Log::error('No argument provided for parameter {param}', ['param' => $param->getName()]);
+                    Log::error('No argument provided for parameter "{param}"', ['param' => $param->getName()]);
                     return;
                 }
             }
