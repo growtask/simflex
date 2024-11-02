@@ -7,6 +7,7 @@ use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\DB\JoinClause;
 use Simflex\Core\DB\Where;
+use Simflex\Core\Log;
 use Simflex\Core\ModelBase;
 
 /**
@@ -174,7 +175,11 @@ class AQ
         foreach ($this->join as $join) {
             $q[] = $join->toSql($this->from);
         }
-        $q[] = new Where($this->where);
+
+        $where = new Where($this->where);
+        $q[] = $where->toString();
+        $this->bind($where->getBinds());
+
         if ($orderBy = $this->orderBy) {
             $q[] = 'ORDER BY ' . DB::escape($orderBy);
         }
@@ -241,6 +246,7 @@ class AQ
     public function fetchOne()
     {
         $q = $this->build();
+
         $r = DB::query($q, $this->binds);
         $row = DB::fetch($r);
         if (!$row) {
@@ -262,7 +268,6 @@ class AQ
      */
     public function all($assocKey = null)
     {
-
         if ((is_bool($assocKey) || !$this->asArray && !$this->scalarColumn) && empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
         }
@@ -347,8 +352,13 @@ class AQ
      * @throws \Exception
      * @see Core/DB/HowTo/UsingJoin.md
      */
-    public function join($table, string $joinColumn1, ?string $joinColumn2 = null, string $type = 'INNER', $extraOnConditions = null)
-    {
+    public function join(
+        $table,
+        string $joinColumn1,
+        ?string $joinColumn2 = null,
+        string $type = 'INNER',
+        $extraOnConditions = null
+    ) {
         $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, $type, $extraOnConditions);
         return $this;
     }

@@ -9,7 +9,6 @@ use Simflex\Core\ModelBase;
  *
  * @property int id
  * @property string file
- * @property bool seeded
  */
 class Migration extends ModelBase
 {

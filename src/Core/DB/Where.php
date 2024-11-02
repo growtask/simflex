@@ -9,6 +9,7 @@ use Simflex\Core\DB;
 class Where implements ArrayAccess
 {
     protected array $data = [];
+    protected array $bind = [];
 
     /**
      * Where constructor.
@@ -64,6 +65,11 @@ class Where implements ArrayAccess
         return $this->toString();
     }
 
+    public function getBinds(): array
+    {
+        return $this->bind;
+    }
+
     /**
      * Convert WHERE statement to string
      *
@@ -73,8 +79,9 @@ class Where implements ArrayAccess
      */
     public function toString(bool $withWhereWord = true): string
     {
-        if ($data = static::prepareData($this->data)) {
-            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data);
+        if (($data = static::prepareData($this->data)) && $data[0]) {
+            $this->bind = $data[1];
+            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data[0]);
         }
 
         return '';
@@ -86,7 +93,7 @@ class Where implements ArrayAccess
      */
     public function toArray(): array
     {
-        return static::prepareData($this->data);
+        return static::prepareData($this->data)[0];
     }
 
     /**
@@ -98,6 +105,7 @@ class Where implements ArrayAccess
      */
     protected static function prepareData(array $data): array
     {
+        $bind = [];
         $result = [];
         foreach ($data as $index => $value) {
             $wrappedIndex = DB::wrapName($index);
@@ -108,10 +116,12 @@ class Where implements ArrayAccess
                 $result[] = "$wrappedIndex IS NULL";
             } elseif ((string)$index !== (string)(int)$index) {
                 if (is_array($value)) {
-                    $values = implode(',', array_map(fn($val) => DB::escape($val), $value));
+                    $values = implode(',', array_fill(0, count($value), '?'));
                     $result[] = "$wrappedIndex IN ($values)";
+                    $bind = array_merge($bind, $value);
                 } else {
-                    $result[] = "$wrappedIndex = " . DB::escape($value);
+                    $result[] = "$wrappedIndex = ?";
+                    $bind[] = $value;
                 }
             } else {
                 if (is_array($value)) {
@@ -122,7 +132,7 @@ class Where implements ArrayAccess
             }
         }
 
-        return $result;
+        return [$result, $bind];
     }
 
     /**

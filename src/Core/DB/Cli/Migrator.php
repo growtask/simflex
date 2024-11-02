@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Core\DB;
+namespace Simflex\Core\DB\Cli;
 
 use Exception;
 use ReflectionClass;
@@ -9,6 +9,7 @@ use Simflex\Core\Console\Help;
 use Simflex\Core\ConsoleBase;
 use Simflex\Core\DB;
 use Simflex\Core\DB\Migration as MigrationInterface;
+use Simflex\Core\DB\Schema;
 use Simflex\Core\Log;
 use Simflex\Core\Models\Migration as Migration;
 
@@ -57,7 +58,7 @@ class Migrator extends ConsoleBase
     /**
      * Attempts to get migration object
      * @param string $name Migration name
-     * @return \Simflex\Core\DB\Migration|null
+     * @return MigrationInterface|null
      */
     protected function getMigrationObject(string $name): ?MigrationInterface
     {
@@ -113,7 +114,8 @@ class Migrator extends ConsoleBase
             // run and remember the migration
             $class = $this->getMigrationObject($migration);
             if (!$class) {
-                return;
+                Log::warning('Skipped {migration} - load failed', ['migration' => $migration]);
+                continue;
             }
 
             $schema = new Schema();
@@ -225,37 +227,5 @@ class Migrator extends ConsoleBase
         copy(__DIR__ . '/migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
 
         Log::notice('Created new migration {name}', ['name' => $fileName]);
-    }
-
-    /**
-     * Seeds the database
-     * @return void
-     * @throws Exception
-     */
-    #[Command('Seed database')]
-    public function seed(): void
-    {
-        $list = Migration::findAdv()
-            ->where('seeded = 0')
-            ->all();
-
-        /** @var Migration $migration */
-        foreach ($list as $migration) {
-            /** @var \Simflex\Core\DB\Migration $class */
-            $class = $this->getMigrationObject($migration->file);
-            if (!$class) {
-                Log::critical('Invalid class on migration {migration}', ['migration' => $migration->file]);
-                return;
-            }
-
-            if (method_exists($class, 'seed')) {
-                $class->seed();
-            }
-
-            $migration->seeded = 1;
-            $migration->save();
-
-            Log::notice('Migration {migration} is seeded', ['migration' => $migration->file]);
-        }
     }
 }

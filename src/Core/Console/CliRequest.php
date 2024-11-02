@@ -46,6 +46,6 @@ class CliRequest extends Request
      */
     public function arg(int|string|null $key = null, mixed $default = null): array|string|null
     {
-        return !$key ? $this->argv : $this->argv[$key] ?? $default;
+        return is_null($key) ? $this->argv : $this->argv[$key] ?? $default;
     }
 }
