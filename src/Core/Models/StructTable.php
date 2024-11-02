@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Models;
 
 use Simflex\Core\ModelBase;
@@ -19,4 +20,9 @@ class StructTable extends ModelBase
 {
     protected static $table = 'struct_table';
     protected static $primaryKeyName = 'table_id';
+
+    public static function byName(string $name): ?StructTable
+    {
+        return static::findOne(['name' => $name]);
+    }
 }
