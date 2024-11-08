@@ -2,6 +2,8 @@
 
 namespace Simflex\Core\DI;
 
+use ReflectionException;
+use ReflectionFunctionAbstract;
 use Simflex\Core\Container;
 
 class Injector
@@ -10,10 +12,10 @@ class Injector
      * Shortcut for resolving dependencies for a class constructor
      *
      * @param object|string $target Class name
-     * @param array ...$params Additional parameters
+     * @param mixed ...$params Additional parameters
      * @return array Resolved dependencies
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function resolveClass(object|string $target, ...$params): array
     {
@@ -33,18 +35,15 @@ class Injector
      *
      * @param object|string $target Target class name
      * @param string $method Method name
-     * @param array ...$params Additional parameters
+     * @param mixed ...$params Additional parameters
      * @return array Resolved dependencies
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function resolveMethod(object|string $target, string $method, ...$params): array
     {
         $ref = new \ReflectionClass($target);
         $md = $ref->getMethod($method);
-        if (!$md) {
-            throw new \Exception("Method {$method} not found in {$target}");
-        }
 
         return static::resolve($md, ...$params);
     }
@@ -52,14 +51,16 @@ class Injector
     /**
      * Resolves dependencies for a function
      *
-     * @param \ReflectionFunctionAbstract $fn Function to resolve
-     * @param array ...$params Additional parameters
+     * @param ReflectionFunctionAbstract $fn Function to resolve
+     * @param mixed ...$params Additional parameters
      * @return array Resolved dependencies
      * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public static function resolve(\ReflectionFunctionAbstract $fn, ...$params): array
+    public static function resolve(ReflectionFunctionAbstract $fn, ...$params): array
     {
+        $target = $fn->getName();
+
         $added = [];
         $args = [];
 
@@ -99,6 +100,7 @@ class Injector
                 throw new DIException("Class {$className} does not implement Service interface");
             }
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $serviceName = $className::getServiceName();
             if (!Container::get($serviceName)) {
                 throw new DIException("Service {$serviceName} not found in container");

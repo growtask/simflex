@@ -100,7 +100,7 @@ const VTableEditor = {
                     ${col.l}
 <label class="form-control">
                                     <div class="form-control__file" id="img-${col.n}">
-                                        <img src="${cv}" onerror="this.src = '/vendor/glushkovds/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
+                                        <img src="${cv}" onerror="this.src = '/vendor/growtask/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
                                         <div class="form-control__file-area-wrapper drop-area">
                                             <div class="form-control__file-area">
                                                 <input type="file" name="" accept="image/*"
@@ -174,7 +174,7 @@ const VTableEditor = {
                                 <div class="form-control__dropdown-current">—</div>
                                 <button class="form-control__dropdown-toggle" type="button">
                                     <svg viewBox="0 0 24 24">
-                                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                                     </svg>
                                 </button>
                             </div>
@@ -572,7 +572,7 @@ const VTableEditor = {
                 ${page != 0 ? `
                 <button  data-page="${page - 1}" type="button" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
                     <svg class="table__pagination-btns-mobile-prev"  data-page="${page - 1}" viewBox="0 0 24 24">
-                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                     </svg>
                 </button>
                 ` : ''}
@@ -580,7 +580,7 @@ const VTableEditor = {
                 ${page + 1 != maxPages ? `
                     <button  data-page="${page + 1}" type="button" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
                         <svg class="table__pagination-btns-mobile-next" data-page="${page + 1}" viewBox="0 0 24 24">
-                            <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                            <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                         </svg>
                     </button>
                 ` : ''}
@@ -597,7 +597,7 @@ const VTableEditor = {
             btns += `
                 <button type="button" data-page="${page - 1}" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
                     <svg data-page="${page - 1}" viewBox="0 0 24 24" class="table__pagination-btns-mobile-next" data-page="${page - 1}">
-                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                     </svg>
                 </button>
             `
@@ -618,7 +618,7 @@ const VTableEditor = {
             btns += `
                 <button type="button" data-page="${page + 1}" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
                     <svg data-page="${page + 1}" viewBox="0 0 24 24" class="table__pagination-btns-mobile-next" data-page="${page + 1}">
-                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                     </svg>
                 </button>`
         }
@@ -642,7 +642,7 @@ const VTableEditor = {
             <div class="table__pagination-btns">
                 <button type="button" data-page="${page - 1}" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
                     <svg viewBox="0 0 24 24" data-page="${page - 1}" class="table__pagination-btns-mobile-prev">
-                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                     </svg>
                 </button>
                 <button type="button" class="table-pagination BtnOutlineMonoXs">1</button>
@@ -658,7 +658,7 @@ const VTableEditor = {
                 <button type="button"  class="table-pagination BtnOutlineMonoXs">${maxPages}</button>
                 <button type="button" data-page="${page + 1}" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
                 <svg viewBox="0 0 24 24" data-page="${page + 1}" class="table__pagination-btns-mobile-next">
-                    <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                    <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                 </svg>
                 </button>
             </div>
@@ -676,7 +676,7 @@ const VTableEditor = {
                 <div class="table__pagination-btns">
                     <button type="button" data-page="${page - 1}" class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
                             <svg viewBox="0 0 24 24" data-page="${page - 1}" class="table__pagination-btns-mobile-prev">
-                                <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                                <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                             </svg>
                     </button>
                     <button type="button" class="table-pagination BtnOutlineMonoXs">1</button>

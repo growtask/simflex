@@ -21,9 +21,9 @@ use Simflex\Core\Container;
 class Log
 {
     /** @var LoggerInterface[] */
-    protected static array $loggers;
+    protected static array $loggers = [];
 
-    public static function addLogger(LoggerInterface $logger)
+    public static function addLogger(LoggerInterface $logger): void
     {
         self::$loggers[] = $logger;
     }

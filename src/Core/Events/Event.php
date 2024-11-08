@@ -7,7 +7,7 @@ class Event
     protected array $params;
 
     public function __construct(
-        protected string $name,
+        protected Events $ev,
         protected string $subject,
         ...$params
     ) {
@@ -16,10 +16,10 @@ class Event
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->ev->name;
     }
 
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }

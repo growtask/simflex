@@ -14,7 +14,7 @@ class Profiler
 
     public static function traceStart($obj, string $func, #[Deprecated] string $type = '')
     {
-        if (!Container::getConfig()::$devMode) {
+        if (!Container::getConfig()->devMode) {
             return;
         }
 
@@ -29,7 +29,7 @@ class Profiler
 
     public static function traceEnd($obj = '', string $func = '', #[Deprecated] string $type = '')
     {
-        if (!Container::getConfig()::$devMode) {
+        if (!Container::getConfig()->devMode) {
             return;
         }
 

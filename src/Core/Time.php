@@ -5,7 +5,6 @@ namespace Simflex\Core;
 
 use Simflex\Core\type;
 use Simflex\Core\TimeDiff;
-use function Simflex\Core\imDev;
 
 class Time
 {
@@ -285,12 +284,6 @@ class Time
                 strlen($value) == 16 ? $value .= ':00' : null;
 
                 preg_match("/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/", $value, $time_ar);
-                if (count($time_ar) < 6 && imDev()) {
-                    echo $value;
-                    print_r($time_ar);
-                    debug_print_backtrace();
-                    die;
-                }
                 return mktime($time_ar[4], $time_ar[5], $time_ar[6], $time_ar[2], $time_ar[3], $time_ar[1]);
 
                 break;

@@ -7,6 +7,31 @@ use Simflex\Core\Container;
 
 class FieldTable extends Field
 {
+    /**
+     * String field
+     */
+    public const TYPE_TEXT = 'text';
+
+    /**
+     * Combobox (select) field
+     */
+    public const TYPE_COMBO = 'combo';
+
+    /**
+     * WYSIWYG editor field
+     */
+    public const TYPE_EDITOR = 'editor';
+
+    /**
+     * Image upload field
+     */
+    public const TYPE_IMAGE = 'image';
+
+    /**
+     * File upload field
+     */
+    public const TYPE_FILE = 'file';
+
     public const STRUCT_VALUE = [
         [
             'n' => 'n',
@@ -44,6 +69,27 @@ class FieldTable extends Field
             'e' => '',
         ],
     ];
+
+    public static function makeStruct(
+        string $name,
+        string $type,
+        string $label,
+        string $value = '',
+        string $extra = ''
+    ): array {
+        return [
+            'n' => $name,
+            't' => $type,
+            'l' => $label,
+            'v' => $value,
+            'e' => $extra,
+        ];
+    }
+
+    public static function makeValue(array $struct, array $values): string
+    {
+        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE);
+    }
 
     public function input($value)
     {

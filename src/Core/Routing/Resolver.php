@@ -37,7 +37,7 @@ class Resolver
         if ($routeDefault = $routes['/'] ?? null) {
             return static::makeRoute($routeDefault);
         }
-        if ($classDefault = Container::getConfig()::$component_default) {
+        if ($classDefault = Container::getConfig()->defaultComponent) {
             return static::makeRoute($classDefault);
         }
         throw new \Exception("Can't resolve route {$request->getPath()}");

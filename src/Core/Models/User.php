@@ -2,26 +2,37 @@
 
 namespace Simflex\Core\Models;
 
+use Exception;
 use Simflex\Core\Buffer;
 use Simflex\Core\DB;
 use Simflex\Core\ModelBase;
 use Simflex\Core\Models\UserRole;
 
 /**
- * Class User
- * @package Simflex\Core\Models
- * @property int $roleId
- * @property-read UserRole $role
- * @property string $login
+ * User model
+ *
+ * @property int user_id
+ * @property int role_id
+ * @property bool active
+ * @property string login
+ * @property string password
+ * @property string hash
+ * @property string hash_admin
+ * @property string email
+ * @property string name
+ * @property string code
  */
 class User extends ModelBase
 {
     protected static $table = 'user';
     protected static $primaryKeyName = 'user_id';
 
-    protected function offsetGetRole()
+    /**
+     * @throws Exception
+     */
+    protected function offsetGetRole(): ?UserRole
     {
-        return new UserRole($this->roleId);
+        return UserRole::findOne(['role_id' => $this->role_id]);
     }
 
     /**

@@ -82,12 +82,12 @@ class FieldInt extends Field
             $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
 
             $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
+                        <div class="form-control__dropdown ' . ($this->readonly ? ' disabled' : '') . '" data-action="searchInt" data-ajax="true">
                             <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '" >
-                               <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
+                                <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . ' >
+                               <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text" ' . ($this->readonly ? ' readonly' : '') . '>
                                 <div class="form-control__dropdown-current">' . $sel['name'] . '</div>
-                                <button type="button" class="form-control__dropdown-toggle">
+                                <button type="button" class="form-control__dropdown-toggle"' . ($this->readonly ? ' readonly' : '') . '>
                                     <svg viewBox="0 0 24 24">
                                         <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
                                     </svg>

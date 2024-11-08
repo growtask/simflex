@@ -27,7 +27,14 @@ const TableEditor = {
 
         let hasEds = false;
         for (const col of val.s) {
-            const cv = r != null ? val.v[r][col.n] : col.v;
+            let cv = r != null ? val.v[r][col.n] : col.v;
+            if (cv == '$DATE$') {
+                const date = new Date();
+                const leadingZero = num => num < 10 ? `0${num}` : `${num}`;
+
+                cv = `${leadingZero(date.getDate())}.${leadingZero(date.getMonth() + 1)}.${date.getFullYear()}`;
+            }
+
             if (col.t.startsWith('editor')) {
                 input += `
                 <label class="modal-point__data-label">
@@ -43,7 +50,7 @@ const TableEditor = {
                     ${col.l}
 <label class="form-control">
                                     <div class="form-control__file" id="img-${col.n}">
-                                        <img src="${cv}" onerror="this.src = '/vendor/glushkovds/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
+                                        <img src="${cv}" onerror="this.src = '/vendor/growtask/simflex/src/Admin/theme/new/img/default-img.png'" alt="" class="form-control__file-img">
                                         <div class="form-control__file-area-wrapper drop-area">
                                             <div class="form-control__file-area">
                                                 <input type="file" name="" accept="image/*"
@@ -151,7 +158,7 @@ ${cv}
                                 <div class="form-control__dropdown-current">—</div>
                                 <button class="form-control__dropdown-toggle" type="button">
                                     <svg viewBox="0 0 24 24">
-                                        <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                                        <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                                     </svg>
                                 </button>
                             </div>
@@ -241,7 +248,7 @@ ${cv}
 
             if (typeof tinymce === 'undefined') {
                 const scr = document.createElement('script');
-                scr.src = '/vendor/glushkovds/simflex/src/Admin/Plugins/Editor/tinymce/tinymce.min.js';
+                scr.src = '/vendor/growtask/simflex/src/Admin/Plugins/Editor/tinymce/tinymce.min.js';
                 scr.addEventListener('load', () => {
                     tinyInit();
                 });
