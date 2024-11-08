@@ -4,6 +4,7 @@ namespace Simflex\Core\DB;
 
 use ArrayAccess;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\DB;
 
 class Where implements ArrayAccess
@@ -79,9 +80,9 @@ class Where implements ArrayAccess
      */
     public function toString(bool $withWhereWord = true): string
     {
-        if (($data = static::prepareData($this->data)) && $data[0]) {
-            $this->bind = $data[1];
-            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data[0]);
+        if (($data = static::prepareData($this->data)) && $data['result']) {
+            $this->bind = $data['bind'];
+            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data['result']);
         }
 
         return '';
@@ -93,7 +94,7 @@ class Where implements ArrayAccess
      */
     public function toArray(): array
     {
-        return static::prepareData($this->data)[0];
+        return static::prepareData($this->data)['result'];
     }
 
     /**
@@ -103,6 +104,7 @@ class Where implements ArrayAccess
      * @return array
      * @throws Exception
      */
+    #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
     protected static function prepareData(array $data): array
     {
         $bind = [];
@@ -132,7 +134,7 @@ class Where implements ArrayAccess
             }
         }
 
-        return [$result, $bind];
+        return ['result' => $result, 'bind' => $bind];
     }
 
     /**
