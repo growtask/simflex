@@ -114,8 +114,8 @@ class Migrator extends ConsoleBase
             // run and remember the migration
             $class = $this->getMigrationObject($migration);
             if (!$class) {
-                Log::warning('Skipped {migration} - load failed', ['migration' => $migration]);
-                continue;
+                Log::error('Migration {migration} cannot be loaded', ['migration' => $migration]);
+                return;
             }
 
             $schema = new Schema();

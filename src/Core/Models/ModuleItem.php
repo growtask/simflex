@@ -26,4 +26,9 @@ class ModuleItem extends ModelBase
     {
         return unserialize($this->params);
     }
+
+    public function setParams(array $params): void
+    {
+        $this->params = serialize($params);
+    }
 }

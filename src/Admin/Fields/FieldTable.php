@@ -7,10 +7,29 @@ use Simflex\Core\Container;
 
 class FieldTable extends Field
 {
+    /**
+     * String field
+     */
     public const TYPE_TEXT = 'text';
+
+    /**
+     * Combobox (select) field
+     */
     public const TYPE_COMBO = 'combo';
+
+    /**
+     * WYSIWYG editor field
+     */
     public const TYPE_EDITOR = 'editor';
+
+    /**
+     * Image upload field
+     */
     public const TYPE_IMAGE = 'image';
+
+    /**
+     * File upload field
+     */
     public const TYPE_FILE = 'file';
 
     public const STRUCT_VALUE = [
