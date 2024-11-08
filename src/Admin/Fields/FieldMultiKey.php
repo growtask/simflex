@@ -160,7 +160,7 @@ for ($i = 0; $i < count($rows); ++$i) {
             <div class="form-control__dropdown-current">—</div>
             <button class="form-control__dropdown-toggle" type="button">
                 <svg viewBox="0 0 24 24">
-                    <use xlink:href="/vendor/glushkovds/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
+                    <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
                 </svg>
             </button>
         </div>

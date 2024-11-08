@@ -2,34 +2,39 @@
 
 namespace Simflex\Core\DB;
 
+use ArrayAccess;
+use Exception;
+use JetBrains\PhpStorm\ArrayShape;
+use Simflex\Core\DB;
 
-use Simflex\Core\DB\Expr;
-use Simflex\Core\ModelBase;
-
-class Where implements \ArrayAccess
+class Where implements ArrayAccess
 {
-
-    private $data = array();
+    protected array $data = [];
+    protected array $bind = [];
 
     /**
+     * Where constructor.
      *
-     * @param mixed $where
-     * @throws \Exception
+     * @param mixed $where Filter conditions
+     * @throws Exception
      */
-    public function __construct($where = [])
+    public function __construct(string|array|Where|Expr $where = [])
     {
         if ($where instanceof static) {
-            $this->data = $where->toArray();
+            $this->data = $where->data;
         }
+
         if (is_string($where) || $where instanceof Expr) {
             $this->data[] = $where;
         }
+
+        /** @var array $where */
         if (is_array($where)) {
             $this->data = $where;
         }
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->data[] = $value;
@@ -38,84 +43,108 @@ class Where implements \ArrayAccess
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->data[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->data[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function __toString()
     {
         return $this->toString();
     }
 
-    /**
-     * @param bool $withWhereWord = true
-     * @return string
-     * @throws \Exception
-     */
-    public function toString($withWhereWord = true)
+    public function getBinds(): array
     {
-        if ($data = static::prepareData($this->data)) {
-            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data);
+        return $this->bind;
+    }
+
+    /**
+     * Convert WHERE statement to string
+     *
+     * @param bool $withWhereWord Whether it should include WHERE word
+     * @return string SQL WHERE statement
+     * @throws Exception
+     */
+    public function toString(bool $withWhereWord = true): string
+    {
+        if (($data = static::prepareData($this->data)) && $data['result']) {
+            $this->bind = $data['bind'];
+            return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data['result']);
         }
+
         return '';
     }
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function toArray()
+    public function toArray(): array
     {
-        return static::prepareData($this->data);
+        return static::prepareData($this->data)['result'];
     }
 
     /**
+     * Prepare WHERE data
+     *
      * @param array $data
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    protected static function prepareData(array $data)
+    #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
+    protected static function prepareData(array $data): array
     {
+        $bind = [];
         $result = [];
         foreach ($data as $index => $value) {
-            // Skip condition if empty array
+            $wrappedIndex = DB::wrapName($index);
+
             if (is_array($value) && !$value) {
                 continue;
             } elseif (is_null($value)) {
-                $result[] = "`$index` IS NULL";
+                $result[] = "$wrappedIndex IS NULL";
             } elseif ((string)$index !== (string)(int)$index) {
                 if (is_array($value)) {
-                    $values = implode(',', array_map([ModelBase::class, 'prepareValue'], $value));
-                    $result[] = "`$index` IN ($values)";
+                    $values = implode(',', array_fill(0, count($value), '?'));
+                    $result[] = "$wrappedIndex IN ($values)";
+                    $bind = array_merge($bind, $value);
                 } else {
-                    $result[] = "`$index` = " . ModelBase::prepareValue($value);
+                    $result[] = "$wrappedIndex = ?";
+                    $bind[] = $value;
                 }
             } else {
                 if (is_array($value)) {
-                    throw new \Exception('Where: array-valued statement must be associative.');
+                    throw new Exception('Where: array-valued statement must be associative.');
                 } elseif ($value) {
                     $result[] = $value;
                 }
             }
         }
-        return $result;
+
+        return ['result' => $result, 'bind' => $bind];
     }
 
     /**
-     * @param string|array|static $where
+     * Add WHERE conditions
+     *
+     * @param string|array|Where|\Simflex\Core\DB\Expr $where Filter conditions
+     * @return void
+     * @throws Exception
      */
-    public function add($where)
+    public function add(string|array|Where|Expr $where): void
     {
         $this->data = array_filter(array_merge($this->toArray(), (new static($where))->toArray()));
     }

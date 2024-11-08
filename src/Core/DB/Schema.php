@@ -8,19 +8,19 @@ use Simflex\Core\DB\Schema\Table;
 
 class Schema
 {
-    /** @var \Simflex\Core\DB\Schema\Table[] Existing tables */
-    protected $tables = [];
+    /** @var Table[] Existing tables */
+    protected array $tables = [];
 
-    /** @var \Simflex\Core\DB\Schema\Table[] Tables that await their creation (commit) */
-    protected $awaitingCreate = [];
+    /** @var Table[] Tables that await their creation (commit) */
+    protected array $awaitingCreate = [];
 
-    /** @var \Simflex\Core\DB\Schema\Table[] Tables that await their deletion */
-    protected $awaitingDelete = [];
+    /** @var Table[] Tables that await their deletion */
+    protected array $awaitingDelete = [];
 
-    /** @var \Simflex\Core\DB\Schema\Table[] Tables that have been created while this object is alive */
-    protected $sessionCreated = [];
+    /** @var Table[] Tables that have been created while this object is alive */
+    protected array $sessionCreated = [];
 
-    protected $awaitingAlter = [];
+    protected array $awaitingAlter = [];
 
     public function __construct()
     {
@@ -30,7 +30,7 @@ class Schema
     // ------------ UTIL ------------ //
     public function reload()
     {
-        $dbName = Container::getConfig()::$db_name;
+        $dbName = Container::getConfig()->db['name'];
         $this->tables = [];
 
         $tables = DB::query(
@@ -52,7 +52,7 @@ class Schema
 
         $columns = DB::query('select * from information_schema.COLUMNS where TABLE_NAME = ? and TABLE_SCHEMA = ?', [
             $name,
-            Container::getConfig()::$db_name
+            Container::getConfig()->db['name']
         ]);
 
         while ($col = DB::fetch($columns)) {

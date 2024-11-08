@@ -16,29 +16,22 @@ use Simflex\Core\DB\Adapter;
  */
 class MySQL implements Adapter
 {
-    /**
-     * @var PDO
-     */
-    private $db;
-
-    /**
-     * @var PDOStatement
-     */
-    private $lastQuery;
+    private PDO $db;
+    private PDOStatement $lastQuery;
 
     public function connect(): bool
     {
         $cfg = Container::getConfig();
-        $host = $cfg::$db_host;
-        $database = $cfg::$db_name;
-        $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg::$db_user, $cfg::$db_pass);
+        $host = $cfg->db['host'];
+        $database = $cfg->db['name'];
+        $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg->db['user'], $cfg->db['password']);
 
-        if (SF_LOCATION != SF_LOCATION_CLI && $cfg::$devMode) {
+        if (SF_LOCATION != SF_LOCATION_CLI && $cfg->devMode) {
             $this->db = new TraceablePDO($this->db);
             Container::get('debugbar')->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->db));
         }
 
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, Container::getConfig()::$mysqlErrorMode);
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return true;
     }
 

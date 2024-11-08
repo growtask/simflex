@@ -24,7 +24,8 @@ class DebugBar implements Service
 
     public function __construct()
     {
-        if (!Container::getConfig()::$devMode) {
+        // deprecated
+        if (!Container::getConfig()->devMode) {
             return;
         }
 

@@ -3,7 +3,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Config;
 use Simflex\Core\Core;
 use Simflex\Core\Page;
 use Simflex\Core\User;
@@ -12,7 +11,7 @@ use Simflex\Core\User;
  * Class Container
  *
  * @package App\Core
- * @method static Config getConfig
+ * @method static ConfigBase getConfig
  * @method static Page getPage
  * @method static Core getCore
  * @method static \Simflex\Core\Request getRequest

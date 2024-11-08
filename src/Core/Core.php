@@ -148,7 +148,19 @@ class Core
         return $path ? $path : '/';
     }
 
-    public static function siteParam($key = false, $defultValue = null)
+    /**
+     * Get setting value by alias
+     *
+     * Can interpolate values from array, example:
+     * `value (k = 'greeting') = 'Hello {name}'`, then
+     * `Core::siteParam('greeting', 'Hello {name}', ['name' => 'John'])` equals to `'Hello John'`
+     *
+     * @param string|bool $key false to get all settings, otherwise alias
+     * @param mixed $defultValue Default value if setting not found
+     * @param array $interp Array of values to interpolate
+     * @return array|bool|string|string[] Value of setting
+     */
+    public static function siteParam($key = false, $defultValue = null, array $interp = [])
     {
         if (!self::$site_params) {
             $q = "SELECT alias, value FROM settings";
@@ -165,14 +177,16 @@ class Core
             self::$site_params[$key] = $defultValue;
             $q = "INSERT INTO settings(name, alias, value) VALUES('New parameter')";
         }
-        return self::$site_params[$key] ?? $defultValue;
+        return str_replace(array_map(fn($k) => '{' . $k . '}', array_keys($interp)),
+            array_values($interp),
+            self::$site_params[$key] ?? $defultValue);
     }
 
     public static function getComponent()
     {
         $route = (new Resolver())
             ->setMenuByLink(self::$menu_by_link) // for deprecated routing by menu database table
-            ->resolve(Container::getConfig()::$routesFile);
+            ->resolve(Container::getConfig()->files['routes']);
         $componentClass = $route->getComponentClassName();
         return new $componentClass(...Injector::resolveClass($componentClass));
     }
@@ -223,12 +237,12 @@ class Core
             Page::content();
         } else {
             $config = Container::getConfig();
-            if (isset($_REQUEST['print']) && is_file('theme/' . $config::$theme . '/print.tpl')) {
-                include 'theme/' . $config::$theme . '/print.tpl';
+            if (isset($_REQUEST['print']) && is_file('theme/' . $config->theme . '/print.tpl')) {
+                include 'theme/' . $config->theme  . '/print.tpl';
                 return;
             }
-            if (is_file('theme/' . $config::$theme . '/index.tpl')) {
-                include 'theme/' . $config::$theme . '/index.tpl';
+            if (is_file('theme/' . $config->theme  . '/index.tpl')) {
+                include 'theme/' . $config->theme  . '/index.tpl';
             }
         }
     }
@@ -276,9 +290,9 @@ class Core
         $config = Container::getConfig();
         header("HTTP/1.0 404 Not Found");
         Page::seo('Error 404');
-        if (is_file('theme/' . $config::$theme . '/404.tpl')) {
+        if (is_file('theme/' . $config->theme . '/404.tpl')) {
             self::$content_only = true;
-            include 'theme/' . $config::$theme . '/404.tpl';
+            include 'theme/' . $config->theme . '/404.tpl';
         } else {
             echo self::siteParam('error404');
         }

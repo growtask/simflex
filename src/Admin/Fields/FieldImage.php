@@ -111,7 +111,7 @@ DATA;
         return $s;
 
         // http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image
-        $thumb = $thumbNoImage = "/vendor/glushkovds/simplex-admin/src/Admin/theme/img/noimage.90x90.gif";
+        $thumb = $thumbNoImage = "/vendor/growtask/simflex/src/Admin/theme/img/noimage.90x90.gif";
         $source = '';
         $imgPath = 'uf/images/' . $this->path . 'preview/' . $value;
         if (is_file("../$imgPath")) {

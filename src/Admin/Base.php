@@ -207,9 +207,6 @@ class Base
     public function content()
     {
         $row = Core::menuCurItem();
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            actlog('User ' . User::$login . '; data = ' . implode(', ', array_keys($_POST)));
-        }
 
         if ($row['model']) {
             $this->initTable();

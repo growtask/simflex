@@ -133,6 +133,20 @@ class Table extends ElementBase
     }
 
     /**
+     * Adds an index
+     * 
+     * @param string $name Index name
+     * @return Index
+     */
+    public function addIndex(string $name = ''): Index
+    {
+        $idx = new Index($name);
+        
+        $this->elements[$name ?: md5(microtime())] = $idx;
+        return $idx;
+    }
+
+    /**
      * Drops a column
      *
      * @param string|array $name Column name(s)
@@ -171,6 +185,11 @@ class Table extends ElementBase
         return $this->addColumn($name, Column::TYPE_TEXT);
     }
 
+    public function longText(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_LONGTEXT);
+    }
+    
     public function boolean(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_TINYINT, 1);
@@ -189,6 +208,11 @@ class Table extends ElementBase
     public function dateTime(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_DATE_TIME);
+    }
+
+    public function timestamp(string $name): Column
+    {
+        return $this->addColumn($name, Column::TYPE_TIMESTAMP);
     }
 
     public function enum(string $name, array $items): Column

@@ -14,14 +14,15 @@ class Column extends TableElementBase
     protected $type = '';
 
     public const TYPE_INT = 'int';
-
     public const TYPE_TINYINT = 'tinyint';
     public const TYPE_VARCHAR = 'varchar';
     public const TYPE_TEXT = 'text';
+    public const TYPE_LONGTEXT = 'longtext';
     public const TYPE_DECIMAL = 'decimal';
     public const TYPE_ENUM = 'enum';
     public const TYPE_DATE = 'date';
     public const TYPE_DATE_TIME = 'datetime';
+    public const TYPE_TIMESTAMP = 'timestamp';
 
     public function __construct(string $name, ?Table $table = null)
     {
@@ -92,12 +93,30 @@ class Column extends TableElementBase
         return $this;
     }
 
-    public function foreignKey(string $table, $other = '')
+    public function foreignKey(string $table, $other = ''): self
     {
         $this->table->addConstraint()->foreignKey(
             $table,
             is_array($other) ? $other : [$this->name => $other ?: $this->name]
         );
+        return $this;
+    }
+
+    public function unique(bool $isIndex = false): self
+    {
+        $this->table->addConstraint()->unique($this->name, $isIndex);
+        return $this;
+    }
+
+    public function index(): self
+    {
+        $this->table->addIndex()->index($this->name);
+        return $this;
+    }
+
+    public function key(): self
+    {
+        $this->table->addIndex()->key($this->name);
         return $this;
     }
 
@@ -111,6 +130,19 @@ class Column extends TableElementBase
     public function getParams(): ColumnParams
     {
         return $this->params;
+    }
+
+    protected function prepareDefault(): string
+    {
+        if (is_string($this->params->default)) {
+            if (in_array($this->type, [self::TYPE_TIMESTAMP, self::TYPE_DATE, self::TYPE_DATE_TIME])) {
+                return $this->params->default;
+            }
+
+            return DB::wrapString($this->params->default);
+        }
+
+        return $this->params->default;
     }
 
     /**
@@ -131,8 +163,7 @@ class Column extends TableElementBase
         $sql .= $this->params->isNull ? 'NULL ' : 'NOT NULL ';
 
         if ($this->params->defaultSet) {
-            $sql .= 'DEFAULT '
-                . (is_string($this->params->default) ? DB::wrapString($this->params->default) : $this->params->default);
+            $sql .= 'DEFAULT ' . $this->prepareDefault();
         }
 
         if ($this->params->isPrimaryKey) {

@@ -8,6 +8,20 @@ use Simflex\Core\ModelBase;
 use Simflex\Extensions\Content\Model\ModelContentTemplate;
 
 /**
+ * @property int $content_id
+ * @property int $pid
+ * @property bool $active
+ * @property string $date
+ * @property string $title
+ * @property string $alias
+ * @property string $path
+ * @property string $short
+ * @property string $text
+ * @property string $params
+ * @property string $file
+ * @property string $photo
+ * @property int $template_id
+ * @property int $npp
  * @property null|string $template_path
  */
 class ModelContent extends ModelBase
