@@ -4,6 +4,7 @@ namespace Simflex\Core;
 abstract class ExtensionConfig
 {
     public string $name;
+    public int $loadOrder;
 
     protected array $routes = [];
     protected array $services = [];
