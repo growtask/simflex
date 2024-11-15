@@ -9,9 +9,14 @@ class Resolver
 {
     protected $menuByLink = [];
 
-    public function resolve(string $routesFile): Route
+    public function resolve(string|array $routesFile): Route
     {
-        $routes = include $routesFile;
+        if (is_array($routesFile)) {
+            $routes = $routesFile;
+        } else {
+            $routes = include $routesFile;
+        }
+
         $request = Container::getRequest();
         if ($route =& $routes[trim($request->getPath(), '/')]) {
             return static::makeRoute($route);

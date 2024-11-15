@@ -32,6 +32,15 @@ class PackageInstaller
         static::copyContents($path . '/database/migrations', $root . '/database/migrations');
         static::copyContents($path . '/database/seeders', $root . '/database/seeders');
         static::copyContents($path . '/provider/extension', $root . '/provider/extension');
+
+        // clear cache
+        if (is_file($root . '/cache/extensions.php')) {
+            unlink($root . '/cache/extensions.php');
+        }
+
+        if (is_file($root . '/cache/files.php')) {
+            unlink($root . '/cache/files.php');
+        }
     }
 
     protected static function copyContents(string $from, string $to): void

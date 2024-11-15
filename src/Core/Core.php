@@ -186,7 +186,7 @@ class Core
     {
         $route = (new Resolver())
             ->setMenuByLink(self::$menu_by_link) // for deprecated routing by menu database table
-            ->resolve(Container::getConfig()->files['routes']);
+            ->resolve(Container::getConfig()->getRoutes());
         $componentClass = $route->getComponentClassName();
         return new $componentClass(...Injector::resolveClass($componentClass));
     }
