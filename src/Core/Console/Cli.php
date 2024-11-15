@@ -52,7 +52,7 @@ class Cli
      */
     public function __construct(array $cmd)
     {
-        $this->providers = include Container::getConfig()->files['commands'];
+        $this->providers = Container::getConfig()->getCommands();
 
         $this->provider = $cmd[0];
         $this->command = $cmd[1];

@@ -61,6 +61,7 @@ abstract class ConfigBase
         'routes' => SF_CORE_ROOT_PATH . '/routes.php',
         'events' => SF_CORE_ROOT_PATH . '/events.php',
         'services' => SF_CORE_ROOT_PATH . '/services.php',
+        'commands' => SF_CORE_ROOT_PATH . '/commands.php',
     ];
 
     /**
@@ -76,6 +77,26 @@ abstract class ConfigBase
     public function __get(string $name)
     {
         return $this->extra[$name] ?? null;
+    }
+
+    public function getRoutes(): array
+    {
+        return include $this->files['routes'];
+    }
+
+    public function getEvents(): array
+    {
+        return include $this->files['events'];
+    }
+
+    public function getServices(): array
+    {
+        return include $this->files['services'];
+    }
+
+    public function getCommands(): array
+    {
+        return include $this->files['commands'];
     }
 
     /**
