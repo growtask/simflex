@@ -6,6 +6,7 @@ use ArrayAccess;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\DB;
+use Simflex\Core\Log;
 
 class Where implements ArrayAccess
 {
@@ -22,6 +23,7 @@ class Where implements ArrayAccess
     {
         if ($where instanceof static) {
             $this->data = $where->data;
+            $this->bind = $where->bind;
         }
 
         if (is_string($where) || $where instanceof Expr) {
@@ -80,7 +82,7 @@ class Where implements ArrayAccess
      */
     public function toString(bool $withWhereWord = true): string
     {
-        if (($data = static::prepareData($this->data)) && $data['result']) {
+        if (($data = static::prepareData($this->data, $this->bind)) && $data['result']) {
             $this->bind = $data['bind'];
             return ($withWhereWord ? 'WHERE ' : '') . implode(' AND ', $data['result']);
         }
@@ -94,23 +96,25 @@ class Where implements ArrayAccess
      */
     public function toArray(): array
     {
-        return static::prepareData($this->data)['result'];
+        return static::prepareData($this->data, $this->bind);
     }
 
     /**
      * Prepare WHERE data
      *
-     * @param array $data
+     * @param array $data input data
+     * @param array $oldBinds previous bindings (if any)
      * @return array
      * @throws Exception
      */
     #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
-    protected static function prepareData(array $data): array
+    protected static function prepareData(array $data, array $oldBinds = []): array
     {
-        $bind = [];
+        $bind = $oldBinds;
         $result = [];
         foreach ($data as $index => $value) {
             $wrappedIndex = DB::wrapName($index);
+            $idCrc = 'id_' . (string)crc32($wrappedIndex);
 
             if (is_array($value) && !$value) {
                 continue;
@@ -118,12 +122,17 @@ class Where implements ArrayAccess
                 $result[] = "$wrappedIndex IS NULL";
             } elseif ((string)$index !== (string)(int)$index) {
                 if (is_array($value)) {
-                    $values = implode(',', array_fill(0, count($value), '?'));
+                    $values = []; $i = 0;
+                    foreach ($value as $val) {
+                        $values[] = ':' . $idCrc . '_' . $i;
+                        $bind[$idCrc . '_' . $i] = $val;
+                    }
+
+                    $values = implode(',', $values);
                     $result[] = "$wrappedIndex IN ($values)";
-                    $bind = array_merge($bind, $value);
                 } else {
-                    $result[] = "$wrappedIndex = ?";
-                    $bind[] = $value;
+                    $result[] = "$wrappedIndex = :$idCrc";
+                    $bind[$idCrc] = $value;
                 }
             } else {
                 if (is_array($value)) {
@@ -146,7 +155,13 @@ class Where implements ArrayAccess
      */
     public function add(string|array|Where|Expr $where): void
     {
-        $this->data = array_filter(array_merge($this->toArray(), (new static($where))->toArray()));
+        $myArr = $this->toArray();
+
+        $other = new static($where);
+        $otherArr = $other->toArray();
+
+        $this->data = array_filter(array_merge($myArr['result'], $otherArr['result']));
+        $this->bind = array_merge($myArr['bind'], $otherArr['bind']);
     }
 
 }
