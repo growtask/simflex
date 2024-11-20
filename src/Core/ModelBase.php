@@ -40,7 +40,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * @var int|null Model ID
      */
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var array Model data

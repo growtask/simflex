@@ -224,7 +224,7 @@ class Migrator extends ConsoleBase
     public function create(#[Help('Migration name')] string $name): void
     {
         $fileName = date('Y_m_d') . '_' . $name . '.php';
-        copy(__DIR__ . '/migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
+        copy(__DIR__ . '/../migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
 
         Log::notice('Created new migration {name}', ['name' => $fileName]);
     }
