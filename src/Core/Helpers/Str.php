@@ -180,22 +180,27 @@ class Str
      */
     public static function pluralize(int $num, string $s, bool $isMale = true, bool $iNum = true): string
     {
+        $isNeuter = str_ends_with($s, 'е');
+        if ($isNeuter) {
+            $s = mb_substr($s, 0, mb_strlen($s) - 1);
+        }
+
         $out = ($iNum ? $num : '') . ' ' . $s;
         if ($num % 100 >= 10 && $num % 100 < 15) {
-            return $out . ($isMale ? 'ов' : '');
+            return $out . ($isNeuter ? 'ий' : ($isMale ? 'ов' : ''));
         }
 
         switch ($num % 10) {
             case 1:
-                $out .= $isMale ? '' : 'а';
+                $out .= $isNeuter ? 'е' : ($isMale ? '' : 'а');
                 break;
             case 2:
             case 3:
             case 4:
-                $out .= $isMale ? 'а' : (str_ends_with('ч') ? 'и' : 'ы');
+                $out .= $isNeuter ? 'я' : ($isMale ? 'а' : (str_ends_with('ч') ? 'и' : 'ы'));
                 break;
             default:
-                $out .= $isMale ? 'ов' : '';
+                $out .= $isNeuter ? 'ий' : ($isMale ? 'ов' : '');
                 break;
         }
 
