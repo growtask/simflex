@@ -11046,6 +11046,8 @@ object svg {
     width: 34.4791666667vw;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 @media screen and (max-width: 1401px) {

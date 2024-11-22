@@ -1006,7 +1006,7 @@ class Base
         foreach ($this->fields as $field) {
             if ($errors = $field->check()) {
                 foreach ($errors as $error) {
-                    $this->errors[$field->name][] = $error;
+                    $this->errors[$field->label][] = $error;
                 }
             }
         }
@@ -1209,7 +1209,10 @@ class Base
             } else {
                 Alert::success('Запись №' . $pkValue . ' успешно сохранена!');
             }
+        } else {
+            $this->form();
         }
+
         return count($this->errors) ? false : $pkValue;
     }
 

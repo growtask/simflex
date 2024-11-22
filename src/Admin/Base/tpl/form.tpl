@@ -125,13 +125,13 @@ $artLeftArr = [];
                             <div class="notification__text">
                                 <?php
                                 echo '<ul>';
-                                foreach ($this->errors as $error) {
+                                foreach ($this->errors as $key => $error) {
                                     if (is_array($error)) {
                                         foreach ($error as $e) {
-                                            echo '<li>', $e, '</li>';
+                                            echo '<li>', (is_string($key) ? ($key . ': ') : ''), $e, '</li>';
                                         }
                                     } else {
-                                        echo '<li>', $error, '</li>';
+                                        echo '<li>', (is_string($key) ? ($key . ': ') : ''), $error, '</li>';
                                     }
                                 }
                                 echo '</ul>'; ?>

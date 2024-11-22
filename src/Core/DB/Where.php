@@ -113,7 +113,7 @@ class Where implements ArrayAccess
         $bind = $oldBinds;
         $result = [];
         foreach ($data as $index => $value) {
-            $wrappedIndex = DB::wrapName($index);
+            $wrappedIndex = implode('.', array_map(fn ($i) => DB::wrapName($i), explode('.', $index)));
             $idCrc = 'id_' . (string)crc32($wrappedIndex);
 
             if (is_array($value) && !$value) {
