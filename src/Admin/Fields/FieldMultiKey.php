@@ -131,6 +131,10 @@ for ($i = 0; $i < count($rows); ++$i) {
 
         if ($this->table == 'catalog_product') {
             // a dumb hack again...
+            if (!$value) {
+                return;
+            }
+
             $q = DB::query(
                 "select {$this->params['key_alias']}, pid from {$this->params['table_values']} where {$this->params['key']} = $value"
             );

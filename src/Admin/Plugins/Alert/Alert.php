@@ -3,18 +3,22 @@
 namespace Simflex\Admin\Plugins\Alert;
 
 
-class Alert {
+use Simflex\Core\Session;
+
+class Alert
+{
 
     protected static $s;
     protected static $isInited = false;
 
-    private function __construct() {
-        
+    private function __construct()
+    {
     }
 
-    public static function init() {
+    public static function init()
+    {
         if (!self::$isInited) {
-            self::$s = & $_SESSION['admin_plug_alert'];
+            self::$s = Session::get('admin.alerts');
             self::$isInited = true;
         }
         if (!isset(self::$s)) {
@@ -28,7 +32,8 @@ class Alert {
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function error($mixed, $goto = false, $page = '') {
+    public static function error($mixed, $goto = false, $page = '')
+    {
         self::init();
         self::pushMsg($page, "danger", $mixed);
         if ($goto) {
@@ -42,7 +47,8 @@ class Alert {
      * @param array|string $mixed сообщение
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function warning($mixed, $goto = false, $page = '') {
+    public static function warning($mixed, $goto = false, $page = '')
+    {
         self::init();
         self::pushMsg($page, "warning", $mixed);
         if ($goto) {
@@ -57,7 +63,8 @@ class Alert {
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function success($mixed, $goto = false, $page = '') {
+    public static function success($mixed, $goto = false, $page = '')
+    {
         self::init();
         self::pushMsg($page, "success", $mixed);
         if ($goto) {
@@ -72,7 +79,8 @@ class Alert {
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function info($mixed, $goto = false, $page = '') {
+    public static function info($mixed, $goto = false, $page = '')
+    {
         self::init();
         self::pushMsg($page, "info", $mixed);
         if ($goto) {
@@ -85,12 +93,15 @@ class Alert {
      * Вывести все накопившиеся сообщения по идентификатору
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function output($page = '') {
+    public static function output($page = '')
+    {
         self::init();
         self::echoSpecified($page, "danger");
         self::echoSpecified($page, "success");
         self::echoSpecified($page, "warning");
         self::echoSpecified($page, "info");
+
+        Session::set('admin.alerts', []);
     }
 
     /**
@@ -98,7 +109,8 @@ class Alert {
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      * @return string HTML
      */
-    public static function getHTML($page = '') {
+    public static function getHTML($page = '')
+    {
         ob_start();
         self::echoAll($page);
         return ob_get_clean();
@@ -109,7 +121,8 @@ class Alert {
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      * @return bool
      */
-    public static function has($page = '') {
+    public static function has($page = '')
+    {
         self::init();
         $has = false;
         $has |= isset(self::$s[$page]["error"]) && count(self::$s[$page]["error"]);
@@ -124,12 +137,14 @@ class Alert {
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      * @return bool
      */
-    public static function hasErrors($page = '') {
+    public static function hasErrors($page = '')
+    {
         self::init();
         return isset(self::$s[$page]["error"]) && count(self::$s[$page]["error"]);
     }
 
-    protected static function echoSpecified($page, $section) {
+    protected static function echoSpecified($page, $section)
+    {
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = "";
             if (count(self::$s[$page][$section]) == 1) {
@@ -141,11 +156,23 @@ class Alert {
             }
             if ($txt) {
                 switch ($section) {
-                    case 'success': $type = 'success'; $title = 'Успешно!'; break;
-                    case 'danger': $type = 'error'; $title = 'Ошибка!'; break;
-                    case 'warning': $type = 'notice'; $title = 'Внимание!'; break;
+                    case 'success':
+                        $type = 'success';
+                        $title = 'Успешно!';
+                        break;
+                    case 'danger':
+                        $type = 'error';
+                        $title = 'Ошибка!';
+                        break;
+                    case 'warning':
+                        $type = 'notice';
+                        $title = 'Внимание!';
+                        break;
                     case 'info':
-                    default: $type = 'info'; $title = 'Информация'; break;
+                    default:
+                        $type = 'info';
+                        $title = 'Информация';
+                        break;
                 }
 
                 include dirname(__FILE__) . '/alert.tpl';
@@ -154,7 +181,8 @@ class Alert {
         }
     }
 
-    protected static function pushMsg($page, $section, $mixed) {
+    protected static function pushMsg($page, $section, $mixed)
+    {
         if (is_array($mixed)) {
             if (!isset(self::$s[$page][$section])) {
                 self::$s[$page][$section] = array();
@@ -163,6 +191,8 @@ class Alert {
         } else {
             self::$s[$page][$section][md5($mixed)] = $mixed;
         }
+
+        Session::set('admin.alerts', self::$s);
     }
 
 }
