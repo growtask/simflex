@@ -210,4 +210,26 @@ class Request implements \Simflex\Core\DI\Service
     {
         return $this->requestBody;
     }
+
+    /**
+     * Builds query from existing GET parameters.
+     * @param array $extra Extra parameters
+     * @param array $ignore Ignore keys
+     * @return string Query
+     */
+    public function buildQuery(array $extra = [], array $ignore = []): string
+    {
+        $get = [];
+        foreach ($this->getParams as $key => $value) {
+            if (!in_array($key, $ignore)) {
+                $get[$key] = $value;
+            }
+        }
+
+        foreach ($extra as $key => $value) {
+            $get[$key] = $value;
+        }
+
+        return http_build_query($get);
+    }
 }

@@ -154,7 +154,9 @@ class Base
             $data = serialize($data);
 
             DB::query("UPDATE $this->table SET params = ? WHERE $keyName = $keyValue", [$data]);
-            exit(json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue]));
+            exit(
+            json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue])
+            );
         }
         $field = $this->fields[$fieldName];
         $q = "select $field->name from `$this->table` where $keyName = $keyValue";
@@ -192,16 +194,19 @@ class Base
         /** @var Field $field */
         $field = $this->fields[$_REQUEST['name']];
 
-        $q = DB::query("select {$this->pk->name}, {$field->params['name']} from {$this->table} where {$field->params['name']} like ? limit 50", [
-            '%' . $_REQUEST['text'] . '%'
-        ]);
+        $q = DB::query(
+            "select {$this->pk->name}, {$field->params['name']} from {$this->table} where {$field->params['name']} like ? limit 50",
+            [
+                '%' . $_REQUEST['text'] . '%'
+            ]
+        );
 
         $out = [];
         while ($r = DB::fetch($q)) {
             $out[] = ['id' => $r[$this->pk->name], 'name' => $r[$field->params['name']]];
         }
 
-        exit(json_encode($out,  JSON_UNESCAPED_UNICODE));
+        exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
     public function content()
@@ -669,7 +674,7 @@ class Base
      */
     protected function filterField($field)
     {
-        return $field->filter(@$_SESSION[$this->table]['filter'][$field->name]);
+        return $field->filter(@$_REQUEST['filter'][$field->name]);
     }
 
     public function addField($field)
@@ -692,7 +697,7 @@ class Base
             /* SYSTEM FILTER */
             if ($field->name == 'priv_id' && !User::ican('dev')) {
                 if ($field->isnull) {
-                    $this->where_sys[] = "(" . $this->table . ".priv_id IN(" . join(',',User::privIds())
+                    $this->where_sys[] = "(" . $this->table . ".priv_id IN(" . join(',', User::privIds())
                         . ") OR " . $this->table . ".priv_id IS NULL)";
                 } else {
                     $this->where_sys[] = "" . $this->table . ".priv_id IN(" . join(',', User::privIds()) . ")";
@@ -700,7 +705,7 @@ class Base
             }
             if ($field->name == 'role_id' && !User::ican('dev')) {
                 $this->where_sys[] = "" . $this->table
-                    . ".role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(" . join(',',User::privIds()) . "))";
+                    . ".role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(" . join(',', User::privIds()) . "))";
             }
         }
     }
@@ -903,7 +908,9 @@ class Base
         include dirname(__FILE__) . '/Base/tpl/form.tpl';
     }
 
-    protected function formBeforeOutput(&$row) {}
+    protected function formBeforeOutput(&$row)
+    {
+    }
 
     /**
      * Вывод html-кода для ввода данных на форме
@@ -939,8 +946,10 @@ class Base
         }
 
         $out = [];
-        $q = DB::query("select `{$field->params['fk_key']}` as id, `{$field->params['fk_label']}` as name from 
-                                      `{$field->params['fk_table']}` where {$field->params['fk_label']} like '%$text%' limit 50");
+        $q = DB::query(
+            "select `{$field->params['fk_key']}` as id, `{$field->params['fk_label']}` as name from 
+                                      `{$field->params['fk_table']}` where {$field->params['fk_label']} like '%$text%' limit 50"
+        );
         while ($r = DB::fetch($q)) {
             $out[] = $r;
         }
@@ -958,8 +967,10 @@ class Base
         }
 
         $out = [];
-        $q = DB::query("select `{$field->params['key']}` as id, `{$field->params['key_alias']}` as name from 
-                                      `{$field->params['table_values']}` where {$field->params['key_alias']} like '%$text%' limit 50");
+        $q = DB::query(
+            "select `{$field->params['key']}` as id, `{$field->params['key_alias']}` as name from 
+                                      `{$field->params['table_values']}` where {$field->params['key_alias']} like '%$text%' limit 50"
+        );
         while ($r = DB::fetch($q)) {
             $out[] = $r;
         }
@@ -1085,7 +1096,9 @@ class Base
                 }
                 $_POST = $MY_POST;
 
-                $q = "UPDATE `$this->table` SET params = '" . serialize($params) . "' WHERE {$this->pk->name} = {$row['id']}";
+                $q = "UPDATE `$this->table` SET params = '" . serialize(
+                        $params
+                    ) . "' WHERE {$this->pk->name} = {$row['id']}";
                 $success &= DB::query($q);
             }
         }
@@ -1162,7 +1175,10 @@ class Base
                         $path = preg_replace('@\/+@', '/', $path);
                         $row[$field_path->name] = $path;
 
-                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(" AND ", $where);
+                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(
+                                " AND ",
+                                $where
+                            );
                         DB::query($q);
 
                         $steck[] = $row;
@@ -1185,7 +1201,7 @@ class Base
                                     $where = $this->where_sys;
                                     $where[] = "" . $this->table . "." . $this->pk->name . "=" . $row[$this->pk->name];
                                     $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path
-                                        . "' WHERE " . join(" AND ",$where);
+                                        . "' WHERE " . join(" AND ", $where);
                                     DB::query($q);
                                     $row[$field_path->name] = $path;
 
@@ -1198,7 +1214,10 @@ class Base
                         $where = $this->where_sys;
                         $where[] = "" . $this->table . "." . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
                         $path = '/' . $_POST[$field_alias->name] . '/';
-                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(" AND ", $where);
+                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(
+                                " AND ",
+                                $where
+                            );
                         DB::query($q);
                     }
                 }
@@ -1242,7 +1261,10 @@ class Base
                 $values[] = '?';
             }
         }
-        $q = "INSERT INTO `" . $this->table . "` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
+        $q = "INSERT INTO `" . $this->table . "` (" . implode(', ', $keys) . ") VALUES (" . implode(
+                ', ',
+                $values
+            ) . ")";
         return [$q, $vals];
     }
 
@@ -1374,7 +1396,10 @@ class Base
                 if ($field instanceof FieldImage) {
                     $dir = 'images';
                 }
-                $q = "SELECT " . $field->name . " FROM `" . $this->table . "` WHERE " . $this->pk->name . " IN (" . join(',', $ids) . ")";
+                $q = "SELECT " . $field->name . " FROM `" . $this->table . "` WHERE " . $this->pk->name . " IN (" . join(
+                        ',',
+                        $ids
+                    ) . ")";
                 $rows = DB::assoc($q);
                 foreach ($rows as $row) {
                     if ($row[$field->name] && is_file('../uf/' . $dir . '/' . $field->path . $row[$field->name])) {
@@ -1439,7 +1464,6 @@ class Base
 
     protected function showDetailExtra($row)
     {
-
     }
 
     public function showDetail()
