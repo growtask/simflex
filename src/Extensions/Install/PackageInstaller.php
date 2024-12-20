@@ -17,12 +17,14 @@ class PackageInstaller
         }
 
         if (!isset($package) || !$package) {
+            echo "[!] Unable to get package\n";
             return;
         }
 
         // check if it's a Simflex package
         $path = $event->getComposer()->getInstallationManager()->getInstallPath($package);
         if (!is_dir($path . '/provider/extension')) {
+            echo "[!] Not a Simflex package\n";
             return;
         }
 
@@ -41,14 +43,18 @@ class PackageInstaller
         if (is_file($root . '/cache/files.php')) {
             unlink($root . '/cache/files.php');
         }
+
+        echo "[+] Processed package\n";
     }
 
     protected static function copyContents(string $from, string $to): void
     {
         if (!is_dir($from) || !is_dir($to)) {
+            echo '[!] Not found: ' . $from . ' or ' . $to . "\n";
             return;
         }
 
+        echo '[*] Copying ' . $from . ' to ' . $to . "\n";
         foreach (scandir($from) as $file) {
             copy($from . '/' . $file, $to . '/' . $file);
         }
