@@ -674,7 +674,7 @@ class Base
      */
     protected function filterField($field)
     {
-        return $field->filter(@$_REQUEST['filter'][$field->name]);
+        return $field->filter($_REQUEST['filter'][$field->name] ?? '');
     }
 
     public function addField($field)
