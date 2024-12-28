@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
+use Simflex\Core\Log;
 
 class FieldRelation extends Field
 {
@@ -68,7 +69,7 @@ class FieldRelation extends Field
                                           (p.{$this->params['left']} = {$id} and p.{$this->params['right']} = t.{$this->tablePk})) > 0";
 
         $q = DB::query($q);
-        
+
         while ($r = DB::fetch($q)) {
             $existing[] = $r[$this->tablePk];
         }
@@ -96,26 +97,35 @@ class FieldRelation extends Field
             }
 
             foreach ($toDelQ as $q) {
-                DB::query("delete from {$this->params['relation']} where {$this->params['left']} = ? and {$this->params['right']} = ?", $q);
+                DB::query(
+                    "delete from {$this->params['relation']} where {$this->params['left']} = ? and {$this->params['right']} = ?",
+                    $q
+                );
             }
         }
 
         if ($toAdd) {
             $toAddQ = [];
             foreach ($toAdd as $a) {
-                $toAddQ[] = "({$id}, {$a})";
+                if ($id && $a) {
+                    $toAddQ[] = "({$id}, {$a})";
+                }
             }
 
             for ($i = 0; $i < count($toAdd) - 1; ++$i) {
                 for ($k = $i + 1; $k < count($toAdd); ++$k) {
-                    $toAddQ[] = "({$toAdd[$i]}, {$toAdd[$k]})";
+                    if ($toAdd[$i] && $toAdd[$k]) {
+                        $toAddQ[] = "({$toAdd[$i]}, {$toAdd[$k]})";
+                    }
                 }
             }
 
-            $toAdd = implode(',', $toAddQ);
-            DB::query(
-                "insert into {$this->params['relation']} ({$this->params['left']}, {$this->params['right']}) values {$toAdd}"
-            );
+            if ($toAddQ) {
+                $toAdd = implode(',', $toAddQ);
+                DB::query(
+                    "insert into {$this->params['relation']} ({$this->params['left']}, {$this->params['right']}) values {$toAdd}"
+                );
+            }
         }
 
         return '';
