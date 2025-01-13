@@ -393,7 +393,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * @return bool True if success
      * @throws Exception
      */
-    public function update(?array $data = null): bool
+    public function update(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
         if (!$this->id) {
             return false;
@@ -410,6 +410,15 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         if ($this->beforeUpdate()) {
             $updateData = $this->data;
             unset($updateData[static::$primaryKeyName]);
+
+            foreach ($this->data as $key => $value) {
+                // skip virtual keys
+                if (($flags & self::FLAG_SKIP_VIRTUAL) && method_exists(static::class, 'offsetGet' . $key)) {
+                    continue;
+                }
+
+                unset($updateData[$key]);
+            }
 
             $query = 'update ' . static::getTableName(true) . ' set ';
             $query .= implode(', ', array_map(fn($key) => DB::wrapName($key) . ' = ?', array_keys($updateData)));
