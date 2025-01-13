@@ -413,7 +413,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
             foreach ($this->data as $key => $value) {
                 // skip virtual keys
-                if (($flags & self::FLAG_SKIP_VIRTUAL) && method_exists(static::class, 'offsetGet' . $key)) {
+                if (!($flags & self::FLAG_SKIP_VIRTUAL) || !method_exists(static::class, 'offsetGet' . $key)) {
                     continue;
                 }
 
