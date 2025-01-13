@@ -92,6 +92,10 @@ for ($i = 0; $i < count($rows); ++$i) {
 
         foreach ($values as $value) {
             $value = (int)$value;
+            if (!$value) {
+                continue;
+            }
+            
             $q = "INSERT INTO {$this->params['table_relations']} set $this->tablePk = $pkValue, {$this->params['key']} = $value";
             DB::query($q);
         }
