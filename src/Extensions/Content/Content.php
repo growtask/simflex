@@ -4,6 +4,7 @@ namespace Simflex\Extensions\Content;
 
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Container;
+use Simflex\Core\Log;
 use Simflex\Core\Profiler;
 use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
 use Simflex\Core\Core;
@@ -25,6 +26,11 @@ class Content extends ComponentBase
         if ($content = ModelContent::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
         }
+
+        if (!$content) {
+            Log::warning('active content with path {path} not found', ['path' => $path ?: Container::getRequest()->getPath()]);
+        }
+
         return $content;
     }
 
@@ -267,6 +273,8 @@ class Content extends ComponentBase
         if (is_file($path = __DIR__ . '/tpl/' . $name)) {
             return $path;
         }
+
+        Log::warning('Content: target template {name} was not found, is this intentional?', ['name' => $name]);
         return __DIR__ . '/tpl/default.tpl';
     }
 
