@@ -253,7 +253,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         $ev = Container::getEvents();
         $ev->dispatch(new Event(Events::PreModelFill, static::class, $this));
 
-        $this->data = array_merge($data, $this->data);
+        $this->data = array_merge($this->data, $data);
         $this->id = $this->data[static::$primaryKeyName] ?? null;
 
         $ev->dispatch(new Event(Events::PostModelFill, static::class, $this));
