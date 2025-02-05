@@ -74,7 +74,7 @@ class DB
      * @return mixed
      * @see Adapter::query()
      */
-    public static function &query(string $q, array $params = [])
+    public static function query(string $q, array $params = [])
     {
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $execTime = microtime(1);

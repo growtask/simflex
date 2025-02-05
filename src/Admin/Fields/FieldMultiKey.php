@@ -86,6 +86,10 @@ for ($i = 0; $i < count($rows); ++$i) {
             $this->tablePk = 'link_id';
         }
 
+        if (!$pkValue) {
+            return '';
+        }
+
         $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : array();
         $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
         DB::query($q);
