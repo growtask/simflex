@@ -32,7 +32,8 @@ abstract class Base
      */
     protected function getMethodName(): string
     {
-        $name = 'action' . ucfirst(Container::get('request')->getUrlParts(0) ?: 'index');
+        $parts = Container::get('request')->getUrlParts();
+        $name = 'action' . ucfirst(end($parts) ?: 'index');
         if (!method_exists($this, $name)) {
             throw Error::byCode(ErrorCodes::APP_METHOD_NOT_FOUND);
         }

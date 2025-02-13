@@ -152,4 +152,6 @@ enum Events
      * - bool $result - delete result
      */
     case PostModelDelete;
+
+    case Custom;
 }
