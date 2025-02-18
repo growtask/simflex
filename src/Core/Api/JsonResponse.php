@@ -86,10 +86,10 @@ class JsonResponse extends Response
     {
         // override status code if it wasn't set to other one yet
         if ($this->statusCode == 200 && $overwriteStatusCode) {
-            $this->statusCode = ErrorCodes::getHttpStatusCode($err->getCode()) ?? 500;
+            $this->statusCode = ErrorCodes::getHttpStatusCode(intval($err->getCode())) ?? 500;
         }
 
-        $this->errorCode = $err->getCode();
+        $this->errorCode = intval($err->getCode());
         $this->errorMessage = $err->getMessage();
         return $this;
     }
