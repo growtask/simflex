@@ -2,6 +2,8 @@
 
 namespace Simflex\Core;
 
+use Simflex\Core\Routing\Route;
+
 class Request implements \Simflex\Core\DI\Service
 {
     protected bool $isHttps;
@@ -17,6 +19,7 @@ class Request implements \Simflex\Core\DI\Service
     protected string $urlPath;
     protected array $urlParts;
     protected array $serverInfo = [];
+    protected ?Route $route = null;
 
     public static function getServiceName(): string
     {
@@ -48,6 +51,16 @@ class Request implements \Simflex\Core\DI\Service
 
         // parse and compose URL
         $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path'] ?? '/');
+    }
+
+    public function setRoute(Route $route): void
+    {
+        $this->route = $route;
+    }
+
+    public function getRoute(): ?Route
+    {
+        return $this->route;
     }
 
     public function setPath(string $path): void
@@ -114,6 +127,11 @@ class Request implements \Simflex\Core\DI\Service
     public function isAjax(): bool
     {
         return $this->header('X-Requested-With') == 'XMLHttpRequest';
+    }
+
+    public function getRequestMethod(): string
+    {
+        return $this->requestMethod;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Simflex\Core\Routing;
 
+use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\Container;
 use Simflex\Core\Routing\Route;
 
@@ -19,8 +20,9 @@ class Resolver
 
         $request = Container::getRequest();
         if ($route =& $routes[trim($request->getPath(), '/')]) {
-            return static::makeRoute($route);
+            return static::makeRoute($route, trim($request->getPath(), '/'));
         }
+
         $uri = $request->getUrlParts();
         $path = '';
         $uris = [];
@@ -33,17 +35,18 @@ class Resolver
 
         foreach (array_reverse($uris) as $path) {
             if ($route =& $routes[$path]) {
-                return static::makeRoute($route);
+                return static::makeRoute($route, $path);
             }
         }
-        if ($className = $this->resolveDeprecated()) {
-            return static::makeRoute($className);
+
+        if ($resolved = $this->resolveDeprecated()) {
+            return static::makeRoute($resolved['class'], $resolved['path']);
         }
         if ($routeDefault = $routes['/'] ?? null) {
-            return static::makeRoute($routeDefault);
+            return static::makeRoute($routeDefault, '/');
         }
         if ($classDefault = Container::getConfig()->defaultComponent) {
-            return static::makeRoute($classDefault);
+            return static::makeRoute($classDefault, '/');
         }
         throw new \Exception("Can't resolve route {$request->getPath()}");
     }
@@ -58,7 +61,8 @@ class Resolver
         return $this;
     }
 
-    protected function resolveDeprecated(): ?string
+    #[ArrayShape(['class' => 'string', 'path' => 'string'])]
+    protected function resolveDeprecated(): ?array
     {
         if (empty($this->menuByLink)) {
             return null;
@@ -80,20 +84,20 @@ class Resolver
             }
             $i++;
         }
-        return $class;
+        return ['class' => $class, 'path' => $path];
     }
 
     /**
      * @param string|array|Route $route
      * @return Route
      */
-    protected static function makeRoute($route): Route
+    protected static function makeRoute(array|Route|string $route, string $baseUri): Route
     {
         if (is_string($route)) {
-            return new Route($route);
+            return new Route($route, $baseUri);
         }
         if (is_array($route)) {
-            return new Route($route[0], $route[1] ?? null);
+            return new Route($route[0], $baseUri, $route[1] ?? null);
         }
         if ($route instanceof Route) {
             return $route;
