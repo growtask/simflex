@@ -5,7 +5,7 @@ namespace Simflex\Core;
 use ReflectionClass;
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Controller\Action;
-use Simflex\Core\Controller\ActionMethod;
+use Simflex\Core\Controller\ActionMatcher;
 use Simflex\Core\Core;
 
 /**
@@ -17,14 +17,22 @@ use Simflex\Core\Core;
 class ControllerBase extends ComponentBase
 {
     /**
-     * @var array|ActionMethod[] Actions
+     * @var array|ActionMatcher[] Actions
      */
     protected array $actions = [];
+
+    /**
+     * @var array Per-controller session
+     */
+    protected array $session = [];
 
     public function __construct(protected Request $request, protected Response $response)
     {
         parent::__construct();
         $this->collectActions();
+
+        // init session
+        $this->session = Session::get(md5(static::class)) ?? [];
     }
 
     /**
@@ -52,15 +60,15 @@ class ControllerBase extends ComponentBase
 
             /** @var Action $action */
             $action = $attribs[0]->newInstance();
-            $this->actions[] = new ActionMethod($action, $method->getName());
+            $this->actions[] = new ActionMatcher($action, $method->getName());
         }
     }
 
     /**
      * Try to resolve controller's actions
-     * @return ActionMethod|null
+     * @return ActionMatcher|null
      */
-    protected function resolve(): ?ActionMethod
+    protected function resolve(): ?ActionMatcher
     {
         foreach ($this->actions as $action) {
             if ($action->match()) {
@@ -101,5 +109,8 @@ class ControllerBase extends ComponentBase
 
         // invoke the method
         $method->invoke($this, ...$varPos);
+
+        // update session
+        Session::set(md5(static::class), $this->session);
     }
 }
