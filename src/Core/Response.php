@@ -1,6 +1,8 @@
 <?php
 namespace Simflex\Core;
 
+use JetBrains\PhpStorm\NoReturn;
+
 abstract class Response implements \Simflex\Core\DI\Service
 {
     protected $statusCode = 200;
@@ -25,6 +27,18 @@ abstract class Response implements \Simflex\Core\DI\Service
     {
         $this->setHeader('Location', $url);
         return $this;
+    }
+
+    /**
+     * Redirect and quit
+     * @param string $url URL to redirect to
+     * @return void
+     */
+    #[NoReturn]
+    public function redirectNow(string $url)
+    {
+        $this->redirect($url);
+        exit;
     }
 
     /**

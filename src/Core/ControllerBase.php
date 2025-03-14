@@ -2,74 +2,104 @@
 
 namespace Simflex\Core;
 
+use ReflectionClass;
 use Simflex\Core\ComponentBase;
+use Simflex\Core\Controller\Action;
+use Simflex\Core\Controller\ActionMatcher;
 use Simflex\Core\Core;
 
 /**
- * Use ControllerBase for your component-class instead of ComponentBase to automatic routing URI paths to class methods
- * @example http://site.ru/myext/myact/ will call "myact" method from "myext" class
- * @example http://site.ru/myext/ will call "index" method from "myext" class
+ * Automatic controller
  *
+ * Use Action attribute to create attributes within child class
+ * @see Action
  */
 class ControllerBase extends ComponentBase
 {
-    protected $s; // private session for class
-    protected $d; // private data for class
-    protected $action = '';
+    /**
+     * @var array|ActionMatcher[] Actions
+     */
+    protected array $actions = [];
 
-    public function __construct()
+    public function __construct(protected Request $request, protected Response $response)
     {
         parent::__construct();
-        $this->s = &$_SESSION[get_class($this)]['session'];
-        if (!isset($this->d)) {
-            $this->d = array();
+        $this->collectActions();
+    }
+
+    /**
+     * Fallback method
+     * @return void
+     */
+    protected function fallback(): void
+    {
+        // redirect to 404
+        $this->response->redirectNow('/404');
+    }
+
+    /**
+     * Collects actions
+     * @return void
+     */
+    protected function collectActions(): void
+    {
+        $class = new ReflectionClass($this);
+        foreach ($class->getMethods() as $method) {
+            $attribs = $method->getAttributes(Action::class);
+            if (!$attribs) {
+                continue;
+            }
+
+            /** @var Action $action */
+            $action = $attribs[0]->newInstance();
+            $this->actions[] = new ActionMatcher($action, $method->getName());
         }
     }
 
-    public function index()
+    /**
+     * Try to resolve controller's actions
+     * @return ActionMatcher|null
+     */
+    protected function resolve(): ?ActionMatcher
     {
+        foreach ($this->actions as $action) {
+            if ($action->match()) {
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     protected function content()
     {
-        $mname = $this->getMethodName();
-        if (!method_exists($this, $mname)) {
-            Core::error404();
-        }
-        $this->$mname(...array_slice(Core::uri(), 2));
-    }
-
-    /**
-     * Find appropriate method by path
-     * @return string
-     */
-    protected function getMethodName(): string
-    {
-        if ($this->action) {
-            return $this->action;
+        $maybeAction = $this->resolve();
+        if (!$maybeAction) {
+            $this->fallback();
+            return;
         }
 
-        // by default
-        $name = $default = "index";
-        $uri = Core::uri();
+        $vars = $maybeAction->getVars();
+        $request = $this->request->request();
 
-        if (isset($uri[1]) && (int)$uri[1]) {
-            // if /article/1/
-            $name = 'item';
-        } elseif (isset($uri[1]) && $uri[1]) {
-            // read URI
-            $name = $uri[1];
+        // get the method
+        $class = new ReflectionClass($this);
+        $method = $class->getMethod($maybeAction->methodName);
+
+        // resolve arguments
+        $varPos = [];
+        foreach ($method->getParameters() as $param) {
+            if (isset($vars[$param->name])) {
+                $varPos[] = $vars[$param->name];
+                continue;
+            }
+
+            if (isset($request[$param->name])) {
+                $varPos[] = $request[$param->name];
+            }
         }
 
-        return $name;
-    }
-
-    /**
-     * @return string
-     * @deprecated use getMethodName()
-     */
-    protected function mname(): string
-    {
-        return $this->getMethodName();
+        // invoke the method
+        $method->invoke($this, ...$varPos);
     }
 }

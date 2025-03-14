@@ -4,19 +4,8 @@ namespace Simflex\Core\Routing;
 
 class Route
 {
-    /** @var string */
-    protected $componentClassName;
-    /** @var string|null */
-    protected $componentAction;
-
-    /**
-     * @param string $componentClassName
-     * @param string|null $componentAction
-     */
-    public function __construct(string $componentClassName, ?string $componentAction = null)
+    public function __construct(protected string $componentClassName, protected string $baseUri, protected ?string $componentAction = null)
     {
-        $this->componentClassName = $componentClassName;
-        $this->componentAction = $componentAction;
     }
 
     /**
@@ -35,5 +24,8 @@ class Route
         return $this->componentAction;
     }
 
-
+    public function getBaseUri(): string
+    {
+        return $this->baseUri;
+    }
 }
