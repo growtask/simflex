@@ -8,7 +8,7 @@ use Simflex\Core\Log;
 /**
  * Combines Action and method name.
  *
- * Delimiteres:
+ * Delimiters:
  * - `:` - start position of a path part to be extracted (example - `/path/:name/to/something/`, if `/path/hello/to/something/` then `name` = `hello`)
  *
  * @see Action
@@ -17,7 +17,10 @@ class ActionMatcher
 {
     protected array $vars = [];
 
-    public function __construct(public Action $action, public string $methodName)
+    public function __construct(
+        public Action $action,
+        public string $methodName
+    )
     {
     }
 
@@ -50,7 +53,7 @@ class ActionMatcher
             return false;
         }
 
-        $route = $request->getRoute();
+        $route = $request->route;
         $path = trim($request->getPath(), '/');
 
         // replace route part in the path
