@@ -10,12 +10,12 @@ class Action
     /**
      * Controller action
      *
-     * @param string $action Action. This will be used as a part of the URI path. Use :name within to extract strings from paths
-     * @param string $method Target HTTP method. Set to "all" if you want to allow any method
+     * @param string $path Action. This will be used as a part of the URI path. Use :name within to extract strings from paths
+     * @param string $httpMethod Target HTTP method. Set to "all" if you want to allow any method
      */
     public function __construct(
-        public string $action,
-        public string $method = 'all',
+        public string $path,
+        public string $httpMethod = 'all',
     )
     {
     }

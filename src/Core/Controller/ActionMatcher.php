@@ -5,7 +5,15 @@ namespace Simflex\Core\Controller;
 use Simflex\Core\Container;
 use Simflex\Core\Log;
 
-class ActionMethod
+/**
+ * Combines Action and method name.
+ *
+ * Delimiteres:
+ * - `:` - start position of a path part to be extracted (example - `/path/:name/to/something/`, if `/path/hello/to/something/` then `name` = `hello`)
+ *
+ * @see Action
+ */
+class ActionMatcher
 {
     protected array $vars = [];
 
@@ -19,6 +27,14 @@ class ActionMethod
     public function getVars(): array
     {
         return $this->vars;
+    }
+
+    /**
+     * @return bool If has normal placeholders (`:example`)
+     */
+    public function hasPlaceholders(): bool
+    {
+        return strpos($this->action->path, ':') !== false;
     }
 
     /**
@@ -39,7 +55,7 @@ class ActionMethod
 
         // replace route part in the path
         $path = trim(substr($path, strlen($route->getBaseUri())), '/');
-        $myPath = trim($this->action->action, '/');
+        $myPath = trim($this->action->path, '/');
 
         // match fast
         if ($path == $myPath) {
@@ -50,6 +66,12 @@ class ActionMethod
         $pathParts = explode('/', $path);
         $parts = explode('/', $myPath);
 
+        // match full path
+        return $this->matchFull($parts, $pathParts);
+    }
+
+    protected function matchFull(array $parts, array $pathParts): bool
+    {
         // check if we even get the same amount of items here
         if (count($parts) !== count($pathParts)) {
             return false;
@@ -78,7 +100,6 @@ class ActionMethod
             }
         }
 
-        // matched everything
         return true;
     }
 }
