@@ -19,7 +19,7 @@ class Request implements \Simflex\Core\DI\Service
     protected string $urlPath;
     protected array $urlParts;
     protected array $serverInfo = [];
-    protected ?Route $route = null;
+    public ?Route $route = null;
 
     public static function getServiceName(): string
     {
@@ -51,16 +51,6 @@ class Request implements \Simflex\Core\DI\Service
 
         // parse and compose URL
         $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path'] ?? '/');
-    }
-
-    public function setRoute(Route $route): void
-    {
-        $this->route = $route;
-    }
-
-    public function getRoute(): ?Route
-    {
-        return $this->route;
     }
 
     public function setPath(string $path): void

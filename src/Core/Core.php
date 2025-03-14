@@ -189,7 +189,7 @@ class Core
             ->resolve(Container::getConfig()->getRoutes());
 
         // set route here so we can use it later, if needed
-        Container::getRequest()->setRoute($route);
+        Container::getRequest()->route = $route;
 
         $componentClass = $route->getComponentClassName();
         return new $componentClass(...Injector::resolveClass($componentClass));

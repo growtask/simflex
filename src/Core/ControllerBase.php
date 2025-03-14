@@ -21,18 +21,10 @@ class ControllerBase extends ComponentBase
      */
     protected array $actions = [];
 
-    /**
-     * @var array Per-controller session
-     */
-    protected array $session = [];
-
     public function __construct(protected Request $request, protected Response $response)
     {
         parent::__construct();
         $this->collectActions();
-
-        // init session
-        $this->session = Session::get(md5(static::class)) ?? [];
     }
 
     /**
@@ -109,8 +101,5 @@ class ControllerBase extends ComponentBase
 
         // invoke the method
         $method->invoke($this, ...$varPos);
-
-        // update session
-        Session::set(md5(static::class), $this->session);
     }
 }
