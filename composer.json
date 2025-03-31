@@ -32,7 +32,8 @@
     "ext-json": "*",
     "psr/log": "*",
     "maximebf/debugbar": "1.22.*",
-    "filp/whoops": "2.15.*"
+    "filp/whoops": "2.15.*",
+    "phpmailer/phpmailer": "v6.*"
   },
   "require-dev": {
   },
