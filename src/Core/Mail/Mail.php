@@ -10,37 +10,42 @@ class Mail
     /**
      * @var string Subject
      */
-    public string $subject;
+    public string $subject = '';
 
     /**
      * @var string Body (may contain HTML)
      */
-    public string $body;
+    public string $body = '';
 
     /**
      * @var string Alternative body (text-only)
      */
-    public string $altBody;
+    public string $altBody = '';
 
     /**
      * @var string Recipient address
      */
-    public string $to;
+    public string $to = '';
 
     /**
      * @var string Reply-To address
      */
-    public string $replyTo;
+    public string $replyTo = '';
 
     /**
      * @var array Additional recipiets
      */
-    public array $cc;
+    public array $cc = [];
 
     /**
      * @var array Additional secret recipients
      */
-    public array $bcc;
+    public array $bcc = [];
+
+    /**
+     * @var array Attachments
+     */
+    public array $attachments = [];
 
     /**
      * Runs a template and sets body and alt body.
