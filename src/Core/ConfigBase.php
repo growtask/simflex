@@ -30,14 +30,16 @@ abstract class ConfigBase
 
     /**
      * @var array{
-     *     adapter: string,
+     *     transport: string,
      *     host: string,
      *     port: string,
      *     security: string,
      *     username: string,
      *     password: string,
      * } Mail options. "security" field value may differ per transport, check what exactly the transport you want to use
-     * expects
+     * expects. For PHPMailer, use these: https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-PHPMailer.html#property_SMTPSecure
+     *
+     * Set the class to the "transport" field. Note that it MUST be implementing Transport interface.
      */
     public array $mail = [
         'transport' => null,
