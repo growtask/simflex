@@ -5,6 +5,7 @@ namespace Simflex\Extensions\Content;
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Container;
 use Simflex\Core\Log;
+use Simflex\Core\Factory;
 use Simflex\Core\Profiler;
 use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
 use Simflex\Core\Core;
@@ -20,10 +21,13 @@ use Simflex\Extensions\Content\Model\ModelContent;
  */
 class Content extends ComponentBase
 {
+    public function __construct(protected Factory $factory)
+    {
+    }
 
     public function get($path = ''): ?ModelContent
     {
-        if ($content = ModelContent::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
+        if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
         }
 
@@ -37,7 +41,7 @@ class Content extends ComponentBase
     public static function getStatic($path = '')
     {
         $path = $path ?: Container::getRequest()->getPath();
-        if ($content = ModelContent::findOne(['active' => 1, 'path' => $path])) {
+        if ($content = Container::getFactory()->getStatic(ModelContent::class)::findOne(['active' => 1, 'path' => $path])) {
             $content['params'] = unserialize($content['params']);
         }
 
