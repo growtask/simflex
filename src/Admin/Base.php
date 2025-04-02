@@ -1255,7 +1255,7 @@ class Base
                 $keys[] = DB::wrapName($field->name);
                 if ($field->name == 'params') {
                     $params = $this->getParams();
-                    $post = "'" . DB::escape(serialize($params)) . "'";
+                    $post = serialize($params);
                 }
                 $vals[] = $post;
                 $values[] = '?';
