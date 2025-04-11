@@ -2,8 +2,8 @@
 
 namespace Simflex\Core\Telegram;
 
+use Curl\Curl;
 use Simflex\Core\Container;
-use Simflex\Core\Curl;
 use Simflex\Core\DI\Service;
 
 /**
@@ -59,15 +59,14 @@ class TelegramApi implements Service
     {
         $cfg = Container::getConfig();
 
-        $ch = new Curl('https://api.telegram.org/bot' . $cfg->telegram['token'] . '/sendMessage');
-        $ch->method = 'POST';
-        $ch->setPostBody([
+        $ch = new Curl();
+        $ch->post('https://api.telegram.org/bot' . $cfg->telegram['token'] . '/sendMessage', [
             'chat_id' => $chatId,
             'parse_mode' => 'MarkdownV2',
             'text' => $md
         ]);
 
-        $ret = json_decode($ch->send() ?? '', true) ?? [];
+        $ret = json_decode($ch->getResponse() ?? '', true) ?? [];
         return $ret['ok'] ?? false;
     }
 }

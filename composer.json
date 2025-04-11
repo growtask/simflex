@@ -33,7 +33,8 @@
     "psr/log": "*",
     "maximebf/debugbar": "1.22.*",
     "filp/whoops": "2.15.*",
-    "phpmailer/phpmailer": "v6.*"
+    "phpmailer/phpmailer": "v6.*",
+    "curl/curl": "2.*"
   },
   "require-dev": {
   },
