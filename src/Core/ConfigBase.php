@@ -29,6 +29,37 @@ abstract class ConfigBase
     ];
 
     /**
+     * @var array{
+     *     transport: string,
+     *     host: string,
+     *     port: string,
+     *     security: string,
+     *     username: string,
+     *     password: string,
+     * } Mail options. "security" field value may differ per transport, check what exactly the transport you want to use
+     * expects. For PHPMailer, use these: https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-PHPMailer.html#property_SMTPSecure
+     *
+     * Set the class to the "transport" field. Note that it MUST be implementing Transport interface.
+     */
+    public array $mail = [
+        'transport' => null,
+        'host' => 'localhost',
+        'port' => '25',
+        'security' => '',
+        'username' => '',
+        'password' => '',
+    ];
+
+    /**
+     * @var array{
+     *     token: string
+     * } Telegram options
+     */
+    public array $telegram = [
+        'token' => '',
+    ];
+
+    /**
      * @var string Default component to load
      */
     public string $defaultComponent = '\Simflex\Extensions\Content\Content';
