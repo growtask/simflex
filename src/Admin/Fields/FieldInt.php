@@ -75,11 +75,18 @@ class FieldInt extends Field
 //            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
 //            $list = Service::tree2list($tree);
 
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            $sel = DB::fetch($sel);
 
-            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
+            if ($this->params['fk_is_pid']) {
+                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from `{$this->params['fk_table']}` limit 20");
+                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from 
+                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+            } else {
+                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
+                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
+                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+            }
+
+            $sel = DB::fetch($sel);
 
             $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown ' . ($this->readonly ? ' disabled' : '') . '" data-action="searchInt" data-ajax="true">
@@ -105,10 +112,22 @@ class FieldInt extends Field
                     $hasId = true;
                 }
 
+                if ($this->params['fk_is_pid']) {
+                    $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
+                    if ($pidName) {
+                        $r['name'] = $pidName . ' -> ' . $r['name'];
+                    }
+                }
                 $tempSel .= '<div data-value="' . $r['id'] . '" class="form-control__dropdown-item">' . $r['name'] . '</div>';
             }
 
             if (!$hasId) {
+                if ($this->params['fk_is_pid']) {
+                    $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
+                    if ($pidName) {
+                        $r['name'] = $pidName . ' -> ' . $r['name'];
+                    }
+                }
                 $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
             }
 
