@@ -109,7 +109,7 @@ class Base
         }
 
         // filter this
-        $this->ids = array_map(fn ($val) => intval($val), $this->ids);
+        $this->ids = implode(',', array_filter(array_map(fn ($val) => intval($val), explode(',', $this->ids))));
 
         $this->initTableName();
         $this->initTableData();
