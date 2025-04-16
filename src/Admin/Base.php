@@ -108,6 +108,9 @@ class Base
             $this->ids = $_POST['group_ids'];
         }
 
+        // filter this
+        $this->ids = array_map(fn ($val) => intval($val), $this->ids);
+
         $this->initTableName();
         $this->initTableData();
 
