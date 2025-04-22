@@ -49,7 +49,7 @@ class ActionMatcher
         $request = Container::getRequest();
 
         // match method, if something but "all" was set
-        if ($this->action->method != 'all' && $request->getRequestMethod() != $this->action->method) {
+        if ($this->action->httpMethod != 'all' && $request->getRequestMethod() != $this->action->httpMethod) {
             return false;
         }
 
