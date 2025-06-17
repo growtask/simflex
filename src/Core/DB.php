@@ -12,16 +12,10 @@ use Simflex\Core\User;
  */
 class DB
 {
-    /**
-     * @var Adapter
-     */
-    protected static $db;
-    protected static $lastQuery = '';
+    protected static Adapter $db;
+    protected static string $lastQuery = '';
 
-    /**
-     * @return Adapter
-     */
-    protected static function db()
+    protected static function db(): Adapter
     {
         if (!isset(static::$db)) {
             Profiler::traceStart(__CLASS__, __FUNCTION__);
@@ -91,7 +85,7 @@ class DB
      * @return mixed
      * @see Adapter::fetch()
      */
-    public static function fetch(&$result)
+    public static function fetch($result)
     {
         return static::db()->fetch($result);
     }
@@ -110,13 +104,13 @@ class DB
 
     /**
      * @param string $q SQL query to execute
-     * @param mixed $field1
-     * @param mixed $field2
+     * @param bool|string $field1
+     * @param bool|string $field2
      * @param array $params
-     * @return mixed
+     * @return bool|array
      * @see Adapter::assoc()
      */
-    public static function assoc(string $q, $field1 = false, $field2 = false, array $params = [])
+    public static function assoc(string $q, bool|string $field1 = false, bool|string $field2 = false, array $params = []): bool|array
     {
         return static::db()->assoc(static::query($q, $params), $field1, $field2);
     }
@@ -202,7 +196,7 @@ class DB
      * @return array|string
      * @see Adapter::escape()
      */
-    public static function escape($mixed)
+    public static function escape(array|string $mixed): array|string
     {
         if (is_array($mixed)) {
             foreach ($mixed as $index => $str) {
@@ -276,7 +270,7 @@ class DB
     /**
      * Starts DB transaction
      */
-    public static function transactionStart()
+    public static function transactionStart(): void
     {
         static::db()->beginTransaction();
     }
@@ -284,7 +278,7 @@ class DB
     /**
      * Commits DB transaction
      */
-    public static function transactionCommit()
+    public static function transactionCommit(): void
     {
         static::db()->commitTransaction();
     }
@@ -292,7 +286,7 @@ class DB
     /**
      * Rolls back DB transaction
      */
-    public static function transactionRollback()
+    public static function transactionRollback(): void
     {
         static::db()->rollbackTransaction();
     }
@@ -302,7 +296,7 @@ class DB
      *
      * @param bool $success True to commit, false to rollback
      */
-    public static function transactionEnd(bool $success)
+    public static function transactionEnd(bool $success): void
     {
         $success ? static::transactionCommit() : static::transactionRollback();
     }

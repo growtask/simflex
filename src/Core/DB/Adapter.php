@@ -18,7 +18,7 @@ interface Adapter
      * @return void
      * @deprecated Use $params in query() instead
      */
-    public function bind(array $params);
+    public function bind(array $params): void;
 
     /**
      * Executes a SQL query with previously (optional) bound items
@@ -35,7 +35,7 @@ interface Adapter
      * @param mixed $result Adapter-specific result object
      * @return mixed False if fails, assoc-array row if success
      */
-    public function fetch(&$result);
+    public function fetch($result);
 
     /**
      * Seeks result to a specific index
@@ -61,9 +61,9 @@ interface Adapter
      * @param mixed $result Adapter-specific result object
      * @param bool|string $f1 Column name to use as key or false to use index
      * @param bool|string $f2 Second column name for inner rows
-     * @return mixed Array containing results
+     * @return bool|array Array containing results
      */
-    public function assoc(&$result, $f1, $f2);
+    public function assoc(mixed $result, bool|string $f1, bool|string $f2): bool|array;
 
     /**
      * Returns last insert ID
@@ -120,19 +120,19 @@ interface Adapter
      *
      * @return void
      */
-    public function beginTransaction();
+    public function beginTransaction(): void;
 
     /**
      * Commits transaction
      *
      * @return void
      */
-    public function commitTransaction();
+    public function commitTransaction(): void;
 
     /**
      * Rollbacks transaction
      *
      * @return void
      */
-    public function rollbackTransaction();
+    public function rollbackTransaction(): void;
 }

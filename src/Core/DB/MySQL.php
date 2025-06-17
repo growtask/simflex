@@ -4,10 +4,8 @@ namespace Simflex\Core\DB;
 
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use PDO;
-use PDOException;
 use PDOStatement;
 use Simflex\Core\Container;
-use Simflex\Core\DB\Adapter;
 
 /**
  * Class MySQL
@@ -35,7 +33,7 @@ class MySQL implements Adapter
         return true;
     }
 
-    public function bind(array $params)
+    public function bind(array $params): void
     {
         $sql = [];
         foreach ($params as $k => $v) {
@@ -61,7 +59,7 @@ class MySQL implements Adapter
         return $query->execute($params) ? $query : false;
     }
 
-    public function fetch(&$result)
+    public function fetch($result)
     {
         if (!$result) {
             return null;
@@ -104,21 +102,12 @@ class MySQL implements Adapter
         }
     }
 
-    /**
-     * @param bool|PDOStatement $result
-     * @param bool $f1
-     * @param bool $f2
-     *
-     * @return array|bool
-     */
-    public function assoc(&$result, $f1 = false, $f2 = false)
+    public function assoc(mixed $result, bool|string $f1, bool|string $f2): bool|array
     {
         if (!$result) {
             return false;
         } else {
             $rows = [];
-
-            /** @var PDOStatement $result */
             if ($f1) {
                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                     if ($f2 === false) {
@@ -132,7 +121,6 @@ class MySQL implements Adapter
             } else {
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             }
-
             return $rows;
         }
     }
@@ -144,17 +132,17 @@ class MySQL implements Adapter
 
     public function errno(): int
     {
-        return $this->lastQuery ? ($this->lastQuery->errorInfo()[1] ?? 0) : 0;
+        return isset($this->lastQuery) ? ($this->lastQuery->errorInfo()[1] ?? 0) : 0;
     }
 
     public function error(): ?string
     {
-        return $this->lastQuery ? $this->lastQuery->errorInfo()[2] : null;
+        return isset($this->lastQuery) ? $this->lastQuery->errorInfo()[2] : null;
     }
 
     public function errorCode(): ?string
     {
-        return $this->lastQuery ? $this->db->errorCode() : null;
+        return isset($this->lastQuery) ? $this->db->errorCode() : null;
     }
 
     public function errorPrepared(): string
@@ -166,7 +154,7 @@ class MySQL implements Adapter
         $errNo = $this->errno();
         if ($errNo > 0) {
             $message = "Ошибка. Код: $errNo. ";
-            $message .= isset($errorList[$errNo]) ? $errorList[$errNo] : $this->error();
+            $message .= $errorList[$errNo] ?? $this->error();
 
             return $message;
         } else {
@@ -181,20 +169,20 @@ class MySQL implements Adapter
 
     public function affectedRows(): int
     {
-        return $this->lastQuery ? $this->lastQuery->rowCount() : 0;
+        return isset($this->lastQuery) ? $this->lastQuery->rowCount() : 0;
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->db->beginTransaction();
     }
 
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->db->commit();
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->db->rollBack();
     }
