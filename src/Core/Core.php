@@ -12,24 +12,24 @@ use Simflex\Core\Routing\Resolver;
 
 class Core
 {
-    protected static $ajax = false;
-    protected static $uri = [];
-    protected static $path = '';
-    protected static $site_params = false;
-    protected static $menu_tree = [];
-    protected static $menu_by_id = [];
-    protected static $menu_by_link = [];
-    protected static $menu_by_ext = [];
-    protected static $menu_cur = false;
-    protected static $component_level = 0;
-    protected static $component_menu_id = 0;
-    protected static $content_only = false;
+    protected static bool $ajax = false;
+    protected static array $uri = [];
+    protected static string $path = '';
+    protected static array $site_params = [];
+    protected static array $menu_tree = [];
+    protected static array $menu_by_id = [];
+    protected static array $menu_by_link = [];
+    protected static array $menu_by_ext = [];
+    protected static ?array $menu_cur = null;
+    protected static int $component_level = 0;
+    protected static int $component_menu_id = 0;
+    protected static bool $content_only = false;
 
     private function __construct()
     {
     }
 
-    public static function init()
+    public static function init(): void
     {
         // if request or response wasn't set, we still have to construct them
         // useful for backwards compatibility
@@ -70,7 +70,7 @@ class Core
         static::initMenu();
     }
 
-    protected static function initMenu()
+    protected static function initMenu(): void
     {
         $q = "SELECT t1.*, t2.class
         FROM menu t1
@@ -94,17 +94,17 @@ class Core
      * @return bool
      * @deprecated use Request::isAjax() instead
      */
-    public static function ajax()
+    public static function ajax(): bool
     {
         return Container::getRequest()->isAjax();
     }
 
     /**
      * @param false $i
-     * @return array|mixed|string
+     * @return array|string
      * @deprecated use Request::getUrlParts() instead
      */
-    public static function uri($i = false)
+    public static function uri(int|false $i = false): array|string
     {
         $uri = Container::getRequest()->getUrlParts();
 
@@ -242,11 +242,11 @@ class Core
         } else {
             $config = Container::getConfig();
             if (isset($_REQUEST['print']) && is_file('theme/' . $config->theme . '/print.tpl')) {
-                include 'theme/' . $config->theme  . '/print.tpl';
+                include 'theme/' . $config->theme . '/print.tpl';
                 return;
             }
-            if (is_file('theme/' . $config->theme  . '/index.tpl')) {
-                include 'theme/' . $config->theme  . '/index.tpl';
+            if (is_file('theme/' . $config->theme . '/index.tpl')) {
+                include 'theme/' . $config->theme . '/index.tpl';
             }
         }
     }
