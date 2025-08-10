@@ -86,7 +86,6 @@ class StdLogger extends AbstractLogger
         if ($level == LogLevel::DEBUG && !Container::getConfig()->devMode) {
             return;
         }
-
-        echo date('H:i:s') . ' [' . $this->colorLevel($level) . '] ' . $this->interpolate($message, $context) . "\n";
+        file_put_contents('php://stdout', date('H:i:s') . ' [' . $this->colorLevel($level) . '] ' . $this->interpolate($message, $context) . "\n");
     }
 }
