@@ -177,9 +177,15 @@ class Core
             self::$site_params[$key] = $defultValue;
             $q = "INSERT INTO settings(name, alias, value) VALUES('New parameter')";
         }
-        return str_replace(array_map(fn($k) => '{' . $k . '}', array_keys($interp)),
-            array_values($interp),
-            self::$site_params[$key] ?? $defultValue);
+        $value = self::$site_params[$key] ?? $defultValue;
+        if (is_string($value)) {
+            $value = str_replace(
+                array_map(fn($k) => '{' . $k . '}', array_keys($interp)),
+                array_values($interp),
+                $value,
+            );
+        }
+        return $value;
     }
 
     public static function getComponent()

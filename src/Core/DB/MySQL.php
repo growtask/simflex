@@ -22,7 +22,11 @@ class MySQL implements Adapter
         $cfg = Container::getConfig();
         $host = $cfg->db['host'];
         $database = $cfg->db['name'];
-        $this->db = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $cfg->db['user'], $cfg->db['password']);
+        $charset = $cfg->db['charset'] ?? 'utf8mb4';
+        $collate = $cfg->db['collate'] ?? 'utf8mb4_general_ci';
+        $this->db = new PDO("mysql:host=$host;dbname=$database;charset=$charset", $cfg->db['user'], $cfg->db['password'], [
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE $collate",
+        ]);
 
         if (SF_LOCATION != SF_LOCATION_CLI && $cfg->devMode) {
             $this->db = new TraceablePDO($this->db);
