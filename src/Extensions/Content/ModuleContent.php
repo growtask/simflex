@@ -6,14 +6,14 @@ use Simflex\Core\DB;
 use Simflex\Core\ModuleBase;
 
 /**
- * ContentModule class
- *
- * Output last contents
+ * Выводит список материалов (меню) из раздела Материалы в админке (таблица content)
  */
-class ModuleContent extends ModuleBase {
+class ModuleContent extends ModuleBase
+{
 
-    protected function content() {
-        $content_id = empty($this->params['content_id']) ? 0 : (int) $this->params['content_id'];
+    protected function content(): void
+    {
+        $content_id = empty($this->params['content_id']) ? 0 : (int)$this->params['content_id'];
         $cnt_limit = empty($this->params['cnt_limit']) ? 0 : abs($this->params['cnt_limit']);
 
         $q = "SELECT content_id, date, title, path, short, text, photo
@@ -31,5 +31,4 @@ class ModuleContent extends ModuleBase {
             }
         }
     }
-
 }
