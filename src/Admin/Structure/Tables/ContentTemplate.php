@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Structure\Data\FieldDefinition;
+use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
@@ -32,16 +33,16 @@ class ContentTemplate extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '1',
-                            'e2n' => '1',
-                            'hidden' => '1',
-                            'width' => '60',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'is_fk' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: true,
+                            e2n: true,
+                            hidden: true,
+                            width: '60',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            isFk: false,
+                        ),
                     ],
                 ),
                 'template_name' => new FieldDefinition(
@@ -52,19 +53,19 @@ class ContentTemplate extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '1',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'onchange' => '',
-                            'readonly' => '0',
-                            'style_cell' => '',
-                            'screen_width' => '0',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '1',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            onchange: '',
+                            readonly: false,
+                            styleCell: '',
+                            screenWidth: '0',
+                        ),
                     ],
                 ),
                 'template_path' => new FieldDefinition(
@@ -75,19 +76,19 @@ class ContentTemplate extends Table
                     help: 'relative path from Extensions/Content/tpl. for example "mainPage.tpl" or "news/item.tpl"',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '1',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'onchange' => '',
-                            'readonly' => '0',
-                            'style_cell' => '',
-                            'screen_width' => '0',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '1',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            onchange: '',
+                            readonly: false,
+                            styleCell: '',
+                            screenWidth: '0',
+                        ),
                     ],
                 ),
             ],

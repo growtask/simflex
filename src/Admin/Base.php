@@ -114,18 +114,18 @@ class Base
         $this->initTableName();
         $this->initTableData();
 
-        $this->canAdd = $this->tableData['priv_add'] ? User::ican((int)$this->tableData['priv_add']) : true;
+        $this->canAdd = !empty($this->tableData['priv_add']) ? User::ican((int)$this->tableData['priv_add']) : true;
         $this->canCopy = $this->canAdd;
-        $this->canEdit = $this->tableData['priv_edit'] ? User::ican((int)$this->tableData['priv_edit']) : true;
+        $this->canEdit = !empty($this->tableData['priv_edit']) ? User::ican((int)$this->tableData['priv_edit']) : true;
         $this->canEditGroup = $this->canEdit;
-        $this->canDelete = $this->tableData['priv_delete'] ? User::ican((int)$this->tableData['priv_delete']) : true;
+        $this->canDelete = !empty($this->tableData['priv_delete']) ? User::ican((int)$this->tableData['priv_delete']) : true;
     }
 
     protected function initTableName()
     {
         if (empty($this->table)) {
             $row = Core::menuCurItem();
-            if ($row['model']) {
+            if (!empty($row['model'])) {
                 $this->table = $row['model'];
             }
         }
@@ -214,7 +214,7 @@ class Base
     {
         $row = Core::menuCurItem();
 
-        if ($row['model']) {
+        if (!empty($row['model'])) {
             $this->initTable();
 
             $action = isset($_GET['action']) ? $_GET['action'] : '';

@@ -65,7 +65,7 @@ class Page
         }
         $extDriverClass = $tableData['class'] ?? null;
 
-        if (class_exists($extDriverClass)) {
+        if ($extDriverClass && class_exists($extDriverClass)) {
             self::$driver = new $extDriverClass();
         }
 
@@ -101,7 +101,7 @@ class Page
             ";
             $rows = DB::assoc($q);
             foreach ($rows as $row) {
-                if (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id']) {
+                if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {
                     $class = $row['class'];
                     if (strpos($class, '\\') === false) {
                         $class = "Simflex\Admin\Modules\\$class\\$class";

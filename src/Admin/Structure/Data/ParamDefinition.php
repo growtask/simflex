@@ -4,6 +4,9 @@ namespace Simflex\Admin\Structure\Data;
 
 class ParamDefinition
 {
+    /**
+     * @param array{main?: FieldParams} $params
+     */
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $label = null,
@@ -40,7 +43,7 @@ class ParamDefinition
             'param_pid' => $this->paramPid,
             'pos' => $this->pos,
             'default_value' => $this->defaultValue,
-            'params' => $this->params,
+            'params' => ['main' => ($this->params['main'] ?? new FieldParams())->toArray()],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Structure\Data\FieldDefinition;
+use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
@@ -32,16 +33,16 @@ class Component extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '1',
-                            'e2n' => '1',
-                            'hidden' => '1',
-                            'width' => '60',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'fk' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: true,
+                            e2n: true,
+                            hidden: true,
+                            width: '60',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            fk: '',
+                        ),
                     ],
                 ),
                 'class' => new FieldDefinition(
@@ -52,16 +53,16 @@ class Component extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '250',
-                            'defaultValue' => '',
-                            'required' => '1',
-                            'filter' => '0',
-                            'onchange' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '250',
+                            defaultValue: '',
+                            required: true,
+                            filter: false,
+                            onchange: '',
+                        ),
                     ],
                 ),
                 'name' => new FieldDefinition(
@@ -72,16 +73,16 @@ class Component extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '1',
-                            'defaultValue' => '',
-                            'required' => '1',
-                            'filter' => '0',
-                            'onchange' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '1',
+                            defaultValue: '',
+                            required: true,
+                            filter: false,
+                            onchange: '',
+                        ),
                     ],
                 ),
                 'params' => new FieldDefinition(
@@ -92,16 +93,16 @@ class Component extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '1',
-                            'hidden' => '1',
-                            'width' => '0',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'onchange' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: true,
+                            hidden: true,
+                            width: '0',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            onchange: '',
+                        ),
                     ],
                 ),
             ],

@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Structure\Data\FieldDefinition;
+use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
@@ -32,16 +33,16 @@ class UserRolePriv extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '1',
-                            'e2n' => '1',
-                            'hidden' => '1',
-                            'width' => '60',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '0',
-                            'fk' => '',
-                        ],
+                        'main' => new FieldParams(
+                            pk: true,
+                            e2n: true,
+                            hidden: true,
+                            width: '60',
+                            defaultValue: '',
+                            required: false,
+                            filter: false,
+                            fk: '',
+                        ),
                     ],
                 ),
                 'role_id' => new FieldDefinition(
@@ -52,22 +53,22 @@ class UserRolePriv extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '1',
-                            'defaultValue' => '',
-                            'required' => '0',
-                            'filter' => '1',
-                            'fk' => 'user_role.role_id.name',
-                            'onchange' => '',
-                            'is_fk' => '1',
-                            'fk_table' => 'user_role',
-                            'fk_key' => 'role_id',
-                            'fk_label' => 'name',
-                            'fk_is_pid' => '0',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '1',
+                            defaultValue: '',
+                            required: false,
+                            filter: true,
+                            fk: 'user_role.role_id.name',
+                            onchange: '',
+                            isFk: true,
+                            fkTable: 'user_role',
+                            fkKey: 'role_id',
+                            fkLabel: 'name',
+                            fkIsPid: false,
+                        ),
                     ],
                 ),
                 'priv_id' => new FieldDefinition(
@@ -78,22 +79,22 @@ class UserRolePriv extends Table
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => [
-                            'pk' => '0',
-                            'e2n' => '0',
-                            'hidden' => '0',
-                            'width' => '1',
-                            'defaultValue' => '',
-                            'required' => '1',
-                            'filter' => '1',
-                            'fk' => 'user_priv.priv_id.name',
-                            'onchange' => '',
-                            'is_fk' => '1',
-                            'fk_table' => 'user_priv',
-                            'fk_key' => 'priv_id',
-                            'fk_label' => 'name',
-                            'fk_is_pid' => '0',
-                        ],
+                        'main' => new FieldParams(
+                            pk: false,
+                            e2n: false,
+                            hidden: false,
+                            width: '1',
+                            defaultValue: '',
+                            required: true,
+                            filter: true,
+                            fk: 'user_priv.priv_id.name',
+                            onchange: '',
+                            isFk: true,
+                            fkTable: 'user_priv',
+                            fkKey: 'priv_id',
+                            fkLabel: 'name',
+                            fkIsPid: false,
+                        ),
                     ],
                 ),
             ],

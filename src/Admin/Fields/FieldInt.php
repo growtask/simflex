@@ -81,14 +81,14 @@ class FieldInt extends Field
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             }
 
-            $sel = DB::fetch($sel);
+            $sel = DB::fetch($sel) ?: [];
 
             $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown ' . ($this->readonly ? ' disabled' : '') . '" data-action="searchInt" data-ajax="true">
                             <div class="form-control__dropdown-top">
                                 <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . ' >
                                <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text" ' . ($this->readonly ? ' readonly' : '') . '>
-                                <div class="form-control__dropdown-current">' . $sel['name'] . '</div>
+                                <div class="form-control__dropdown-current">' . ($sel['name'] ?? '') . '</div>
                                 <button type="button" class="form-control__dropdown-toggle"' . ($this->readonly ? ' readonly' : '') . '>
                                     <svg viewBox="0 0 24 24">
                                         <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
@@ -103,7 +103,7 @@ class FieldInt extends Field
 
             $hasId = false;
             foreach ($items as $r) {
-                if ($r['id'] == $sel['id']) {
+                if ($r['id'] == ($sel['id'] ?? null)) {
                     $hasId = true;
                 }
 
@@ -116,11 +116,11 @@ class FieldInt extends Field
                 $tempSel .= '<div data-value="' . $r['id'] . '" class="form-control__dropdown-item">' . $r['name'] . '</div>';
             }
 
-            if (!$hasId) {
+            if (!$hasId && $sel) {
                 if ($this->params['fk_is_pid']) {
                     $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
                     if ($pidName) {
-                        $r['name'] = $pidName . ' -> ' . $r['name'];
+                        $sel['name'] = $pidName . ' -> ' . $sel['name'];
                     }
                 }
                 $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
@@ -158,9 +158,9 @@ class FieldInt extends Field
 //            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
 //            $list = Service::tree2list($tree);
 
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            $sel = DB::fetch($sel);
+            $sel = DB::fetch($sel) ?: [];
 
             $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
@@ -182,7 +182,9 @@ class FieldInt extends Field
 //            if ($this->isnull) {
 //                $select .= '<div data-value="null" class="form-control__dropdown-item">NULL</div>';
 //            }
-            $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
+            if ($sel) {
+                $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
+            }
 
 
             $select .= '</div>
