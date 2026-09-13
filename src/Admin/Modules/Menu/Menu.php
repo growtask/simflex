@@ -4,16 +4,25 @@ namespace Simflex\Admin\Modules\Menu;
 
 use Simflex\Core\Container;
 use Simflex\Core\ModuleBase;
+use Simflex\Core\ModuleType;
 
 class Menu extends ModuleBase
 {
-
-    protected $name = 'menu';
-
-    public function content()
+    public static function extensionTitle(): string
     {
-        $menu = Container::getCore()::menu();
-        include dirname(__FILE__) . '/tpl/menu.tpl';
+        return 'Admin - Меню';
     }
 
+    public static function moduleType(): ModuleType
+    {
+        return ModuleType::Admin;
+    }
+
+    protected string $name = 'menu';
+
+    public function content(): string
+    {
+        $menu = Container::getCore()::menu();
+        return $this->render(__DIR__ . '/tpl/menu.tpl', ['menu' => $menu]);
+    }
 }

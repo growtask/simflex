@@ -2,13 +2,8 @@
 
 namespace Simflex\Core;
 
-
-use Simflex\Core\PlugPunyCode;
-use Simflex\Core\DB;
 use Simflex\Core\Helpers\Phone;
-use Simflex\Core\Mail;
-use Simflex\Core\Sms;
-use Simflex\Core\UserInstance;
+use Simflex\Core\Models\User as UserModel;
 
 /**
  * Class User
@@ -18,20 +13,15 @@ use Simflex\Core\UserInstance;
  */
 class User
 {
-    public static $id = 0;
-    public static $login = '';
-    public static $role_id = 0;
-    public static $role_name = '';
+    public static int $id = 0;
+    public static string $login = '';
+    public static int $roleId = 0;
+    public static string $roleName = '';
 
-    /**
-     *
-     * @var UserInstance
-     */
-    protected static $instance;
+    protected static UserInstance $instance;
 
-    public static function login($type = 'site')
+    public static function login(string|UserInstance $type = 'site'): void
     {
-
         if ('site' == $type) {
             self::$instance = new UserInstance('user_id', 'user_hash', 'hash', 'ch', 'cs');
         }
@@ -44,44 +34,42 @@ class User
 
         self::$id = self::$instance->id;
         self::$login = self::$instance->login;
-        self::$role_id = self::$instance->role_id;
-        self::$role_name = self::$instance->role_name;
+        self::$roleId = self::$instance->roleId;
+        self::$roleName = self::$instance->roleName;
     }
 
-    public static function logout()
+    public static function logout(): void
     {
         self::$instance->logout();
         self::$id = 0;
-        self::$login = null;
-        self::$role_id = null;
-        self::$role_name = null;
+        self::$login = '';
+        self::$roleId = 0;
+        self::$roleName = '';
     }
 
-    public static function logout2()
+    public static function logout2(): void
     {
         self::$instance = new UserInstance('', '', '', '', '');
         self::$id = 0;
-        self::$login = null;
-        self::$role_id = null;
-        self::$role_name = null;
+        self::$login = '';
+        self::$roleId = 0;
+        self::$roleName = '';
     }
 
-    public static function privIds()
+    public static function privIds(): array
     {
         return self::$instance->privIds();
     }
 
-    public static function privNames()
+    public static function privNames(): array
     {
         return self::$instance->privNames();
     }
 
     /**
-     *
      * @param string|int|bool $priv - можно указать название привилегии, можно ее ID. Если false, то вернет все привилегии
-     * @return bool|array
      */
-    public static function ican($priv = false)
+    public static function ican(string|int|bool $priv = false): array|bool
     {
         return self::$instance->ican($priv);
     }
@@ -91,15 +79,15 @@ class User
      * @param string (optional) $field - если указано, возвращает конкретное поле
      * @return false|array|string
      */
-    public static function info($field = false)
+    public static function info(string|false $field = false): mixed
     {
         return self::$instance->info($field);
     }
 
-    public static function create($data)
+    public static function create(array $data): array
     {
         if (self::$id) {
-            return array('success' => false, 'error_code' => 1, 'error' => 'Пользователь уже авторизован');
+            return ['success' => false, 'error_code' => 1, 'error' => 'Пользователь уже авторизован'];
         }
 
         $login = Phone::extract((string)@$data['login']);
@@ -107,48 +95,47 @@ class User
         $email = (string)@$data['email'];
         $name = (string)@$data['name'];
 
-        $errors = array();
+        $errors = [];
         $login ? null : $errors[] = 'логин';
         $email ? null : $errors[] = 'email';
         $name ? null : $errors[] = 'имя';
         if (count($errors)) {
-            return array('success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors));
+            return ['success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors)];
         }
 
-        $q = "SELECT user_id FROM user WHERE login = '$login'";
-        $user = DB::result($q, 0);
+        $user = UserModel::findOne(['login' => $login]);
         if ($user) {
-            return array('success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован');
+            return ['success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован'];
         }
 
-        $q = "SELECT user_id FROM user WHERE email = '$email'";
-        $user = DB::result($q, 0);
+        $user = UserModel::findOne(['email' => $email]);
         if ($user) {
-            return array('success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован');
+            return ['success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован'];
         }
 
         $passMD5 = md5($pass);
         $hash = md5(microtime());
-        $set = array("login = '$login', email = '$email', name = '$name', password = '$passMD5', hash = '$hash'");
-        $q = "INSERT INTO user SET " . implode(', ', $set);
-        DB::query($q);
-        $userId = DB::insertId();
+        $userId = UserModel::insertStatic([
+            'login' => $login,
+            'email' => $email,
+            'name' => $name,
+            'password' => $passMD5,
+            'hash' => $hash,
+        ])?->getId();
 
         if (!$userId) {
-            return array('success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации');
+            return ['success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации'];
         }
 
-        $HTTPHost = $_SERVER['HTTP_HOST'];
-        if (class_exists('PlugPunyCode')) {
-            $HTTPHost = PlugPunyCode::httpHost();
+        $HTTPHost = (string)($_SERVER['HTTP_HOST'] ?? '');
+        if (function_exists('idn_to_utf8') && str_contains($HTTPHost, 'xn--')) {
+            $HTTPHost = idn_to_utf8($HTTPHost) ?: $HTTPHost;
         }
 
         // Отправляем письмо об успешной регистрации
-        if ($email) {
-            ob_start();
-            include $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail/user_create.tpl';
-            $html = ob_get_contents();
-            ob_end_clean();
+        $mailTpl = SF_ROOT_PATH . '/theme/default/mail/user_create.tpl';
+        if ($email && is_file($mailTpl)) {
+            $html = View::render($mailTpl, get_defined_vars());
             Mail::staticSend($email, "Регистрация на сайте $HTTPHost", $html);
         }
 
@@ -157,22 +144,20 @@ class User
         Sms::send($login, $smsText);
 
         if ($userId) {
-            setcookie("user_id", $userId, time() + 3600 * 24 * 365, '/');
-            setcookie("user_hash", $hash, time() + 3600 * 24 * 365, '/');
+            setcookie('user_id', $userId, time() + 3600 * 24 * 365, '/');
+            setcookie('user_hash', $hash, time() + 3600 * 24 * 365, '/');
             $_SESSION['user_id'] = $userId;
             $_SESSION['user_hash'] = $hash;
             self::login();
         }
 
-        return array('success' => true, 'user_id' => $userId);
+        return ['success' => true, 'user_id' => $userId];
     }
 
-    public static function authorizeOnce($login, $password)
+    public static function authorizeOnce($login, $password): void
     {
         $GLOBALS[UserInstance::class]['login'] = $login;
         $GLOBALS[UserInstance::class]['password'] = $password;
         static::login();
     }
-
 }
-

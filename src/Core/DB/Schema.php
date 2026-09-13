@@ -28,7 +28,7 @@ class Schema
     }
 
     // ------------ UTIL ------------ //
-    public function reload()
+    public function reload(): void
     {
         $dbName = Container::getConfig()->db['name'];
         $this->tables = [];
@@ -52,7 +52,7 @@ class Schema
 
         $columns = DB::query('select * from information_schema.COLUMNS where TABLE_NAME = ? and TABLE_SCHEMA = ?', [
             $name,
-            Container::getConfig()->db['name']
+            Container::getConfig()->db['name'],
         ]);
 
         while ($col = DB::fetch($columns)) {
@@ -95,7 +95,7 @@ class Schema
      * @param string $name Table name
      * @param callable $fn Table data callback (Schema\Table passed as argument)
      */
-    public function createTable(string $name, callable $fn)
+    public function createTable(string $name, callable $fn): void
     {
         $table = new Table($name);
         $fn($table);
@@ -108,16 +108,16 @@ class Schema
      *
      * @throws \Exception
      */
-    public function dropTable(string $name, bool $checkIfExists = false)
+    public function dropTable(string $name, bool $checkIfExists = false): void
     {
         if ($checkIfExists && !$this->hasTable($name)) {
             throw new \Exception('Table ' . $name . ' does not exist');
         }
 
-        $this->awaitingDelete[] = $this->tables[$name]  ?? $this->sessionCreated[$name];
+        $this->awaitingDelete[] = $this->tables[$name] ?? $this->sessionCreated[$name];
     }
 
-    public function table(string $name, callable $fn)
+    public function table(string $name, callable $fn): void
     {
         if (!$this->hasTable($name)) {
             $this->createTable($name, $fn);
@@ -133,7 +133,6 @@ class Schema
     /**
      * Commits changes
      *
-     * @return bool
      * @throws \Exception
      */
     public function commit(): bool
@@ -144,7 +143,6 @@ class Schema
     /**
      * Rollbacks created tables
      *
-     * @return bool
      * @throws \Exception
      */
     public function rollback(): bool
@@ -174,7 +172,6 @@ class Schema
     /**
      * Commits creation changes
      *
-     * @return bool
      * @throws \Exception
      */
     protected function commitCreation(): bool

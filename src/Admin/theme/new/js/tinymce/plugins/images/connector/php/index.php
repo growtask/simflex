@@ -14,13 +14,12 @@ include 'config.php';
 
 class TinyImageManager
 {
-
-    var $dir;
-    var $firstAct = false;
-    var $folderAct = false;
-    var $ALLOWED_IMAGES;
-    var $ALLOWED_FILES;
-    var $SID;
+    public array $dir;
+    public bool $firstAct = false;
+    public bool $folderAct = false;
+    public array $ALLOWED_IMAGES;
+    public array $ALLOWED_FILES;
+    public string $SID;
 
     /**
      * Конструктор
@@ -30,23 +29,29 @@ class TinyImageManager
     public function __construct()
     {
         error_reporting(E_ALL);
-        ob_start("ob_gzhandler");
+        ob_start('ob_gzhandler');
         header('Content-Type: text/html; charset=utf-8');
 
-        if (isset($_POST['SID'])) session_id($_POST['SID']);
-        if (!isset($_SESSION)) session_start();
+        if (isset($_POST['SID'])) {
+            session_id($_POST['SID']);
+        }
+        if (!isset($_SESSION)) {
+            session_start();
+        }
         $this->SID = session_id();
         require 'yoursessioncheck.php';
 
-        if (!isset($_SESSION['tiny_image_manager_path'])) $_SESSION['tiny_image_manager_path'] = '';
+        if (!isset($_SESSION['tiny_image_manager_path'])) {
+            $_SESSION['tiny_image_manager_path'] = '';
+        }
 
-        $this->ALLOWED_IMAGES = array('jpeg', 'jpg', 'gif', 'png');
-        $this->ALLOWED_FILES = array('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'mdb', 'accdb', 'swf', 'zip', 'rar', 'rtf', 'pdf', 'psd', 'mp3', 'wma');
+        $this->ALLOWED_IMAGES = ['jpeg', 'jpg', 'gif', 'png'];
+        $this->ALLOWED_FILES = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'mdb', 'accdb', 'swf', 'zip', 'rar', 'rtf', 'pdf', 'psd', 'mp3', 'wma'];
 
-        $this->dir = array(
+        $this->dir = [
             'images' => realpath(DIR_ROOT . DIR_IMAGES),
-            'files' => realpath(DIR_ROOT . DIR_FILES)
-        );
+            'files' => realpath(DIR_ROOT . DIR_FILES),
+        ];
 
         require 'Image_Toolbox.class.php';
         require 'exifReader.php';
@@ -56,7 +61,7 @@ class TinyImageManager
             //Создать папку
             case 'newfolder':
 
-                $result = array();
+                $result = [];
                 $dir = $this->AccessDir($_POST['path'], $_POST['type']);
                 if ($dir) {
                     if (preg_match('/[a-z0-9-_]+/sim', $_POST['name'])) {
@@ -84,50 +89,75 @@ class TinyImageManager
 
                 break;
 
-            //Показать дерево папок
+                //Показать дерево папок
             case 'showtree':
-                if (!isset($_POST['path'])) $_POST['path'] = '';
-                if (!isset($_POST['type'])) $_POST['type'] = '';
+                if (!isset($_POST['path'])) {
+                    $_POST['path'] = '';
+                }
+                if (!isset($_POST['type'])) {
+                    $_POST['type'] = '';
+                }
 
-                if ($_POST['path'] == '/') $_POST['path'] = '';
+                if ($_POST['path'] == '/') {
+                    $_POST['path'] = '';
+                }
 
-                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) $path = $_SESSION['tiny_image_manager_path'];
-                else $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) {
+                    $path = $_SESSION['tiny_image_manager_path'];
+                } else {
+                    $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                }
 
-                if ($_POST['type'] == 'files') $this->firstAct = true;
-                if ($_POST['type'] == 'files') echo $this->DirStructure('images', 'first');
-                else                        echo $this->DirStructure('images', 'first', $this->AccessDir($path, 'images'));
-                if ($_POST['type'] == 'files') $this->firstAct = false;
-                if ($_POST['type'] == 'images') echo $this->DirStructure('files', 'first');
-                else                         echo $this->DirStructure('files', 'first', $this->AccessDir($path, 'files'));
+                if ($_POST['type'] == 'files') {
+                    $this->firstAct = true;
+                }
+                if ($_POST['type'] == 'files') {
+                    echo $this->DirStructure('images', 'first');
+                } else {
+                    echo $this->DirStructure('images', 'first', $this->AccessDir($path, 'images'));
+                }
+                if ($_POST['type'] == 'files') {
+                    $this->firstAct = false;
+                }
+                if ($_POST['type'] == 'images') {
+                    echo $this->DirStructure('files', 'first');
+                } else {
+                    echo $this->DirStructure('files', 'first', $this->AccessDir($path, 'files'));
+                }
                 exit();
                 break;
 
-            //Показать путь (хлебные крошки вверху)
+                //Показать путь (хлебные крошки вверху)
             case 'showpath':
-                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) $path = $_SESSION['tiny_image_manager_path'];
-                else $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) {
+                    $path = $_SESSION['tiny_image_manager_path'];
+                } else {
+                    $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                }
 
                 echo $this->DirPath($_POST['type'], $this->AccessDir($path, $_POST['type']));
                 exit();
                 break;
 
-            //Показать файлы
+                //Показать файлы
             case 'showdir':
-                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) $path = $_SESSION['tiny_image_manager_path'];
-                else $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                if (isset($_POST['default']) && isset($_SESSION['tiny_image_manager_path'])) {
+                    $path = $_SESSION['tiny_image_manager_path'];
+                } else {
+                    $path = $_SESSION['tiny_image_manager_path'] = $_POST['path'];
+                }
 
                 echo $this->ShowDir($path, $_POST['pathtype']);
                 exit();
                 break;
 
-            //Загрузить изображение
+                //Загрузить изображение
             case 'uploadfile':
                 echo $this->UploadFile($_POST['path'], $_POST['pathtype']);
                 exit();
                 break;
 
-            //Удалить файл, или несколько файлов
+                //Удалить файл, или несколько файлов
             case 'delfile':
                 if (is_array($_POST['md5'])) {
                     foreach ($_POST['md5'] as $k => $v) {
@@ -169,21 +199,26 @@ class TinyImageManager
      * @param (images|files) $typeDirectory Тип папки, изображения или файлы
      * @return path|false
      */
-    function AccessDir($requestDirectory, $typeDirectory)
+    public function AccessDir($requestDirectory, $typeDirectory)
     {
         if ($typeDirectory == 'images') {
             $full_request_images_dir = realpath($this->dir['images'] . $requestDirectory);
             if (strpos($full_request_images_dir, $this->dir['images']) === 0) {
                 return $full_request_images_dir;
-            } else return false;
+            } else {
+                return false;
+            }
         } elseif ($typeDirectory == 'files') {
             $full_request_files_dir = realpath($this->dir['files'] . $requestDirectory);
             if (strpos($full_request_files_dir, $this->dir['files']) === 0) {
                 return $full_request_files_dir;
-            } else return false;
-        } else return false;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
-
 
     /**
      * Дерево каталогов
@@ -191,19 +226,19 @@ class TinyImageManager
      *
      * @return array
      */
-    function Tree($beginFolder)
+    public function Tree($beginFolder)
     {
-        $struct = array();
+        $struct = [];
         $handle = opendir($beginFolder);
         if ($handle) {
-            $struct[$beginFolder]['path'] = str_replace(array($this->dir['files'], $this->dir['images']), '', $beginFolder);
+            $struct[$beginFolder]['path'] = str_replace([$this->dir['files'], $this->dir['images']], '', $beginFolder);
             $tmp = preg_split('[\\/]', $beginFolder);
             $tmp = array_filter($tmp);
             end($tmp);
             $struct[$beginFolder]['name'] = current($tmp);
             $struct[$beginFolder]['count'] = 0;
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".." && $file != '.thumbs') {
+                if ($file != '.' && $file != '..' && $file != '.thumbs') {
                     if (is_dir($beginFolder . '/' . $file)) {
                         $struct[$beginFolder]['childs'][] = $this->Tree($beginFolder . '/' . $file);
                     } else {
@@ -228,19 +263,19 @@ class TinyImageManager
      * @param int $level
      * @return html
      */
-    function DirStructure($type, $innerDirs = 'first', $currentDir = '', $level = 0)
+    public function DirStructure($type, $innerDirs = 'first', $currentDir = '', $level = 0)
     {
         //Пока отключим файлы
         //if($type=='files') return ;
 
-        $currentDirArr = array();
+        $currentDirArr = [];
         if (!empty($currentDir)) {
             $currentDirArr = preg_split('[\\/]', str_replace($this->dir[$type], '', realpath($currentDir)));
             $currentDirArr = array_filter($currentDirArr);
         }
 
         if ($innerDirs == 'first') {
-            $innerDirs = array();
+            $innerDirs = [];
             $innerDirs = $this->Tree($this->dir[$type]);
             if (realpath($currentDir) == $this->dir[$type] && !$this->firstAct) {
                 $firstAct = 'folderAct';
@@ -249,7 +284,9 @@ class TinyImageManager
                 $firstAct = '';
             }
             $ret = '';
-            if ($innerDirs == false) return 'Неверно задана корневая директория (' . DIR_IMAGES . ')';
+            if ($innerDirs == false) {
+                return 'Неверно задана корневая директория (' . DIR_IMAGES . ')';
+            }
             foreach ($innerDirs as $v) {
                 $ret = '<div class="folder' . ucfirst($type) . ' ' . $firstAct . '" path="" pathtype="' . $type . '">' . ($type == 'images' ? 'Изображения' : 'Файлы') . ($v['count'] > 0 ? ' (' . $v['count'] . ')' : '') . '</div><div class="folderOpenSection" style="display:block;">';
                 if (isset($v['childs'])) {
@@ -261,7 +298,9 @@ class TinyImageManager
             return $ret;
         }
 
-        if (sizeof($innerDirs) == 0) return false;
+        if (sizeof($innerDirs) == 0) {
+            return false;
+        }
         $ret = '';
         foreach ($innerDirs as $v) {
             foreach ($v as $v) {
@@ -315,7 +354,7 @@ class TinyImageManager
      * @param String $path
      * @return html
      */
-    function DirPath($type, $path = '')
+    public function DirPath($type, $path = '')
     {
 
         if (!empty($path)) {
@@ -338,15 +377,15 @@ class TinyImageManager
             }
         }
 
-
         return $ret;
     }
 
-
-    function CallDir($dir, $type)
+    public function CallDir($dir, $type)
     {
         $dir = $this->AccessDir($dir, $type);
-        if (!$dir) return false;
+        if (!$dir) {
+            return false;
+        }
 
         set_time_limit(120);
 
@@ -356,31 +395,37 @@ class TinyImageManager
 
         $dbfile = $dir . '/.thumbs/.db';
         if (is_file($dbfile)) {
-            $dbfilehandle = fopen($dbfile, "r");
+            $dbfilehandle = fopen($dbfile, 'r');
             $dblength = filesize($dbfile);
-            if ($dblength > 0) $dbdata = fread($dbfilehandle, $dblength);
+            if ($dblength > 0) {
+                $dbdata = fread($dbfilehandle, $dblength);
+            }
             fclose($dbfilehandle);
-            $dbfilehandle = fopen($dbfile, "w");
+            $dbfilehandle = fopen($dbfile, 'w');
         } else {
-            $dbfilehandle = fopen($dbfile, "w");
+            $dbfilehandle = fopen($dbfile, 'w');
         }
 
         if (!empty($dbdata)) {
             $files = unserialize($dbdata);
-        } else $files = array();
+        } else {
+            $files = [];
+        }
 
         $handle = opendir($dir);
         if ($handle) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
-                    if (isset($files[$file])) continue;
+                if ($file != '.' && $file != '..') {
+                    if (isset($files[$file])) {
+                        continue;
+                    }
                     if (is_file($dir . '/' . $file)) {
                         $file_info = pathinfo($dir . '/' . $file);
                         $file_info['extension'] = strtolower($file_info['extension']);
                         if (!in_array(strtolower($file_info['extension']), $this->ALLOWED_IMAGES)) {
                             continue;
                         }
-                        $link = str_replace(array('/\\', '//', '\\\\', '\\'), '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
+                        $link = str_replace(['/\\', '//', '\\\\', '\\'], '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
                         $path = pathinfo($link);
                         $path = $path['dirname'];
                         if ($file_info['extension'] == 'jpg' || $file_info['extension'] == 'jpeg') {
@@ -388,7 +433,7 @@ class TinyImageManager
                             $files[$file]['exifinfo'] = $er->getImageInfo();
                             $files[$file]['imageinfo'] = getimagesize($dir . '/' . $file);
 
-                            $files[$file]['general'] = array(
+                            $files[$file]['general'] = [
                                 'filename' => $file,
                                 'name' => basename(strtolower($file_info['basename']), '.' . $file_info['extension']),
                                 'ext' => $file_info['extension'],
@@ -398,12 +443,12 @@ class TinyImageManager
                                 'date' => filemtime($dir . '/' . $file),
                                 'width' => $files[$file]['imageinfo'][0],
                                 'height' => $files[$file]['imageinfo'][1],
-                                'md5' => md5_file($dir . '/' . $file)
-                            );
+                                'md5' => md5_file($dir . '/' . $file),
+                            ];
 
                         } else {
                             $files[$file]['imageinfo'] = getimagesize($dir . '/' . $file);
-                            $files[$file]['general'] = array(
+                            $files[$file]['general'] = [
                                 'filename' => $file,
                                 'name' => basename(strtolower($file_info['basename']), '.' . $file_info['extension']),
                                 'ext' => $file_info['extension'],
@@ -413,8 +458,8 @@ class TinyImageManager
                                 'date' => filemtime($dir . '/' . $file),
                                 'width' => $files[$file]['imageinfo'][0],
                                 'height' => $files[$file]['imageinfo'][1],
-                                'md5' => md5_file($dir . '/' . $file)
-                            );
+                                'md5' => md5_file($dir . '/' . $file),
+                            ];
                         }
                     }
                 }
@@ -428,11 +473,12 @@ class TinyImageManager
         return $files;
     }
 
-
-    function UploadFile($dir, $type)
+    public function UploadFile($dir, $type)
     {
         $dir = $this->AccessDir($dir, $type);
-        if (!$dir) return false;
+        if (!$dir) {
+            return false;
+        }
 
         if (!is_dir($dir . '/.thumbs')) {
             mkdir($dir . '/.thumbs');
@@ -440,9 +486,11 @@ class TinyImageManager
 
         $dbfile = $dir . '/.thumbs/.db';
         if (is_file($dbfile)) {
-            $dbfilehandle = fopen($dbfile, "r");
+            $dbfilehandle = fopen($dbfile, 'r');
             $dblength = filesize($dbfile);
-            if ($dblength > 0) $dbdata = fread($dbfilehandle, $dblength);
+            if ($dblength > 0) {
+                $dbdata = fread($dbfilehandle, $dblength);
+            }
             fclose($dbfilehandle);
             //$dbfilehandle = fopen($dbfile, "w");
         } else {
@@ -451,7 +499,9 @@ class TinyImageManager
 
         if (!empty($dbdata)) {
             $files = unserialize($dbdata);
-        } else $files = array();
+        } else {
+            $files = [];
+        }
 
         //Файл из flash-мультизагрузки
         if (isset($_POST['Filename'])) {
@@ -464,8 +514,11 @@ class TinyImageManager
                 header('HTTP/1.1 403 Forbidden');
                 exit();
             }
-            if ($pathtype == 'images') $allowed = $this->ALLOWED_IMAGES;
-            elseif ($pathtype == 'files') $allowed = $this->ALLOWED_FILES;
+            if ($pathtype == 'images') {
+                $allowed = $this->ALLOWED_IMAGES;
+            } elseif ($pathtype == 'files') {
+                $allowed = $this->ALLOWED_FILES;
+            }
             //Если не подходит разрешение файла
             if (!in_array(strtolower($extension), $allowed)) {
                 header('HTTP/1.1 403 Forbidden');
@@ -490,14 +543,14 @@ class TinyImageManager
                 exit();
             }
 
-            $link = str_replace(array('/\\', '//', '\\\\', '\\'), '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
+            $link = str_replace(['/\\', '//', '\\\\', '\\'], '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
             $path = pathinfo($link);
             $path = $path['dirname'];
             if ($extension == 'jpg' || $extension == 'jpeg') {
                 $er = new phpExifReader($dir . '/' . $file);
                 $files[$file]['exifinfo'] = $er->getImageInfo();
 
-                $files[$file]['general'] = array(
+                $files[$file]['general'] = [
                     'filename' => $file,
                     'name' => $filename,
                     'ext' => $extension,
@@ -507,10 +560,10 @@ class TinyImageManager
                     'date' => filemtime($dir . '/' . $file),
                     'width' => $files[$file]['imageinfo'][0],
                     'height' => $files[$file]['imageinfo'][1],
-                    'md5' => $md5
-                );
+                    'md5' => $md5,
+                ];
             } else {
-                $files[$file]['general'] = array(
+                $files[$file]['general'] = [
                     'filename' => $file,
                     'name' => $filename,
                     'ext' => $extension,
@@ -520,8 +573,8 @@ class TinyImageManager
                     'date' => filemtime($dir . '/' . $file),
                     'width' => $files[$file]['imageinfo'][0],
                     'height' => $files[$file]['imageinfo'][1],
-                    'md5' => $md5
-                );
+                    'md5' => $md5,
+                ];
             }
         } //Файлы из обычной загрузки
         else {
@@ -529,7 +582,9 @@ class TinyImageManager
             $ufiles = $_FILES[0];
 
             foreach ($ufiles['name'] as $k => $v) {
-                if ($ufiles['error'][$k] != 0) continue;
+                if ($ufiles['error'][$k] != 0) {
+                    continue;
+                }
 
                 //Тип (изображение/файл)
                 $pathtype = $_POST['pathtype'];
@@ -540,8 +595,11 @@ class TinyImageManager
                 } else {
                     continue;
                 }
-                if ($pathtype == 'images') $allowed = $this->ALLOWED_IMAGES;
-                elseif ($pathtype == 'files') $allowed = $this->ALLOWED_FILES;
+                if ($pathtype == 'images') {
+                    $allowed = $this->ALLOWED_IMAGES;
+                } elseif ($pathtype == 'files') {
+                    $allowed = $this->ALLOWED_FILES;
+                }
                 //Если не подходит расширение файла
                 if (!in_array(strtolower($extension), $allowed)) {
                     continue;
@@ -563,14 +621,14 @@ class TinyImageManager
                 if (!copy($ufiles['tmp_name'][$k], $dir . '/' . $file)) {
                     continue;
                 }
-                $link = str_replace(array('/\\', '//', '\\\\', '\\'), '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
+                $link = str_replace(['/\\', '//', '\\\\', '\\'], '/', '/' . str_replace(realpath(DIR_ROOT), '', realpath($dir . '/' . $file)));
                 $path = pathinfo($link);
                 $path = $path['dirname'];
                 if ($extension == 'jpg' || $extension == 'jpeg') {
                     $er = new phpExifReader($dir . '/' . $file);
                     $files[$file]['exifinfo'] = $er->getImageInfo();
 
-                    $files[$file]['general'] = array(
+                    $files[$file]['general'] = [
                         'filename' => $file,
                         'name' => $filename,
                         'ext' => $extension,
@@ -580,10 +638,10 @@ class TinyImageManager
                         'date' => filemtime($dir . '/' . $file),
                         'width' => $files[$file]['imageinfo'][0],
                         'height' => $files[$file]['imageinfo'][1],
-                        'md5' => $md5
-                    );
+                        'md5' => $md5,
+                    ];
                 } else {
-                    $files[$file]['general'] = array(
+                    $files[$file]['general'] = [
                         'filename' => $file,
                         'name' => $filename,
                         'ext' => $extension,
@@ -593,24 +651,25 @@ class TinyImageManager
                         'date' => filemtime($dir . '/' . $file),
                         'width' => $files[$file]['imageinfo'][0],
                         'height' => $files[$file]['imageinfo'][1],
-                        'md5' => $md5
-                    );
+                        'md5' => $md5,
+                    ];
                 }
             }
         }
 
-        $dbfilehandle = fopen($dbfile, "w");
+        $dbfilehandle = fopen($dbfile, 'w');
         fwrite($dbfilehandle, serialize($files));
         fclose($dbfilehandle);
 
         return '';
     }
 
-
-    function RenameFile($type, $dir, $filename, $newname)
+    public function RenameFile($type, $dir, $filename, $newname)
     {
         $dir = $this->AccessDir($dir, $type);
-        if (!$dir) return false;
+        if (!$dir) {
+            return false;
+        }
 
         $filename = trim($filename);
 
@@ -624,9 +683,11 @@ class TinyImageManager
 
         $dbfile = $dir . '/.thumbs/.db';
         if (is_file($dbfile)) {
-            $dbfilehandle = fopen($dbfile, "r");
+            $dbfilehandle = fopen($dbfile, 'r');
             $dblength = filesize($dbfile);
-            if ($dblength > 0) $dbdata = fread($dbfilehandle, $dblength);
+            if ($dblength > 0) {
+                $dbdata = fread($dbfilehandle, $dblength);
+            }
             fclose($dbfilehandle);
         } else {
             return 'error';
@@ -641,14 +702,14 @@ class TinyImageManager
             }
         }
 
-        $dbfilehandle = fopen($dbfile, "w");
+        $dbfilehandle = fopen($dbfile, 'w');
         fwrite($dbfilehandle, serialize($files));
         fclose($dbfilehandle);
 
         return 'ok';
     }
 
-    function bytes_to_str($bytes)
+    public function bytes_to_str($bytes)
     {
         $d = '';
         if ($bytes >= 1048576) {
@@ -665,8 +726,7 @@ class TinyImageManager
         return number_format($num, 2, ',', ' ') . $d;
     }
 
-
-    function ShowDir($dir, $type)
+    public function ShowDir($dir, $type)
     {
         $dir_orig = $dir;
         $dir = $this->CallDir($dir, $type);
@@ -713,12 +773,13 @@ class TinyImageManager
         return $ret;
     }
 
-
-    function GetThumb($dir, $md5, $filename, $mode, $width = 100, $height = 100)
+    public function GetThumb($dir, $md5, $filename, $mode, $width = 100, $height = 100)
     {
         $path = realpath(DIR_ROOT . '/' . $dir);
         return $dir . '/' . $filename;
-        if (is_file($path . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg')) return $dir . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg';
+        if (is_file($path . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg')) {
+            return $dir . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg';
+        }
 
         $isfile = (strpos($dir, DIR_FILES) === 0 ? true : false);
 
@@ -744,19 +805,20 @@ class TinyImageManager
         return $dir . '/.thumbs/' . $md5 . '_' . $width . '_' . $height . '_' . $mode . '.jpg';
     }
 
-
-    function DelFile($pathtype, $path, $md5, $filename, $callShowDir = false)
+    public function DelFile($pathtype, $path, $md5, $filename, $callShowDir = false)
     {
         $tmppath = $path;
         $path = $this->AccessDir($path, $pathtype);
-        if (!$path) return false;
+        if (!$path) {
+            return false;
+        }
 
         if (is_dir($path . '/.thumbs')) {
             if ($pathtype == 'images') {
                 $handle = opendir($path . '/.thumbs');
                 if ($handle) {
                     while (false !== ($file = readdir($handle))) {
-                        if ($file != "." && $file != "..") {
+                        if ($file != '.' && $file != '..') {
                             if (substr($file, 0, 32) == $md5) {
                                 unlink($path . '/.thumbs/' . $file);
                             }
@@ -767,19 +829,22 @@ class TinyImageManager
 
             $dbfile = $path . '/.thumbs/.db';
             if (is_file($dbfile)) {
-                $dbfilehandle = fopen($dbfile, "r");
+                $dbfilehandle = fopen($dbfile, 'r');
                 $dblength = filesize($dbfile);
-                if ($dblength > 0) $dbdata = fread($dbfilehandle, $dblength);
+                if ($dblength > 0) {
+                    $dbdata = fread($dbfilehandle, $dblength);
+                }
                 fclose($dbfilehandle);
-                $dbfilehandle = fopen($dbfile, "w");
+                $dbfilehandle = fopen($dbfile, 'w');
             } else {
-                $dbfilehandle = fopen($dbfile, "w");
+                $dbfilehandle = fopen($dbfile, 'w');
             }
-
 
             if (isset($dbdata)) {
                 $files = unserialize($dbdata);
-            } else $files = array();
+            } else {
+                $files = [];
+            }
 
             unset($files[$filename]);
 
@@ -795,26 +860,30 @@ class TinyImageManager
                     return true;
                 }
             }
-        } else return 'error';
+        } else {
+            return 'error';
+        }
 
         return 'error';
     }
 
-    function DelFolder($pathtype, $path)
+    public function DelFolder($pathtype, $path)
     {
         $path = $this->AccessDir($path, $pathtype);
-        if (!$path) return false;
+        if (!$path) {
+            return false;
+        }
 
         if (realpath($path . '/') == realpath(DIR_ROOT . DIR_IMAGES . '/')) {
             return '{error:"Нельзя удалять корневую папку!"}';
         }
 
-        $files = array();
+        $files = [];
 
         $handle = opendir($path);
         if ($handle) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".." && trim($file) != "" && $file != ".thumbs") {
+                if ($file != '.' && $file != '..' && trim($file) != '' && $file != '.thumbs') {
                     if (is_dir($path . '/' . $file)) {
                         return '{error:"Пока папка содержит вложенные папки, она не может быть удалена."}';
                     } else {
@@ -828,7 +897,7 @@ class TinyImageManager
         $handle = opendir($path . '/.thumbs');
         if ($handle) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
+                if ($file != '.' && $file != '..') {
                     if (is_file($path . '/.thumbs/' . $file)) {
                         unlink($path . '/.thumbs/' . $file);
                     }
@@ -839,16 +908,17 @@ class TinyImageManager
         }
 
         foreach ($files as $f) {
-            if (is_file($path . '/' . $f)) unlink($path . '/' . $f);
+            if (is_file($path . '/' . $f)) {
+                unlink($path . '/' . $f);
+            }
         }
 
-        if (!rmdir($path)) return '{error:"Ошибка удаления папки"}';
+        if (!rmdir($path)) {
+            return '{error:"Ошибка удаления папки"}';
+        }
 
         return '{ok:\'\'}';
     }
-
 }
 
-
 $letsGo = new TinyImageManager();
-?>

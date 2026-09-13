@@ -18,9 +18,8 @@ class EventManager implements \Simflex\Core\DI\Service
      *
      * @param string $eventName Event name
      * @param string $listenerClass Listener class (must implement EventListener interface)
-     * @return void
      */
-    public function subscribe(string $eventName, string $listenerClass)
+    public function subscribe(string $eventName, string $listenerClass): void
     {
         if (!isset($this->listeners[$eventName])) {
             $this->listeners[$eventName] = [];
@@ -34,9 +33,8 @@ class EventManager implements \Simflex\Core\DI\Service
      *
      * @param string $eventName Event name
      * @param array $listenerClasses Array of listener classes (must implement EventListener interface)
-     * @return void
      */
-    public function subscribeMany(string $eventName, array $listenerClasses)
+    public function subscribeMany(string $eventName, array $listenerClasses): void
     {
         foreach ($listenerClasses as $listenerClass) {
             $this->subscribe($eventName, $listenerClass);
@@ -47,9 +45,8 @@ class EventManager implements \Simflex\Core\DI\Service
      * Subscribes many listeners to many events
      *
      * @param array $subscribers Array of event names and listener classes
-     * @return void
      */
-    public function subscribeAll(array $subscribers)
+    public function subscribeAll(array $subscribers): void
     {
         foreach ($subscribers as $eventName => $listenerClasses) {
             $this->subscribeMany($eventName, $listenerClasses);
@@ -60,9 +57,8 @@ class EventManager implements \Simflex\Core\DI\Service
      * Fires an event
      *
      * @param Event $event Event object
-     * @return void
      */
-    public function dispatch(Event $event)
+    public function dispatch(Event $event): void
     {
         $subject = $event->getSubject();
         if (isset($this->listeners[$subject])) {

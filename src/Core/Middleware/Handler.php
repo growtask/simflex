@@ -6,8 +6,7 @@ interface Handler
 {
     /**
      * @param mixed $payload any data
-     * @param \Closure $next
      * @return mixed handled payload
      */
-    public function handle($payload, \Closure $next);
+    public function handle(mixed $payload, \Closure $next): mixed;
 }

@@ -18,16 +18,15 @@ use Simflex\Core\ModuleBase;
 
 class ModuleForm extends ModuleBase
 {
-
-    protected $name;
-    protected $submitButtonText;
+    protected string $name;
+    protected string $submitButtonText;
     /** @var Field[] */
-    protected $fields = [];
-    protected static $formTplDefault = 'form.tpl';
-    protected $formTpl;
-    protected $errors;
-    protected $action = '';
-    protected $method = 'post';
+    protected array $fields = [];
+    protected static string $formTplDefault = 'form.tpl';
+    protected string $formTpl;
+    protected array $errors = [];
+    protected string $action = '';
+    protected string $method = 'post';
 
     protected const TYPE_MAP = [
         'string' => FieldString::class,
@@ -48,7 +47,7 @@ class ModuleForm extends ModuleBase
         $this->maybeSubmit();
     }
 
-    protected function maybeSubmit()
+    protected function maybeSubmit(): void
     {
         if ($this->submitted()) {
             if ($this->validate()) {
@@ -60,13 +59,13 @@ class ModuleForm extends ModuleBase
                 $subject = 'Заполненная форма ' . $this->title;
 
                 $rows = [];
-                $rows[] = "Отправлено со страницы " . Container::getRequest()->getFullUrl();
-                $rows[] = "";
+                $rows[] = 'Отправлено со страницы ' . Container::getRequest()->getFullUrl();
+                $rows[] = '';
                 foreach ($this->fields as $field) {
                     $rows[] = $field->getLabel() . ': ' . $field->getPOST();
                 }
-                $rows[] = "";
-                $rows[] = "---";
+                $rows[] = '';
+                $rows[] = '---';
                 $rows[] = 'Simplex Framework';
                 if (Mail::create($to, $subject, join("\r\n", $rows))->setAsPlain()->send()) {
                     Alert::success('Ваше сообщение отправлено, Мы ответим Вам в ближайшее время');
@@ -97,7 +96,7 @@ class ModuleForm extends ModuleBase
 
     public function validate(): bool
     {
-        $errors = array();
+        $errors = [];
         foreach ($this->fields as $field) {
             $errors = array_merge($errors, $field->check());
         }
@@ -105,7 +104,7 @@ class ModuleForm extends ModuleBase
         return !count($this->errors);
     }
 
-    protected function fillFields(array $fields)
+    protected function fillFields(array $fields): void
     {
         $this->fields = [];
         foreach ($fields as $fieldRaw) {
@@ -121,17 +120,14 @@ class ModuleForm extends ModuleBase
         }
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    protected function content()
+    protected function content(): string
     {
-        include static::findTemplateFile($this->formTpl);
+        return $this->render(static::findTemplateFile($this->formTpl));
     }
 
     protected static function findTemplateFile(string $name): string

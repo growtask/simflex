@@ -5,7 +5,6 @@ namespace Simflex\Extensions\Content\Model;
 use Simflex\Core\Buffer;
 use Simflex\Core\DB\AQ;
 use Simflex\Core\ModelBase;
-use Simflex\Extensions\Content\Model\ModelContentTemplate;
 
 /**
  * @property int $content_id
@@ -26,10 +25,10 @@ use Simflex\Extensions\Content\Model\ModelContentTemplate;
  */
 class ModelContent extends ModelBase
 {
-    protected static $table = 'content';
-    protected static $primaryKeyName = 'content_id';
+    protected static string $table = 'content';
+    protected static string $primaryKeyName = 'content_id';
 
-    public static function aqModifyWithTemplate(AQ $AQ)
+    public static function aqModifyWithTemplate(AQ $AQ): void
     {
         $AQ->leftJoin(ModelContentTemplate::class, 'template_id');
     }
@@ -50,7 +49,7 @@ class ModelContent extends ModelBase
         });
     }
 
-    public function loadParent()
+    public function loadParent(): ?ModelContent
     {
         $pid = $this['pid'];
         return Buffer::getOrSet('content.parent.' . $pid, function () use ($pid) {

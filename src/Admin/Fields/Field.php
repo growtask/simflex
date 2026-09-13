@@ -2,58 +2,58 @@
 
 namespace Simflex\Admin\Fields;
 
-
-use Simflex\Core\DB;
-use Simflex\Admin\Fields\ForeignKey;
+use Simflex\Core\View;
 
 class Field
 {
+    public string $form = '';
+    public string $name = '';
+    public string $label = '';
+    public bool $pk = false;
+    public string $table = '';
+    public string $tablePk = '';
+    public string $help = '';
+    public string $placeholder = '';
+    public array $params = [];
 
-    public $form = '';
-    public $name = '';
-    public $label = '';
-    public $pk = false;
-    public $table = '';
-    public $tablePk = '';
-    public $help = '';
-    public $placeholder = '';
-    public $params = array();
-
-    /**
-     *
-     * @var  ForeignKey
-     */
-    public $fk = false;
-    public $width = 0;
-    public $widthMob = 0;
-    public $isVisible = true;
-    public $link = '';
-    public $isnull = false;
-    public $e2n = false;
-    public $defaultValue = '';
-    public $autoIncrement = false;
-    public $required = 0;
-    public $editor = '';
-    public $filter = 0;
+    public ForeignKey|false $fk = false;
+    public float $width = 0;
+    public float $widthMob = 0;
+    public bool $isVisible = true;
+    public string $link = '';
+    public bool $isnull = false;
+    public bool $e2n = false;
+    public mixed $defaultValue = '';
+    public bool $autoIncrement = false;
+    public bool $required = false;
+    public string $editor = '';
+    public bool $filter = false;
 
     /* INPUT */
-    public $styleCol = [];
-    public $styleCell = '';
-    public $hidden = false;
-    public $readonly = false;
-    public $onchange = '';
-    protected $tree = array();
-    public $value = '';
-    public $pkValue = '';
-    protected $pid;
+    public array $styleCol = [];
+    public string $styleCell = '';
+    public bool $hidden = false;
+    public bool $readonly = false;
+    public string $onchange = '';
+    protected array $tree = [];
+    public string|int|float|bool|array|null $value = '';
+    public string|int $pkValue = '';
+    protected int $pid;
 
-    protected $isNumeric = false;
+    protected bool $isNumeric = false;
 
-    /**
-     *
-     * @var bool
-     */
-    public $isVirtual = false; //  FVirtual,  FMultiKey
+    public bool $isVirtual = false; //  FVirtual,  FMultiKey
+
+    public static function typeLabel(): string
+    {
+        $parts = explode('\\', static::class);
+        return end($parts) ?: static::class;
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 
     public function __construct($row)
     {
@@ -67,20 +67,20 @@ class Field
             $row['params'] = unserialize($row['params']);
         }
 
-        $params = isset($row['params']['main']) ? $row['params']['main'] : array();
+        $params = isset($row['params']['main']) ? $row['params']['main'] : [];
         $this->params = $params;
 
         $this->setWidth(@$params['width']);
 
         if ($params['width_mob'] ?? '') {
-            $this->widthMob = (double)$params['width_mob'];
+            $this->widthMob = (float)$params['width_mob'];
         }
 
         if (!empty($params['pk'])) {
             $this->pk = (bool)$params['pk'];
         }
         if (!empty($params['is_fk'])) {
-            $this->fk = new  ForeignKey($params);
+            $this->fk = new ForeignKey($params);
         }
         if (!empty($params['style_col'])) {
             $this->styleCol['from_param'] = $params['style_col'];
@@ -130,30 +130,19 @@ class Field
      *
      * @param float $width
      */
-    public function setWidth($width)
+    public function setWidth($width): void
     {
-        $this->width = (empty($width) || (int)$width == 0) ? 0 : (double)$width;
+        $this->width = (empty($width) || (int)$width == 0) ? 0 : (float)$width;
         $this->isVisible = $this->width > 0;
         $this->styleCol['width'] = $this->width > 1
             ? 'width: ' . $this->width . 'px'
             : (($this->width < 1 && $this->width > 0) ? 'width: ' . round($this->width * 100) . '%' : '');
     }
 
-    /**
-     * @param Field $field
-     * @param $group
-     * @param $params
-     * @param $row
-     * @return void
-     */
-    public static function setFieldValue(&$field, $group, $params, $row)
+    public static function setFieldValue(Field &$field, $group, $params, $row): void
     {
         $p = false;
         $params = $params ?: [];
-//        if (is_string($field)) {
-//            $field = $this->fields[$field];
-//            $p = true;
-//        }
         $value = '';
         if (is_array($group) && $group['name']) {
             $value = isset($params[$group['name']]) && array_key_exists($field->name, $params[$group['name']])
@@ -168,29 +157,72 @@ class Field
         $field->value = $value;
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $value = $this->value ?: $value;
-        return '<div class="form-control form-control--sm">
-                                    <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"
-                                    ' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
-            . ($this->readonly ? ' readonly' : '') . '
-                                        type="text" class="form-control__input">
-                                </div>';
+        return $this->render('input', ['value' => $value] + $this->inputVars());
     }
 
-    public function inputName()
+    /**
+     * Renders the template from the tpl directory next to this file
+     *
+     * @param string $tpl Template name without extension
+     * @param array<string, mixed> $vars Variables available in the template as $name, along with $this
+     */
+    protected function render(string $tpl, array $vars = []): string
+    {
+        return View::render(__DIR__ . '/tpl/' . $tpl . '.tpl', $vars, $this);
+    }
+
+    protected function inputVars(): array
+    {
+        return [
+            'name' => $this->inputName(),
+            'placeholder' => $this->placeholder,
+            'readonly' => $this->readonly,
+        ];
+    }
+
+    protected function cell(string $value, string $kind = 'text'): string
+    {
+        return $this->render('cell', [
+            'name' => $this->name,
+            'isId' => (bool)$this->fk,
+            'kind' => $kind,
+            'value' => $value,
+        ]);
+    }
+
+    /**
+     * @param array $vars name, value, onchange, data, readonly, disabled, action, search, current, items [[value, label]]
+     */
+    protected function dropdown(array $vars): string
+    {
+        return $this->render('dropdown', $vars + [
+            'name' => '',
+            'value' => '',
+            'onchange' => null,
+            'data' => [],
+            'readonly' => false,
+            'disabled' => false,
+            'action' => '',
+            'search' => false,
+            'current' => '—',
+            'items' => [],
+        ]);
+    }
+
+    public function inputName(): string
     {
         return $this->form ? $this->form . '[' . $this->name . ']' : $this->name;
     }
 
-    public function inputHidden($value)
+    public function inputHidden($value): string
     {
         $value = $this->value ?: $value;
-        return '<input type="hidden" name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '" />';
+        return $this->render('input-hidden', ['name' => $this->inputName(), 'value' => $value]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         if ($simple) {
             return $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
@@ -198,67 +230,75 @@ class Field
         return $this->e2n && $_POST[$this->name] === '' ? null : $_POST[$this->name];
     }
 
-    public function check()
+    public function check(): array
     {
-        $errors = array();
+        $errors = [];
         if ($this->required && (!isset($_POST[$this->name]) || $_POST[$this->name] === '')) {
             $errors[] = 'Обязательно для заполнения';
         }
         return $errors;
     }
 
-    public function show($row)
+    public function show($row): string
     {
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
-        $value = strip_tags($value, ['br', 'strong', 'b', 'em', 'i', 'span']);
+        $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
-            echo '<a href="?action=form&' . $this->tablePk . '=' . $this->pkValue . '" class="table__row-' . $this->name . '">' . $value . '</a>';
+            return $this->render('link', [
+                'href' => '?action=form&' . $this->tablePk . '=' . $this->pkValue,
+                'class' => 'table__row-' . $this->name,
+                'label' => $value,
+                'blank' => false,
+            ]);
         } else {
             $isNumericReal = $this->isNumeric || ((string)intval($value) == $value);
-            echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
+            return $this->cell($value, $isNumericReal ? 'num' : 'text');
         }
     }
 
     /**
      * Show in detail card in show mode
-     * @param $row
-     * @return mixed
      */
-    public function showDetail($row)
+    public function showDetail($row): ?string
     {
-        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
+        $value = strip_tags((string)$row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
         return $value;
     }
 
-    public function delete($value)
+    public function delete($value): bool
     {
         return true;
     }
 
-    public function defval()
+    public function defval(): mixed
     {
         return $this->defaultValue;
     }
 
-    public function filter($value)
+    public function filter($value): string
     {
         if ($this->filter) {
             $inExtra = $this->width == 0;
-            echo ' <div class="form-control form-control--sm">
-                        <input class="form-control__input" name="filter[' . $this->name . ']" placeholder="'
-                . ($inExtra ? htmlspecialchars($this->label) : '') . '" value="' . htmlspecialchars($value) . '" type="text" />
-                    </div>';
+            return $this->render('filter', [
+                'name' => $this->name,
+                'placeholder' => $inExtra ? $this->label : '',
+                'value' => $value,
+            ]);
         }
+        return '';
     }
 
-    public function loadUI($onForm = false)
+    /**
+     * Registers the field assets, returns HTML required by the field UI (init scripts)
+     */
+    public function loadUI(bool $onForm = false): string
     {
+        return '';
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         return '' . $this->table . '.' . $this->name;
     }
-
 }

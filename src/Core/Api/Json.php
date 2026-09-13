@@ -1,9 +1,6 @@
 <?php
-namespace Simflex\Core\Api;
 
-use Simflex\Core\Api\Base;
-use Simflex\Core\Api\JsonRequest;
-use Simflex\Core\Api\JsonResponse;
+namespace Simflex\Core\Api;
 
 class Json extends Base
 {

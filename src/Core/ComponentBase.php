@@ -2,36 +2,23 @@
 
 namespace Simflex\Core;
 
-
-use Simflex\Core\ExtensionBase;
-use Simflex\Core\Path;
-
 abstract class ComponentBase extends ExtensionBase
 {
+    /**
+     * Url опубликованной статики компонента (см. Assets::publish)
+     */
+    protected function rootHref(): string
+    {
+        return Path::dirToHref($this->rootDir);
+    }
 
     /**
-     * Путь до компонента в строке браузера
-     * @var string
+     * Component content. Returns HTML, does not output it
      */
-    protected $rootHref;
+    abstract protected function content(): string;
 
-    public function __construct()
+    final public function execute(): string
     {
-        parent::__construct();
-        $this->rootHref = Path::dirToHref($this->rootDir);
+        return $this->content();
     }
-
-    protected abstract function content();
-
-    public final function execute($is_print = false)
-    {
-        if ($is_print) {
-            $this->content();
-        } else {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        }
-    }
-
 }

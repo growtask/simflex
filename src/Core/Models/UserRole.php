@@ -17,14 +17,13 @@ use Simflex\Core\ModelBase;
  */
 class UserRole extends ModelBase
 {
-    protected static $table = 'user_role';
-    protected static $primaryKeyName = 'role_id';
+    protected static string $table = 'user_role';
+    protected static string $primaryKeyName = 'role_id';
 
     /**
      * Get role by alias
      *
      * @param string $alias Role alias
-     * @return static|null
      * @throws Exception
      */
     public static function byAlias(string $alias): ?static

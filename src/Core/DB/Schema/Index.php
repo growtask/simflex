@@ -17,10 +17,8 @@ class Index extends ElementBase
 
     /**
      * Sets index
-     * @param array|string $column
-     * @return $this
      */
-    public function index($column): self
+    public function index(array|string $column): static
     {
         if (!is_array($column)) {
             $column = [$column];
@@ -37,23 +35,21 @@ class Index extends ElementBase
 
     /**
      * Sets key
-     * @param array|string $column
-     * @return $this
      */
-    public function key($column): self
+    public function key(array|string $column): static
     {
         $this->index($column);
         $this->params->isKey = true;
         return $this;
     }
 
-    public function fullText(): self
+    public function fullText(): static
     {
         $this->params->type = IndexParams::TYPE_FULLTEXT;
         return $this;
     }
 
-    public function spatial(): self
+    public function spatial(): static
     {
         $this->params->type = IndexParams::TYPE_SPATIAL;
         return $this;

@@ -18,13 +18,13 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
             </div>
             <div class="content__head-right">
                 <div class="content__head-btns">
-                    <?php $this->showActions() ?>
+                    <?= $this->showActions() ?>
                 </div>
             </div>
         </div>
     </div>
     <div class="content__body">
-        <?php \Simflex\Admin\Plugins\Alert\Alert::output() ?>
+        <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
         <div class="tables">
             <form class="table-top-form" >
                 <table class="table">
@@ -55,7 +55,7 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
                                         </div>
                                     </div>
                                 </div>
-                                <?php $this->filterField($f)?>
+                                <?= $this->filterField($f) ?>
                             </th>
                             <?php endif; ?>
                             <?php endforeach; ?>
@@ -95,7 +95,7 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
                                 <?php endif ?>
                             <?php endforeach ?>
                             <td class="table-data-controls">
-                                                                    <?php $this->rowActions($row, $i)?>
+                                                                    <?= $this->rowActions($row, $i) ?>
                             </td>
                         </tr>
                         <?php
@@ -106,7 +106,7 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
             </div>
         </div>
 
-        <?php echo $pagecontrol->content(); ?>
+        <?= $pagecontrol->content() ?>
     </div>
 </div>
 

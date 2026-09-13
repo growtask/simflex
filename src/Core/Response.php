@@ -1,13 +1,14 @@
 <?php
+
 namespace Simflex\Core;
 
 use JetBrains\PhpStorm\NoReturn;
 
 abstract class Response implements \Simflex\Core\DI\Service
 {
-    protected $statusCode = 200;
-    protected $cookies = [];
-    protected $headers = [];
+    protected int $statusCode = 200;
+    protected array $cookies = [];
+    protected array $headers = [];
 
     public function __construct()
     {
@@ -21,9 +22,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     /**
      * Sets redirect url
      * @param string $url URL to redirect to
-     * @return self
      */
-    public function redirect(string $url): self
+    public function redirect(string $url): static
     {
         $this->setHeader('Location', $url);
         return $this;
@@ -32,10 +32,9 @@ abstract class Response implements \Simflex\Core\DI\Service
     /**
      * Redirect and quit
      * @param string $url URL to redirect to
-     * @return void
      */
     #[NoReturn]
-    public function redirectNow(string $url)
+    public function redirectNow(string $url): never
     {
         $this->redirect($url);
         exit;
@@ -47,13 +46,12 @@ abstract class Response implements \Simflex\Core\DI\Service
      * @param string $name Name
      * @param string $value Value
      * @param array $options Options
-     * @return self
      */
-    public function setCookie(string $name, string $value = '', array $options = []): self
+    public function setCookie(string $name, string $value = '', array $options = []): static
     {
         $this->cookies[$name] = [
             'value' => $value,
-            'options' => $options
+            'options' => $options,
         ];
 
         return $this;
@@ -64,9 +62,8 @@ abstract class Response implements \Simflex\Core\DI\Service
      *
      * @param string $name Name
      * @param string $value Value
-     * @return $this
      */
-    public function setHeader(string $name, string $value): self
+    public function setHeader(string $name, string $value): static
     {
         $this->headers[$name] = $value;
         return $this;
@@ -75,9 +72,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     /**
      * Sends a header with status code
      * @param int $code Status code string
-     * @return self
      */
-    public function setStatusCode(int $code): self
+    public function setStatusCode(int $code): static
     {
         $this->statusCode = $code;
         return $this;
@@ -86,9 +82,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     /**
      * Sets the content type
      * @param string $contentType Content type
-     * @return self
      */
-    public function setContentType(string $contentType): self
+    public function setContentType(string $contentType): static
     {
         $this->setHeader('Content-Type', $contentType);
         return $this;
@@ -97,9 +92,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     /**
      * Sets the content disposition header
      * @param string $fileName File name
-     * @return self
      */
-    public function setContentDisposition(string $fileName): self
+    public function setContentDisposition(string $fileName): static
     {
         $this->setHeader('Content-Disposition', 'attachment; filename=' . $fileName);
         return $this;
@@ -111,7 +105,7 @@ abstract class Response implements \Simflex\Core\DI\Service
      * @param string $fileName File name
      * @param string $fileContent Content of the file
      */
-    public function outputFile(string $fileName, string $fileContent)
+    public function outputFile(string $fileName, string $fileContent): void
     {
         $this->outputHeaders();
 
@@ -122,13 +116,13 @@ abstract class Response implements \Simflex\Core\DI\Service
         echo $fileContent;
     }
 
-    public function output()
+    public function output(): void
     {
         $this->outputHeaders();
         echo $this->makeBody();
     }
 
-    protected function outputHeaders()
+    protected function outputHeaders(): void
     {
         http_response_code($this->statusCode);
 
@@ -141,5 +135,5 @@ abstract class Response implements \Simflex\Core\DI\Service
         }
     }
 
-    protected abstract function makeBody(): string;
+    abstract protected function makeBody(): string;
 }

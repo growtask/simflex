@@ -4,21 +4,21 @@ namespace Simflex\Core\Helpers;
 
 class Str
 {
-    public static function translite($str)
+    public static function translite($str): string
     {
         $tl = \Transliterator::create('Any-Latin; Latin-ASCII; Lower()');
         return str_replace(
             ' ',
             '-',
             preg_replace(
-                "/[^A-Za-z0-9\\- ]/",
+                '/[^A-Za-z0-9\\- ]/',
                 '',
                 $tl->transliterate($str)
             )
         );
     }
 
-    public static function sizeToStr(string $path)
+    public static function sizeToStr(string $path): string
     {
         $fileSize = filesize($_SERVER['DOCUMENT_ROOT'] . $path);
         $sizeDenom = 'б';
@@ -38,12 +38,7 @@ class Str
         return round($fileSize) . $sizeDenom;
     }
 
-    /**
-     * @param string $str
-     * @param bool $firstIsLower
-     * @return string|string[]
-     */
-    public static function toCamel($str, $firstIsLower = true)
+    public static function toCamel(string $str, bool $firstIsLower = true): string
     {
         if ($firstIsLower) {
             $parts = explode('_', $str);
@@ -54,11 +49,7 @@ class Str
         return $result;
     }
 
-    /**
-     * @param string $str
-     * @return string
-     */
-    public static function toUnderscore($str)
+    public static function toUnderscore(string $str): string
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $str, $matches);
         $ret = $matches[0];
@@ -112,7 +103,7 @@ class Str
             case 2:
             case 3:
             case 4:
-                $out .= $isNeuter ? 'я' : ($isMale ? 'а' : (str_ends_with('ч') ? 'и' : 'ы'));
+                $out .= $isNeuter ? 'я' : ($isMale ? 'а' : (preg_match('/[гкхжчшщ]$/u', $s) ? 'и' : 'ы'));
                 break;
             default:
                 $out .= $isNeuter ? 'ий' : ($isMale ? 'ов' : '');

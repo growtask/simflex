@@ -2,18 +2,11 @@
 
 namespace Simflex\Core;
 
-
 class Buffer
 {
+    protected static array $data = [];
 
-    protected static $data = [];
-
-    /**
-     * @param string $key
-     * @param callable $callback
-     * @return mixed
-     */
-    public static function getOrSet($key, callable $callback)
+    public static function getOrSet(string $key, callable $callback): mixed
     {
         if (!array_key_exists($key, static::$data)) {
             static::$data[$key] = $callback();
@@ -21,14 +14,10 @@ class Buffer
         return static::$data[$key];
     }
 
-    /**
-     * @param string $key
-     */
-    public static function delete($key)
+    public static function delete(string $key): void
     {
         if (array_key_exists($key, static::$data)) {
             unset(static::$data[$key]);
         }
     }
-
 }

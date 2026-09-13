@@ -1,15 +1,16 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
 
 class FieldVirtualTable extends Field
 {
-    public $query = '';
-    public $queryCount = '';
-    public $cols = [];
-    public $button = '';
-    public $customjs = '';
+    public string $query = '';
+    public string $queryCount = '';
+    public array $cols = [];
+    public string $button = '';
+    public string $customjs = '';
 
     public function __construct($row)
     {
@@ -17,33 +18,30 @@ class FieldVirtualTable extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         if (!($_REQUEST[$this->tablePk] ?? 0)) {
-            return '<p><em>Для редактирования этой таблицы сначала создайте запись</em></p>';
+            return $this->render('vtable-notice');
         }
-        
+
         $value = $this->getValue();
         $jsId = (string)crc32($this->inputName());
         $total = $this->getCount();
 
-        ob_start();
-        include 'tpl/vtable.tpl';
-        echo $this->customjs;
-        return ob_get_clean();
+        return $this->render('vtable', compact('value', 'jsId', 'total')) . $this->customjs;
     }
 
-    public function getCount()
+    public function getCount(): mixed
     {
         return DB::result($this->queryCount, 0);
     }
 
-    public function getValue()
+    public function getValue(): string|false
     {
         $vv = [];
         $q = DB::query($this->query);
         while ($r = DB::fetch($q)) {
-            foreach ($r as $k=>$v) {
+            foreach ($r as $k => $v) {
                 if ($k == 'img_json') {
                     $js = json_decode($v, true)['v'] ?? ['v' => ['npp' => 0, 'img' => asset('img/default-img.png')]];
                     usort($js, function ($a, $b) {
@@ -76,8 +74,18 @@ class FieldVirtualTable extends Field
         ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return '';
+    }
+
+    public static function typeLabel(): string
+    {
+        return 'Виртуальная таблица';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
     }
 }

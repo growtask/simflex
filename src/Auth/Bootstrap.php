@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Auth;
-
 
 use Simflex\Auth\Auth\Chain;
 use Simflex\Auth\SignOut\CookieMiddleware;
@@ -13,20 +11,20 @@ use Simflex\Core\UserInstance;
 
 class Bootstrap
 {
-    public static function authByMiddlewareChain(Chain $chain)
+    public static function authByMiddlewareChain(Chain $chain): void
     {
         $user = $chain->process(null);
         Container::set('user', $user);
         static::initLegacy($user);
     }
 
-    public static function authByUser(User $user)
+    public static function authByUser(User $user): void
     {
         Container::set('user', $user);
         static::initLegacy($user);
     }
 
-    protected static function initLegacy(?User $user)
+    protected static function initLegacy(?User $user): void
     {
         Container::set('userLegacy', \Simflex\Core\User::class);
         if (SF_LOCATION_ADMIN == SF_LOCATION) {
@@ -40,13 +38,12 @@ class Bootstrap
         \Simflex\Core\User::login($userInstance);
     }
 
-    public static function signOut()
+    public static function signOut(): void
     {
         (new \Simflex\Core\Middleware\Chain([
             new SessionMiddleware(),
             new CookieMiddleware(),
         ]))->process();
         Container::set('user', null);
-        //Container::getUserLegacy()::logout2();
     }
 }

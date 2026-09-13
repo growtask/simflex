@@ -15,6 +15,12 @@ use Simflex\Core\Models\Migration as Migration;
 
 class Migrator extends ConsoleBase
 {
+    /**
+     * Миграция, создающая таблицы migration и seeder. Не откатывается: без этих таблиц
+     * migrate/up не сможет запомнить выполненные миграции.
+     */
+    protected const BOOTSTRAP_MIGRATION = '00_migration';
+
     protected array $migrationFiles = [];
 
     public function __construct()
@@ -25,7 +31,7 @@ class Migrator extends ConsoleBase
             if (($path['extension'] ?? '') == 'php') {
                 $this->migrationFiles[$path['filename']] = [
                     'file' => 'database/migrations/' . $file,
-                    'name' => $path['filename']
+                    'name' => $path['filename'],
                 ];
             }
         }
@@ -58,7 +64,6 @@ class Migrator extends ConsoleBase
     /**
      * Attempts to get migration object
      * @param string $name Migration name
-     * @return MigrationInterface|null
      */
     protected function getMigrationObject(string $name): ?MigrationInterface
     {
@@ -84,7 +89,6 @@ class Migrator extends ConsoleBase
     /**
      * Ups the migrations
      * @param string $steps Amount of steps to go
-     * @return void
      * @throws Exception
      */
     #[Command('Up migrations')]
@@ -92,9 +96,10 @@ class Migrator extends ConsoleBase
         #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = 'all'
     ): void {
         // find migrations that were not processed yet
-        $list = Migration::findAdv()
-            ->asArray()
-            ->all();
+        // на пустой базе таблицы migration ещё нет: её создаст миграция 00_migration
+        $list = DB::result("SHOW TABLES LIKE 'migration'")
+            ? Migration::findAdv()->asArray()->all()
+            : [];
 
         $migrations = $this->getNewMigrations($list);
         if (empty($migrations)) {
@@ -122,7 +127,9 @@ class Migrator extends ConsoleBase
             $class->up($schema);
             if (!$schema->commit()) {
                 Log::critical('Failed to up migration {migration}', ['migration' => $migration]);
-                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                Log::critical(
+                    'Query: {query}, error: {error}',
+                    ['query' => DB::getLastQuery(), 'error' => DB::error()]
                 );
 
                 $schema->rollback();
@@ -136,7 +143,9 @@ class Migrator extends ConsoleBase
             if (!$dbMigration->insert(['file' => $migration])) {
                 $class->down($schema);
                 if (!$schema->commit()) {
-                    Log::emergency('Failed to down migration {migration} after DB failure', ['migration' => $migration]
+                    Log::emergency(
+                        'Failed to down migration {migration} after DB failure',
+                        ['migration' => $migration]
                     );
                     return;
                 }
@@ -151,8 +160,6 @@ class Migrator extends ConsoleBase
 
     /**
      * Downs the migrations
-     * @param string $steps
-     * @return void
      * @throws Exception
      */
     #[Command('Down migrations')]
@@ -160,6 +167,7 @@ class Migrator extends ConsoleBase
         #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = '1'
     ): void {
         $list = Migration::findAdv()
+            ->where("`file` <> '" . static::BOOTSTRAP_MIGRATION . "'")
             ->orderBy('`id` DESC');
 
         if ($steps != 'all') {
@@ -179,7 +187,9 @@ class Migrator extends ConsoleBase
             $class->down($schema);
             if (!$schema->commit()) {
                 Log::critical('Failed to down migration {migration}', ['migration' => $migration->file]);
-                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                Log::critical(
+                    'Query: {query}, error: {error}',
+                    ['query' => DB::getLastQuery(), 'error' => DB::error()]
                 );
                 return;
             }
@@ -199,12 +209,16 @@ class Migrator extends ConsoleBase
 
             Log::notice('Migration {migration} is down', ['migration' => $migration->file]);
         }
+
+        if (!Migration::findAdv()->where("`file` <> '" . static::BOOTSTRAP_MIGRATION . "'")->asArray()->all()) {
+            // данные сидов удалены вместе с таблицами, их можно накатывать заново
+            DB::query('DELETE FROM `seeder`');
+            Log::notice('Seeders history is cleared');
+        }
     }
 
     /**
      * Refreshes the migrations
-     * @param string $steps
-     * @return void
      * @throws Exception
      */
     #[Command('Refresh migrations')]
@@ -217,8 +231,6 @@ class Migrator extends ConsoleBase
 
     /**
      * Creates a new migration
-     * @param string $name
-     * @return void
      */
     #[Command('Create new migration')]
     public function create(#[Help('Migration name')] string $name): void

@@ -1,25 +1,35 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
 use Simflex\Core\DB;
 
+/**
+ * @todo Incomplete: there are no migrations for the shared_category table, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
+ */
 class FieldCategorySelect extends Field
 {
-    public function input($value)
+    public function input($value): string
     {
         $this->syncCategories();
 
-        $existing = DB::assoc('SELECT name FROM shared_category');
-
-        $out = '<select name="' . $this->inputName() . '[]" class="form-control cat-select" multiple>';
-        foreach ($existing as $cat) {
-            $out .= '<option ' . (in_array($cat['name'], explode(',', $value)) ? ' selected' : '') . '>' . $cat['name'] . '</option>';
+        $selected = explode(',', $value);
+        $options = [];
+        foreach (DB::assoc('SELECT name FROM shared_category') as $cat) {
+            $options[] = [$cat['name'], $cat['name'], in_array($cat['name'], $selected)];
         }
-        return $out .'</select>';
+        return $this->render('select', [
+            'name' => $this->inputName() . '[]',
+            'onchange' => null,
+            'class' => 'form-control cat-select',
+            'multiple' => true,
+            'wrap' => false,
+            'options' => $options,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $data = $_POST[$this->inputName()] ?: [];
         foreach ($data as $val) {
@@ -31,14 +41,16 @@ class FieldCategorySelect extends Field
         return "'" . DB::escape(implode(',', $data)) . "'";
     }
 
-    protected function syncCategories()
+    protected function syncCategories(): void
     {
-        $realCats = DB::assoc('SELECT title as name FROM content WHERE template_id = 6');
-        $existing = DB::assoc('SELECT name FROM shared_category');
+        // DB::assoc возвращает список строк-массивов: array_diff по ним сравнивает "Array" с "Array",
+        // поэтому сравниваем плоские списки имён
+        $realCats = array_column(DB::assoc('SELECT content_id, title FROM content WHERE template_id = 6') ?: [], 'content_id', 'title');
+        $existing = array_column(DB::assoc('SELECT name FROM shared_category') ?: [], 'name');
 
-        $toAdd = array_diff($realCats, $existing);
-        foreach ($toAdd as $cat) {
-            DB::query('INSERT INTO shared_category (name, linked_to) VALUES (?, ?)', [$cat['name'], DB::result('SELECT content_id FROM content WHERE title = ? AND template_id = 6', 'content_id', [$cat['name']])]);
+        $toAdd = array_diff(array_map('strval', array_keys($realCats)), $existing);
+        foreach ($toAdd as $name) {
+            DB::query('INSERT INTO shared_category (name, linked_to) VALUES (?, ?)', [$name, $realCats[$name]]);
         }
     }
 }

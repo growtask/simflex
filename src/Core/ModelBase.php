@@ -25,8 +25,8 @@ use Simflex\Core\Models\Enums\Relation;
  */
 abstract class ModelBase implements ArrayAccess, JsonSerializable
 {
-    const FLAG_IGNORE = 1 << 0;
-    const FLAG_SKIP_VIRTUAL = 1 << 1;
+    public const FLAG_IGNORE = 1 << 0;
+    public const FLAG_SKIP_VIRTUAL = 1 << 1;
 
     /**
      * @var array For debugging purposes. Logs inserts, deletions and updates.
@@ -60,12 +60,12 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * @var string Table name
      */
-    protected static $table;
+    protected static string $table;
 
     /**
      * @var string Primary key name
      */
-    protected static $primaryKeyName;
+    protected static string $primaryKeyName;
 
     /**
      * @var array Last error
@@ -115,7 +115,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Loads relations from reflection to local cache for speed
-     * @return void
      */
     protected function loadRelations(): void
     {
@@ -161,15 +160,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Get enum values for field
-     *
-     * @param string $fieldName
-     * @param bool $withBuffer
-     * @return array
      */
     public static function enumValues(string $fieldName, bool $withBuffer = true): array
     {
         $closure = fn() => DB::enumValues(static::$table, $fieldName);
-        if ($withBuffer && class_exists(' Buffer')) {
+        if ($withBuffer) {
             return Buffer::getOrSet('enumValues.' . static::$table . ".$fieldName", $closure);
         }
 
@@ -192,7 +187,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         ?string $limit = null,
         bool|string $assocKey = false
     ): array {
-        return static::findAdv()->andWhere($where)->orderBy($orderBy)->limit($limit)->all($assocKey);
+        return static::findAdv()->andWhere($where)->orderBy($orderBy)->limit($limit ?? '')->all($assocKey);
     }
 
     /**
@@ -228,7 +223,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public static function findOne(string|array|Where $where, bool $returnModelIfNotFound = false): ?static
     {
         $row = static::findAdv()->where($where)->limit(1)->fetchOne();
-        return $row ?? ($returnModelIfNotFound ? new static : null);
+        return $row ?? ($returnModelIfNotFound ? new static() : null);
     }
 
     /**
@@ -244,9 +239,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Fill model with data
-     *
-     * @param array $data
-     * @return static
      */
     public function fill(array $data): static
     {
@@ -263,7 +255,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Invoked after model data is filled
-     * @return void
      */
     protected function afterFill(): void
     {
@@ -296,7 +287,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param array|null $data Data override
      * @param int $flags Insert flags
-     * @return bool
      */
     public function insert(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
@@ -327,9 +317,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             $query = "insert $ignore into " . static::getTableName(true) . ' (';
             $query .= implode(', ', array_map(fn($key) => DB::wrapName($key), $keys)) . ') values (';
             $query .= implode(
-                    ', ',
-                    array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
-                ) . ')';
+                ', ',
+                array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
+            ) . ')';
 
             // fix bindings to remove Expr statements
             $bind = [];
@@ -359,7 +349,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     public static function insertStatic(array $data, int $flags = self::FLAG_SKIP_VIRTUAL): ?static
     {
-        $model = new static;
+        $model = new static();
         if ($model->insert($data, $flags)) {
             $model->reload();
             return $model;
@@ -379,7 +369,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     {
         $success = true;
         foreach ($items as $item) {
-            $model = new static;
+            $model = new static();
             $success &= $model->insert($item, $flags);
         }
 
@@ -436,8 +426,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Delete model from database
-     *
-     * @return bool
      */
     public function delete(): bool
     {
@@ -465,7 +453,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * @throws Exception
      */
-    public static function bulkDelete($where, bool $viaModels = false): bool
+    public static function bulkDelete(string|array|Where $where, bool $viaModels = false): bool
     {
         if ($viaModels) {
             $success = true;
@@ -476,7 +464,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             return $success;
         }
 
-        return !!DB::query('delete from ' . static::getTableName(true) . ' ' . (new Where($where)));
+        $where = new Where($where);
+        $query = 'delete from ' . static::getTableName(true) . ' ' . $where; // binds are filled on string conversion
+
+        return !!DB::query($query, $where->getBinds());
     }
 
     /**
@@ -498,11 +489,19 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
             return $success;
         } else {
-            $query = 'update ' . static::getTableName(true) . ' set ';
-            $query .= implode(', ', array_map(fn($key) => DB::wrapName($key) . ' = ?', array_keys($set)));
-            $query .= ' where ' . (new Where($where));
+            // named binds only: Where produces named ones and PDO can't mix them with positional
+            $bind = [];
+            $assign = [];
+            foreach (array_values($set) as $i => $value) {
+                $assign[] = DB::wrapName(array_keys($set)[$i]) . " = :set_$i";
+                $bind["set_$i"] = $value;
+            }
 
-            return !!DB::query($query, array_values($set));
+            $where = new Where($where);
+            $query = 'update ' . static::getTableName(true) . ' set ' . implode(', ', $assign);
+            $query .= ' ' . $where; // binds are filled on string conversion
+
+            return !!DB::query($query, array_merge($bind, $where->getBinds()));
         }
     }
 
@@ -539,7 +538,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param string|array $text Error text or array with 'text' and 'code' keys
      * @param int|null $code Error code
-     * @return void
      */
     protected function setError(
         #[ArrayShape(['text' => 'string', 'code' => 'int'])] string|array $text,
@@ -579,7 +577,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after insert
      *
      * @param bool $success Insert result
-     * @return void
      */
     protected function afterInsert(bool $success): void
     {
@@ -603,7 +600,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after update
      *
      * @param bool $success Update result
-     * @return void
      */
     protected function afterUpdate(bool $success): void
     {
@@ -627,7 +623,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param bool $success Delete result
      * @param array $oldData Old model data
-     * @return void
      */
     protected function afterDelete(bool $success, array $oldData): void
     {
@@ -650,7 +645,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after save
      *
      * @param bool $success Save result
-     * @return void
      */
     protected function afterSave(bool $success): void
     {
@@ -743,7 +737,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return array
      * @see Core/DB/HowTo/UsingModifiers.md
      */
     public static function aqModifiersDefault(): array

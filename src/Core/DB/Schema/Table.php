@@ -3,27 +3,22 @@
 namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB;
-use Simflex\Core\DB\Schema\Constraint;
-use Simflex\Core\DB\Schema\ElementBase;
 use Simflex\Core\DB\Schema\Params\TableParams;
-use Simflex\Core\DB\Schema\Column;
 
 class Table extends ElementBase
 {
-    /** @var \Simflex\Core\DB\Schema\Params\TableParams */
-    protected $params;
+    protected TableParams $params;
 
-    /** @var \Simflex\Core\DB\Schema\Params\TableParams */
-    protected $oldParams;
+    protected TableParams $oldParams;
 
     /** @var \Simflex\Core\DB\Schema\Element[] */
-    protected $elements = [];
+    protected array $elements = [];
 
     /** @var \Simflex\Core\DB\Schema\Element[] */
-    protected $oldElements = [];
+    protected array $oldElements = [];
 
-    protected $isExisting;
-    protected $dropQueue = [];
+    protected bool $isExisting;
+    protected array $dropQueue = [];
 
     public function __construct(string $name, bool $isExisting = false)
     {
@@ -32,7 +27,7 @@ class Table extends ElementBase
         $this->isExisting = $isExisting;
     }
 
-    public function keepParams()
+    public function keepParams(): void
     {
         if (!$this->isExisting) {
             return;
@@ -47,7 +42,7 @@ class Table extends ElementBase
     /**
      * Create table only if one doesn't exist yet
      */
-    public function ifNotExists(): self
+    public function ifNotExists(): static
     {
         $this->params->ifNotExists = true;
         return $this;
@@ -56,7 +51,7 @@ class Table extends ElementBase
     /**
      * Create temporary table
      */
-    public function temporary(): self
+    public function temporary(): static
     {
         $this->params->temporary = true;
         return $this;
@@ -64,11 +59,8 @@ class Table extends ElementBase
 
     /**
      * Set auto increment counter
-     *
-     * @param int $n
-     * @return $this
      */
-    public function autoIncrement(int $n): self
+    public function autoIncrement(int $n): static
     {
         $this->params->autoIncrement = $n;
         return $this;
@@ -76,11 +68,8 @@ class Table extends ElementBase
 
     /**
      * Set table comment
-     *
-     * @param string $comment
-     * @return $this
      */
-    public function comment(string $comment): self
+    public function comment(string $comment): static
     {
         $this->params->comment = $comment;
         return $this;
@@ -91,9 +80,8 @@ class Table extends ElementBase
      *
      * @param string $charset Character set
      * @param bool $isDefault DEFAULT modifier
-     * @return $this
      */
-    public function characterSet(string $charset, bool $isDefault = false): self
+    public function characterSet(string $charset, bool $isDefault = false): static
     {
         $this->params->characterSet = $charset;
         $this->params->defaultCharacterSet = $isDefault;
@@ -107,7 +95,6 @@ class Table extends ElementBase
      * @param string $name Column name
      * @param string $type Column type
      * @param int|null $length Column type length
-     * @return \Simflex\Core\DB\Schema\Column
      */
     public function addColumn(string $name, string $type, ?int $length = null): Column
     {
@@ -122,7 +109,6 @@ class Table extends ElementBase
      * Adds a constraint
      *
      * @param string $name Constraint symbol name
-     * @return \Simflex\Core\DB\Schema\Constraint
      */
     public function addConstraint(string $name = ''): Constraint
     {
@@ -134,14 +120,13 @@ class Table extends ElementBase
 
     /**
      * Adds an index
-     * 
+     *
      * @param string $name Index name
-     * @return Index
      */
     public function addIndex(string $name = ''): Index
     {
         $idx = new Index($name);
-        
+
         $this->elements[$name ?: md5(microtime())] = $idx;
         return $idx;
     }
@@ -150,9 +135,8 @@ class Table extends ElementBase
      * Drops a column
      *
      * @param string|array $name Column name(s)
-     * @return $this
      */
-    public function dropColumns($name): Table
+    public function dropColumns(string|array $name): static
     {
         if (is_array($name)) {
             $this->dropQueue = array_unique(array_merge($this->dropQueue, $name));
@@ -189,7 +173,7 @@ class Table extends ElementBase
     {
         return $this->addColumn($name, Column::TYPE_LONGTEXT);
     }
-    
+
     public function boolean(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_TINYINT, 1);
@@ -218,20 +202,20 @@ class Table extends ElementBase
     public function enum(string $name, array $items): Column
     {
         return $this->addColumn(
-            $name, Column::TYPE_ENUM . '(' . implode(
+            $name,
+            Column::TYPE_ENUM . '(' . implode(
                 ',',
                 array_map(function ($i) {
                     return "'$i'";
-                }, $items)) . ')'
-            );
+                }, $items)
+            ) . ')'
+        );
     }
 
     // ------------ UTIL ------------ //
 
     /**
      * Returns params
-     *
-     * @return \Simflex\Core\DB\Schema\Params\TableParams
      */
     public function getParams(): TableParams
     {

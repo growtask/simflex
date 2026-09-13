@@ -1,26 +1,27 @@
 <?php
+
 namespace Simflex\Core\DB\Schema\Params;
 
 class ConstraintParams
 {
-    const REFERENCE_OPTION_RESTRICT = 'RESTRICT';
-    const REFERENCE_OPTION_CASCADE = 'CASCADE';
-    const REFERENCE_OPTION_SET_NULL = 'SET NULL';
-    const REFERENCE_OPTION_NO_ACTION = 'NO ACTION';
-    const REFERENCE_OPTION_SET_DEFAULT = 'SET DEFAULT';
+    public const REFERENCE_OPTION_RESTRICT = 'RESTRICT';
+    public const REFERENCE_OPTION_CASCADE = 'CASCADE';
+    public const REFERENCE_OPTION_SET_NULL = 'SET NULL';
+    public const REFERENCE_OPTION_NO_ACTION = 'NO ACTION';
+    public const REFERENCE_OPTION_SET_DEFAULT = 'SET DEFAULT';
 
-    const REFERENCE_MATCH_FULL = 'FULL';
-    const REFERENCE_MATCH_PARTIAL = 'PARTIAL';
-    const REFERENCE_MATCH_SIMPLE = 'SIMPLE';
+    public const REFERENCE_MATCH_FULL = 'FULL';
+    public const REFERENCE_MATCH_PARTIAL = 'PARTIAL';
+    public const REFERENCE_MATCH_SIMPLE = 'SIMPLE';
 
-    public $isPrimary = false;
-    public $isUnique = false;
-    public $isUniqueIndex = false;
-    public $isForeign = false;
-    public $keyParts = [];
-    public $referenceColumns = [];
-    public $reference = '';
-    public $onDelete = '';
-    public $onUpdate = '';
-    public $match = '';
+    public bool $isPrimary = false;
+    public bool $isUnique = false;
+    public bool $isUniqueIndex = false;
+    public bool $isForeign = false;
+    public array $keyParts = [];
+    public array $referenceColumns = [];
+    public string $reference = '';
+    public string $onDelete = '';
+    public string $onUpdate = '';
+    public string $match = '';
 }

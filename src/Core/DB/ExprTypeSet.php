@@ -2,9 +2,7 @@
 
 namespace Simflex\Core\DB;
 
-
 use Simflex\Core\DB;
-use Simflex\Core\DB\Expr;
 
 /**
  * Class ExprTypeSet
@@ -14,22 +12,12 @@ use Simflex\Core\DB\Expr;
  */
 class ExprTypeSet extends Expr
 {
-    /**
-     * @param string $fieldName
-     * @param string $value
-     * @return static
-     */
-    public static function add($fieldName, $value)
+    public static function add(string $fieldName, string $value): static
     {
         return new static("CONCAT(`$fieldName`,'," . DB::escape($value) . "')");
     }
 
-    /**
-     * @param string $fieldName
-     * @param string $value
-     * @return static
-     */
-    public static function remove($fieldName, $value)
+    public static function remove(string $fieldName, string $value): static
     {
         return new static("
             TRIM(BOTH ',' FROM
@@ -39,12 +27,7 @@ class ExprTypeSet extends Expr
             )");
     }
 
-    /**
-     * @param string $fieldName
-     * @param string $value
-     * @return static
-     */
-    public static function in($fieldName, $value)
+    public static function in(string $fieldName, string $value): static
     {
         return new static("FIND_IN_SET('" . DB::escape($value) . "',`$fieldName`)");
     }

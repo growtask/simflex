@@ -22,9 +22,9 @@ abstract class ConfigBase
      */
     public array $db = [
         'adapter' => MySQL::class,
-        'host' => 'localhost',
-        'user' => 'root',
-        'password' => 'root',
+        'host' => '127.0.0.1',
+        'user' => 'simflex',
+        'password' => 'simflex',
         'name' => 'simflex',
     ];
 
@@ -81,9 +81,19 @@ abstract class ConfigBase
     public bool $enableLogging = false;
 
     /**
-     * @var string Log path
+     * @var string Admin panel URL prefix, e.g. /admin. Links in admin_menu are stored relative to it
      */
-    public string $logPath = SF_ROOT_PATH . '/uf/log';
+    public string $adminPath = '/admin';
+
+    /**
+     * @var bool Also write the log to a file in $logPath (by default the log goes to stdout only)
+     */
+    public bool $logToFile = false;
+
+    /**
+     * @var string Log path, used when $logToFile is enabled
+     */
+    public string $logPath = SF_ROOT_PATH . '/log';
 
     /**
      * @var array{routes: string, events: string, services: string} Data providers for autoloading
@@ -102,10 +112,8 @@ abstract class ConfigBase
 
     /**
      * Getter for user-defined data
-     * @param string $name
-     * @return mixed
      */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         return $this->extra[$name] ?? null;
     }
@@ -132,7 +140,6 @@ abstract class ConfigBase
 
     /**
      * Load config data
-     * @return void
      */
-    public abstract function load(): void;
+    abstract public function load(): void;
 }

@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Core\ExtBase;
-use Simflex\Admin\Core;
+use Simflex\Core\View;
 
-abstract class WidgetBase extends ExtBase
+abstract class WidgetBase
 {
-
-    protected $data;
-    protected $id;
+    protected array $data;
+    protected int $id;
 
     public function __construct($data)
     {
@@ -17,30 +15,26 @@ abstract class WidgetBase extends ExtBase
         $this->id = (int)$this->data['widget_id'];
     }
 
-    protected abstract function content();
+    /**
+     * Widget content. Returns HTML, does not output it
+     */
+    abstract protected function content(): string;
 
-    protected function actions()
+    /**
+     * Widget header actions HTML
+     */
+    protected function actions(): string
     {
-
-    }
-
-    public final function execute()
-    {
-        if (Core::ajax()) {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        } else {
-            ob_start();
-            $this->content();
-            $content = ob_get_clean();
-            if ($content) {
-                ob_start();
-                include $_SERVER['DOCUMENT_ROOT'] . '/admin/theme/tpl/widget.layout.tpl';
-                return ob_get_clean();
-            }
-        }
         return '';
     }
 
+    final public function execute(): string
+    {
+        $content = $this->content();
+        if (Core::ajax() || $content === '') {
+            return $content;
+        }
+
+        return View::render(__DIR__ . '/theme/tpl/widget.layout.tpl', ['content' => $content], $this);
+    }
 }

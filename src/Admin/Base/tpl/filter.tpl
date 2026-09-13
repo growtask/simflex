@@ -1,5 +1,5 @@
 <div id="admin-filter">
-    <form id="admin-filter-form" method="post" action="./">
+    <form id="admin-filter-form" method="post" action="<?= \Simflex\Admin\Core::path() ?>">
         <table>
             <tr>
                 <td>

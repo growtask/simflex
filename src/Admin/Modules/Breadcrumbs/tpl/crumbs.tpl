@@ -1,5 +1,5 @@
 <li class="breadcrumbs__item">
-    <a href="/admin/" class="breadcrumbs__link">
+    <a href="<?= \Simflex\Admin\Core::url('') ?>" class="breadcrumbs__link">
         <span class="breadcrumbs__link-text">Главная</span>
         <?php if ($crumbs): ?>
             <svg class="breadcrumbs__link-icon" viewBox="0 0 24 24">

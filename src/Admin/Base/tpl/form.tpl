@@ -1,9 +1,7 @@
 <?php
 
 $showRightCol = (bool)count($this->params['right']);
-ob_start();
-$this->portlets('right');
-$rightPortletsHTML = ob_get_clean();
+$rightPortletsHTML = $this->portlets('right');
 $showRightCol |= (bool)$rightPortletsHTML;
 $artificial = false;
 $artificialGroups = [];
@@ -68,7 +66,7 @@ $artLeftArr = [];
 
                                 Сохранить и выйти
                             </button>
-                            <a href="./" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                            <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -105,8 +103,7 @@ $artLeftArr = [];
             </div>
 
             <div class="content__body" data-simplebar>
-                <?php
-                \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
+                <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
                 <?php
                 if (count($this->errors)): ?>
                     <div class="content__notification notification notification--active notification--error">
@@ -217,7 +214,7 @@ $artLeftArr = [];
                                                 <?php
                                                 \Simflex\Admin\Fields\Field::setFieldValue(
                                                     $field,
-                                                    $group,
+                                                    false,
                                                     $params,
                                                     $row
                                                 ) ?>
@@ -289,8 +286,7 @@ $artLeftArr = [];
                 </div>
 
                 <?= $this->extraLeft ?>
-                <?php
-                $this->portlets('left') ?>
+                <?= $this->portlets('left') ?>
             </div>
             <div class="content__btns">
                 <button name="submit_apply" type="submit" class="content__btn-save BtnPrimarySm BtnIconLeft">
@@ -309,38 +305,12 @@ $artLeftArr = [];
                     </svg>
                     Сохранить и выйти
                 </button>
-                <a href="./" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                     <svg stroke="none" fill="#343434" viewBox="0 0 24 24">
                         <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#close"></use>
                     </svg>
                     Отмена
                 </a>
-                <?php
-                if ($this->blocks): ?>
-                    <!--                    <div class="form-control form-control--sm">-->
-                    <!--                        <div class="form-control__dropdown">-->
-                    <!--                            <div class="form-control__dropdown-top">-->
-                    <!--                                <div class="form-control__dropdown-current">Переход к блоку</div>-->
-                    <!--                                <button class="form-control__dropdown-toggle">-->
-                    <!--                                    <svg stroke="none" fill="#0D0D0D" viewBox="0 0 24 24">-->
-                    <!--                                        <use xlink:href="-->
-                    <!--                --><?php
-                    //= asset('img/icons/svg-defs.svg') ?><!--#chevron-mini"></use>-->
-                    <!--                                    </svg>-->
-                    <!--                                </button>-->
-                    <!--                            </div>-->
-                    <!--                            <div class="form-control__dropdown-list">-->
-                    <!--                                --><?php
-//                                foreach ($this->blocks as $b): ?>
-                    <!--                                    <div class="form-control__dropdown-item">--><?php
-                    //= $b ?><!--</div>-->
-                    <!--                                --><?php
-//                                endforeach; ?>
-                    <!--                            </div>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
-                <?php
-                endif; ?>
             </div>
         </div>
 

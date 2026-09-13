@@ -219,7 +219,7 @@ function deleteRowsForce() {
     $('input.model-row-check:checked').each(function () {
         data['rows'][data['rows'].length] = this.value;
     });
-    window.location.href = './?ajax=1&action=delete&' + http_build_query(data);
+    window.location.href = location.pathname + '?ajax=1&action=delete&' + http_build_query(data);
 }
 
 function editRows() {
@@ -290,8 +290,7 @@ function componentChange(val) {
 
 
 function moduleUpdate(ob) {
-    var a = location.href.split('/');
-    var link = a[a.length - 1] + '&load_module_id=' + $(ob).val();
+    var link = location.pathname + location.search + (location.search ? '&' : '?') + 'load_module_id=' + $(ob).val();
     $('#form-right-col').load(link + ' #form-right-col>div');
     $('#params-left').load(link + ' #params-left>table');
 }
@@ -314,7 +313,7 @@ function deleteField(a) {
     var params = {action: 'delete_field', table: $('#info-table').val(), key_value: $('#info-key-value').val()};
     params.key_name = $('#info-key-name').val();
     params.field_name = fieldName;
-    $.get('./', params, function (r) {
+    $.get(location.pathname, params, function (r) {
         r = $.parseJSON(r);
         if (r.success) {
             if ($('.fileinput', $formGroup).length) {

@@ -2,12 +2,8 @@
 
 namespace Simflex\Core\DB;
 
-
 use Simflex\Core\Container;
 use Simflex\Core\DB;
-use Simflex\Core\DB\JoinClause;
-use Simflex\Core\DB\Where;
-use Simflex\Core\Log;
 use Simflex\Core\ModelBase;
 
 /**
@@ -16,133 +12,100 @@ use Simflex\Core\ModelBase;
  */
 class AQ
 {
-
-    protected $select = '*';
-    protected $from;
-    protected $fromAlias;
+    protected string|array $select = '*';
+    protected string $from;
+    protected string $fromAlias = '';
     /** @var JoinClause[] */
-    protected $join = [];
-    protected $where = '';
-    protected $orderBy = null;
-    protected $limit = '';
-    protected $asArray = false;
-    /** @var ModelBase|null */
-    protected $modelClass;
-    protected $custom;
-    protected $prefix;
-    protected $binds = [];
+    protected array $join = [];
+    protected string|array|Where $where = '';
+    protected ?string $orderBy = null;
+    protected string $limit = '';
+    protected bool $asArray = false;
+    /** @var class-string<ModelBase>|null */
+    protected ?string $modelClass = null;
+    protected string $custom = '';
+    protected string $prefix = '';
+    protected array $binds = [];
 
     /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
-    protected $scalarColumn = null;
+    protected string|int|null $scalarColumn = null;
 
-    /**
-     * @param bool $asArray
-     * @return $this
-     */
-    public function asArray(bool $asArray = true)
+    public function asArray(bool $asArray = true): static
     {
         $this->asArray = $asArray;
         $this->scalarColumn = null;
         return $this;
     }
 
-    /**
-     * @param string|array $fields
-     * @return $this
-     */
-    public function select($fields)
+    public function select(string|array $fields): static
     {
         $this->select = $fields;
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @return $this
-     */
-    public function from($table, $alias = '')
+    public function from(string $table, string $alias = ''): static
     {
         $this->from = $table;
         $this->fromAlias = $alias;
         return $this;
     }
 
-    public function fromAlias($alias)
+    public function fromAlias(string $alias): static
     {
         $this->fromAlias = $alias;
         return $this;
     }
 
-    /**
-     * @param string|array|Where $where
-     * @return $this
-     */
-    public function where($where)
+    public function where(string|array|Where $where): static
     {
         $this->where = $where;
         return $this;
     }
 
-    /**
-     * @param string|array|Where $where
-     * @return $this
-     */
-    public function andWhere($where)
+    public function andWhere(string|array|Where|Expr $where): static
     {
         $this->where = new Where($this->where);
         $this->where->add($where);
         return $this;
     }
 
-    /**
-     * @param string|null $orderBy
-     * @return $this
-     */
-    public function orderBy(?string $orderBy)
+    public function orderBy(?string $orderBy): static
     {
         $this->orderBy = $orderBy;
         return $this;
     }
 
-    /**
-     * @param string $limit
-     * @return $this
-     */
-    public function limit($limit)
+    public function limit(int|string $limit): static
     {
         $this->limit = $limit;
         return $this;
     }
 
-    public function custom($cst)
+    public function custom(string $cst): static
     {
         $this->custom = $cst;
         return $this;
     }
 
-    public function prefix($pf)
+    public function prefix(string $pf): static
     {
         $this->prefix = $pf;
         return $this;
     }
 
-    public function bind(array $arr)
+    public function bind(array $arr): static
     {
         $this->binds = array_merge($this->binds, $arr);
         return $this;
     }
 
-    /**
-     * @param string $class
-     * @return $this
-     */
-    public function setModelClass(string $class)
+    public function setModelClass(string $class): static
     {
         $this->modelClass = Container::getFactory()->getStatic($class);
         return $this;
     }
 
-    protected function getSelect()
+    protected function getSelect(): string
     {
         if (is_array($this->select)) {
             return implode(', ', $this->select);
@@ -154,10 +117,9 @@ class AQ
     }
 
     /**
-     * @return string
      * @throws \Exception
      */
-    public function build()
+    public function build(): string
     {
         if ($this->modelClass) {
             foreach ($this->modelClass::aqModifiersDefault() as $modifier) {
@@ -192,11 +154,10 @@ class AQ
 
     /**
      * @param null|string $column If null query will return primary key
-     * @return AQ
      * @throws \Exception
      * @deprecated use fetchScalar
      */
-    public function selectColumn($column = null)
+    public function selectColumn(?string $column = null): static
     {
         if ($column === null) {
             if (empty($this->modelClass)) {
@@ -208,11 +169,9 @@ class AQ
     }
 
     /**
-     * @param int|string $column
-     * @return $this
      * @deprecated use fetchScalar
      */
-    public function asScalar($column = 0)
+    public function asScalar(int|string $column = 0): static
     {
         $this->asArray = false;
         $this->scalarColumn = $column;
@@ -220,11 +179,9 @@ class AQ
     }
 
     /**
-     * @param int|string $column
-     * @return string|int|null
      * @throws \Exception
      */
-    public function fetchScalar($column = 0)
+    public function fetchScalar(int|string $column = 0): string|int|float|null
     {
         $q = $this->build();
         $r = DB::query($q, $this->binds);
@@ -239,11 +196,9 @@ class AQ
     }
 
     /**
-     * @param int|string $column
-     * @return array|ModelBase|null
      * @throws \Exception
      */
-    public function fetchOne()
+    public function fetchOne(): array|ModelBase|null
     {
         $q = $this->build();
 
@@ -258,15 +213,14 @@ class AQ
         if (empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
         }
-        return (new $this->modelClass)->fill($row);
+        return (new $this->modelClass())->fill($row);
     }
 
     /**
-     * @param string|array|null $assocKey
-     * @return array| ModelBase[]
+     * @return array|ModelBase[]
      * @throws \Exception
      */
-    public function all($assocKey = null)
+    public function all(string|array|bool|null $assocKey = null): array
     {
         if ((is_bool($assocKey) || !$this->asArray && !$this->scalarColumn) && empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
@@ -286,7 +240,7 @@ class AQ
                     $payload = $row[$this->scalarColumn];
                 }
             } else {
-                $payload = (new $this->modelClass)->fill($row);
+                $payload = (new $this->modelClass())->fill($row);
             }
 
             if ($assocKey === true) {
@@ -317,19 +271,16 @@ class AQ
         return $result;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->build();
     }
 
     /**
-     * @param string $modifier
-     * @param ...$params
-     * @return $this
      * @throws \Exception
      * @see Core/DB/HowTo/UsingModifiers.md
      */
-    public function modify(string $modifier, ...$params)
+    public function modify(string $modifier, ...$params): static
     {
         if (empty($this->modelClass)) {
             throw new \Exception("Model class must be specified for modifier $modifier");
@@ -343,40 +294,32 @@ class AQ
     }
 
     /**
-     * @param string|ModelBase $table
-     * @param string $joinColumn1
-     * @param string|null $joinColumn2
      * @param string $type for example INNER, LEFT, RIGHT, FULL
-     * @param string|Where|array|null $extraOnConditions
-     * @return $this
      * @throws \Exception
      * @see Core/DB/HowTo/UsingJoin.md
      */
     public function join(
-        $table,
+        string|ModelBase $table,
         string $joinColumn1,
         ?string $joinColumn2 = null,
         string $type = 'INNER',
-        $extraOnConditions = null
-    ) {
+        string|array|Where|Expr|null $extraOnConditions = null
+    ): static {
         $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, $type, $extraOnConditions);
         return $this;
     }
 
     /**
-     * @param string|ModelBase $table
-     * @param string $joinColumn1
-     * @param string|null $joinColumn2
-     * @param string|Where|array|null $extraOnConditions
-     * @return $this
      * @throws \Exception
      * @see Core/DB/HowTo/UsingJoin.md
      */
-    public function leftJoin($table, string $joinColumn1, ?string $joinColumn2 = null, $extraOnConditions = null)
-    {
+    public function leftJoin(
+        string|ModelBase $table,
+        string $joinColumn1,
+        ?string $joinColumn2 = null,
+        string|array|Where|Expr|null $extraOnConditions = null
+    ): static {
         $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, 'LEFT', $extraOnConditions);
         return $this;
     }
-
 }
-

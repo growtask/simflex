@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Api;
 
 use Simflex\Core\Request;
@@ -12,7 +13,6 @@ class JsonRequest extends Request
 
     /**
      * Returns JSON array
-     * @return array
      */
     public function json(): array
     {

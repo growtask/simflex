@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
-use Simflex\Core\Log;
 
 class FieldRelation extends Field
 {
@@ -13,7 +12,7 @@ class FieldRelation extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $rows = [];
 
@@ -37,27 +36,22 @@ class FieldRelation extends Field
 
         $value = implode(',', $value);
 
-        echo '<div class="form-control__tags" data-readonly="true" data-ajax="true">
-<input class="form-control__tags-value" value="' . $value . '" type="hidden" name="' . $this->name . '">
-<ul class="form-control__tags-list">
-    <input type="text" class="form-control__tags-input">
-</ul>
-<div class="form-control__tags-popup list1">
-    <div class="list1__wrapper">
-        <ul class="list1__items">
-';
-
+        $items = [];
         foreach ($rows as $row) {
-            echo '<li data-value="' . $row[$this->tablePk] . '" class="list1__item">' . $row[$this->params['name']] . '</li>';
+            $items[] = [$row[$this->tablePk], $row[$this->params['name']]];
         }
 
-        echo ' </ul>
-        </div>
-    </div>
-</div>';
+        return $this->render('tags', [
+            'readonly' => true,
+            'ajax' => true,
+            'addNew' => false,
+            'name' => $this->name,
+            'value' => $value,
+            'items' => $items,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $in = explode(',', $_POST[$this->name]);
         $id = (int)$_REQUEST[$this->tablePk];
@@ -129,5 +123,51 @@ class FieldRelation extends Field
         }
 
         return '';
+    }
+
+    public static function typeLabel(): string
+    {
+        return 'Двусторонняя связь';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'relation',
+                'label' => 'Таблица связей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'left',
+                'label' => 'Левая колонка',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'right',
+                'label' => 'Правая колонка',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'table',
+                'label' => 'Таблица сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'name',
+                'label' => 'Ярлык',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
     }
 }

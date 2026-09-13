@@ -2,33 +2,39 @@
 
 namespace Simflex\Admin\Modules\Account;
 
-use Simflex\Admin\Plugins\Alert\Alert;;
-use Simflex\Core\DB;
+use Simflex\Admin\Plugins\Alert\Alert;
+use Simflex\Core\Container;
+use Simflex\Core\Models\User as UserModel;
 use Simflex\Core\ModuleBase;
-use Simflex\Core\User;
 
 class Account extends ModuleBase
 {
-
-    public function content()
+    public function content(): string
     {
-        if (count($data = DB::escape($_POST))) {
-            $set = array("email = '{$data['email']}', name = '{$data['name']}'");
-            if ($data['password']) {
-                $password = md5($data['password']);
-                $set[] = "password = '$password'";
+        $user = Container::getUser();
+        if (!$user) {
+            return '';
+        }
+
+        if (isset($_POST['email'], $_POST['name'])) {
+            $set = ['email' => (string)$_POST['email'], 'name' => (string)$_POST['name']];
+            if (!empty($_POST['password'])) {
+                $set['password'] = md5((string)$_POST['password']);
             }
-            $q = "UPDATE user SET " . implode(', ', $set) . " WHERE user_id = " . User::$id;
-            $success = DB::query($q);
+            $success = UserModel::bulkUpdate($set, ['user_id' => $user->getId()]);
             if ($success) {
-                Alert::success('Данные успешно обновлены', './');
+                Alert::success('Данные успешно обновлены', \Simflex\Admin\Core::path());
             } else {
-                Alert::error('Данные не обновлены', './');
+                Alert::error('Данные не обновлены', \Simflex\Admin\Core::path());
             }
         }
 
-        $data = User::info();
-        include 'tpl/index.tpl';
+        $data = [
+            'role_name' => $user->role?->name ?? '',
+            'login' => $user->login,
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+        return $this->render(__DIR__ . '/tpl/index.tpl', ['data' => $data]);
     }
-
 }

@@ -2,74 +2,44 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\FieldString;
 
-class FieldEnum extends  FieldString
+class FieldEnum extends FieldString
 {
+    protected string $changeURL = '';
 
-    protected $changeURL;
-
-    public function input($value)
+    public function input($value): string
     {
-
-        $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" onchange="'.$this->onchange.'" value="'.(!$value ? '' : $value).'" type="hidden" name="' . $this->name . '" >
-                                <div class="form-control__dropdown-current">—</div>
-                                <button type="button" class="form-control__dropdown-toggle">
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                           
-                                        ';
-        if ($this->e2n) {
-            $select .= '<div data-value="" class="form-control__dropdown-item">—</div>';
-        }
-
-        foreach ($this->fetchValues($this->table, $this->name) as $k => $v) {
-            $select .= '<div data-value="'.$k.'" class="form-control__dropdown-item">'.$v.'</div>';
-        }
-
-        $select .= '</div>
-                                    </div>
-                                </div>';
-
-        return $select;
-
-        $this->value = $value;
-        $disabled = 1 ? "" : " disabled";
-        $this->select = '<select' . $disabled . ' class=" form-control"' . ($this->onchange ? ' onchange="' . $this->onchange . '"' : '') . ' name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . '>';
-        $values = $this->fetchValues($this->table, $this->name);
-        if ($this->e2n) {
-            $this->select .= '<option value=""></option>';
-        }
-        foreach ($values as $valAlias => $val) {
-            $selected = $value == $valAlias ? ' selected' : '';
-            $this->select .= '<option value="' . $valAlias . '"' . $selected . '>' . $val . '</option>';
-        }
-        $this->select .= '</select>';
-        return $this->select;
+        return $this->dropdown([
+            'name' => $this->name,
+            'value' => !$value ? '' : $value,
+            'onchange' => $this->onchange,
+            'items' => $this->dropdownItems($this->e2n),
+        ]);
     }
 
-    protected function fetchValues()
+    protected function dropdownItems(bool $withEmpty): array
+    {
+        $items = $withEmpty ? [['', '—']] : [];
+        foreach ($this->fetchValues() as $k => $v) {
+            $items[] = [$k, $v];
+        }
+        return $items;
+    }
+
+    protected function fetchValues(): array
     {
         $buffer = &$_ENV['enum_values'][$this->table][$this->name];
 
         if (!isset($buffer)) {
             $q = "SHOW FULL COLUMNS FROM `$this->table` LIKE '$this->name'";
             $row = DB::result($q);
-            $enumArray = array();
+            $enumArray = [];
             preg_match_all("/'(.*?)'/", $row['Type'], $enumArray);
             $enumFields = $enumArray[1];
             $names = explode(';;', $row['Comment']);
             if (count($names) == count($enumFields)) {
-                $ret = array();
+                $ret = [];
                 foreach ($names as $index => $name) {
                     $ret[$enumFields[$index]] = trim($name);
                 }
@@ -82,7 +52,7 @@ class FieldEnum extends  FieldString
                         $buffer[$kvv[0]] = $kvv[1];
                     }
                 } else {
-                    $buffer = array();
+                    $buffer = [];
                     foreach ($enumFields as $name) {
                         $buffer[$name] = $name;
                     }
@@ -93,87 +63,52 @@ class FieldEnum extends  FieldString
         return $buffer;
     }
 
-    public function filter($value)
+    public function filter($value): string
     {
         if ($this->filter) {
-            $select =  '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="filter[' . $this->name . ']" >
-                                <div class="form-control__dropdown-current">—</div>
-                                <button class="form-control__dropdown-toggle" type="button">
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                
-                            ';
-
-            $select .= '<div data-value="" class="form-control__dropdown-item">—</div>';
-            foreach ($this->fetchValues($this->table, $this->name) as $k => $v) {
-                $select .= '<div data-value="'.$k.'" class="form-control__dropdown-item">'.$v.'</div>';
-            }
-
-            $select .= '</div>
-                                    </div>
-                                </div>';
-
-            /*
-            $disabled = 1 ? "" : " disabled";
-            $select = '<select' . $disabled . ' class="form-control" name="filter[' . $this->name . ']" onchange="submit()">';
-            $select .= '<option value="">---' . $this->label . '---</option>';
-            $values = $this->fetchValues();
-            foreach ($values as $key => $val) {
-                $selected = $value == $key ? ' selected' : '';
-                $select .= '<option value="' . $key . '"' . $selected . '>' . $val . '</option>';
-            }
-            $select .= '</select>';*/
-            echo $select;
+            return $this->dropdown([
+                'name' => 'filter[' . $this->name . ']',
+                'value' => $value,
+                'items' => $this->dropdownItems(true),
+            ]);
         }
+        return '';
     }
 
-    public function showDetail($row)
+    public function showDetail($row): ?string
     {
         $value = $row[$this->name];
         $values = $this->fetchValues();
         return @$values[$value];
     }
 
-    public function show($row)
+    public function show($row): string
     {
-        $value0 = $row[$this->name];
-        $pkValue = $row[$this->tablePk];
         $values = $this->fetchValues();
 
-        $value = @$values[$value0];
-
-        $select =  '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown">
-                            <div class="form-control__dropdown-top">
-                                <input data-enum="'.$this->tablePk.'" data-enumv="'.$pkValue.'" class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="'.$this->name.'" >
-                                <div class="form-control__dropdown-current">—</div>
-                                <button class="form-control__dropdown-toggle" type="button">
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="'.asset('img/icons/svg-defs.svg').'#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                
-                            ';
-
-        $select .= '<div data-value="" class="form-control__dropdown-item">—</div>';
-        foreach ($this->fetchValues($this->table, $this->name) as $k => $v) {
-            $select .= '<div data-value="'.$k.'" class="form-control__dropdown-item">'.$v.'</div>';
-        }
-
-        $select .= '</div>
-                                    </div>
-                                </div>';
-
-        echo $select;
+        return $this->dropdown([
+            'name' => $this->name,
+            'value' => @$values[$row[$this->name]],
+            'data' => ['data-enum' => $this->tablePk, 'data-enumv' => $row[$this->tablePk]],
+            'items' => $this->dropdownItems(true),
+        ]);
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Варианты';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'enum',
+                'label' => 'Варианты (key=value;;)',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
+    }
 }

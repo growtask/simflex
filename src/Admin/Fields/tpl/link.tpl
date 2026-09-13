@@ -1,0 +1,1 @@
+<a href="<?= $href ?>"<?php if ($class !== ''): ?> class="<?= $class ?>"<?php endif ?><?= $blank ? ' target="_blank"' : '' ?>><?= $label ?></a>

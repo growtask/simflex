@@ -2,15 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
-use Simflex\Admin\Fields\AdminBase;
+use Simflex\Admin\Base;
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\Field;
 
 class FieldMultiKey extends Field
 {
-
-    private static $buffer;
+    private static array $buffer;
 
     public function __construct($row)
     {
@@ -18,9 +15,9 @@ class FieldMultiKey extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $fields = array("*");
+        $fields = ['*'];
 
         $value = (int)@$_GET[$this->tablePk];
         if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
@@ -31,7 +28,7 @@ class FieldMultiKey extends Field
             $fields[] = "(select count(*) from {$this->params['table_relations']} where $this->tablePk = $value and {$this->params['key']} = t.{$this->params['key']}) checked";
         }
 
-        $q = "SELECT " . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
+        $q = 'SELECT ' . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
         $rows = DB::assoc($q);
 
         $valReal = [];
@@ -48,38 +45,24 @@ class FieldMultiKey extends Field
                 $valReal[] = $row[(string)$this->params['key']];
             }
         }
+        unset($row);
 
-        $valReal = implode(',', $valReal);
+        $items = [];
+        foreach ($rows as $row) {
+            $items[] = [$row[(string)$this->params['key']], $row[(string)$this->params['key_alias']]];
+        }
 
-        echo '<div class="form-control__tags" data-readonly="true">
-                                                <input class="form-control__tags-value" value="'.$valReal.'" type="hidden" name="'.$this->name.'">
-                                                <ul class="form-control__tags-list">
-                                                    <input type="text" class="form-control__tags-input">
-                                                </ul>
-                                                <div class="form-control__tags-popup list1">
-                                                    <div class="list1__wrapper">
-                                                        <ul class="list1__items">
-';
-
-for ($i = 0; $i < count($rows); ++$i) {
-            echo '<li data-value="'.$rows[$i][(string)$this->params['key']].'" class="list1__item">'.$rows[$i][(string)$this->params['key_alias']].'</li>';
-}
-
-        echo ' </ul>
-                                                    </div>
-                                                </div>
-                                            </div>';
-
-//
-//
-//        echo '<div class="checkbox-list">';
-//        foreach ($rows as $row) {
-//            echo '<label class="checkbox-inline"><input type="checkbox" name="' . $this->name . '[' . $row[(string)$this->params['key']] . ']" value="' . $row[(string)$this->params['key']] . '"' . (!empty($row['checked']) ? ' checked' : '') . ' /> ' . $row[(string)$this->params['key_alias']] . '</label>';
-//        }
-//        echo '</div>';
+        return $this->render('tags', [
+            'readonly' => true,
+            'ajax' => false,
+            'addNew' => false,
+            'name' => $this->name,
+            'value' => implode(',', $valReal),
+            'items' => $items,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $pkValue = (int)@$_REQUEST[$this->tablePk];
         if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
@@ -90,7 +73,7 @@ for ($i = 0; $i < count($rows); ++$i) {
             return '';
         }
 
-        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : array();
+        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : [];
         $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
         DB::query($q);
 
@@ -99,7 +82,7 @@ for ($i = 0; $i < count($rows); ++$i) {
             if (!$value) {
                 continue;
             }
-            
+
             $q = "INSERT INTO {$this->params['table_relations']} set $this->tablePk = $pkValue, {$this->params['key']} = $value";
             DB::query($q);
         }
@@ -107,16 +90,13 @@ for ($i = 0; $i < count($rows); ++$i) {
         return '';
     }
 
-    public function show($row)
+    public function show($row): string
     {
         $pkValue = (int)$row[$this->tablePk];
         if (!isset(self::$buffer)) {
             $q = "SELECT {$this->params['key']}, {$this->params['key_alias']} FROM {$this->params['table_values']}";
             $values = DB::assoc($q, $this->params['key']);
-            $where = '';
-            if (class_exists('AdminBase')) {
-                $where = AdminBase::$currentWhere;
-            }
+            $where = Base::$currentWhere;
             $q = "
                 SELECT $this->tablePk,
                     (SELECT {$this->params['key_alias']} FROM {$this->params['table_values']} WHERE {$this->params['key']} = r.{$this->params['key']}) label
@@ -130,17 +110,17 @@ for ($i = 0; $i < count($rows); ++$i) {
             }
         }
 
-        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-text">' . (string)@self::$buffer[$pkValue] . '</div>';
+        return $this->cell((string)@self::$buffer[$pkValue]);
     }
 
-    public function filter($value)
+    public function filter($value): string
     {
         $value = DB::escape($value);
 
         if ($this->table == 'catalog_product') {
             // a dumb hack again...
             if (!$value) {
-                return;
+                return '';
             }
 
             $q = DB::query(
@@ -163,31 +143,57 @@ for ($i = 0; $i < count($rows); ++$i) {
             }
         }
 
-        echo <<<HTML
-<div class="form-control form-control--sm">
-    <div class="form-control__dropdown" data-action="searchMultiKey" data-ajax="true">
-        <div class="form-control__dropdown-top">
-            <input class="form-control__dropdown-input" value="$value" type="hidden" name="filter[{$this->name}]" >
-            <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
-            <div class="form-control__dropdown-current">—</div>
-            <button class="form-control__dropdown-toggle" type="button">
-                <svg viewBox="0 0 24 24">
-                    <use xlink:href="/vendor/growtask/simflex/src/Admin/theme/new/img/icons/svg-defs.svg#chevron-mini"></use>
-                </svg>
-            </button>
-        </div>
-        <div class="form-control__dropdown-list">
-            <div data-value="{$value}" class="form-control__dropdown-item">{$r[$this->params['key_alias']]}</div>
-        </div>
-    </div>
-</div>
-HTML;
+        return $this->dropdown([
+            'name' => 'filter[' . $this->name . ']',
+            'value' => $value,
+            'action' => 'searchMultiKey',
+            'search' => true,
+            'items' => [[$value, $r[$this->params['key_alias']]]],
+        ]);
 
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         return '';
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Связь многие ко многим';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'table_values',
+                'label' => 'Таблица сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'table_relations',
+                'label' => 'Таблица связей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'key',
+                'label' => 'Ключ таблицы сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'key_alias',
+                'label' => 'Поле-ярлык у сущности',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Например name у catalog_category',
+                'default_value' => '',
+            ],
+        ];
+    }
 }

@@ -33,7 +33,7 @@ function deleteRowsForce() {
 
     // const url = new URLSearchParams(d);
 
-    window.location.href = './?ajax=1&action=delete&' + http_build_query(d);
+    window.location.href = location.pathname + '?ajax=1&action=delete&' + http_build_query(d);
 }
 
 

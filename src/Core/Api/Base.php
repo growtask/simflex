@@ -1,8 +1,8 @@
 <?php
+
 namespace Simflex\Core\Api;
 
 use Simflex\Core\Container;
-use Simflex\Core\Core;
 use Simflex\Core\Errors\Error;
 use Simflex\Core\Errors\ErrorCodes;
 use Simflex\Core\Models\User;
@@ -12,22 +12,18 @@ abstract class Base
     /**
      * @var bool Should require authentication on all methods?
      */
-    protected $requireAuth = false;
+    protected bool $requireAuth = false;
 
     /**
      * @var User|null Authenticated user (set ONLY if requireAuth = true)
      */
-    protected $user = null;
+    protected ?User $user = null;
 
-    /**
-     * @return string
-     */
-    public abstract function execute(): string;
+    abstract public function execute(): string;
 
     /**
      * Gets name of the method to execute
      *
-     * @return string
      * @throws \Simflex\Core\Errors\Error
      */
     protected function getMethodName(): string
@@ -43,9 +39,8 @@ abstract class Base
 
     /**
      * Assert that user is currently authenticated
-     * 
+     *
      * @throws Error
-     * @return User
      */
     protected function assertAuthenticated(): User
     {

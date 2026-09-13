@@ -1,11 +1,6 @@
 <?php
 
-
 namespace Simflex\Core;
-
-use Simflex\Core\Core;
-use Simflex\Core\Page;
-use Simflex\Core\User;
 
 /**
  * Class Container
@@ -22,15 +17,14 @@ use Simflex\Core\User;
  */
 class Container
 {
-    /** @var array */
-    protected static $registry = [];
+    protected static array $registry = [];
 
-    public static function set(string $name, $payload)
+    public static function set(string $name, mixed $payload): void
     {
         static::$registry[$name] = $payload;
     }
 
-    public static function get(string $name)
+    public static function get(string $name): mixed
     {
         return static::$registry[$name] ?? null;
     }
@@ -40,7 +34,7 @@ class Container
         return isset(static::$registry[$name]);
     }
 
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
         if (strpos($name, 'get') === 0) {
             return static::get(lcfirst(substr($name, 3)));
@@ -49,19 +43,16 @@ class Container
         throw new \BadMethodCallException();
     }
 
-    public static function setAuthHandler(callable $closure)
+    public static function setAuthHandler(callable $closure): void
     {
         static::$registry['authHandler'] = $closure;
     }
 
-    /**
-     * @return \Simflex\Core\Models\User|null
-     */
-    public static function getUser()
+    public static function getUser(): ?\Simflex\Core\Models\User
     {
         if (
-            !($called =& static::$registry['authHandlerCalled'])
-            && ($authHandler =& static::$registry['authHandler'])
+            !($called = & static::$registry['authHandlerCalled'])
+            && ($authHandler = & static::$registry['authHandler'])
             && is_callable($authHandler)
         ) {
             $authHandler();

@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Models;
 
 use Simflex\Core\ModelBase;
@@ -6,7 +7,7 @@ use Simflex\Core\ModelBase;
 /**
  * @property int $menu_id
  * @property int $menu_pid
- * @property int $component_id
+ * @property string $component Component class, see \Simflex\Core\ExtensionRegistry
  * @property bool $active
  * @property bool $hidden
  * @property int $npp
@@ -15,8 +16,8 @@ use Simflex\Core\ModelBase;
  */
 class Menu extends ModelBase
 {
-    protected static $primaryKeyName = 'menu_id';
-    protected static $table = 'menu';
+    protected static string $primaryKeyName = 'menu_id';
+    protected static string $table = 'menu';
 
     public static function byLink(string $link): ?self
     {

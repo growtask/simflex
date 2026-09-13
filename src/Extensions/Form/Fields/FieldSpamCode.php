@@ -2,29 +2,23 @@
 
 namespace Simflex\Extensions\Form\Fields;
 
-use Simflex\Extensions\Form\Fields\Field;
-
 class FieldSpamCode extends Field
 {
+    public array|int $vRequired = 1;
 
-    public $v_requied = 1;
-
-    public function html()
+    public function html(): string
     {
-        $val = isset($_POST[$this->form][$this->name]) ? $_POST[$this->form][$this->name] : '';
-        echo '<span class="plug-form-spamcode">';
-//        PlugSpamcode::html($this->form);
-        echo '</span>';
+        return '<span class="plug-form-spamcode"></span>';
     }
 
-    public function &check()
+    public function &check(): array
     {
-        $err = array();
-        $_POST[$this->form][$this->name] = isset($_POST[$this->form][$this->name]) ? $_POST[$this->form][$this->name] : '';
-        if ($_POST[$this->form][$this->name] === '' || $_POST[$this->form][$this->name] !== $_SESSION['spamcode']) {
-            $err[$this->name][] = "спам-код введен неверно";
+        $formName = $this->form->getName();
+        $err = [];
+        $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
+        if ($_POST[$formName][$this->name] === '' || $_POST[$formName][$this->name] !== ($_SESSION['spamcode'] ?? null)) {
+            $err[$this->name][] = 'спам-код введен неверно';
         }
         return $err;
     }
-
 }

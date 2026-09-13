@@ -2,33 +2,34 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\ModCity;
-use Simflex\Core\ModelCatalog;
-use Simflex\Core\type;
-use Simflex\Core\Core;
-use Simflex\Core\DB;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
-class Mail {
+/**
+ * @todo Incomplete: there are no migrations for the mail_log table, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
+ */
+class Mail
+{
+    public const MAIL_TRANSPORT_DAEMON = 1;
+    public const MAIL_TRANSPORT_SMTP = 2;
+    public const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
+    public const MAIL_TRANSPORT_FAKE_ERROR = 4;
 
-    const MAIL_TRANSPORT_DAEMON = 1;
-    const MAIL_TRANSPORT_SMTP = 2;
-    const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
-    const MAIL_TRANSPORT_FAKE_ERROR = 4;
-
-    private static $connect = array('host' => 'smtp.yandex.ru', 'port' => 465, 'fromru' => 'Mail');
-    private $data = array(
+    private array $data = [
         'to_email' => '', 'to_name' => '', 'from_name' => '', 'from_email' => '', 'as_plain' => false,
         'reply_email' => '', 'reply_name' => '', 'text' => '', 'subject' => '', 'can_answer' => false,
-        'transport' => self::MAIL_TRANSPORT_DAEMON
-    );
+        'transport' => self::MAIL_TRANSPORT_DAEMON,
+    ];
 
     /**
-     * 
+     *
      * @param string $toEmail
      * @param string $subject
      * @param string $msg
      */
-    public function __construct($toEmail, $subject, $msg) {
+    public function __construct($toEmail, $subject, $msg)
+    {
         $this->data['from_name'] = Core::siteParam('site_name');
         $this->data['from_email'] = "noreply@{$_SERVER['HTTP_HOST']}";
 
@@ -46,48 +47,51 @@ class Mail {
      * @param string $toEmail
      * @param string $subject
      * @param string $msg
-     * @return Mail
      */
-    public static function create($toEmail, $subject, $msg) {
+    public static function create($toEmail, $subject, $msg): static
+    {
         $instance = new static($toEmail, $subject, $msg);
         return $instance;
     }
 
-    public function setToName($name) {
+    public function setToName($name): static
+    {
         $this->data['to_name'] = trim($name);
         return $this;
     }
 
-    public function setTransport($transport) {
+    public function setTransport($transport): static
+    {
         $this->data['transport'] = $transport;
         return $this;
     }
 
     /**
-     * 
-     * @param type $toEmail
-     * @param type $subject
-     * @param type $msg
+     *
+     * @param string $toEmail
+     * @param string $subject
+     * @param string $msg
      * @return bool
      */
-    public static function staticSend($toEmail, $subject, $msg) {
+    public static function staticSend($toEmail, $subject, $msg): mixed
+    {
         $instance = new static($toEmail, $subject, $msg);
         return $instance->send();
     }
 
     /**
-     * 
+     *
      * @param string $str Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str2 (optional = '') Имя отправителя. Имеет значение, если $str - это email
-     * @return \Mail
      */
-    public function setFrom($str, $str2 = '') {
+    public function setFrom($str, $str2 = ''): static
+    {
         if (strpos($str, '<') !== false) {
-            $matches = array();
+            $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
             if (count($matches)) {
-                $this->data['from_name'] = trim($matches[0]);
-                $this->data['from_email'] = trim($matches[1]);
+                $this->data['from_name'] = trim($matches[1]);
+                $this->data['from_email'] = trim($matches[2]);
             }
         } elseif (strpos($str, '@') !== false) {
             $this->data['from_email'] = trim($str);
@@ -103,15 +107,15 @@ class Mail {
     /**
      * Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str
-     * @return \Mail
      */
-    public function setReplyTo($str) {
+    public function setReplyTo($str): static
+    {
         if (strpos($str, '<') !== false) {
-            $matches = array();
+            $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
             if (count($matches)) {
-                $this->data['reply_name'] = trim($matches[0]);
-                $this->data['reply_email'] = trim($matches[1]);
+                $this->data['reply_name'] = trim($matches[1]);
+                $this->data['reply_email'] = trim($matches[2]);
             }
         } elseif (strpos($str, '@') !== false) {
             $this->data['reply_email'] = trim($str);
@@ -124,7 +128,8 @@ class Mail {
     /**
      * По умолчанию отправлять как HTML
      */
-    public function setAsPlain() {
+    public function setAsPlain(): static
+    {
         $this->data['as_plain'] = true;
         return $this;
     }
@@ -132,72 +137,62 @@ class Mail {
     /**
      * По умолчанию уже отправлять как HTML
      */
-    public function setAsHTML() {
+    public function setAsHTML(): static
+    {
         $this->data['as_plain'] = false;
         return $this;
     }
 
     /**
-     * 
+     *
      * @param string $sender Допускается mail@mail.ru или mail@mail.ru:12345
      * @param string $pass (optional = false) указывается, если в $sender нет пароля
-     * @return \Mail
      */
-    public function setSMTPSender($sender, $pass = false) {
+    public function setSMTPSender($sender, $pass = false): static
+    {
         if (!$pass) {
-            $tmp = explode(':', $sender);
+            $tmp = explode(':', (string)$sender, 2);
             $sender = $tmp[0];
-            $pass = $tmp[1];
+            $pass = $tmp[1] ?? '';
         }
         $this->data['from_email'] = $sender;
-        $this->data['smtp'] = array('login' => $sender, 'pass' => $pass);
+        $this->data['smtp'] = ['login' => $sender, 'pass' => $pass];
         return $this;
     }
 
     /**
      * Используется чтобы убрать внизу текст "Отвечать на данное письмо ненужно"
      * @param bool $can
-     * @return \Mail
      */
-    public function setCanAnswer($can) {
+    public function setCanAnswer($can): static
+    {
         $this->data['can_answer'] = $can;
         return $this;
     }
 
     /**
-     * 
      * @return bool
      */
-    public function send() {
+    public function send(): mixed
+    {
         $result = false;
 
-        if (!$this->data['as_plain'] && is_file($_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail.tpl')) {
-            ob_start();
-            if (!class_exists('ModCity')) {
-                @include_once $_SERVER['DOCUMENT_ROOT'] . '/ext/city/modcity.class.php';
-            }
-            $toEmail = $this->data['to_email'];
-
-            $httpHost = $_SERVER['HTTP_HOST'];
-            if (class_exists('ModCity')) {
-                $httpHost = ModCity::baseHost();
-            }
-            $httpHost = "http://$httpHost";
-
-            $mailContent = $this->data['text'];
-            $canAnswer = $this->data['can_answer'];
-            include $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail.tpl';
-            $this->data['text'] = ob_get_clean();
+        if (!$this->data['as_plain'] && is_file(SF_ROOT_PATH . '/theme/default/mail.tpl')) {
+            $this->data['text'] = View::render(SF_ROOT_PATH . '/theme/default/mail.tpl', [
+                'toEmail' => $this->data['to_email'],
+                'httpHost' => "http://{$_SERVER['HTTP_HOST']}",
+                'mailContent' => $this->data['text'],
+                'canAnswer' => $this->data['can_answer'],
+            ], $this);
 
             $siteParams = Core::siteParam();
             foreach ($siteParams as $paramAlias => $paramValue) {
                 $this->data['text'] = str_replace('{' . $paramAlias . '}', $paramValue, $this->data['text']);
             }
             $this->data['text'] = str_replace('{year}', date('Y'), $this->data['text']);
-            class_exists('ModCity') && $this->data['text'] = ModCity::replaceTemplates($this->data['text']);
-            class_exists('ModelCatalog') && $this->data['text'] = ModelCatalog::getInstance()->replaceTemplates($this->data['text']);
         }
         $this->data['text_utf8'] = $this->data['text'];
+        $this->data['subject_utf8'] = $this->data['subject'];
 
         if (md5(@iconv('utf-8', 'utf-8', $this->data['subject'])) == md5($this->data['subject'])) {
             $this->data['subject'] = @iconv('utf-8', 'windows-1251', $this->data['subject']);
@@ -246,108 +241,89 @@ class Mail {
         return $result;
     }
 
-    private function toLog($result) {
-        $q = "DELETE FROM mail_log WHERE ADDDATE(time_create,INTERVAL 1 MONTH) < NOW()";
+    private function toLog($result): void
+    {
+        $q = 'DELETE FROM mail_log WHERE ADDDATE(time_create,INTERVAL 1 MONTH) < NOW()';
         DB::query($q);
-        $set = array("mail_from = '" . DB::escape($this->data['from_full']) . "', email = '" . DB::escape($this->data['to_full']) . "'");
+        $set = ["mail_from = '" . DB::escape($this->data['from_full']) . "', email = '" . DB::escape($this->data['to_full']) . "'"];
         $set[] = "text = '" . DB::escape($this->data['text_utf8']) . "', subject = '" . DB::escape($this->data['subject_ready']) . "'";
-        $set[] = "success = " . (int) $result . ", transport = {$this->data['transport']}";
+        $set[] = 'success = ' . (int) $result . ", transport = {$this->data['transport']}";
         if (!empty($this->data['reply_full'])) {
             $set[] = "reply_to = '" . DB::escape($this->data['reply_full']) . "'";
         }
-        $q = "INSERT INTO mail_log SET " . implode(', ', $set);
+        $q = 'INSERT INTO mail_log SET ' . implode(', ', $set);
         $success = DB::query($q);
     }
 
     /**
      * Отправка через стандартную функцию php mail
-     * @return type
      */
-    private function sendDaemon() {
+    private function sendDaemon(): bool
+    {
         $contentType = $this->data['as_plain'] ? 'plain' : 'html';
         $header = "Content-type: text/$contentType; charset=\"windows-1251\"\n";
-        $header .= "MIME-Version: 1.0" . "\n";
+        $header .= 'MIME-Version: 1.0' . "\n";
         $header .= "From: {$this->data['from_full']}\n";
         if ($this->data['reply_email']) {
             $header .= "Reply-To: {$this->data['reply_full']}\n";
         }
         $header .= "Subject: {$this->data['subject_ready']}";
-        //$header .= "Content-type: text/$contentType; charset=\"windows-1251\"\n";
         return mail($this->data['to_full'], $this->data['subject_ready'], $this->data['text'], $header);
     }
 
     /**
-     * Отправка через SMTP
-     * @return bool 
+     * Отправка через SMTP (PHPMailer). Сервер берется из Config::$mail (host, port, security).
+     * Логин/пароль: setSMTPSender() > Config::$mail (username, password) > параметр сайта "sender" (login:pass).
      */
-    private function sendSMTP() {
+    private function sendSMTP(): bool
+    {
+        $cfgMail = Container::getConfig()->mail;
 
-        $canSend = true;
-
-        if (empty($this->data['smtp']['login']) && !empty(self::$connect['login']) && !empty(self::$connect['pass'])) {
-            $this->setSMTPSender(self::$connect['login'], self::$connect['pass']);
+        if (empty($this->data['smtp']['login']) && !empty($cfgMail['username']) && !empty($cfgMail['password'])) {
+            $this->setSMTPSender($cfgMail['username'], $cfgMail['password']);
         }
-        if (empty($this->data['smtp']['login'])) {
+        if (empty($this->data['smtp']['login']) && Core::siteParam('sender')) {
             $this->setSMTPSender(Core::siteParam('sender'));
         }
-        $canSend &=!empty($this->data['smtp']['login']) && !empty($this->data['smtp']['pass']);
-
-        if (!$canSend) {
+        if (empty($this->data['smtp']['login']) || empty($this->data['smtp']['pass'])) {
+            Log::error('Mail SMTP: credentials are not set');
             return false;
         }
 
-        include_once dirname(__FILE__) . '/Mail/smtp_sasl/login_sasl_client.php';
-        include_once dirname(__FILE__) . '/Mail/smtp_sasl/sasl.php';
-        include_once dirname(__FILE__) . '/Mail/smtp.class.php';
-        $smtp = new \Simflex\Core\Mail\smtp();
+        $mailer = new PHPMailer(true);
+        try {
+            $mailer->isSMTP();
+            $mailer->Host = (string)($cfgMail['host'] ?? 'localhost');
+            $mailer->Port = (int)($cfgMail['port'] ?? 25) ?: 25;
+            $mailer->SMTPSecure = (string)($cfgMail['security'] ?? '');
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $this->data['smtp']['login'];
+            $mailer->Password = $this->data['smtp']['pass'];
+            $mailer->Timeout = 10;
+            $mailer->CharSet = PHPMailer::CHARSET_UTF8;
 
-        $sender_line = __LINE__;
-        $recipient_line = __LINE__;
+            $mailer->setFrom($this->data['from_email'], (string)$this->data['from_name'], false);
+            $mailer->addAddress($this->data['to_email'], (string)$this->data['to_name']);
+            if ($this->data['reply_email']) {
+                $mailer->addReplyTo($this->data['reply_email'], (string)$this->data['reply_name']);
+            }
+            $mailer->isHTML(!$this->data['as_plain']);
+            $mailer->Subject = $this->data['subject_utf8'] ?? $this->data['subject'];
+            $mailer->Body = $this->data['text_utf8'] ?? $this->data['text'];
 
-        $smtp->host_name = self::$connect['host'];
-        $smtp->host_port = self::$connect['port'];
-        $smtp->ssl = 1;
-        $smtp->start_tls = 0;
-        $smtp->localhost = "localhost";
-        $smtp->timeout = 10;
-        $smtp->data_timeout = 0;
-        $smtp->debug = (int) @$_ENV['debug'];
-        $smtp->html_debug = (int) @$_ENV['debug'];
-        $smtp->pop3_auth_host = '';
-        $smtp->user = $this->data['smtp']['login'];
-        $smtp->realm = "";
-        $smtp->password = $this->data['smtp']['pass'];
-        $smtp->workstation = "";
-        $smtp->authentication_mechanism = '';
-
-        setlocale(LC_TIME, null);
-        $date = strftime("%a, %d %b %Y %H:%M:%S %z");
-
-        $contentType = $this->data['as_plain'] ? 'plain' : 'html';
-        $headers = array(
-            "From: {$this->data['from_full']}",
-            "To: {$this->data['to_full']}",
-            "Subject: {$this->data['subject_ready']}",
-            "Date: " . $date,
-            "Content-type: text/$contentType; charset=windows-1251"
-        );
-        if ($this->data['reply_email']) {
-            $headers[] = "Reply-To: {$this->data['reply_full']}";
+            return $mailer->send();
+        } catch (PHPMailerException $e) {
+            Log::error('Mail SMTP: ' . $e->getMessage());
+            return false;
         }
-
-        $res = $smtp->SendMessage($this->data['smtp']['login'], array($this->data['to_email']), $headers, $this->data['text']);
-        if (@$_ENV['debug']) {
-            echo $smtp->error;
-        }
-        return $res;
     }
 
     /**
      * Рекурсивно конвертирует массив или строку. У массива ключи тоже конвертируются
      * @param string|array $mixed
-     * @return string|array
      */
-    private static function utf2win($mixed) {
+    private static function utf2win($mixed): array|string|false
+    {
         if (is_array($mixed)) {
             foreach ($mixed as $index => $str) {
                 unset($mixed[$index]);
@@ -357,5 +333,4 @@ class Mail {
         }
         return iconv('utf-8', 'windows-1251', $mixed);
     }
-
 }

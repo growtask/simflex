@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
 use Simflex\Core\Container;
 
 class FieldTable extends Field
@@ -88,10 +87,10 @@ class FieldTable extends Field
 
     public static function makeValue(array $struct, array $values): string
     {
-        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE);
+        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 
-    public function input($value)
+    public function input($value): string
     {
         // fallback value = []
         $value = !json_decode($value, true) ? '[]' : $value;
@@ -106,9 +105,9 @@ class FieldTable extends Field
 
         $tmpVal = json_decode($value, true);
         if (!strstr(Container::getRequest()->getPath(), 'content_template_param') && !strstr(
-                Container::getRequest()->getPath(),
-                'structure'
-            ) &&
+            Container::getRequest()->getPath(),
+            'structure'
+        ) &&
             $this->params['struct'] && $tmpVal['s'] != $this->params['struct']) {
             $s = json_decode($this->params['struct'], true);
             $v = json_decode($value, true);
@@ -128,8 +127,24 @@ class FieldTable extends Field
         // generate id for the js
         $jsId = (string)crc32($this->inputName());
 
-        ob_start();
-        include 'tpl/table.tpl';
-        return ob_get_clean();
+        return $this->render('table', compact('value', 'jsId'));
+    }
+
+    public static function typeLabel(): string
+    {
+        return 'Таблица';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'struct',
+                'label' => 'Параметры',
+                'type' => \Simflex\Admin\Fields\FieldTable::class,
+                'help' => '',
+                'default_value' => '{"s":[{"n":"n","t":"text","l":"Имя","v":"","e":""},{"n":"t","t":"combo","l":"Тип","v":"text","e":"text=Текст,,int=Число,,combo=Список,,editor=Редактор,,image=Изображение,,file=Файл"},{"n":"l","t":"text","l":"Заголовок","v":"","e":""},{"n":"v","t":"text","l":"Значение","v":"","e":""},{"n":"e","t":"text","l":"Дополнительно","v":"","e":""}],"v":[]}',
+            ],
+        ];
     }
 }

@@ -6,6 +6,6 @@ use Simflex\Core\ModelBase;
 
 class ModelContentTemplate extends ModelBase
 {
-    protected static $table = 'content_template';
-    protected static $primaryKeyName = 'template_id';
+    protected static string $table = 'content_template';
+    protected static string $primaryKeyName = 'template_id';
 }

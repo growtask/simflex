@@ -2,24 +2,20 @@
 
 namespace Simflex\Admin\Fields;
 
-
-use Simflex\Admin\Fields\Field;
-
 class FieldVirtual extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
         $this->isVirtual = true;
     }
 
-    public function show($row)
+    public function show($row): string
     {
         $value = $row[$this->name];
         if ($this->params['text']) {
             $value = $this->params['text'];
-            $matches = array();
+            $matches = [];
             preg_match_all("@\{([\w]+)\}@Ui", $value, $matches);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
@@ -31,7 +27,7 @@ class FieldVirtual extends Field
         }
         if ($this->params['href']) {
             $href = $this->params['href'];
-            $matches = array();
+            $matches = [];
             preg_match_all("@\{([\w]+)\}@Ui", $href, $matches);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
@@ -43,21 +39,59 @@ class FieldVirtual extends Field
             if (@$this->params['in_modal']) {
                 $href = "javascript:openModal('$href')";
             }
-            $value = '<a href="' . $href . '">' . $value . '</a>';
+            $value = $this->render('link', ['href' => $href, 'class' => '', 'label' => $value, 'blank' => false]);
         }
-        echo $value;
+        return (string)$value;
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return '';
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         $subquery = $this->params['subquery'];
         $subquery = $subquery ? "($subquery)" : "''";
         return "$subquery $this->name";
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Виртуальное поле';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'subquery',
+                'label' => 'Подзапрос',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'text',
+                'label' => 'Текст',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'href',
+                'label' => 'Ссылка',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'in_modal',
+                'label' => 'Открыть в модальном окне',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
+    }
 }

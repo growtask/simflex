@@ -2,16 +2,15 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Container;
-
 class Path
 {
     /**
-     * @param string $dir for example /var/www/html/Layout/Cards/Product1/script.js
-     * @return string for example /Layout/Cards/Product1/script.js
+     * Публикует статику каталога или файла в SF_PUBLIC_PATH (см. Assets::publish) и возвращает её url
+     * @param string $dir for example /var/www/html/Layout/Cards/Product1
+     * @return string for example /cache/assets/1a2b3c4d5e6f7a8b
      */
     public static function dirToHref(string $dir): string
     {
-        return str_replace(['\\', Container::getRequest()->getServerInfo()['DOCUMENT_ROOT']], ['/', ''], $dir);
+        return Assets::publish($dir);
     }
 }

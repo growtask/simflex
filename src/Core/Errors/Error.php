@@ -4,7 +4,6 @@ namespace Simflex\Core\Errors;
 
 use RuntimeException;
 use Simflex\Core\Log;
-use Simflex\Core\Errors\ErrorCodes;
 use Throwable;
 
 /**
@@ -13,14 +12,13 @@ use Throwable;
  */
 class Error extends \Error
 {
-
     /**
      * @var array Дополнительные необязательные параметры, например, для кастомизации текста ошибки.
      */
-    public $params = [];
+    public array $params = [];
 
     /** @inheritDoc */
-    public function __construct($message = "", $code = 0, Throwable $previous = null, $params = [])
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, array $params = [])
     {
         parent::__construct($message, $code, $previous);
         $this->params = $params;
@@ -28,9 +26,8 @@ class Error extends \Error
 
     /**
      * @param string $message Например {code, -10} Пользователь не найден
-     * @return null|Error
      */
-    public static function createFromMessage(string $message)
+    public static function createFromMessage(string $message): ?static
     {
         $matches = [];
         if (preg_match('#{error,\s*-?([0-9]+)}\s*(.*)#', $message, $matches)) {
@@ -39,11 +36,7 @@ class Error extends \Error
         return null;
     }
 
-    /**
-     * @param bool $withCode
-     * @return string
-     */
-    public function toString($withCode = false)
+    public function toString(bool $withCode = false): string
     {
         $ret = $this->message;
         if ($withCode && $this->code !== null) {
@@ -54,20 +47,16 @@ class Error extends \Error
 
     /**
      * Бросить исключение определенного класса
-     * @param string $exceptionClass
      */
-    public function throwCustom($exceptionClass = RuntimeException::class)
+    public function throwCustom(string $exceptionClass = RuntimeException::class): never
     {
         throw new $exceptionClass($this->message, $this->code);
     }
 
     /**
      * @param int $code from ErrorCodes
-     * @param Throwable $previous [optional = null]
-     * @param array $params
-     * @return Error
      */
-    public static function byCode(int $code, Throwable $previous = null, $params = []): Error
+    public static function byCode(int $code, ?Throwable $previous = null, array $params = []): Error
     {
         $class = Error::class;
         $error = new $class(ErrorCodes::getText($code, false, $params), $code, $previous);
@@ -75,21 +64,14 @@ class Error extends \Error
         return $error;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return static::toArrayThrowableInner($this) + [
                 'params' => $this->params,
             ];
     }
 
-    /**
-     * @param Throwable $e
-     * @return array
-     */
-    protected static function toArrayThrowableInner(Throwable $e)
+    protected static function toArrayThrowableInner(Throwable $e): array
     {
         return [
             'code' => $e->getCode(),
@@ -100,16 +82,12 @@ class Error extends \Error
                 'code' => $e->getPrevious()->getCode(),
                 'message' => $e->getPrevious()->getMessage(),
                 'class' => get_class($e->getPrevious()),
-                'file' => $e->getPrevious()->getFile() . ':' . $e->getPrevious()->getLine()
+                'file' => $e->getPrevious()->getFile() . ':' . $e->getPrevious()->getLine(),
             ] : null,
         ];
     }
 
-    /**
-     * @param Throwable $e
-     * @return array
-     */
-    public static function toArrayThrowable(Throwable $e)
+    public static function toArrayThrowable(Throwable $e): array
     {
         if ($e instanceof self) {
             return $e->toArray();
@@ -117,19 +95,12 @@ class Error extends \Error
         return self::toArrayThrowableInner($e);
     }
 
-    /**
-     * @param Throwable $e
-     * @return string
-     */
-    public static function serializeThrowable(Throwable $e)
+    public static function serializeThrowable(Throwable $e): string
     {
         return (string)json_encode(self::toArrayThrowable($e), JSON_PARTIAL_OUTPUT_ON_ERROR);
     }
 
-    /**
-     * @return string
-     */
-    public function serialize()
+    public function serialize(): string
     {
         return (string)json_encode($this->toArray(), JSON_PARTIAL_OUTPUT_ON_ERROR);
     }
@@ -137,17 +108,13 @@ class Error extends \Error
     /**
      * Send this error to logs
      */
-    public function report()
+    public function report(): void
     {
         $level = 'error';
         Log::$level($this->getMessage());
     }
 
-    /**
-     * @param Throwable $throwable
-     * @return static
-     */
-    public static function byThrowable(Throwable $throwable)
+    public static function byThrowable(Throwable $throwable): static
     {
         if ($throwable instanceof static) {
             return clone $throwable;

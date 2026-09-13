@@ -2,6 +2,8 @@
 
 namespace Simflex\Core\Mail;
 
+use Simflex\Core\View;
+
 /**
  * Mail object.
  */
@@ -52,13 +54,10 @@ class Mail
      * @param string $templatePath Path to the template file
      * @param array $data Additional arbitrary data
      * @param bool $strip Whether should strip tags from body
-     * @return void
      */
     public function setBodyFromTemplate(string $templatePath, array $data = [], bool $strip = true): void
     {
-        ob_start();
-        include $templatePath;
-        $this->body = ob_get_clean();
+        $this->body = View::render($templatePath, ['data' => $data], $this);
 
         if ($strip) {
             // replace </p> and <br/> with \n

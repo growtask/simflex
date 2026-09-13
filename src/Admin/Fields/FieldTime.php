@@ -2,15 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\Time;
-use Simflex\Admin\Fields\Field;
 
 class FieldTime extends Field
 {
-
-    private $pattern;
+    private string $pattern;
 
     public function __construct($row)
     {
@@ -22,38 +19,58 @@ class FieldTime extends Field
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::timePicker();
         }
+        return '';
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $value = $value ? Time::convert($value, $this->pattern, false) : '';
-        $classes = array("form-control");
+        $classes = ['form-control'];
         if (!$this->readonly) {
-            $classes[] = "form-timepicker" . (@$this->params['use_seconds'] ? '-seconds' : '');
+            $classes[] = 'form-timepicker' . (@$this->params['use_seconds'] ? '-seconds' : '');
         }
-        return '<input class="' . implode(' ', $classes) . '" type="text" name="' . $this->inputName() . '" value="' . $value . '"' . ($this->readonly ? ' readonly' : '') . ' />';
+        return $this->render('time', [
+            'classes' => $classes,
+            'name' => $this->inputName(),
+            'value' => $value ? Time::convert($value, $this->pattern, false) : '',
+            'readonly' => $this->readonly,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
         if ($simple) {
             return $value;
         }
-        $ret = $this->e2n && $value === '' ? 'NULL' : "'" . Time::convert($value, $this->pattern, false) . "'";
+        $ret = $this->e2n && $value === '' ? null : Time::convert($value, $this->pattern, false);
         return $ret;
     }
 
-    public function show($row)
+    public function show($row): string
     {
-        $value = $row[$this->name] ? Time::convert($row[$this->name], $this->pattern, false) : '';
-        echo $value;
+        return $row[$this->name] ? (string)Time::convert($row[$this->name], $this->pattern, false) : '';
     }
 
-}
+    public static function typeLabel(): string
+    {
+        return 'Время';
+    }
 
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'use_seconds',
+                'label' => 'С секундами',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => 'Учитывать секунды',
+                'default_value' => '0',
+            ],
+        ];
+    }
+}
