@@ -5,7 +5,6 @@ use Simflex\Core\Container;
 
 \Simflex\Admin\Plugins\Alert\Alert::init();
 
-Page::js('/theme/default/js/cookie.js');
 Page::coreJs('/theme/js/table.js');
 Page::coreJs('/theme/js/vtable.js');
 
@@ -20,10 +19,12 @@ Page::coreJs('/theme/js/vtable.js');
 
     <link rel="stylesheet" href="<?= asset('css/styles.min.css') ?>"/>
     <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
-    <link rel="shortcut icon" href="<?= asset('img/favicon.ico') ?>" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
-    <link rel="stylesheet" href="/vendor/growtask/simflex-file-manager/src/assets/css/styles.css"/>
+    <?php $fmAssets = \Simflex\Core\Assets::publish(SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/assets'); ?>
+    <link rel="stylesheet" href="<?= $fmAssets ?>/css/styles.css"/>
     <script src="https://cdn.sn9.ru/js/jquery/3.7.1/jquery.min.js"></script>
+    <script>window.sfAdminUrl = '<?= \Simflex\Admin\Core::webVendorPath() ?>';</script>
 
     <noscript>
         <style>
@@ -49,8 +50,7 @@ Page::coreJs('/theme/js/vtable.js');
         echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
         Simflex Admin </title>
 
-    <?php
-    Page::meta() ?>
+    <?= Page::meta() ?>
 </head>
 
 <body>
@@ -61,8 +61,7 @@ Page::coreJs('/theme/js/vtable.js');
         <?php
         include 'partial/sidebar.tpl'; ?>
         <div class="layout__content">
-            <?php
-            Page::content(); ?>
+            <?= Page::content() ?>
         </div>
     </div>
     <?php
@@ -123,17 +122,13 @@ include 'modals/point.tpl'; ?>
 <script src="<?= asset('js/app.min.js'); ?>"></script>
 <script src="<?= asset('js/extra.js'); ?>"></script>
 
-<script src="/vendor/growtask/simflex-file-manager/src/assets/js/app.js"></script>
+<script src="<?= $fmAssets ?>/js/app.js"></script>
 <script>
-    fileManager.assetsDir = '/vendor/growtask/simflex-file-manager/src/assets';
+    fileManager.assetsDir = '<?= $fmAssets ?>';
     fileManager.rootDir = '/uf';
-    fileManager.apiBase = '/fm.php';
+    fileManager.apiBase = '<?= \Simflex\Admin\Core::url('fm') ?>';
 </script>
 
-<?php
-if (Container::getConfig()->devMode) {
-    Container::get('debugbar')->render();
-}
-?>
+<?= Container::getConfig()->devMode ? Container::get('debugbar')->render() : '' ?>
 </body>
 </html>

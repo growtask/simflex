@@ -4,7 +4,6 @@ namespace Simflex\Core\Models;
 
 use Exception;
 use Simflex\Core\DB\Where;
-use Simflex\Core\Log;
 use Simflex\Core\ModelBase;
 
 /**
@@ -18,8 +17,8 @@ use Simflex\Core\ModelBase;
  */
 class UserPriv extends ModelBase
 {
-    protected static $table = 'user_priv';
-    protected static $primaryKeyName = 'priv_id';
+    protected static string $table = 'user_priv';
+    protected static string $primaryKeyName = 'priv_id';
 
     /**
      * Find user priv by name

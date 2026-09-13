@@ -11,24 +11,23 @@ use Simflex\Core\Helpers\Str;
  */
 class Service
 {
-
-    private static $list = array();
+    private static array $list = [];
 
     private function __construct()
     {
 
     }
 
-    public static function &tree2list(&$tree, $id_start = 0, $p_only = false)
+    public static function &tree2list(array &$tree, int|string $id_start = 0, bool $p_only = false): array
     {
-        self::$list = array();
+        self::$list = [];
         if (isset($tree[$id_start])) {
             self::tree2listBuild($tree, $id_start, $p_only);
         }
         return self::$list;
     }
 
-    private static function tree2listBuild(&$tree, $pid, $p_only, $level = 0)
+    private static function tree2listBuild(array &$tree, int|string $pid, bool $p_only, int $level = 0): void
     {
         if ($p_only) {
             foreach ($tree[$pid] as $id => $item) {
@@ -51,9 +50,8 @@ class Service
         }
     }
 
-    public static function translite($string)
+    public static function translite($string): string
     {
         return Str::translite($string);
     }
-
 }

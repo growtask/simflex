@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Simflex\Core;
 
 /**
@@ -10,13 +9,13 @@ namespace Simflex\Core;
  */
 class Auth
 {
-    public static function login($login, $password)
+    public static function login($login, $password): void
     {
 
     }
 
-    public static function logout()
+    public static function logout(): void
     {
-        
+
     }
 }

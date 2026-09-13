@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core;
 
 abstract class ExtensionConfig

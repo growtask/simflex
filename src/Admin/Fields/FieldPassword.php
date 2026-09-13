@@ -2,13 +2,10 @@
 
 namespace Simflex\Admin\Fields;
 
-
-use Simflex\Admin\Fields\Field;
 use Simflex\Core\Helpers\Str;
 
 class FieldPassword extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -17,23 +14,12 @@ class FieldPassword extends Field
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $in = $this->inputName();
-
-        return <<<HTML
-<div class="form-control form-control--pass form-control--sm">
-                <input name="$in"
-                       value=""
-                       placeholder="Оставьте пустым, если не требуется изменить"
-                       type="password"
-                       class="form-control__input">
-                <a href="#" class="form-control-show-pass"></a>
-            </div>
-HTML;
+        return $this->render('password', ['name' => $this->inputName()]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $pw = $_REQUEST[$this->name];
         if (!$pw) {
@@ -49,4 +35,13 @@ HTML;
         return $pw;
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Пароль';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 }

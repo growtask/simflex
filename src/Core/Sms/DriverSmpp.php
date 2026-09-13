@@ -5,17 +5,19 @@ namespace Simflex\Core\Sms;
 use PhpSmpp\Service\Sender as SmppSender;
 use PhpSmpp\SMPP\SMPP;
 use PhpSmpp\SMPP\Unit\Sm;
-use Simflex\Core\Sms\PlugPhone;
-use Simflex\Core\Sms\DriverBase;
+use Simflex\Core\Helpers\Phone;
+use Simflex\Core\Log;
 
 /**
  * Class DriverSmpp
  * @require https://github.com/glushkovds/php-smpp
+ *
+ * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
  */
 class DriverSmpp extends DriverBase
 {
-
-    const STATES = [
+    public const STATES = [
         SMPP::STATE_ENROUTE => self::STATE_SEND,
         SMPP::STATE_DELIVERED => self::STATE_DELIVERY,
         SMPP::STATE_EXPIRED => self::STATE_ERROR,
@@ -27,30 +29,28 @@ class DriverSmpp extends DriverBase
     ];
 
     /**
-     *
      * @param string $phone
      * @param string $text
      * @param string $from
-     * @return boolean
      */
-    public function send($phone, $text, $from, $smsId = 0)
+    public function send($phone, $text, $from, $smsId = 0): array|bool
     {
         try {
             $error = '';
             $errorCode = 0;
-            $phone = PlugPhone::extract7($phone);
+            $phone = Phone::extract7($phone);
             $service = new SmppSender([$this->config['url']], $this->config['login'], $this->config['pass'], false);
             $service->client->csmsMethod = \PhpSmpp\SMPP\SmppClient::CSMS_8BIT_UDH;
-            $driverSmsId = $service->send($phone, $text, 'CigMall');
+            $driverSmsId = $service->send($phone, $text, (string)$from);
         } catch (\Throwable $e) {
             $error = $e->getMessage();
             $errorCode = $e->getCode() ?: 500;
             $driverSmsId = 0;
         }
 
-        if (!empty($smpp)) {
+        if (!empty($service)) {
             try {
-                $smpp->close();
+                $service->client->close();
             } catch (\Throwable $e) {
 
             }
@@ -61,17 +61,16 @@ class DriverSmpp extends DriverBase
             'driver_sms_id' => $driverSmsId,
             'price' => 1,
             'error_code' => $errorCode,
-            'error_text' => $error
+            'error_text' => $error,
         ];
     }
 
-    public function readDeliveries()
+    public function readDeliveries(): void
     {
         $service = new \PhpSmpp\Service\Listener([$this->config['url']], $this->config['login'], $this->config['pass'], true);
         $service->listenOnce(function (Sm $sm) {
-//            file_put_contents('/tmp/' . microtime(true) . '.hex', $sm->getHex());
             if (!($sm instanceof \PhpSmpp\SMPP\Unit\DeliverReceiptSm)) {
-                echo "not receipt\n";
+                Log::debug('SMPP: skipped a unit that is not a delivery receipt');
                 return;
             }
 
@@ -84,5 +83,4 @@ class DriverSmpp extends DriverBase
             ]);
         });
     }
-
 }

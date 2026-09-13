@@ -1,7 +1,7 @@
 function onChangeField(select) {
-    var fieldId = select.value;
+    var fieldType = select.value;
     var fieldName = $(select).attr('name');
-    var params = {action: 'field_param', field_id: fieldId, table: $('#info-table').val(), key_value: $('#info-key-value').val()};
+    var params = {action: 'field_param', field_type: fieldType, table: $('#info-table').val(), key_value: $('#info-key-value').val()};
     params.key_name = $('#info-key-name').val();
     params.field_name = fieldName;
     
@@ -9,7 +9,7 @@ function onChangeField(select) {
         $('.row-content .col-md-12').removeClass('col-md-12').addClass('col-md-8').after('<div class="col-md-4"><div class="ajax-params"></div></div>');
     }
     
-    $.get('./', params, function (r) {
+    $.get(location.pathname, params, function (r) {
         var $portlet = $('.field-params-' + fieldName);
         if ($portlet.length) {
             $portlet.replaceWith(r);

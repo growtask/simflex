@@ -1,15 +1,23 @@
 <?php
+
 namespace Simflex\Core;
 
 class Session
 {
-    private static $data = [];
-    private static $init = false;
+    private static array $data = [];
+    private static bool $init = false;
 
-    public static function get($key)
+    private static function ensureStarted(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+    }
+
+    public static function get(string $key): mixed
     {
         if (!static::$init) {
-            session_start();
+            static::ensureStarted();
             static::$data = $_SESSION;
             session_write_close();
             static::$init = true;
@@ -17,11 +25,11 @@ class Session
 
         return static::$data[$key] ?? null;
     }
-    
-    public static function getAll()
+
+    public static function getAll(): array
     {
         if (!static::$init) {
-            session_start();
+            static::ensureStarted();
             static::$data = $_SESSION;
             session_write_close();
             static::$init = true;
@@ -30,9 +38,9 @@ class Session
         return static::$data;
     }
 
-    public static function set($key, $value)
+    public static function set(string $key, mixed $value): void
     {
-        session_start();
+        static::ensureStarted();
         if (!static::$init) {
             static::$data = $_SESSION;
             static::$init = true;

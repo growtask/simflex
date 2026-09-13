@@ -15,7 +15,7 @@
             <li>
                 <ul class="dropdown-menu-list scroller">
                     <?php foreach ($this->items as $item): ?>
-                        <?php $item->html() ?>
+                        <?= $item->html() ?>
                     <?php endforeach ?>
                     <!--                <li>
                                         <a href="#">

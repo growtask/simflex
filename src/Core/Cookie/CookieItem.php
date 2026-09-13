@@ -1,66 +1,43 @@
 <?php
 
-
 namespace Simflex\Core\Cookie;
-
 
 class CookieItem
 {
-    /** @var string */
-    protected $key;
-    /** @var string|null */
-    protected $value;
-    /** @var \DateTime */
-    protected $expires;
+    protected string $key;
+    protected ?string $value;
+    protected ?\DateTime $expires;
 
-    /**
-     * CookieItem constructor.
-     * @param string $key
-     * @param string $value
-     * @param null $expires
-     */
-    public function __construct($key, $value = null, $expires = null)
+    public function __construct(string $key, ?string $value = null, ?\DateTime $expires = null)
     {
         $this->key = $key;
         $this->value = $value ?? $_COOKIE[$key] ?? null;
         $this->expires = $expires;
     }
 
-    public function save()
+    public function save(): void
     {
         if (headers_sent()) {
-            throw new \Exception("Cannot modify header information - headers already sent");
+            throw new \Exception('Cannot modify header information - headers already sent');
         }
         $_COOKIE[$this->key] = $this->value;
-        setcookie($this->key, $this->value, $this->expires ? $this->expires->getTimestamp() : 0, "/");
+        setcookie($this->key, $this->value, $this->expires ? $this->expires->getTimestamp() : 0, '/');
     }
 
-    /**
-     * @param \DateTime $expires
-     * @return $this
-     */
-    public function setExpires(\DateTime $expires)
+    public function setExpires(\DateTime $expires): static
     {
         $this->expires = $expires;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getValue(): ?string
     {
         return $this->value;
     }
 
-    /**
-     * @param string $value
-     * @return $this
-     */
-    public function setValue(string $value)
+    public function setValue(string $value): static
     {
         $this->value = $value;
         return $this;
     }
-
 }

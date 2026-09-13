@@ -6,7 +6,6 @@ use ArrayAccess;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\DB;
-use Simflex\Core\Log;
 
 class Where implements ArrayAccess
 {
@@ -63,7 +62,7 @@ class Where implements ArrayAccess
     /**
      * @throws Exception
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -91,7 +90,6 @@ class Where implements ArrayAccess
     }
 
     /**
-     * @return array
      * @throws Exception
      */
     public function toArray(): array
@@ -104,7 +102,6 @@ class Where implements ArrayAccess
      *
      * @param array $data input data
      * @param array $oldBinds previous bindings (if any)
-     * @return array
      * @throws Exception
      */
     #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
@@ -113,7 +110,7 @@ class Where implements ArrayAccess
         $bind = $oldBinds;
         $result = [];
         foreach ($data as $index => $value) {
-            $wrappedIndex = implode('.', array_map(fn ($i) => DB::wrapName($i), explode('.', $index)));
+            $wrappedIndex = implode('.', array_map(fn($i) => DB::wrapName($i), explode('.', $index)));
             $idCrc = 'id_' . (string)crc32($wrappedIndex);
 
             if (is_array($value) && !$value) {
@@ -122,10 +119,12 @@ class Where implements ArrayAccess
                 $result[] = "$wrappedIndex IS NULL";
             } elseif ((string)$index !== (string)(int)$index) {
                 if (is_array($value)) {
-                    $values = []; $i = 0;
+                    $values = [];
+                    $i = 0;
                     foreach ($value as $val) {
                         $values[] = ':' . $idCrc . '_' . $i;
                         $bind[$idCrc . '_' . $i] = $val;
+                        $i++;
                     }
 
                     $values = implode(',', $values);
@@ -150,7 +149,6 @@ class Where implements ArrayAccess
      * Add WHERE conditions
      *
      * @param string|array|Where|\Simflex\Core\DB\Expr $where Filter conditions
-     * @return void
      * @throws Exception
      */
     public function add(string|array|Where|Expr $where): void
@@ -163,5 +161,4 @@ class Where implements ArrayAccess
         $this->data = array_filter(array_merge($myArr['result'], $otherArr['result']));
         $this->bind = array_merge($myArr['bind'], $otherArr['bind']);
     }
-
 }

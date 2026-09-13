@@ -25,7 +25,7 @@ class Seeder extends ConsoleBase
             if (($path['extension'] ?? '') == 'php') {
                 $this->seederFiles[$path['filename']] = [
                     'file' => 'database/seeders/' . $file,
-                    'name' => $path['filename']
+                    'name' => $path['filename'],
                 ];
             }
         }
@@ -58,7 +58,6 @@ class Seeder extends ConsoleBase
     /**
      * Attempts to get migration object
      * @param string $name Migration name
-     * @return SeederInterface|null
      */
     protected function getSeederObject(string $name): ?SeederInterface
     {
@@ -84,7 +83,6 @@ class Seeder extends ConsoleBase
     /**
      * Executes seeders
      * @param string $only Specific seeder to run
-     * @return void
      * @throws Exception
      */
     #[Command('Execute seeders')]
@@ -99,7 +97,9 @@ class Seeder extends ConsoleBase
 
         if ($only) {
             if (!in_array($only, $seeders)) {
-                Log::error('Seeder {seeder} not found in the list (does not exist or already ran)', ['seeder' => $only]
+                Log::error(
+                    'Seeder {seeder} not found in the list (does not exist or already ran)',
+                    ['seeder' => $only]
                 );
                 return;
             }

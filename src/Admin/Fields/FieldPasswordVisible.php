@@ -2,12 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
-
-use Simflex\Admin\Fields\Field;
-
 class FieldPasswordVisible extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -16,9 +12,18 @@ class FieldPasswordVisible extends Field
         }
     }
 
-    public function show($row)
+    public function show($row): string
     {
-        echo '<div style="text-align: center">***</div>';
+        return $this->render('password-visible');
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Пароль видимый';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 }

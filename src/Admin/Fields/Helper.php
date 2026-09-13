@@ -1,18 +1,10 @@
 <?php
 
-
 namespace Simflex\Admin\Fields;
-
-
-use Simflex\Admin\Fields\Field;
 
 class Helper
 {
-    /**
-     * @param $row
-     * @return Field
-     */
-    public static function create($row)
+    public static function create($row): Field
     {
         $class = $row['class'];
         if (strpos($class, '\\') === false) {

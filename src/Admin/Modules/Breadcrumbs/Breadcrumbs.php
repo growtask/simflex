@@ -4,25 +4,25 @@ namespace Simflex\Admin\Modules\Breadcrumbs;
 
 use Simflex\Core\Container;
 use Simflex\Core\ModuleBase;
+use Simflex\Core\ModuleType;
 
 class Breadcrumbs extends ModuleBase
 {
-
-    protected $name = 'breadcrumbs';
-
-    public function content()
+    public static function extensionTitle(): string
     {
-        $crumbs = Container::getCore()::crumbs();
-        include 'tpl/crumbs.tpl';
-//
-//        if (count($crumbs) > 0) {
-//            $links = array();
-//            $cnt = count($crumbs);
-//            foreach ($crumbs as $i => $row) {
-//                $links[] = '<a href="' . $row['link'] . '">' . $row['name'] . '</a>';
-//            }
-//            include dirname(__FILE__) . '/tpl/crumbs.tpl';
-//        }
+        return 'Admin - Хлебные крошки';
     }
 
+    public static function moduleType(): ModuleType
+    {
+        return ModuleType::Admin;
+    }
+
+    protected string $name = 'breadcrumbs';
+
+    public function content(): string
+    {
+        $crumbs = Container::getCore()::crumbs();
+        return $this->render(__DIR__ . '/tpl/crumbs.tpl', ['crumbs' => $crumbs]);
+    }
 }

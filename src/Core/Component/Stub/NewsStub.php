@@ -6,9 +6,8 @@ use Simflex\Core\ComponentBase;
 
 class NewsStub extends ComponentBase
 {
-
-    protected function content()
+    protected function content(): string
     {
-        echo 'This is NewsStub component';
+        return 'This is NewsStub component';
     }
 }

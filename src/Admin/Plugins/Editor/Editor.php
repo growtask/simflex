@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Plugins\Editor;
 
-
 use Simflex\Admin\Core;
 use Simflex\Core\Container;
 
@@ -14,19 +13,22 @@ use Simflex\Core\Container;
  */
 class Editor
 {
+    public static array $inited = [];
 
-    public static $inited = array();
-
-    public static function tinymce($type, $css_class = '')
+    /**
+     * Registers the TinyMCE script and returns the editor init HTML (once per editor type)
+     */
+    public static function tinymce(string $type, string $css_class = ''): string
     {
         $tinyMcePath = Core::webVendorPath() . '/Plugins/Editor/tinymce/tinymce.min.js';
         Container::getPage()::js($tinyMcePath . '" referrerpolicy="origin', 10);
 
         if (!empty(self::$inited[$type])) {
-            return;
+            return '';
         }
+        self::$inited[$type] = true;
 
-        echo <<<HTML
+        return <<<HTML
 <script>
 tinymce.init({
     selector: '.$css_class',
@@ -56,9 +58,5 @@ tinymce.init({
 }
 </style>
 HTML;
-
-
-        self::$inited[$type] = true;
     }
-
 }

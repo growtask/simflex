@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Models;
 
 use Simflex\Core\ModelBase;
@@ -10,6 +11,6 @@ use Simflex\Core\ModelBase;
  */
 class ContentTemplate extends ModelBase
 {
-    protected static $primaryKeyName = 'template_id';
-    protected static $table = 'content_template';
+    protected static string $primaryKeyName = 'template_id';
+    protected static string $table = 'content_template';
 }

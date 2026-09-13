@@ -1,0 +1,1 @@
+<input class="<?= implode(' ', $classes) ?>" type="text" name="<?= $name ?>" value="<?= $value ?>"<?= $readonly ? ' readonly' : '' ?> />

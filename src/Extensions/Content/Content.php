@@ -25,20 +25,22 @@ class Content extends ComponentBase
     {
     }
 
-    public function get($path = ''): ?ModelContent
+    public function get(string $path = ''): ?ModelContent
     {
-        if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
+        $path = $path ?: Container::getRequest()->getPath();
+        if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path, 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
         }
 
-        if (!$content) {
-            Log::warning('active content with path {path} not found', ['path' => $path ?: Container::getRequest()->getPath()]);
+        // /404 is the service page that missing paths are redirected to
+        if (!$content && $path !== '/404') {
+            Log::warning('active content with path {path} not found', ['path' => $path]);
         }
 
         return $content;
     }
 
-    public static function getStatic($path = '')
+    public static function getStatic(string $path = ''): ?ModelContent
     {
         $path = $path ?: Container::getRequest()->getPath();
         if ($content = Container::getFactory()->getStatic(ModelContent::class)::findOne(['active' => 1, 'path' => $path])) {
@@ -58,7 +60,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $query = ModelContent::findAdv()->where([
             'pid' => $id,
-            'active' => 1
+            'active' => 1,
         ]);
 
         if ($except) {
@@ -79,7 +81,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'pid' => $id,
-            'active' => 1
+            'active' => 1,
         ]);
 
         if ($except) {
@@ -106,7 +108,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'path' => $path,
-            'active' => 1
+            'active' => 1,
         ])->orderBy('title ASC')->all();
 
         foreach ($children as $child) {
@@ -123,7 +125,7 @@ class Content extends ComponentBase
         $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
         $res = ModelContent::findAdv()->where([
             'active' => 1,
-            'pid' => $parent
+            'pid' => $parent,
         ])->orderBy('date DESC')->all();
 
         $children = [];
@@ -160,7 +162,7 @@ class Content extends ComponentBase
         $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
         $children = ModelContent::findAdv()->where([
             'active' => 1,
-            'pid' => $parent
+            'pid' => $parent,
         ])->andWhere(implode(' AND ', $searchStr))->orderBy('date DESC LIMIT ' . $max)->all();
 
         foreach ($children as $c) {
@@ -172,7 +174,7 @@ class Content extends ComponentBase
         return $children;
     }
 
-    protected function content()
+    protected function content(): string
     {
         Profiler::traceStart($this, __FUNCTION__);
 
@@ -186,7 +188,7 @@ class Content extends ComponentBase
 
             Page::seo($content['title']);
 
-            $children = array();
+            $children = [];
             $page = 0;
             $pages = 0;
             $hasPrev = false;
@@ -204,10 +206,10 @@ class Content extends ComponentBase
 
                 // count all values
                 $cnt = DB::result(
-                    "SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                            ' AND ',
-                            $searchStr
-                        )) : ''),
+                    'SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
+                        ' AND ',
+                        $searchStr
+                    )) : ''),
                     'cnt'
                 );
 
@@ -219,14 +221,14 @@ class Content extends ComponentBase
                 $hasPrev = $page > 0;
                 $hasNext = $page < $pages - 1;
 
-                $q = "SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                            ' AND ',
-                            $searchStr
-                        )) : '');
+                $q = 'SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
+                    ' AND ',
+                    $searchStr
+                )) : '');
                 if (isset($_GET['mob'])) {
-                    $q .= " ORDER BY date DESC LIMIT " . (($page + 1) * $pageCount);
+                    $q .= ' ORDER BY date DESC LIMIT ' . (($page + 1) * $pageCount);
                 } else {
-                    $q .= " ORDER BY date DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
+                    $q .= ' ORDER BY date DESC LIMIT ' . ($page * $pageCount) . ', ' . $pageCount;
                 }
                 $q = DB::query($q);
                 $children = [];
@@ -237,7 +239,7 @@ class Content extends ComponentBase
                 }
             }
 
-            include static::findTemplateFile($content->template_path ?? 'default.tpl');
+            $html = $this->render(static::findTemplateFile($content->template_path ?? 'default.tpl'), get_defined_vars());
         } else {
             if ($link == '/404') {
                 http_response_code(404);
@@ -249,13 +251,14 @@ class Content extends ComponentBase
 
             // load home here to avoid issues with templater
             $content = $this->get('/');
-            include self::findTemplateFile('base/404.tpl');
+            $html = $this->render(self::findTemplateFile('base/404.tpl'), get_defined_vars());
         }
 
         Profiler::traceEnd($this, __FUNCTION__);
+        return $html;
     }
 
-    protected function breadcrumbs($content)
+    protected function breadcrumbs($content): void
     {
         Breadcrumbs::add($content['title'], $content['path']);
         $id = (int)$content['pid'];
@@ -281,5 +284,4 @@ class Content extends ComponentBase
         Log::warning('Content: target template {name} was not found, is this intentional?', ['name' => $name]);
         return __DIR__ . '/tpl/default.tpl';
     }
-
 }

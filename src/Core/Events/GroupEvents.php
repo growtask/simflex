@@ -3,7 +3,6 @@
 namespace Simflex\Core\Events;
 
 use Simflex\Core\DI\Injector;
-use Simflex\Core\Log;
 
 /**
  * Implements onEvent in a way that allows to call methods with event name

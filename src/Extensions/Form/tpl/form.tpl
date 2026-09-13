@@ -1,8 +1,8 @@
-<?
+<?php
 
 /** @var \Simflex\Extensions\Form\ModuleForm $this */
-\Simflex\Core\Alert\Site\Alert::output();
 ?>
+<?= \Simflex\Core\Alert\Site\Alert::getHTML() ?>
 <?php
 if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
     <?= $this->params['text_before'] ?? '' ?>
@@ -13,10 +13,10 @@ if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
             foreach ($this->fields as $field) : ?>
                 <tr>
                     <td><label class="plug-form-label"><?php
-                            echo $field->getLabel(), $field->v_requied ? ' <span>*</span>' : ''; ?></label></td>
+                            echo $field->getLabel(), $field->vRequired ? ' <span>*</span>' : ''; ?></label></td>
                     <td>
                         <?php
-                        $field->html();
+                        echo $field->html();
                         echo '<div class="plug-form-error">';
                         if (isset($this->errors[$field->getName()])) {
                             foreach ($this->errors[$field->getName()] as $err) {

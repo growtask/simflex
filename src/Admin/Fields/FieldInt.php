@@ -2,20 +2,17 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
 use Simflex\Core\DB\AQ;
-use Simflex\Core\Service;
-use Simflex\Admin\Fields\Field;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldInt extends Field
 {
+    public mixed $defaultValue = 0;
 
-    public $defaultValue = 0;
-
-    public $filterAndWhere = '';
+    public string $filterAndWhere = '';
     /** @var callable return [x => [y => [label => z], q => [label => k]]] */
-    public $filterDataProvider;
+    public \Closure|array|string $filterDataProvider;
 
     public function __construct($row)
     {
@@ -26,33 +23,37 @@ class FieldInt extends Field
         };
     }
 
-    protected function bigint($value)
+    protected function bigint($value): string
     {
-        return sprintf("%.0f", $value);
+        return sprintf('%.0f', $value);
     }
 
-    public function &tree()
+    /**
+     * Finds the column of $table that is marked as the self-referencing "parent" (fk_is_pid) column.
+     *
+     * @return string Wrapped column name, or '0' if the table has no such column
+     */
+    protected function fkPidColumn(string $table): string
     {
-        $tree = array();
-        $q = "
-            SELECT *,
-                (SELECT class FROM struct_field WHERE field_id = s.field_id) class
-            FROM struct_data s
-            WHERE table_id = (SELECT table_id FROM struct_table WHERE name = '{$this->fk->table}')
-        ";
-        $fkTableFields = DB::assoc($q);
-        $fkPID = 0;
+        $fkTableFields = StructureRepository::fields($table);
         foreach ($fkTableFields as $fkTableField) {
-            if ($fkTableField['class'] == 'FieldInt') {
-                $fkParams = unserialize($fkTableField['params']);
+            if ($fkTableField['class'] == 'FieldInt' || str_ends_with($fkTableField['class'], '\\FieldInt')) {
+                $fkParams = $fkTableField['params'];
                 if (!empty($fkParams['main']['fk_is_pid'])) {
-                    $fkPID = $fkTableField['name'];
-                    break;
+                    return DB::wrapName($fkTableField['name']);
                 }
             }
         }
 
-        $query = (new AQ)
+        return '0';
+    }
+
+    public function &tree(): array
+    {
+        $tree = [];
+        $fkPID = $this->fkPidColumn($this->fk->table);
+
+        $query = (new AQ())
             ->select("{$this->fk->key} id, $fkPID pid, {$this->fk->label} label")
             ->from($this->fk->table)
             ->orderBy($this->fk->key);
@@ -69,136 +70,134 @@ class FieldInt extends Field
         return $tree;
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        if ($this->fk) {
-//            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
-//            $list = Service::tree2list($tree);
+        if (!$this->fk) {
+            return $this->render('input', ['value' => $value] + $this->inputVars());
+        }
 
+        if ($this->params['fk_is_pid']) {
+            $pidColumn = $this->fkPidColumn($this->params['fk_table']);
+            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from
+                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+        } else {
+            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
+                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+        }
+
+        $sel = DB::fetch($sel) ?: [];
+
+        $listItems = [];
+        $hasId = false;
+        foreach ($items as $r) {
+            if ($r['id'] == ($sel['id'] ?? null)) {
+                $hasId = true;
+            }
 
             if ($this->params['fk_is_pid']) {
-                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from `{$this->params['fk_table']}` limit 20");
-                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from 
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            } else {
-                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
-                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            }
-
-            $sel = DB::fetch($sel);
-
-            $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown ' . ($this->readonly ? ' disabled' : '') . '" data-action="searchInt" data-ajax="true">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . ' >
-                               <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text" ' . ($this->readonly ? ' readonly' : '') . '>
-                                <div class="form-control__dropdown-current">' . $sel['name'] . '</div>
-                                <button type="button" class="form-control__dropdown-toggle"' . ($this->readonly ? ' readonly' : '') . '>
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                           
-                                        ';
-
-            $tempSel = '';
-
-            $hasId = false;
-            foreach ($items as $r) {
-                if ($r['id'] == $sel['id']) {
-                    $hasId = true;
+                $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
+                if ($pidName) {
+                    $r['name'] = $pidName . ' -> ' . $r['name'];
                 }
-
-                if ($this->params['fk_is_pid']) {
-                    $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
-                    if ($pidName) {
-                        $r['name'] = $pidName . ' -> ' . $r['name'];
-                    }
-                }
-                $tempSel .= '<div data-value="' . $r['id'] . '" class="form-control__dropdown-item">' . $r['name'] . '</div>';
             }
-
-            if (!$hasId) {
-                if ($this->params['fk_is_pid']) {
-                    $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
-                    if ($pidName) {
-                        $r['name'] = $pidName . ' -> ' . $r['name'];
-                    }
-                }
-                $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
-            }
-
-            $select .= $tempSel;
-
-//            foreach ($list as $id=>$row) {
-//                $select .= '<div data-value="'.$id.'" class="form-control__dropdown-item">'. str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $row['tree_level']) . $row['label'] .'</div>';
-//            }
-
-            $select .= '</div>
-                                    </div>
-                                </div>';
-
-            return $select;
+            $listItems[] = [$r['id'], $r['name']];
         }
-        return '<div class="form-control form-control--sm">
-                                    <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
-                                        type="text" class="form-control__input">
-                                </div>';
+
+        if (!$hasId && $sel) {
+            if ($this->params['fk_is_pid']) {
+                $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
+                if ($pidName) {
+                    $sel['name'] = $pidName . ' -> ' . $sel['name'];
+                }
+            }
+            array_unshift($listItems, [$sel['id'], $sel['name']]);
+        }
+
+        return $this->dropdown([
+            'name' => $this->name,
+            'value' => !$value ? '' : $value,
+            'onchange' => $this->onchange,
+            'readonly' => $this->readonly,
+            'disabled' => $this->readonly,
+            'action' => 'searchInt',
+            'search' => true,
+            'current' => $sel['name'] ?? '',
+            'items' => $listItems,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        return $this->e2n && $_POST[$this->name] === '' ? NULL : (int)$_POST[$this->name];
+        return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
     }
 
-    public function filter($value)
+    public function filter($value): string
     {
         if (!$this->filter) {
             return '';
         }
         if ($this->fk) {
-//            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
-//            $list = Service::tree2list($tree);
-
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            $sel = DB::fetch($sel);
+            $sel = DB::fetch($sel) ?: [];
 
-            $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" value="' . $value . '" type="hidden" name="filter[' . $this->name . ']" >
-                                <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
-                                <div class="form-control__dropdown-current">—</div>
-                                <button class="form-control__dropdown-toggle" type="button">
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                
-                            ';
-
-//            $select .= '<div data-value="" class="form-control__dropdown-item">—</div>';
-//            if ($this->isnull) {
-//                $select .= '<div data-value="null" class="form-control__dropdown-item">NULL</div>';
-//            }
-            $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
-
-
-            $select .= '</div>
-                        </div>
-                    </div>';
-
-            echo $select;
+            return $this->dropdown([
+                'name' => 'filter[' . $this->name . ']',
+                'value' => $value,
+                'action' => 'searchInt',
+                'search' => true,
+                'items' => $sel ? [[$sel['id'], $sel['name']]] : [],
+            ]);
         } else {
             return parent::filter($value);
         }
-
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Целое число';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'is_fk',
+                'label' => 'Внешний ключ',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_table',
+                'label' => 'Внешний ключ. Таблица',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_key',
+                'label' => 'Внешний ключ. Ключ',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_label',
+                'label' => 'Внешний ключ. Ярлык',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_is_pid',
+                'label' => 'Внешний ключ. Поле PID',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
+    }
 }

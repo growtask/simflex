@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 use Simflex\Core\DB\Adapter;
-use Simflex\Core\User;
 
 /**
  * Class DB
@@ -27,17 +26,14 @@ class DB
 
     /**
      * Creates new adapter instance
-     *
-     * @return Adapter
      */
     private static function create(): Adapter
     {
         $class = Container::getConfig()->db['adapter'];
-        return new $class;
+        return new $class();
     }
 
     /**
-     * @return bool
      * @see Adapter::connect()
      */
     public static function connect(): bool
@@ -47,8 +43,6 @@ class DB
     }
 
     /**
-     * @param $params
-     * @return bool
      * @see Adapter::bind()
      * @deprecated Use $params in query()/assoc()/result() instead
      */
@@ -63,12 +57,9 @@ class DB
     }
 
     /**
-     * @param string $q
-     * @param array $params
-     * @return mixed
      * @see Adapter::query()
      */
-    public static function query(string $q, array $params = [])
+    public static function query(string $q, array $params = []): mixed
     {
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $execTime = microtime(1);
@@ -81,33 +72,24 @@ class DB
     }
 
     /**
-     * @param $result
-     * @return mixed
      * @see Adapter::fetch()
      */
-    public static function fetch($result)
+    public static function fetch($result): mixed
     {
         return static::db()->fetch($result);
     }
 
     /**
      * @param string $q SQL query to execute
-     * @param string $field
-     * @param array $params
-     * @return mixed
      * @see Adapter::result()
      */
-    public static function result(string $q, $field = '', array $params = [])
+    public static function result(string $q, int|string $field = '', array $params = []): mixed
     {
         return static::db()->result(static::query($q, $params), $field);
     }
 
     /**
      * @param string $q SQL query to execute
-     * @param bool|string $field1
-     * @param bool|string $field2
-     * @param array $params
-     * @return bool|array
      * @see Adapter::assoc()
      */
     public static function assoc(string $q, bool|string $field1 = false, bool|string $field2 = false, array $params = []): bool|array
@@ -140,7 +122,6 @@ class DB
     }
 
     /**
-     * @return string
      * @see Adapter::insertId()
      */
     public static function insertId(): string
@@ -153,9 +134,8 @@ class DB
      *
      * @param string $time Time point
      * @param int $length String limit
-     * @return false|string
      */
-    public static function getTime(string $time, int $length = 4)
+    public static function getTime(string $time, int $length = 4): string
     {
         $a = explode(' ', $time);
         $b = explode(' ', microtime());
@@ -163,7 +143,6 @@ class DB
     }
 
     /**
-     * @return int
      * @see Adapter::errno()
      */
     public static function errno(): int
@@ -172,7 +151,6 @@ class DB
     }
 
     /**
-     * @return string|null
      * @see Adapter::error()
      */
     public static function error(): ?string
@@ -181,7 +159,6 @@ class DB
     }
 
     /**
-     * @return string|null
      * @see Adapter::errorCode()
      */
     public static function errorCode(): ?string
@@ -193,7 +170,6 @@ class DB
      * Escapes array or string
      *
      * @param array|string $mixed Target to escape
-     * @return array|string
      * @see Adapter::escape()
      */
     public static function escape(array|string $mixed): array|string
@@ -251,15 +227,13 @@ class DB
      *
      * @param string $table Table name
      * @param string $field Column name
-     * @return mixed
      */
-    public static function columnInfo(string $table, string $field)
+    public static function columnInfo(string $table, string $field): mixed
     {
         return DB::result("SHOW FULL COLUMNS FROM `$table` LIKE '$field'");
     }
 
     /**
-     * @return int
      * @see Adapter::affectedRows()
      */
     public static function affectedRows(): int
@@ -304,7 +278,6 @@ class DB
     /**
      * @param mixed $r Adapter-specific result
      * @param int $index Index
-     * @return bool
      * @see Adapter::seek()
      */
     public static function seek(&$r, int $index): bool
@@ -316,7 +289,6 @@ class DB
      * Resets result to position 0
      *
      * @param mixed $r Adapter-specific result
-     * @return bool
      */
     public static function fetchReset(&$r): bool
     {

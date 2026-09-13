@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 use Psr\Log\LoggerInterface;
-use Simflex\Core\Container;
 
 /**
  * PSR-3 logger facade
@@ -28,7 +27,7 @@ class Log
         self::$loggers[] = $logger;
     }
 
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $name, array $arguments): void
     {
         foreach (self::$loggers as $logger) {
             if (method_exists($logger, $name)) {

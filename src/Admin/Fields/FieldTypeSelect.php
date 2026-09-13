@@ -1,31 +1,49 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
-use Simflex\Core\DB;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldTypeSelect extends Field
 {
-    public function input($value)
+    public function input($value): string
     {
-        $existing = DB::assoc('SELECT name FROM shared_type');
-
-        $out = '<select name="' . $this->inputName() . '[]" class="form-control cat-select" multiple>';
-        foreach ($existing as $cat) {
-            $out .= '<option ' . (in_array($cat['name'], explode(',', $value)) ? ' selected' : '') . '>' . $cat['name'] . '</option>';
+        $options = [['', '', false]];
+        foreach (StructureRepository::fieldTypes() as $type) {
+            $options[] = [$type['class'], $type['name'], $type['class'] === $value];
         }
-        return $out .'</select>';
+        return $this->render('select', [
+            'name' => $this->inputName(),
+            'onchange' => $this->onchange,
+            'class' => 'form-control__input',
+            'multiple' => false,
+            'wrap' => false,
+            'options' => $options,
+        ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function show($row): string
     {
-        $data = $_POST[$this->inputName()] ?: [];
-        foreach ($data as $val) {
-            if (!DB::result('SELECT COUNT(*) as c FROM shared_type WHERE name = ?', 'c', [$val])) {
-                DB::query('INSERT INTO shared_type (name) VALUES (?)', [$val]);
-            }
+        return $this->cell(htmlspecialchars($this->typeName((string)$row[$this->name])));
+    }
+
+    public function showDetail($row): ?string
+    {
+        return htmlspecialchars($this->typeName((string)$row[$this->name]));
+    }
+
+    protected function typeName(string $class): string
+    {
+        if ($class === '') {
+            return '';
         }
 
-        return "" . DB::escape(implode(',', $data)) . "";
+        $type = StructureRepository::fieldTypeByClass($class);
+        return $type['name'] ?? $class;
+    }
+
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
+    {
+        return $simple && $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
     }
 }

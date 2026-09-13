@@ -1,12 +1,12 @@
 function onChangeModule(select) {
-    var moduleId = select.value;
-    var params = {action: 'module_param', module_id: moduleId, item_id: $('#info-key-value').val()};
+    var module = select.value;
+    var params = {action: 'module_param', module: module, item_id: $('#info-key-value').val()};
 
     if (!$('.ajax-params-left').length) {
         $('.row-content .col-main').append('<div class="ajax-params-left">');
     }
 
-    $.get('./', params, function (r) {
+    $.get(location.pathname, params, function (r) {
         r = $.parseJSON(r);
         if (r.right && !$('.ajax-params').length) {
             $('.row-content .col-md-12').removeClass('col-md-12').addClass('col-md-8').after('<div class="col-md-4"><div class="ajax-params"></div></div>');

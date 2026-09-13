@@ -2,14 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\Field;
 
 class FieldDate extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -19,26 +16,25 @@ class FieldDate extends Field
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::datePicker();
         }
+        return '';
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $value = \Simflex\Core\Time::normal($value ?: time()); //substr($value, 8, 2) . '.' . substr($value, 5, 2) . '.' . substr($value, 0, 4);
-        $classes = array("form-control");
-        if (!$this->readonly) {
-            $classes[] = "form-datepicker";
-        }
-        return '<div id="calendar" class="form-control form-control--sm">
-                                    <input value="'.date('Y-m-d', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="date" class="form-control__input">
-                                </div>';
-     }
+        $value = \Simflex\Core\Time::normal($value ?: time());
+        return $this->render('date', [
+            'value' => date('Y-m-d', strtotime($value)),
+            'name' => $this->inputName(),
+            'placeholder' => $this->placeholder,
+        ]);
+    }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
         if ($simple) {
@@ -47,15 +43,21 @@ class FieldDate extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4}$@', $value)) {
             $value = substr($value, -4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2);
         }
-        return $this->e2n && $value === '' ? NULL : "" . DB::escape($value) . "";
+        return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
     }
 
-    public function show($row)
+    public function show($row): string
     {
-        $value = $row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '';
-        $isNumericReal = false;
-        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
-
+        return $this->cell($row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '');
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Дата';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 }

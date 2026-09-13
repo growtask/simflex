@@ -1,11 +1,10 @@
 <?php
-namespace Simflex\Core\DB\Schema;
 
-use Simflex\Core\DB\Schema\Element;
+namespace Simflex\Core\DB\Schema;
 
 abstract class ElementBase implements Element
 {
-    protected $name = '';
+    protected string $name = '';
 
     public function getName(): string
     {

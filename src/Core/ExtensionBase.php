@@ -2,18 +2,28 @@
 
 namespace Simflex\Core;
 
-
-use Simflex\Core\Core;
-
-abstract class ExtensionBase
+abstract class ExtensionBase implements HasAdminParams
 {
-
     /**
      * Путь до расширения в файловой системе
      * @var string
      */
-    protected $rootDir;
-    protected $root = '';
+    protected string $rootDir;
+    protected string $root = '';
+
+    /**
+     * Title in the admin panel lists
+     */
+    public static function extensionTitle(): string
+    {
+        $parts = explode('\\', static::class);
+        return end($parts);
+    }
+
+    public static function adminParams(): array
+    {
+        return [];
+    }
 
     public function __construct()
     {
@@ -21,7 +31,7 @@ abstract class ExtensionBase
         $this->rootDir = dirname($reflector->getFileName());
     }
 
-    protected function root()
+    protected function root(): string
     {
         if (!$this->root) {
             $this->root = '/';
@@ -32,7 +42,7 @@ abstract class ExtensionBase
             }
             $ext = strtolower($ext);
 
-            $menu =  Core::menu('by_ext');
+            $menu = Core::menu('by_ext');
             if (isset($menu[$ext]) && is_array($menu[$ext])) {
                 $this->root = $menu[$ext][0]['link'];
                 $n = count($menu[$ext]);
@@ -46,9 +56,19 @@ abstract class ExtensionBase
         return $this->root;
     }
 
-    protected function link($link)
+    /**
+     * Renders the template into a string, $this in the template is the extension
+     *
+     * @param string $file Absolute path to the template
+     * @param array<string, mixed> $vars Variables available in the template as $name
+     */
+    protected function render(string $file, array $vars = []): string
+    {
+        return View::render($file, $vars, $this);
+    }
+
+    protected function link($link): string
     {
         return str_replace('//', '/', $this->root() . $link);
     }
-
 }

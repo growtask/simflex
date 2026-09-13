@@ -2,32 +2,28 @@
 
 namespace Simflex\Core\DB;
 
-use Simflex\Core\DB\Where;
 use Simflex\Core\ModelBase;
 
 class JoinClause
 {
-    /** @var string */
-    protected $table;
-    /** @var string */
-    protected $joinColumn1;
-    /** @var string|null */
-    protected $joinColumn2;
-    /** @var string */
-    protected $type;
-    /** @var Where|null */
-    protected $extraOnConditions;
+    protected string $table;
+    protected string $joinColumn1;
+    protected ?string $joinColumn2;
+    protected string $type;
+    protected ?Where $extraOnConditions;
 
     /**
-     * @param string|ModelBase $table
-     * @param string $joinColumn1
      * @param string|null $joinColumn2 if not specified, will be used USING clause
      * @param string $type for example INNER, LEFT, RIGHT, FULL
-     * @param string|Where|array|null $extraOnConditions
      * @throws \Exception
      */
-    public function __construct($table, string $joinColumn1, ?string $joinColumn2 = null, string $type = 'INNER', $extraOnConditions = null)
-    {
+    public function __construct(
+        string|ModelBase $table,
+        string $joinColumn1,
+        ?string $joinColumn2 = null,
+        string $type = 'INNER',
+        string|array|Where|Expr|null $extraOnConditions = null
+    ) {
         $this->table = (is_subclass_of($table, ModelBase::class)) ? $table::getTableName() : (string)$table;
         $this->joinColumn1 = $joinColumn1;
         $this->joinColumn2 = $joinColumn2;

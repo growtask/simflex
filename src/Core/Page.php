@@ -2,48 +2,42 @@
 
 namespace Simflex\Core;
 
-
-use Simflex\Core\Core;
-use Simflex\Core\DB;
-
 class Page
 {
+    protected static string $menu = '';
+    protected static string $content = '';
+    protected static array $positions = [];
+    protected static array $modules = [];
+    protected static array $css = [];
+    protected static array $cssCheck = [];
+    protected static array $js = [];
+    protected static array $jsCheck = [];
+    public static string $seoTitle = '';
+    protected static string $seoDescription = '';
+    protected static string $seoKeywords = '';
+    protected static string $seoMetatags = '';
+    protected static bool $seoIs = false;
+    protected static string $metaRaw = '';
+    public static bool $showAside = false;
 
-    protected static $menu = '';
-    protected static $content = '';
-    protected static $positions = array();
-    protected static $modules = array();
-    protected static $css = array();
-    protected static $css_check = array();
-    protected static $js = array();
-    protected static $js_check = array();
-    public static $seo_title = '';
-    protected static $seo_description = '';
-    protected static $seo_keywords = '';
-    protected static $seo_metatags = '';
-    protected static $seo_is = false;
-    protected static $meta_raw = '';
-    public static $showAside = false;
-
-    public static $override = [
+    public static array $override = [
         'description' => '',
         'keywords' => '',
         'title' => '',
         'uses_meta' => false,
     ];
 
-    public static function init()
+    public static function init(): void
     {
         $com = Core::getComponent();
 
-        $q = "
-            SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params, t2.postexec
-            FROM module_item t1
-            JOIN module t2 ON t2.module_id=t1.module_id and t2.type = 'site'
-            WHERE t1.active=1
-            ORDER BY t1.npp, t1.item_id
-        ";
-        $rows = DB::assoc($q);
+        $q = '
+            SELECT item_id, module, menu_id, posname, name, params
+            FROM module_item
+            WHERE active=1
+            ORDER BY npp, item_id
+        ';
+        $rows = static::moduleRows(DB::assoc($q), ModuleType::Site);
         $curmenu = Core::menuCurItem();
         foreach ($rows as $row) {
             if (!$row['postexec'] && (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id'])) {
@@ -67,56 +61,68 @@ class Page
         }
     }
 
-    public static function content()
+    public static function content(): string
     {
-        echo self::$content;
+        return self::$content;
     }
 
     /**
-     *
-     * @param string $posname
      * @param string $delimiter (optional = '') разделитель, например: '<hr/>'
      */
-    public static function position($posname, $delimiter = '')
+    public static function position(string $posname, string $delimiter = ''): string
     {
-        if ($posname && !empty(self::$positions[$posname])) {
-            $i = 0;
-
-            $counter = count(self::$positions[$posname]);
-            foreach (self::$positions[$posname] as $mod) {
-                echo $mod;
-                if ($counter-- > 1) {
-                    echo $delimiter;
-                }
-            }
+        if (!$posname || empty(self::$positions[$posname])) {
+            return '';
         }
+        return implode($delimiter, self::$positions[$posname]);
     }
 
-    public static function module($modname)
+    public static function module($modname): false
     {
         return false;
     }
 
-    public static function moduleById($module_id)
+    public static function moduleById(int $module_id): string
     {
-        $q = "SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params
-        FROM module_item t1
-        JOIN module t2 ON t2.module_id=t1.module_id
-        WHERE t1.active=1 AND t1.item_id=" . $module_id;
-        if ($row = DB::result($q)) {
-            $module = new $row['class']($row);
-            echo $module->execute();
+        $q = 'SELECT item_id, module, menu_id, posname, name, params
+        FROM module_item
+        WHERE active=1 AND item_id=' . $module_id;
+        $rows = static::moduleRows(DB::assoc($q));
+        if ($rows) {
+            $module = new $rows[0]['class']($rows[0]);
+            return $module->execute();
         }
+        return '';
+    }
+
+    /**
+     * Adds class and postexec from the modules declared in code, skips the items of unknown modules
+     *
+     * @param ModuleType|null $type
+     */
+    public static function moduleRows(array $rows, ?ModuleType $type = null): array
+    {
+        $out = [];
+        foreach ($rows as $row) {
+            $module = ExtensionRegistry::module((string)$row['module']);
+            if (!$module || ($type !== null && $module['type'] !== $type)) {
+                continue;
+            }
+            $row['class'] = ltrim($row['module'], '\\');
+            $row['postexec'] = $module['postexec'];
+            $out[] = $row;
+        }
+
+        return $out;
     }
 
     /**
      * @param string $file Web path to asset file
      * @param int $idx Priority from highest 0 to lowest 100
      * @param string|null $type css/js - optional, to specify directly what is this asset
-     * @return void
      * @throws \Exception
      */
-    public static function addAsset(string $file, int $idx = 100, string $type = null)
+    public static function addAsset(string $file, int $idx = 100, ?string $type = null): void
     {
         if ('css' === $type || strpos($file, '.css')) {
             static::css($file, $idx);
@@ -129,40 +135,38 @@ class Page
         throw new \Exception("Unknown asset type (css or js?) for $file");
     }
 
-    public static function css($file, $idx = 100)
+    public static function css(string $file, int $idx = 100): void
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return \Simflex\Admin\Page::css($file, $idx);
+            \Simflex\Admin\Page::css($file, $idx);
+            return;
         }
-        $idx = (int)$idx;
         if (empty(self::$css[$idx][md5($file)])) {
-            if (isset(self::$css_check[md5($file)])) {
-                unset(self::$css[self::$css_check[md5($file)]][md5($file)]);
-                unset(self::$css_check[md5($file)]);
+            if (isset(self::$cssCheck[md5($file)])) {
+                unset(self::$css[self::$cssCheck[md5($file)]][md5($file)]);
+                unset(self::$cssCheck[md5($file)]);
             }
-            self::$css_check[md5($file)] = $idx;
+            self::$cssCheck[md5($file)] = $idx;
             self::$css[$idx][md5($file)] = $file;
         }
     }
 
     /**
-     *
      * @param string $file Путь к подключаемому скрипту
      * @param int $idx [optional = 100] Приоритет, 0 - самый высокий, 100 - самый низкий
-     * @return void
      */
-    public static function js($file, $idx = 100)
+    public static function js(string $file, int $idx = 100): void
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return \Simflex\Admin\Page::js($file, $idx);
+            \Simflex\Admin\Page::js($file, $idx);
+            return;
         }
-        $idx = (int)$idx;
         if (empty(self::$js[$idx][md5($file)])) {
-            if (isset(self::$js_check[md5($file)])) {
-                unset(self::$js[self::$js_check[md5($file)]][md5($file)]);
-                unset(self::$js_check[md5($file)]);
+            if (isset(self::$jsCheck[md5($file)])) {
+                unset(self::$js[self::$jsCheck[md5($file)]][md5($file)]);
+                unset(self::$jsCheck[md5($file)]);
             }
-            self::$js_check[md5($file)] = $idx;
+            self::$jsCheck[md5($file)] = $idx;
             self::$js[$idx][md5($file)] = $file;
         }
     }
@@ -170,56 +174,49 @@ class Page
     /**
      * Добавляет JS код в блок подключения скриптов
      * @param string $js inline js code
-     * @param int $idx [optional = 100]
-     * @return void
      */
-    public static function jsInline($js, $idx = 100)
+    public static function jsInline(string $js, int $idx = 100): bool
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
             return false;
         }
-        $idx = (int)$idx;
         self::$js[$idx][md5($js)] = ['type' => 'inline', 'value' => $js];
         return true;
     }
 
-    public static function addMetaRaw($str)
+    public static function addMetaRaw(string $str): void
     {
-        self::$meta_raw .= "$str\n";
+        self::$metaRaw .= "$str\n";
     }
 
-    public static function title()
+    public static function title(): string
     {
         return str_replace(
-                '<br/>',
-                '',
-                htmlspecialchars(self::$seo_title)
-            ) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
+            '<br/>',
+            '',
+            htmlspecialchars(self::$seoTitle)
+        ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
     }
 
-    public static function meta()
+    public static function meta(): string
     {
-        $title = self::$override['title'] ?: self::$seo_title;
+        $title = self::$override['title'] ?: self::$seoTitle;
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
-                'site_name'
-            ) : '');
-        echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
-        echo self::$seo_metatags ? self::$seo_metatags . "\r\n" : '';
-
-        self::metaCSS();
-
-        // self::metaJS();
-
-        echo self::$meta_raw;
-
-        echo '<meta charset="utf-8">', "\r\n";
+            'site_name'
+        ) : '');
+        $html = '<title>' . str_replace('<br/>', '', htmlspecialchars($title)) . $sname . '</title>' . "\r\n";
+        $html .= self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
+        $html .= self::metaCSS();
+        $html .= self::$metaRaw;
+        $html .= '<meta charset="utf-8">' . "\r\n";
 
         if (Container::getConfig()->devMode) {
-            Container::get('debugbar')->renderHead();
+            $html .= Container::get('debugbar')->renderHead();
         }
+        return $html;
     }
 
-    public static function metaCSS()
+    public static function metaCSS(): string
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'css.' : '';
@@ -232,6 +229,7 @@ class Page
                 self::$css[1][] = "/cache/css/$v.min.css";
             }
         }
+        $html = '';
         ksort(self::$css);
         foreach (self::$css as $css_arr) {
             foreach ($css_arr as $css) {
@@ -241,13 +239,15 @@ class Page
                 if ($std && strpos($css, 'http') === false) {
                     $css = "http://$sub$std$css";
                 }
-                echo '<link type="text/css" rel="preload" as="style" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
-                echo '<link type="text/css" rel="stylesheet" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
+                $href = $css . ($v ? '?v=' . $v : '');
+                $html .= '<link type="text/css" rel="preload" as="style" href="' . $href . '" />' . "\r\n";
+                $html .= '<link type="text/css" rel="stylesheet" href="' . $href . '" />' . "\r\n";
             }
         }
+        return $html;
     }
 
-    public static function metaJS()
+    public static function metaJS(): string
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'js.' : '';
@@ -260,11 +260,12 @@ class Page
                 self::$js[1][] = "/cache/js/$v.min.js";
             }
         }
+        $html = '';
         ksort(self::$js);
         foreach (self::$js as $js_arr) {
             foreach ($js_arr as $js) {
                 if (is_array($js) && 'inline' === (string)@$js['type']) {
-                    echo '<script type="text/javascript" defer>', $js['value'], '</script>', "\r\n";
+                    $html .= '<script type="text/javascript" defer>' . $js['value'] . '</script>' . "\r\n";
                     continue;
                 }
                 if ($hasCache && isset($cache[trim($js)])) {
@@ -273,27 +274,30 @@ class Page
                 if ($std && strpos($js, 'http') === false) {
                     $js = "http://$sub$std$js";
                 }
-                echo '<script type="text/javascript" defer src="', $js, $v && strpos(
-                    $js,
-                    'http'
-                ) === false ? '?v=' . $v : '', '"></script>', "\r\n";
+                $src = $js . ($v && strpos($js, 'http') === false ? '?v=' . $v : '');
+                $html .= '<script type="text/javascript" defer src="' . $src . '"></script>' . "\r\n";
             }
         }
 
         if (Container::getConfig()->devMode) {
-            Container::get('debugbar')->render();
+            $html .= Container::get('debugbar')->render();
         }
+        return $html;
     }
 
-    public static function seo($title, $description = '', $keywords = '', $final = false, $metatags = '')
-    {
-        if (!self::$seo_is) {
-            self::$seo_title = $title;
-            self::$seo_description = $description ? $description : self::$seo_description;
-            self::$seo_keywords = $keywords ? $keywords : self::$seo_keywords;
-            self::$seo_metatags = $metatags ? $metatags : self::$seo_metatags;
-            self::$seo_is = $final;
+    public static function seo(
+        string $title,
+        ?string $description = '',
+        ?string $keywords = '',
+        bool $final = false,
+        ?string $metatags = ''
+    ): void {
+        if (!self::$seoIs) {
+            self::$seoTitle = $title;
+            self::$seoDescription = $description ?: self::$seoDescription;
+            self::$seoKeywords = $keywords ?: self::$seoKeywords;
+            self::$seoMetatags = $metatags ?: self::$seoMetatags;
+            self::$seoIs = $final;
         }
     }
-
 }

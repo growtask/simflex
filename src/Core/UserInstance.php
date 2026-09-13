@@ -1,10 +1,6 @@
 <?php
 
-
 namespace Simflex\Core;
-
-use Simflex\Core\type;
-use Simflex\Core\DB;
 
 /**
  * Class UserInstance
@@ -14,30 +10,26 @@ use Simflex\Core\DB;
  */
 class UserInstance
 {
+    public int $id = 0;
+    public string $login = '';
+    public int $roleId = 0;
+    public string $roleName = '';
+    private array $privIds = [];
+    private array $privNames = [];
+    private array|false $info;
+    private string $idName;
+    private string $hashName;
+    private string $dbHashName;
+    private string $remIdName;
+    private string $remHashName;
 
-    public $id = 0;
-    public $login = '';
-    public $role_id = 0;
-    public $role_name = '';
-    private $priv_ids = array();
-    private $priv_names = array();
-    private $info;
-    private $idName;
-    private $hashName;
-    private $dbHashName;
-    private $remIdName;
-    private $remHashName;
-
-    /**
-     *
-     * @param type $idName
-     * @param type $hashName
-     * @param type $dbHashName
-     * @param type $remIdName
-     * @param type $remHashName
-     */
-    public function __construct($idName, $hashName, $dbHashName, $remIdName, $remHashName)
-    {
+    public function __construct(
+        string $idName,
+        string $hashName,
+        string $dbHashName,
+        string $remIdName,
+        string $remHashName
+    ) {
         $this->idName = $idName;
         $this->hashName = $hashName;
         $this->dbHashName = $dbHashName;
@@ -46,7 +38,7 @@ class UserInstance
         $this->login();
     }
 
-    public function logout()
+    public function logout(): void
     {
         $_SESSION[$this->idName] = 0;
         $_SESSION[$this->hashName] = '';
@@ -55,26 +47,27 @@ class UserInstance
         unset($_COOKIE[$this->remIdName]);
         unset($_COOKIE[$this->remHashName]);
     }
-    
-    public function initByModel(\Simflex\Core\Models\User $model){
+
+    public function initByModel(\Simflex\Core\Models\User $model): void
+    {
         $this->id = $model->getId();
         $this->login = $model->login;
-        $this->role_id = $model->roleId;
-        $this->role_name = $model->role->name;
+        $this->roleId = $model->roleId;
+        $this->roleName = $model->role->name;
         $this->login();
     }
 
-    private function login()
+    private function login(): void
     {
         if (!isset($_SESSION[$this->idName]) && isset($_COOKIE[$this->remIdName]) && isset($_COOKIE[$this->remHashName])) {
             $userId_md5 = DB::escape($_COOKIE[$this->remIdName]);
             $hash = DB::escape($_COOKIE[$this->remHashName]);
             $q = "select user_id `id` from `user` where md5(`user_id`) = '$userId_md5' and $this->dbHashName = '$hash'";
-            if ($userId = DB::result($q, "id")) {
+            if ($userId = DB::result($q, 'id')) {
                 $_SESSION[$this->idName] = $userId;
                 $_SESSION[$this->hashName] = $hash;
-                setcookie($this->remIdName, $_COOKIE[$this->remIdName], time() + 60 * 60 * 24 * 3, "/");
-                setcookie($this->remHashName, $_COOKIE[$this->remHashName], time() + 60 * 60 * 24 * 3, "/");
+                setcookie($this->remIdName, $_COOKIE[$this->remIdName], time() + 60 * 60 * 24 * 3, '/');
+                setcookie($this->remHashName, $_COOKIE[$this->remHashName], time() + 60 * 60 * 24 * 3, '/');
             }
         }
 
@@ -91,8 +84,8 @@ class UserInstance
                 if (md5($GLOBALS[self::class]['password']) === $row['password']) {
                     $this->id = (int)$row[$this->idName];
                     $this->login = $row['login'];
-                    $this->role_id = (int)$row['role_id'];
-                    $this->role_name = $row['role_name'];
+                    $this->roleId = (int)$row['role_id'];
+                    $this->roleName = $row['role_name'];
                 }
             }
         }
@@ -102,33 +95,33 @@ class UserInstance
                     SELECT user_id, role_id, login, $this->dbHashName, r.name role_name
                     FROM user u
                     JOIN user_role r USING(role_id)
-                    WHERE user_id=" . (int)$_SESSION[$this->idName] . " AND u.active=1 AND r.active=1
-                ";
+                    WHERE user_id=" . (int)$_SESSION[$this->idName] . ' AND u.active=1 AND r.active=1
+                ';
             $r = DB::query($q);
             if ($row = DB::fetch($r)) {
                 if ($_SESSION[$this->hashName] === $row[$this->dbHashName]) {
                     $this->id = (int)$_SESSION[$this->idName];
                     $this->login = $row['login'];
-                    $this->role_id = (int)$row['role_id'];
-                    $this->role_name = $row['role_name'];
+                    $this->roleId = (int)$row['role_id'];
+                    $this->roleName = $row['role_name'];
                 }
             }
         }
 
         if ($this->id) {
-            $q = "
+            $q = '
                 SELECT priv_id, name
                 FROM user_priv
                 WHERE active=1
                 AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id" . ($this->role_id ? '=' . (int)$this->role_id : " IS NULL") . ")
-                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=" . $this->id . ")
+                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id' . ($this->roleId ? '=' . (int)$this->roleId : ' IS NULL') . ')
+                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=' . $this->id . ')
                 )
-            ";
+            ';
             $r = DB::query($q);
             while ($row = DB::fetch($r)) {
-                $this->priv_ids[(int)$row['priv_id']] = (int)$row['priv_id'];
-                $this->priv_names[$row['name']] = $row['name'];
+                $this->privIds[(int)$row['priv_id']] = (int)$row['priv_id'];
+                $this->privNames[$row['name']] = $row['name'];
             }
         }
     }
@@ -136,18 +129,17 @@ class UserInstance
     /**
      * Возвращает информацию о пользователе
      * @param string|false $field (optional) - если указано, возвращает конкретное поле
-     * @param bool $buffered
      * @return false|array|string
      */
-    public function info($field = false, $buffered = true)
+    public function info(string|false $field = false, bool $buffered = true): mixed
     {
         if (!$this->id) {
             return false;
         }
         if (!isset($this->info) || !$buffered) {
-            $q = "select * from user where user_id = " . $this->id;
+            $q = 'select * from user where user_id = ' . $this->id;
             $this->info = DB::result($q);
-            $this->info['role_name'] = $this->role_name;
+            $this->info['role_name'] = $this->roleName;
         }
         $ret = false;
         if ($field === false) {
@@ -158,25 +150,24 @@ class UserInstance
         return $ret;
     }
 
-    public function privIds()
+    public function privIds(): array
     {
-        return count($this->priv_ids) ? $this->priv_ids : array(0);
+        return count($this->privIds) ? $this->privIds : [0];
     }
 
-    public function privNames()
+    public function privNames(): array
     {
-        return count($this->priv_names) ? $this->priv_names : array('');
+        return count($this->privNames) ? $this->privNames : [''];
     }
 
-    public function ican($priv)
+    public function ican(string|int|bool $priv): array|bool
     {
         if (false === $priv) {
-            return $this->priv_names;
+            return $this->privNames;
         }
         if (is_int($priv)) {
-            return isset($this->priv_ids[$priv]);
+            return isset($this->privIds[$priv]);
         }
-        return isset($this->priv_names[$priv]);
+        return isset($this->privNames[$priv]);
     }
-
 }

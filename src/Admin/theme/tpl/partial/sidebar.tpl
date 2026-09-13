@@ -9,7 +9,7 @@
                 </svg>
             </button>
         </div>
-        <?php \Simflex\Admin\Page::position('menu'); ?>
+        <?= \Simflex\Admin\Page::position('menu') ?>
         <div class="sidebar__bottom">
             <p class="sidebar__bottom-text">Simflex CMS v<?= getSimflexVersion() ?></p>
             <button class="sidebar__bottom-btn modal-help-open BtnSecondaryMonoSm">

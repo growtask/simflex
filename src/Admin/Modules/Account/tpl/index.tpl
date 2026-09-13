@@ -31,11 +31,11 @@
         </div>
     </div>
     <div class="content__body" data-simplebar>
-        <?php \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
+        <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
         <label class="data-point">
             Роль
             <div class="form-control form-control--sm">
-                <input value="<?= $data['role_name'] ?>"
+                <input value="<?= htmlspecialchars((string)$data['role_name']) ?>"
                        disabled
                        placeholder="Роль"
                        type="text"
@@ -45,7 +45,7 @@
         <label class="data-point">
             Логин
             <div class="form-control form-control--sm">
-                <input value="<?= $data['login'] ?>"
+                <input value="<?= htmlspecialchars((string)$data['login']) ?>"
                        disabled
                        placeholder="Логин"
                        type="text"
@@ -56,7 +56,7 @@
             Имя
             <div class="form-control form-control--sm">
                 <input name="name"
-                       value="<?= $data['name'] ?>"
+                       value="<?= htmlspecialchars((string)$data['name']) ?>"
                        placeholder="Имя"
                        type="text"
                        class="form-control__input">
@@ -66,7 +66,7 @@
             E-mail
             <div class="form-control form-control--sm">
                 <input name="email"
-                       value="<?= $data['email'] ?>"
+                       value="<?= htmlspecialchars((string)$data['email']) ?>"
                        placeholder="E-mail"
                        type="email"
                        class="form-control__input">

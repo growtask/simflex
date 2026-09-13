@@ -3,91 +3,85 @@
 namespace Simflex\Core\Cron;
 
 use Exception;
-use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
 use Simflex\Core\DI\DIException;
 use Simflex\Core\DI\Injector;
 use Simflex\Core\Log;
-use Simflex\Core\Models\Cron;
+use Simflex\Core\Models\Cron as CronModel;
 use Simflex\Core\Models\CronLog;
 use Simflex\Core\Time;
+use Throwable;
 
 class Cron
 {
     /**
-     * @var array|Cron[]
+     * @param string|null $jobKey Run only this job (key in provider/cron.php) right now, regardless of its
+     *                            schedule and activity. All the active jobs on schedule when null
      */
-    protected array $jobs = [];
-
-    /**
-     * CronBootstrap constructor.
-     * @param int|null $jobId
-     * @throws Exception
-     */
-    public function __construct(protected ?int $jobId)
+    public function __construct(protected ?string $jobKey = null)
     {
-        $where = $jobId ? ['id' => $jobId] : [];
-        $this->jobs = Cron::find(array_merge($where, ['active' => 1]));
     }
 
     /**
      * Execute cron jobs
-     * @return void
+     * @throws Exception
      */
     public function execute(): void
     {
-        foreach ($this->jobs as $job) {
-            try {
-                $this->runJob($job);
-                CronLog::insertStatic([
-                    'cron_id' => $job->id,
-                    'datetime' => Time::mysql(time()),
-                    'result' => 'ok',
-                ]);
-            } catch (Exception $ex) {
-                Log::error('Cron job {jobId} failed: {error}', ['jobId' => $job->id, 'error' => $ex->getMessage()]);
-                CronLog::insertStatic([
-                    'cron_id' => $job->id,
-                    'datetime' => Time::mysql(time()),
-                    'result' => 'failed (' . $ex->getMessage() . ')',
-                ]);
+        CronRegistry::sync();
+
+        if ($this->jobKey !== null) {
+            $job = CronRegistry::job($this->jobKey);
+            if (!$job) {
+                throw new Exception("Cron job {$this->jobKey} is not declared in provider/cron.php");
             }
+            $this->runAndLog($this->jobKey, $job);
+            return;
         }
 
-        // delete old logs
-        if ($this->testTiming('30 0 * * *')) {
-            CronLog::bulkDelete('adddate(datetime, interval 2 month) < now()');
+        foreach (CronModel::find(['active' => 1]) as $row) {
+            $job = CronRegistry::job($row->job);
+            if ($job && $this->testTiming($row->timing)) {
+                $this->runAndLog($row->job, $job);
+            }
         }
+    }
+
+    protected function runAndLog(string $key, CronJob $job): void
+    {
+        try {
+            $this->runJob($job);
+            $result = 'ok';
+        } catch (Throwable $ex) {
+            Log::error('Cron job {job} failed: {error}', ['job' => $key, 'error' => $ex->getMessage()]);
+            $result = 'failed (' . $ex->getMessage() . ')';
+        }
+
+        CronLog::insertStatic([
+            'job' => $key,
+            'datetime' => Time::mysql(time()),
+            'result' => mb_substr($result, 0, 2047),
+        ]);
     }
 
     /**
      * Run a cron job
-     * @param Cron $job Cron job
-     * @return void
      * @throws DIException
      * @throws ReflectionException
      */
-    protected function runJob(Cron $job): void
+    protected function runJob(CronJob $job): void
     {
-        if (!$this->testTiming($job->timing)) {
-            return;
-        }
-
-        $class = new ReflectionClass($job->class_fqn);
-        $method = $class->getMethod($job->action);
+        [$class, $action] = $job->handler;
+        $method = new ReflectionMethod($class, $action);
 
         if ($method->isStatic()) {
-            $method->invoke(null, ...Injector::resolve($method, $job->cparams));
+            $method->invoke(null, ...$job->params);
             return;
         }
 
-        $args = [];
-        if ($ctor = $class->getConstructor()) {
-            $args = Injector::resolve($ctor);
-        }
-
-        $instance = $class->newInstance(...$args);
-        $method->invoke($instance, $job->cparams);
+        $instance = new $class(...Injector::resolveClass($class));
+        $method->invoke($instance, ...$job->params);
     }
 
     /**

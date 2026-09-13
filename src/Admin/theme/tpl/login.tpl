@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="<?=asset('css/styles.min.css');?>" />
         <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
+        <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
         <title>Simflex Admin</title>
     </head>
@@ -15,7 +16,7 @@
                 <div class="login__logo">
                     <img class="login__logo-img" src="<?=asset('img/logo.svg')?>" alt="" />
                 </div>
-                <form class="form login-form" action="/admin/login/?r=<?php echo urlencode($back) ?>">
+                <form class="form login-form" action="<?= \Simflex\Admin\Core::url('login/') ?>?r=<?php echo urlencode($back) ?>">
                     <div class="login-form__text">
                         <h4 class="login-form__title">Вход в панель управления</h4>
                     </div>

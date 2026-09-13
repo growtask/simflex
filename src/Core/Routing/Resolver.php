@@ -4,11 +4,10 @@ namespace Simflex\Core\Routing;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\Container;
-use Simflex\Core\Routing\Route;
 
 class Resolver
 {
-    protected $menuByLink = [];
+    protected array $menuByLink = [];
 
     public function resolve(string|array $routesFile): Route
     {
@@ -19,7 +18,7 @@ class Resolver
         }
 
         $request = Container::getRequest();
-        if ($route =& $routes[trim($request->getPath(), '/')]) {
+        if ($route = & $routes[trim($request->getPath(), '/')]) {
             return static::makeRoute($route, trim($request->getPath(), '/'));
         }
 
@@ -34,7 +33,7 @@ class Resolver
         }
 
         foreach (array_reverse($uris) as $path) {
-            if ($route =& $routes[$path]) {
+            if ($route = & $routes[$path]) {
                 return static::makeRoute($route, $path);
             }
         }
@@ -51,11 +50,7 @@ class Resolver
         throw new \Exception("Can't resolve route {$request->getPath()}");
     }
 
-    /**
-     * @param array $menuByLink
-     * @return Resolver
-     */
-    public function setMenuByLink(array $menuByLink): Resolver
+    public function setMenuByLink(array $menuByLink): static
     {
         $this->menuByLink = $menuByLink;
         return $this;
@@ -87,10 +82,6 @@ class Resolver
         return ['class' => $class, 'path' => $path];
     }
 
-    /**
-     * @param string|array|Route $route
-     * @return Route
-     */
     protected static function makeRoute(array|Route|string $route, string $baseUri): Route
     {
         if (is_string($route)) {

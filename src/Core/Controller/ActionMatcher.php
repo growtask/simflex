@@ -3,7 +3,6 @@
 namespace Simflex\Core\Controller;
 
 use Simflex\Core\Container;
-use Simflex\Core\Log;
 
 /**
  * Combines Action and method name.
@@ -20,8 +19,7 @@ class ActionMatcher
     public function __construct(
         public Action $action,
         public string $methodName
-    )
-    {
+    ) {
     }
 
     /**
@@ -42,7 +40,6 @@ class ActionMatcher
 
     /**
      * Attempt matching against the current path
-     * @return bool
      */
     public function match(): bool
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\DB\Schema\Params;
 
 class IndexParams

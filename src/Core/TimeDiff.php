@@ -1,26 +1,19 @@
 <?php
 
-
 namespace Simflex\Core;
-
 
 use Simflex\Core\Helpers\Declension;
 
 class TimeDiff
 {
+    private \DateInterval $value;
 
-    private $value;
-
-    /**
-     *
-     * @param \DateInterval $value
-     */
     public function __construct(\DateInterval $value)
     {
         $this->value = $value;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->value->days;
     }
@@ -28,7 +21,6 @@ class TimeDiff
     /**
      * @see http://php.net/manual/ru/dateinterval.format.php
      * @param string $format %d - дни, %Y - года, %H - часы и т.п.
-     * @return string
      */
     public function format(string $format): string
     {
@@ -53,12 +45,8 @@ class TimeDiff
         return implode(' ', $ret);
     }
 
-    /**
-     * @return \DateInterval
-     */
     public function getRawDateInterval(): \DateInterval
     {
         return $this->value;
     }
-
 }

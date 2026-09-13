@@ -13,7 +13,7 @@ class CliRequest extends Request
         // set parameters for CLI request
         $_SERVER['REQUEST_URI'] = '/';
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $_SERVER['DOCUMENT_ROOT'] = SF_ROOT_PATH;
+        $_SERVER['DOCUMENT_ROOT'] = SF_PUBLIC_PATH;
         $_SERVER['HTTP_HOST'] = 'localhost';
         $_SERVER['REQUEST_METHOD'] = 'GET';
 

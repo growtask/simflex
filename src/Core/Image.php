@@ -1,58 +1,58 @@
 <?php
 
-
 namespace Simflex\Core;
-
-
-use Simflex\Core\named;
-use Simflex\Core\PlugFS;
-use Simflex\Core\type;
-use Simflex\Core\File;
 
 class Image extends File
 {
-
-    public $path_base = 'images';
-    protected $uploadedFilePath;
+    public string $pathBase = 'images';
+    protected string $uploadedFilePath;
 
     /**
-     *
-     * @param type $path
-     * @param type $sizes
+     * @var array<string, string> subdir => "WxH" или "WxHx1" (с обрезкой)
      */
-    public function __construct($path, $sizes = array())
+    public array $sizes = [];
+
+    /**
+     * @var \GdImage|string|null GD-изображение; для SVG - исходный XML
+     */
+    protected \GdImage|string|false|null $img = null;
+
+    /**
+     * @param string $path
+     * @param array $sizes subdir => "WxH"
+     */
+    public function __construct($path, $sizes = [])
     {
         parent::__construct($path);
-        $this->sizes = is_array($sizes) ? $sizes : array();
+        $this->sizes = is_array($sizes) ? $sizes : [];
         $this->sizes['source'] = '2000x10000';
-        if (!in_array('90x90', array($this->sizes))) {
+        // preview/ используется админкой (FieldImage) для миниатюр, поэтому создается всегда
+        if (!isset($this->sizes['preview'])) {
             $this->sizes['preview'] = '90x90';
         }
     }
 
-    public function loadPost($fileName)
+    public function loadPost(string $fileName): void
     {
         if (is_uploaded_file($this->uploadedFilePath = $_FILES[$fileName]['tmp_name'])) {
-            //print_r($_FILES);
-            //echo $_FILES[$fileName]['type'];
             switch ($_FILES[$fileName]['type']) {
-                case 'image/gif' :
+                case 'image/gif':
                     $this->type = 'gif';
                     $this->img = imagecreatefromgif($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/jpeg' :
+                case 'image/jpeg':
                     $this->type = 'jpg';
                     $this->img = imagecreatefromjpeg($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/pjpeg' :
+                case 'image/pjpeg':
                     $this->type = 'jpg';
                     $this->img = imagecreatefromjpeg($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/webp' :
+                case 'image/webp':
                     $this->type = 'webp';
                     $this->img = imagecreatefromwebp($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/png' :
+                case 'image/png':
                     $this->type = 'png';
                     $this->img = imagecreatefrompng($_FILES[$fileName]['tmp_name']);
                     imageAlphaBlending($this->img, false);
@@ -66,7 +66,7 @@ class Image extends File
         }
     }
 
-    public function convertTypeToStr()
+    public function convertTypeToStr(): void
     {
         if ($this->type == IMAGETYPE_JPEG) {
             $this->type = 'jpg';
@@ -76,12 +76,12 @@ class Image extends File
             $this->type = 'png';
         } elseif ($this->type == IMAGETYPE_WEBP) {
             $this->type = 'webp';
-        }  elseif ($this->type == IMAGETYPE_SVG) {
+        } elseif ($this->type == IMAGETYPE_SVG) {
             $this->type = 'svg';
         }
     }
 
-    public function getTypeStr()
+    public function getTypeStr(): string|false
     {
         if ((string)$this->type === (string)(int)$this->type) {
             $type = '';
@@ -97,8 +97,16 @@ class Image extends File
         return $this->type;
     }
 
-    public function save()
+    public function save(): void
     {
+        if (is_string($this->img)) {
+            // SVG - векторное изображение, масштабирование не требуется: кладем исходник во все размеры
+            copy($this->uploadedFilePath, $this->outputMkDirReturnFilePath('raw'));
+            foreach ($this->sizes as $subdir => $_) {
+                file_put_contents($this->outputMkDirReturnFilePath($subdir), $this->img);
+            }
+            return;
+        }
         if ($this->img) {
             copy($this->uploadedFilePath, $this->outputMkDirReturnFilePath('raw'));
             $img = null;
@@ -147,7 +155,7 @@ class Image extends File
         }
     }
 
-    protected function outputMkDirReturnFilePath($subdir)
+    protected function outputMkDirReturnFilePath($subdir): string
     {
         $typeStr = $this->getTypeStr($this->type);
         $name = $this->name . '.' . $typeStr;
@@ -163,23 +171,24 @@ class Image extends File
         return $this->path . $folder . $name;
     }
 
-    private function output($img, $subdir)
+    private function output($img, $subdir): ?bool
     {
         $typeStr = $this->getTypeStr($this->type);
         $file = $this->outputMkDirReturnFilePath($subdir);
         switch ($typeStr) {
-            case 'gif' :
+            case 'gif':
                 return imagegif($img, $file);
-            case 'jpg' :
+            case 'jpg':
                 return imagejpeg($img, $file, 100);
-            case 'png' :
+            case 'png':
                 return imagepng($img, $file);
-            case 'webp' :
+            case 'webp':
                 return imagewebp($img, $file);
         }
+        return null;
     }
 
-    public function delete($name)
+    public function delete($name): bool|int
     {
         parent::delete($name);
         $success = true;
@@ -197,9 +206,8 @@ class Image extends File
 
     /**
      * Загружает изображение в свой буфер
-     * @param string $filename
      */
-    public function load($filename, $leaveName = false)
+    public function load(string $filename, $leaveName = false): void
     {
 
         $image_info = getimagesize($filename);
@@ -214,18 +222,20 @@ class Image extends File
 
             $this->img = imagecreatefrompng($filename);
         }
+        // исходник для raw/ в save()
+        $this->uploadedFilePath = $filename;
 
         if ($leaveName) {
-            $this->name = PlugFS::fileName($filename);
+            $this->name = pathinfo($filename, PATHINFO_FILENAME);
         }
     }
 
-    protected function getWidth()
+    protected function getWidth(): int
     {
         return imagesx($this->img);
     }
 
-    protected function getHeight()
+    protected function getHeight(): int
     {
         return imagesy($this->img);
     }
@@ -234,7 +244,7 @@ class Image extends File
      * Изменяет размер изображения, подгоняет по высоте, сохраняя пропорции
      * @param int $height
      */
-    public function resizeToHeight($height)
+    public function resizeToHeight($height): void
     {
 
         $ratio = $height / $this->getHeight();
@@ -246,7 +256,7 @@ class Image extends File
      * Изменяет размер изображения, подгоняет по ширине, сохраняя пропорции
      * @param int $width
      */
-    public function resizeToWidth($width)
+    public function resizeToWidth($width): void
     {
         $ratio = $width / $this->getWidth();
         $height = $this->getheight() * $ratio;
@@ -257,7 +267,7 @@ class Image extends File
      * Изменяет размер изображения, сохраняя пропорции
      * @param int $scale Пропорция в процентах. Пример: $scale = 50, изображение уменьшится в 2 раза
      */
-    public function scale($scale)
+    public function scale($scale): void
     {
         $width = $this->getWidth() * $scale / 100;
         $height = $this->getheight() * $scale / 100;
@@ -269,7 +279,7 @@ class Image extends File
      * @param int $width
      * @param int $height
      */
-    public function resize($width, $height)
+    public function resize($width, $height): void
     {
         $new_image = imagecreatetruecolor($width, $height);
         imagecopyresampled($new_image, $this->img, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
@@ -279,11 +289,11 @@ class Image extends File
     /**
      *
      * @param string $filename
-     * @param named constant (optional) $image_type (IMAGETYPE_JPEG, IMAGETYPE_GIF, ...)
+     * @param int|false $image_type (optional) IMAGETYPE_JPEG, IMAGETYPE_GIF, ...
      * @param int (optional) $compression Процент сжатия качества
      * @param int (optional) $permissions Только для *nix систем
      */
-    public function saveAs($filename, $image_type = false, $compression = 100, $permissions = null)
+    public function saveAs($filename, $image_type = false, $compression = 100, $permissions = null): void
     {
 
         if ($image_type) {
@@ -300,5 +310,4 @@ class Image extends File
             chmod($filename, $permissions);
         }
     }
-
 }
