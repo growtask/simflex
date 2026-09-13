@@ -14,28 +14,21 @@ use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\ParamDefinition;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 use Simflex\Extensions\Content\Admin\AdminContent;
 
 class Content extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'content';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'content',
             class: AdminContent::class,
             fields: [
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             width: '104',
@@ -46,10 +39,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'content_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -62,10 +53,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'template_id',
-                    label: 'Шаблон',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Шаблон',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -80,10 +69,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '107',
@@ -92,10 +79,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'pid',
-                    label: 'Родитель',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Родитель',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -109,20 +94,16 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'date',
-                    label: 'Дата',
                     class: FieldDate::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Дата',
                     params: [
                         'main' => new FieldParams(),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'title',
-                    label: 'Заголовок',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Заголовок',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -134,10 +115,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'alias',
-                    label: 'Алиас',
                     class: FieldAlias::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Алиас',
                     params: [
                         'main' => new FieldParams(
                             source: 'title',
@@ -146,10 +125,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'path',
-                    label: 'Путь',
                     class: FieldPath::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Путь',
                     params: [
                         'main' => new FieldParams(
                             readonly: true,
@@ -158,20 +135,16 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'short',
-                    label: 'Коротко',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Коротко',
                     params: [
                         'main' => new FieldParams(),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'text',
-                    label: 'Текст',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Текст',
                     params: [
                         'main' => new FieldParams(
                             editorFull: true,
@@ -180,10 +153,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'params',
-                    label: 'Параметры',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Параметры',
                     params: [
                         'main' => new FieldParams(
                             hidden: true,
@@ -192,10 +163,8 @@ class Content extends Table
                 ),
                 new FieldDefinition(
                     name: 'photo',
-                    label: 'Фото',
                     class: FieldImage::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Фото',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,

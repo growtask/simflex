@@ -7,26 +7,19 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class Seo extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'seo';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'seo',
             fields: [
                 new FieldDefinition(
                     name: 'seo_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -40,10 +33,8 @@ class Seo extends Table
                 ),
                 new FieldDefinition(
                     name: 'seo_pid',
-                    label: 'PID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'PID',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -57,10 +48,8 @@ class Seo extends Table
                 ),
                 new FieldDefinition(
                     name: 'link',
-                    label: 'Ссылка',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Ссылка',
                     params: [
                         'main' => new FieldParams(
                             width: '300',
@@ -71,10 +60,8 @@ class Seo extends Table
                 ),
                 new FieldDefinition(
                     name: 'title',
-                    label: 'Заголовок',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Заголовок',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -85,20 +72,16 @@ class Seo extends Table
                 ),
                 new FieldDefinition(
                     name: 'description',
-                    label: 'Описание',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Описание',
                     params: [
                         'main' => new FieldParams(),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'keywords',
-                    label: 'Keywords',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Keywords',
                     params: [
                         'main' => new FieldParams(),
                     ],

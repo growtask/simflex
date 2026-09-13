@@ -8,29 +8,22 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class Cron extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'cron';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'cron',
             privAdd: 1,
             privEdit: 1,
             privDelete: 1,
             fields: [
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             width: '85',
@@ -40,10 +33,8 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -55,10 +46,9 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'timing',
-                    label: 'Время',
                     class: FieldString::class,
+                    label: 'Время',
                     help: 'Как в *nix crontab. Например */10 * * * *',
-                    placeholder: '',
                     params: [
                         'main' => new FieldParams(
                             width: '160',
@@ -68,10 +58,8 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Название',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Название',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -80,10 +68,9 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'ext_id',
-                    label: 'Расширение',
                     class: FieldInt::class,
+                    label: 'Расширение',
                     help: 'ID компонента',
-                    placeholder: '',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -97,10 +84,9 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'plugin_name',
-                    label: 'Плагин',
                     class: FieldString::class,
+                    label: 'Плагин',
                     help: 'Название класса плагина',
-                    placeholder: '',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -110,10 +96,9 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'action',
-                    label: 'Действие',
                     class: FieldString::class,
+                    label: 'Действие',
                     help: 'Метод компонента или плагина',
-                    placeholder: '',
                     params: [
                         'main' => new FieldParams(
                             width: '180',
@@ -123,10 +108,8 @@ class Cron extends Table
                 ),
                 new FieldDefinition(
                     name: 'cparams',
-                    label: 'Параметры',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Параметры',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,

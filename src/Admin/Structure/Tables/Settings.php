@@ -9,27 +9,20 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class Settings extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'settings';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'settings',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(
                     name: 'alias',
-                    label: 'Алиас',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Алиас',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -40,10 +33,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Наименование',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Наименование',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -55,10 +46,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '107',
@@ -68,10 +57,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'setting_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -84,10 +71,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'value',
-                    label: 'Значение',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Значение',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -96,10 +81,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'type',
-                    label: 'Тип',
                     class: FieldEnum::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Тип',
                     params: [
                         'main' => new FieldParams(
                             defaultValue: 'string',
@@ -109,10 +92,8 @@ class Settings extends Table
                 ),
                 new FieldDefinition(
                     name: 'enum_values',
-                    label: 'Значения enum',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Значения enum',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,

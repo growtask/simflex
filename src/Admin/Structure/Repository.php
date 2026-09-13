@@ -5,7 +5,6 @@ namespace Simflex\Admin\Structure;
 use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\ParamDefinition;
-use Simflex\Admin\Structure\Data\TableDefinition;
 
 class Repository
 {
@@ -130,7 +129,7 @@ class Repository
         $tables = [];
         foreach (static::tableClasses() as $class) {
             $instance = new $class();
-            $tables[$instance->name()] = static::normalizeTable($instance->definition(), $instance->name());
+            $tables[$instance->name] = $instance->toArray();
         }
 
         static::$tables = $tables;
@@ -188,14 +187,6 @@ class Repository
 
         sort($files);
         return $files;
-    }
-
-    protected static function normalizeTable(TableDefinition $table, string $name): array
-    {
-        $table = $table->toArray();
-        $table['name'] = $name;
-
-        return $table;
     }
 
     protected static function normalizeField(FieldDefinition $field, string $table): array

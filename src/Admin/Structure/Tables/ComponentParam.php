@@ -8,27 +8,20 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldTypeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class ComponentParam extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'component_param';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'component_param',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(
                     name: 'cp_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -40,10 +33,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '80',
@@ -52,10 +43,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'component_id',
-                    label: 'Компонент',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Компонент',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -69,10 +58,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'param_pid',
-                    label: 'PID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'PID',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -86,10 +73,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'position',
-                    label: 'Позиция',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Позиция',
                     params: [
                         'main' => new FieldParams(
                             width: '120',
@@ -98,10 +83,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'field_type',
-                    label: 'Тип поля',
                     class: FieldTypeSelect::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Тип поля',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -112,10 +95,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Название',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Название',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -124,10 +105,8 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'label',
-                    label: 'Ярлык',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Ярлык',
                     params: [
                         'main' => new FieldParams(
                             width: 1,
@@ -136,20 +115,16 @@ class ComponentParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'help',
-                    label: 'Подсказка',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Подсказка',
                     params: [
                         'main' => new FieldParams(),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'params',
-                    label: 'Параметры',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Параметры',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,

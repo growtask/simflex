@@ -8,26 +8,19 @@ use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class UserRole extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'user_role';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'user_role',
             fields: [
                 new FieldDefinition(
                     name: 'role_id',
-                    label: 'ID',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -40,10 +33,8 @@ class UserRole extends Table
                 ),
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             width: '104',
@@ -54,10 +45,8 @@ class UserRole extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '107',
@@ -67,29 +56,25 @@ class UserRole extends Table
                 ),
                 new FieldDefinition(
                     name: 'priv_id',
-                    label: 'Привилегия',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Привилегия',
                     params: [
                         'main' => new FieldParams(
                             width: '140',
                             required: true,
                             filter: true,
-                            fk: 'user_priv.priv_id.name',
                             isFk: true,
                             fkTable: 'user_priv',
                             fkKey: 'priv_id',
                             fkLabel: 'name',
+                            fk: 'user_priv.priv_id.name',
                         ),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Название',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Название',
                     params: [
                         'main' => new FieldParams(
                             width: '1',

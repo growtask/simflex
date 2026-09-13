@@ -8,26 +8,19 @@ use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class Module extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'module';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'module',
             fields: [
                 new FieldDefinition(
                     name: 'module_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -39,10 +32,8 @@ class Module extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Наименование',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Наименование',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -53,10 +44,8 @@ class Module extends Table
                 ),
                 new FieldDefinition(
                     name: 'class',
-                    label: 'Класс',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Класс',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -66,10 +55,8 @@ class Module extends Table
                 ),
                 new FieldDefinition(
                     name: 'postexec',
-                    label: 'Выполнять после контента',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Выполнять после контента',
                     params: [
                         'main' => new FieldParams(
                             width: '250',
@@ -79,10 +66,8 @@ class Module extends Table
                 ),
                 new FieldDefinition(
                     name: 'type',
-                    label: 'Тип',
                     class: FieldEnum::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Тип',
                     params: [
                         'main' => new FieldParams(
                             width: '100',

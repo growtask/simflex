@@ -10,27 +10,20 @@ use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\ParamDefinition;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class ModuleItem extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'module_item';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'module_item',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             width: '104',
@@ -41,10 +34,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'item_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -57,10 +48,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '107',
@@ -70,10 +59,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Наименование',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Наименование',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
@@ -83,10 +70,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'posname',
-                    label: 'Позиция',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Позиция',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -96,10 +81,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'module_id',
-                    label: 'Модуль',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Модуль',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -114,10 +97,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'menu_id',
-                    label: 'Меню',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Меню',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -132,10 +113,8 @@ class ModuleItem extends Table
                 ),
                 new FieldDefinition(
                     name: 'params',
-                    label: 'Параметры',
                     class: FieldText::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Параметры',
                     params: [
                         'main' => new FieldParams(
                             hidden: true,

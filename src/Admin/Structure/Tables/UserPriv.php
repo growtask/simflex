@@ -8,26 +8,19 @@ use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class UserPriv extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'user_priv';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'user_priv',
             fields: [
                 new FieldDefinition(
                     name: 'priv_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -40,10 +33,8 @@ class UserPriv extends Table
                 ),
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             width: '85',
@@ -54,10 +45,8 @@ class UserPriv extends Table
                 ),
                 new FieldDefinition(
                     name: 'npp',
-                    label: '№ п/п',
                     class: FieldNPP::class,
-                    help: '',
-                    placeholder: '',
+                    label: '№ п/п',
                     params: [
                         'main' => new FieldParams(
                             width: '80',
@@ -67,10 +56,8 @@ class UserPriv extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Название',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Название',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -81,10 +68,8 @@ class UserPriv extends Table
                 ),
                 new FieldDefinition(
                     name: 'comment',
-                    label: 'Комментарий',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Комментарий',
                     params: [
                         'main' => new FieldParams(
                             width: '1',

@@ -8,26 +8,19 @@ use Simflex\Admin\Fields\FieldPassword;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
 
 class User extends Table
 {
-    public function name(): string
+    public function __construct()
     {
-        return 'user';
-    }
-
-    public function definition(): TableDefinition
-    {
-        return new TableDefinition(
+        parent::__construct(
+            name: 'user',
             fields: [
                 new FieldDefinition(
                     name: 'user_id',
-                    label: 'ID',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'ID',
                     params: [
                         'main' => new FieldParams(
                             pk: true,
@@ -41,10 +34,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'active',
-                    label: 'Активно',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Активно',
                     params: [
                         'main' => new FieldParams(
                             defaultValue: '0',
@@ -54,10 +45,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'role_id',
-                    label: 'Роль',
                     class: FieldInt::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Роль',
                     params: [
                         'main' => new FieldParams(
                             required: true,
@@ -71,10 +60,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'login',
-                    label: 'Логин',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Логин',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
@@ -86,20 +73,16 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'password',
-                    label: 'Пароль',
                     class: FieldPassword::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Пароль',
                     params: [
                         'main' => new FieldParams(),
                     ],
                 ),
                 new FieldDefinition(
                     name: 'hash',
-                    label: 'Хеш',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Хеш',
                     params: [
                         'main' => new FieldParams(
                             hidden: true,
@@ -108,10 +91,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'hash_admin',
-                    label: 'Admin. Хеш',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Admin. Хеш',
                     params: [
                         'main' => new FieldParams(
                             hidden: true,
@@ -120,10 +101,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'email',
-                    label: 'Email',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Email',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
@@ -134,10 +113,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'name',
-                    label: 'Имя',
                     class: FieldString::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Имя',
                     params: [
                         'main' => new FieldParams(
                             width: '140',
@@ -147,10 +124,8 @@ class User extends Table
                 ),
                 new FieldDefinition(
                     name: 'in_mailing',
-                    label: 'Подписан на рассылку',
                     class: FieldBool::class,
-                    help: '',
-                    placeholder: '',
+                    label: 'Подписан на рассылку',
                     params: [
                     ],
                 ),
