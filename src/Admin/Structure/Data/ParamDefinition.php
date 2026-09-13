@@ -8,7 +8,7 @@ class ParamDefinition
      * @param array{main?: FieldParams} $params
      */
     public function __construct(
-        public readonly ?string $name = null,
+        public readonly string $name,
         public readonly ?string $label = null,
         public readonly ?string $class = null,
         public readonly int|string|null $paramId = null,
@@ -17,20 +17,6 @@ class ParamDefinition
         public readonly string $defaultValue = '',
         public readonly array $params = [],
     ) {
-    }
-
-    public static function fromArray(array $data, ?string $name = null): self
-    {
-        return new self(
-            name: $data['name'] ?? $name,
-            label: $data['label'] ?? null,
-            class: $data['class'] ?? $data['type'] ?? null,
-            paramId: $data['param_id'] ?? null,
-            paramPid: $data['param_pid'] ?? '',
-            pos: (string)($data['pos'] ?? 'left'),
-            defaultValue: (string)($data['default_value'] ?? ''),
-            params: $data['params'] ?? [],
-        );
     }
 
     public function toArray(): array

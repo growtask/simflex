@@ -2,35 +2,52 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Fields\FieldAlias;
+use Simflex\Admin\Fields\FieldBool;
+use Simflex\Admin\Fields\FieldDate;
+use Simflex\Admin\Fields\FieldImage;
+use Simflex\Admin\Fields\FieldInt;
+use Simflex\Admin\Fields\FieldNPP;
+use Simflex\Admin\Fields\FieldPath;
+use Simflex\Admin\Fields\FieldString;
+use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\ParamDefinition;
 use Simflex\Admin\Structure\Data\TableDefinition;
 use Simflex\Admin\Structure\Table;
+use Simflex\Extensions\Content\Admin\AdminContent;
 
 class Content extends Table
 {
-    public static function name(): string
+    public function name(): string
     {
         return 'content';
     }
 
-    public static function definition(): TableDefinition
+    public function definition(): TableDefinition
     {
         return new TableDefinition(
-            name: 'content',
-            orderBy: '',
-            orderDesc: false,
-            privAdd: null,
-            privEdit: null,
-            privDelete: null,
-            class: \Simflex\Extensions\Content\Admin\AdminContent::class,
+            class: AdminContent::class,
             fields: [
-                'content_id' => new FieldDefinition(
+                new FieldDefinition(
+                    name: 'active',
+                    label: 'Активно',
+                    class: FieldBool::class,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => new FieldParams(
+                            width: '104',
+                            defaultValue: '1',
+                            filter: true,
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
                     name: 'content_id',
                     label: 'ID',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
-                    npp: 1,
+                    class: FieldInt::class,
                     help: '',
                     placeholder: '',
                     params: [
@@ -39,42 +56,49 @@ class Content extends Table
                             e2n: true,
                             hidden: true,
                             width: '60',
-                            defaultValue: '',
-                            required: false,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            isFk: false,
-                            fkTable: '',
-                            fkKey: '',
-                            fkLabel: '',
-                            fkIsPid: false,
                         ),
                     ],
                 ),
-                'pid' => new FieldDefinition(
-                    name: 'pid',
-                    label: 'Родитель',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
-                    npp: 3,
+                new FieldDefinition(
+                    name: 'template_id',
+                    label: 'Шаблон',
+                    class: FieldInt::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
                             e2n: true,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
+                            width: '176',
+                            filter: true,
+                            isFk: true,
+                            fkTable: 'content_template',
+                            fkKey: 'template_id',
+                            fkLabel: 'template_name',
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
+                    name: 'npp',
+                    label: '№ п/п',
+                    class: FieldNPP::class,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => new FieldParams(
+                            width: '107',
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
+                    name: 'pid',
+                    label: 'Родитель',
+                    class: FieldInt::class,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => new FieldParams(
+                            e2n: true,
                             isFk: true,
                             fkTable: 'content',
                             fkKey: 'content_id',
@@ -83,360 +107,183 @@ class Content extends Table
                         ),
                     ],
                 ),
-                'active' => new FieldDefinition(
-                    name: 'active',
-                    label: 'Активно',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
-                    npp: 0,
-                    help: '',
-                    placeholder: '',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '104',
-                            defaultValue: '1',
-                            required: false,
-                            filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                        ),
-                    ],
-                ),
-                'date' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'date',
                     label: 'Дата',
-                    class: \Simflex\Admin\Fields\FieldDate::class,
-                    npp: 4,
+                    class: FieldDate::class,
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
-                        ),
+                        'main' => new FieldParams(),
                     ],
                 ),
-                'title' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'title',
                     label: 'Заголовок',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 5,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
                             width: '1',
-                            defaultValue: '',
                             required: true,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
                             widthMob: '1',
-                            pos: '',
-                            posGroup: '',
                         ),
                     ],
                 ),
-                'alias' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'alias',
                     label: 'Алиас',
-                    class: \Simflex\Admin\Fields\FieldAlias::class,
-                    npp: 6,
+                    class: FieldAlias::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
                             source: 'title',
                         ),
                     ],
                 ),
-                'path' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'path',
                     label: 'Путь',
-                    class: \Simflex\Admin\Fields\FieldPath::class,
-                    npp: 7,
+                    class: FieldPath::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
                             readonly: true,
-                            styleCell: '',
                         ),
                     ],
                 ),
-                'short' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'short',
                     label: 'Коротко',
-                    class: \Simflex\Admin\Fields\FieldText::class,
-                    npp: 8,
+                    class: FieldText::class,
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
-                            editorMini: false,
-                            editorFull: false,
-                        ),
+                        'main' => new FieldParams(),
                     ],
                 ),
-                'text' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'text',
                     label: 'Текст',
-                    class: \Simflex\Admin\Fields\FieldText::class,
-                    npp: 9,
+                    class: FieldText::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
-                            onchange: '',
-                            editorMini: false,
                             editorFull: true,
                         ),
                     ],
                 ),
-                'params' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'params',
                     label: 'Параметры',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 10,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
                             hidden: true,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
-                            onchange: '',
                         ),
                     ],
                 ),
-                'photo' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'photo',
                     label: 'Фото',
-                    class: \Simflex\Admin\Fields\FieldImage::class,
-                    npp: 11,
+                    class: FieldImage::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
                             e2n: true,
-                            hidden: false,
                             width: '88',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
                             widthMob: '50',
-                            pos: '',
-                            posGroup: '',
                             path: 'content',
                             small: '200x150',
-                            medium: '',
                             large: '800x600',
-                        ),
-                    ],
-                ),
-                'template_id' => new FieldDefinition(
-                    name: 'template_id',
-                    label: 'Шаблон',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
-                    npp: 2,
-                    help: '',
-                    placeholder: '',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: true,
-                            hidden: false,
-                            width: '176',
-                            defaultValue: '',
-                            required: false,
-                            filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            isFk: true,
-                            fkTable: 'content_template',
-                            fkKey: 'template_id',
-                            fkLabel: 'template_name',
-                            fkIsPid: false,
-                        ),
-                    ],
-                ),
-                'npp' => new FieldDefinition(
-                    name: 'npp',
-                    label: '№ п/п',
-                    class: \Simflex\Admin\Fields\FieldNPP::class,
-                    npp: 3,
-                    help: '',
-                    placeholder: '',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '107',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
                         ),
                     ],
                 ),
             ],
             params: [
-                'content_main' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'content_main',
                     label: 'Вывод данных',
-                    class: null,
                     paramId: 18,
                     paramPid: '',
                     pos: 'right',
-                    defaultValue: '',
                     params: [],
                 ),
-                'tpl' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'tpl',
                     label: 'Шаблон вывода',
-                    class: \Simflex\Admin\Fields\FieldString::class,
+                    class: FieldString::class,
                     paramId: 19,
                     paramPid: 18,
-                    pos: '',
                     defaultValue: 'mod_list.tpl',
                     params: [],
                 ),
-                'cnt_limit' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'cnt_limit',
                     label: 'Количество',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
+                    class: FieldInt::class,
                     paramId: 20,
                     paramPid: 18,
-                    pos: '',
                     defaultValue: '3',
                     params: [],
                 ),
-                'content_view' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'content_view',
                     label: 'Внешний вид',
-                    class: null,
                     paramId: 21,
                     paramPid: '',
                     pos: 'right',
-                    defaultValue: '',
                     params: [],
                 ),
-                'date' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'date',
                     label: 'Дата',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    class: FieldBool::class,
                     paramId: 22,
                     paramPid: 21,
-                    pos: '',
-                    defaultValue: '',
                     params: [],
                 ),
-                'short' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'short',
                     label: 'Анонс',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    class: FieldBool::class,
                     paramId: 23,
                     paramPid: 21,
-                    pos: '',
                     defaultValue: '0',
                     params: [],
                 ),
-                'more' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'more',
                     label: 'Кнопка далее',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    class: FieldBool::class,
                     paramId: 24,
                     paramPid: 21,
-                    pos: '',
                     defaultValue: '0',
                     params: [],
                 ),
-                'more_text' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'more_text',
                     label: 'Текст на кнопке далее',
-                    class: \Simflex\Admin\Fields\FieldString::class,
+                    class: FieldString::class,
                     paramId: 25,
                     paramPid: 21,
-                    pos: '',
                     defaultValue: 'Читать далее',
                     params: [],
                 ),
-                'hide_title' => new ParamDefinition(
+                new ParamDefinition(
                     name: 'hide_title',
                     label: 'Не показывать заголовок',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    class: FieldBool::class,
                     paramId: 26,
                     paramPid: 21,
-                    pos: '',
                     defaultValue: '0',
                     params: [
                         'main' => new FieldParams(

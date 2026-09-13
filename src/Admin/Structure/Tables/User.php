@@ -2,6 +2,10 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Fields\FieldBool;
+use Simflex\Admin\Fields\FieldInt;
+use Simflex\Admin\Fields\FieldPassword;
+use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\TableDefinition;
@@ -9,27 +13,19 @@ use Simflex\Admin\Structure\Table;
 
 class User extends Table
 {
-    public static function name(): string
+    public function name(): string
     {
         return 'user';
     }
 
-    public static function definition(): TableDefinition
+    public function definition(): TableDefinition
     {
         return new TableDefinition(
-            name: 'user',
-            orderBy: '',
-            orderDesc: false,
-            privAdd: null,
-            privEdit: null,
-            privDelete: null,
-            class: '',
             fields: [
-                'user_id' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'user_id',
                     label: 'ID',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
-                    npp: 1,
+                    class: FieldInt::class,
                     help: '',
                     placeholder: '',
                     params: [
@@ -38,225 +34,121 @@ class User extends Table
                             e2n: true,
                             hidden: true,
                             width: '80',
-                            defaultValue: '',
-                            required: false,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
                             widthMob: '50',
-                            pos: '',
-                            posGroup: '',
-                            isFk: false,
-                            fkTable: '',
-                            fkKey: '',
-                            fkLabel: '',
-                            fkIsPid: false,
                         ),
                     ],
                 ),
-                'role_id' => new FieldDefinition(
-                    name: 'role_id',
-                    label: 'Роль',
-                    class: \Simflex\Admin\Fields\FieldInt::class,
-                    npp: 3,
+                new FieldDefinition(
+                    name: 'active',
+                    label: 'Активно',
+                    class: FieldBool::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
+                            defaultValue: '0',
+                            filter: true,
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
+                    name: 'role_id',
+                    label: 'Роль',
+                    class: FieldInt::class,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => new FieldParams(
                             required: true,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            pos: '',
-                            posGroup: '',
                             isFk: true,
                             fkTable: 'user_role',
                             fkKey: 'role_id',
                             fkLabel: 'name',
-                            fkIsPid: false,
                         ),
                     ],
                 ),
-                'active' => new FieldDefinition(
-                    name: 'active',
-                    label: 'Активно',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
-                    npp: 2,
-                    help: '',
-                    placeholder: '',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '0',
-                            required: false,
-                            filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            pos: '',
-                            posGroup: '',
-                        ),
-                    ],
-                ),
-                'login' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'login',
                     label: 'Логин',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 4,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
                             width: '200',
-                            defaultValue: '',
                             required: true,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
                             widthMob: '190',
-                            pos: '',
-                            posGroup: '',
                         ),
                     ],
                 ),
-                'password' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'password',
                     label: 'Пароль',
-                    class: \Simflex\Admin\Fields\FieldPassword::class,
-                    npp: 5,
+                    class: FieldPassword::class,
                     help: '',
                     placeholder: '',
                     params: [
-                        'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
-                            onchange: '',
-                        ),
+                        'main' => new FieldParams(),
                     ],
                 ),
-                'hash' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'hash',
                     label: 'Хеш',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 6,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
                             hidden: true,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
                         ),
                     ],
                 ),
-                'hash_admin' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'hash_admin',
                     label: 'Admin. Хеш',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 7,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
                             hidden: true,
-                            width: '0',
-                            defaultValue: '',
-                            required: false,
-                            filter: false,
-                            fk: '',
                         ),
                     ],
                 ),
-                'email' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'email',
                     label: 'Email',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 8,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
                             e2n: true,
-                            hidden: false,
                             width: '1',
-                            defaultValue: '',
-                            required: false,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            pos: '',
-                            posGroup: '',
                         ),
                     ],
                 ),
-                'name' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'name',
                     label: 'Имя',
-                    class: \Simflex\Admin\Fields\FieldString::class,
-                    npp: 10,
+                    class: FieldString::class,
                     help: '',
                     placeholder: '',
                     params: [
                         'main' => new FieldParams(
-                            pk: false,
-                            e2n: false,
-                            hidden: false,
                             width: '140',
-                            defaultValue: '',
-                            required: false,
                             filter: true,
-                            onchange: '',
-                            readonly: false,
-                            styleCell: '',
-                            screenWidth: '0',
-                            widthMob: '0',
-                            pos: '',
-                            posGroup: '',
                         ),
                     ],
                 ),
-                'in_mailing' => new FieldDefinition(
+                new FieldDefinition(
                     name: 'in_mailing',
                     label: 'Подписан на рассылку',
-                    class: \Simflex\Admin\Fields\FieldBool::class,
-                    npp: 100,
+                    class: FieldBool::class,
                     help: '',
                     placeholder: '',
                     params: [

@@ -222,7 +222,7 @@ class Field implements FieldType
     public function show($row)
     {
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
-        $value = strip_tags($value, ['br', 'strong', 'b', 'em', 'i', 'span']);
+        $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
             echo '<a href="?action=form&' . $this->tablePk . '=' . $this->pkValue . '" class="table__row-' . $this->name . '">' . $value . '</a>';
@@ -239,7 +239,7 @@ class Field implements FieldType
      */
     public function showDetail($row)
     {
-        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
+        $value = strip_tags((string)$row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
         return $value;
     }
 

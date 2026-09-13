@@ -26,11 +26,10 @@ class Repository
         }
 
         $out = [];
-        foreach ($tableData['fields'] as $key => $field) {
-            $out[] = static::normalizeField($field, $table, is_string($key) ? $key : null);
+        foreach ($tableData['fields'] as $field) {
+            $out[] = static::normalizeField($field, $table);
         }
 
-        usort($out, fn(array $a, array $b) => [$a['npp'], $a['name']] <=> [$b['npp'], $b['name']]);
         return $out;
     }
 
@@ -53,8 +52,8 @@ class Repository
         }
 
         $out = [];
-        foreach ($tableData['params'] as $key => $param) {
-            $param = static::normalizeParam($param, $table, is_string($key) ? $key : null);
+        foreach ($tableData['params'] as $param) {
+            $param = static::normalizeParam($param, $table);
             $out[(string)$param['param_pid']][(string)$param['param_id']] = $param;
         }
 
@@ -129,13 +128,28 @@ class Repository
         }
 
         $tables = [];
-        foreach (static::discoverTableClasses() as $class) {
-            $table = static::normalizeTable($class::definition(), $class::name());
-            $tables[$table['name']] = $table;
+        foreach (static::tableClasses() as $class) {
+            $instance = new $class();
+            $tables[$instance->name()] = static::normalizeTable($instance->definition(), $instance->name());
         }
 
         static::$tables = $tables;
         return static::$tables;
+    }
+
+    /**
+     * @return class-string<Table>[]
+     */
+    protected static function tableClasses(): array
+    {
+        $classes = require SF_CORE_ROOT_PATH . '/Admin/Structure/tables.php';
+
+        $appFile = SF_ROOT_PATH . '/Admin/Structure/tables.php';
+        if (is_file($appFile)) {
+            $classes = array_merge($classes, require $appFile);
+        }
+
+        return array_values($classes);
     }
 
     protected static function discoverFieldTypeClasses(): array
@@ -159,27 +173,6 @@ class Repository
         return array_values(array_unique($classes));
     }
 
-    protected static function discoverTableClasses(): array
-    {
-        $classes = [];
-        foreach (static::phpFiles(SF_CORE_ROOT_PATH . '/Admin/Structure/Tables') as $file) {
-            $class = 'Simflex\\Admin\\Structure\\Tables\\' . pathinfo($file, PATHINFO_FILENAME);
-            if (is_subclass_of($class, Table::class)) {
-                $classes[] = $class;
-            }
-        }
-
-        foreach (static::phpFiles(SF_ROOT_PATH . '/Admin/Structure/Tables') as $file) {
-            require_once $file;
-            $class = 'App\\Admin\\Structure\\Tables\\' . pathinfo($file, PATHINFO_FILENAME);
-            if (is_subclass_of($class, Table::class)) {
-                $classes[] = $class;
-            }
-        }
-
-        return $classes;
-    }
-
     protected static function phpFiles(string $dir): array
     {
         if (!is_dir($dir)) {
@@ -197,56 +190,31 @@ class Repository
         return $files;
     }
 
-    protected static function normalizeTable(TableDefinition|array $table, ?string $name = null): array
+    protected static function normalizeTable(TableDefinition $table, string $name): array
     {
-        if ($table instanceof TableDefinition) {
-            $table = $table->toArray();
-        }
-
-        $table['name'] = $table['name'] ?? $name;
-        $table['order_by'] = $table['order_by'] ?? '';
-        $table['order_desc'] = $table['order_desc'] ?? false;
-        $table['priv_add'] = $table['priv_add'] ?? null;
-        $table['priv_edit'] = $table['priv_edit'] ?? null;
-        $table['priv_delete'] = $table['priv_delete'] ?? null;
-        $table['class'] = $table['class'] ?? '';
+        $table = $table->toArray();
+        $table['name'] = $name;
 
         return $table;
     }
 
-    protected static function normalizeField(FieldDefinition|array $field, string $table, ?string $name = null): array
+    protected static function normalizeField(FieldDefinition $field, string $table): array
     {
-        if ($field instanceof FieldDefinition) {
-            $field = $field->toArray();
-        }
-
-        $field['name'] = $field['name'] ?? $name;
-        $field['npp'] = $field['npp'] ?? 500;
-        $field['label'] = $field['label'] ?? ucfirst((string)$field['name']);
-        $field['help'] = $field['help'] ?? '';
-        $field['placeholder'] = $field['placeholder'] ?? '';
+        $field = $field->toArray();
+        $field['label'] = $field['label'] ?? ucfirst($field['name']);
         $field['table'] = $table;
-        $field['class'] = static::normalizeFieldType((string)($field['class'] ?? $field['type'] ?? ''));
-        $field['params'] = static::normalizeParams($field['params'] ?? []);
+        $field['class'] = static::normalizeFieldType($field['class']);
 
         return $field;
     }
 
-    protected static function normalizeParam(ParamDefinition|array $param, string $table, ?string $name = null): array
+    protected static function normalizeParam(ParamDefinition $param, string $table): array
     {
-        if ($param instanceof ParamDefinition) {
-            $param = $param->toArray();
-        }
-
-        $param['name'] = $param['name'] ?? $name;
+        $param = $param->toArray();
         $param['param_id'] = $param['param_id'] ?? static::stableId($table . '.param.' . $param['name']);
-        $param['param_pid'] = $param['param_pid'] ?? '';
-        $param['pos'] = $param['pos'] ?? 'left';
-        $param['label'] = $param['label'] ?? ucfirst((string)$param['name']);
-        $param['default_value'] = $param['default_value'] ?? '';
+        $param['label'] = $param['label'] ?? ucfirst($param['name']);
         $param['table'] = $table;
-        $param['class'] = static::normalizeFieldType((string)($param['class'] ?? $param['type'] ?? ''));
-        $param['params'] = static::normalizeParams($param['params'] ?? []);
+        $param['class'] = static::normalizeFieldType((string)($param['class'] ?? ''));
 
         return $param;
     }
@@ -270,15 +238,6 @@ class Repository
         }
 
         return 'Simflex\\Admin\\Fields\\' . $type;
-    }
-
-    protected static function normalizeParams(array|string $params): array
-    {
-        if (is_string($params)) {
-            $params = unserialize($params) ?: [];
-        }
-
-        return isset($params['main']) ? $params : ['main' => $params];
     }
 
     protected static function stableId(string $value): int
