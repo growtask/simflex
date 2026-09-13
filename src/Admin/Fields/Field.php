@@ -3,10 +3,11 @@
 namespace Simflex\Admin\Fields;
 
 
+use Simflex\Admin\Structure\FieldType;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\ForeignKey;
 
-class Field
+class Field implements FieldType
 {
 
     public $form = '';
@@ -54,6 +55,17 @@ class Field
      * @var bool
      */
     public $isVirtual = false; //  FVirtual,  FMultiKey
+
+    public static function typeLabel(): string
+    {
+        $parts = explode('\\', static::class);
+        return end($parts) ?: static::class;
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 
     public function __construct($row)
     {
@@ -210,7 +222,7 @@ class Field
     public function show($row)
     {
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
-        $value = strip_tags($value, ['br', 'strong', 'b', 'em', 'i', 'span']);
+        $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
             echo '<a href="?action=form&' . $this->tablePk . '=' . $this->pkValue . '" class="table__row-' . $this->name . '">' . $value . '</a>';
@@ -227,7 +239,7 @@ class Field
      */
     public function showDetail($row)
     {
-        $value = strip_tags($row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
+        $value = strip_tags((string)$row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
         return $value;
     }
 

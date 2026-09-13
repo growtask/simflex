@@ -130,4 +130,50 @@ class FieldRelation extends Field
 
         return '';
     }
+    public static function typeLabel(): string
+    {
+        return 'Двусторонняя связь';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'relation',
+                'label' => 'Таблица связей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'left',
+                'label' => 'Левая колонка',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'right',
+                'label' => 'Правая колонка',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'table',
+                'label' => 'Таблица сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'name',
+                'label' => 'Ярлык',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
+    }
+
 }

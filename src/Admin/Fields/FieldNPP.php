@@ -71,4 +71,14 @@ DATA;
         return $this->e2n && $_POST[$this->name] === '' ? 'NULL' : (int)$_POST[$this->name];
     }
 
+    public static function typeLabel(): string
+    {
+        return '№ п/п';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }

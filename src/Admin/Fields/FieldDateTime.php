@@ -57,4 +57,14 @@ class FieldDateTime extends Field
 
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Дата и время';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }

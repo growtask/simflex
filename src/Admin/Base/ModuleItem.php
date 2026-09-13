@@ -7,6 +7,7 @@ use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Page;
 use Simflex\Admin\Plugins\Editor\Editor;;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
 
 class ModuleItem extends Base
@@ -32,14 +33,14 @@ class ModuleItem extends Base
         $menuItems = DB::assoc($q);
 
         $q = "
-            select mp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, f.class, '$this->table' `table`
+            select mp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, p.field_type, '$this->table' `table`
             from module_param p
-            LEFT JOIN struct_field f using(field_id)
             LEFT JOIN module_item t on item_id = $itemId
             WHERE p.module_id = $moduleId
             ORDER BY p.npp
         ";
         $rows = DB::assoc($q, 'param_pid', 'mp_id');
+        $rows = StructureRepository::hydrateFieldClasses($rows);
         if (count($rows)) {
 
             $positions = array('left' => '', 'right' => '');
@@ -115,13 +116,13 @@ class ModuleItem extends Base
         if (!empty($_POST['module_id'])) {
             $moduleId = (int)$_POST['module_id'];
             $q = "
-                select p.name name, p.label label, f.class
+                select p.name name, p.label label, p.field_type
                 from module_param p
-                JOIN struct_field f using(field_id)
                 WHERE p.module_id = $moduleId
                 ORDER BY p.npp
             ";
             $rows = DB::assoc($q);
+            $rows = StructureRepository::hydrateFieldClasses($rows);
             foreach ($rows as $row) {
                 $field = new $row['class']($row);
                 $value = $field->getPost(true);

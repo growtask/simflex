@@ -21,4 +21,14 @@ class FieldPasswordVisible extends Field
         echo '<div style="text-align: center">***</div>';
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Пароль видимый';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }

@@ -10,6 +10,7 @@ use Simflex\Admin\Base\Struct;
 use Simflex\Admin\Core;
 use Simflex\Admin\Modules\Account\Account;
 use Simflex\Admin\Notify\Collection;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\Request;
@@ -60,12 +61,11 @@ class Page
         $menuCurModel = Core::menuCurItem('model');
         $tableData = null;
         if ($menuCurModel) {
-            $q = "SELECT * FROM struct_table WHERE name = '$menuCurModel'";
-            $tableData = DB::result($q);
+            $tableData = StructureRepository::table($menuCurModel);
         }
         $extDriverClass = $tableData['class'] ?? null;
 
-        if (class_exists($extDriverClass)) {
+        if ($extDriverClass && class_exists($extDriverClass)) {
             self::$driver = new $extDriverClass();
         }
 
@@ -77,7 +77,7 @@ class Page
             // todo: lol fix this
             if (Container::getRequest()->getPath() == '/admin/account/') {
                 self::$driver = new Account([]);
-            } elseif (in_array($menuCurModel, array('struct_param', 'struct_data', 'module_param', 'struct_table', 'content_template_param'))) {
+            } elseif (in_array($menuCurModel, array('module_param', 'content_template_param'))) {
                 self::$driver = new Struct();
             } elseif (in_array($menuCurModel, array('module_item'))) {
                 self::$driver = new ModuleItem();
@@ -101,7 +101,7 @@ class Page
             ";
             $rows = DB::assoc($q);
             foreach ($rows as $row) {
-                if (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id']) {
+                if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {
                     $class = $row['class'];
                     if (strpos($class, '\\') === false) {
                         $class = "Simflex\Admin\Modules\\$class\\$class";

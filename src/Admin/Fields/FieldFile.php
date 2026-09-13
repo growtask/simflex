@@ -176,4 +176,22 @@ class FieldFile extends Field
         return $errors;
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Файл';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'path',
+                'label' => 'Адрес',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '/uf/files/{указанный адрес}',
+                'default_value' => '',
+            ],
+        ];
+    }
+
 }

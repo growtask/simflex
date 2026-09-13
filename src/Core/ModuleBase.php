@@ -21,7 +21,7 @@ abstract class ModuleBase extends ExtensionBase
         $this->name = strtolower(substr($module['class'], 3));
         $this->title = $module['name'];
         $this->position = $module['posname'];
-        $this->params = unserialize($module['params']);
+        $this->params = unserialize($module['params']) ?: [];
         $this->params['css_id'] = isset($this->params['css_id']) ? $this->params['css_id'] : 'module-' . $this->id;
         $this->params['is_title'] = isset($this->params['is_title']) ? $this->params['is_title'] : 0;
         $this->params['is_wrap'] = isset($this->params['is_wrap']) ? $this->params['is_wrap'] : 0;

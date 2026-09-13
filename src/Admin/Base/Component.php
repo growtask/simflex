@@ -5,6 +5,7 @@ namespace Simflex\Admin\Base;
 
 use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
 
 /**
@@ -27,13 +28,13 @@ class Component extends Base
         }
 
         $q = "
-            select cp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, f.class, '$this->table' `table`
+            select cp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, p.field_type, '$this->table' `table`
             from component_param p
-            LEFT JOIN struct_field f using(field_id)
             LEFT JOIN component t on t.component_id = $componentId
             where p.component_id = $componentId
         ";
         $rows = DB::assoc($q, 'param_pid', 'cp_id');
+        $rows = StructureRepository::hydrateFieldClasses($rows);
         if (!count($rows)) {
             return;
         }
@@ -86,12 +87,12 @@ class Component extends Base
         if (!empty($_POST['component_id'])) {
             $componentId = (int)$_POST['component_id'];
             $q = "
-                select cp_id, param_pid, p.name name, p.label label, f.class
+                select cp_id, param_pid, p.name name, p.label label, p.field_type
                 from component_param p
-                LEFT JOIN struct_field f using(field_id)
                 where p.component_id = $componentId
             ";
             $rows = DB::assoc($q);
+            $rows = StructureRepository::hydrateFieldClasses($rows);
             foreach ($rows as $row) {
                 if (!$row['class']) {
                     continue;

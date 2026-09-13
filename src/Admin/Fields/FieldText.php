@@ -44,4 +44,29 @@ class FieldText extends Field
                                 </div>';
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Текст';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'editor_mini',
+                'label' => 'Минимальный редактор',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'editor_full',
+                'label' => 'Полный редактор',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
+    }
+
 }

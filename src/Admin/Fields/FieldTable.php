@@ -132,4 +132,22 @@ class FieldTable extends Field
         include 'tpl/table.tpl';
         return ob_get_clean();
     }
+    public static function typeLabel(): string
+    {
+        return 'Таблица';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'struct',
+                'label' => 'Параметры',
+                'type' => \Simflex\Admin\Fields\FieldTable::class,
+                'help' => '',
+                'default_value' => '{"s":[{"n":"n","t":"text","l":"Имя","v":"","e":""},{"n":"t","t":"combo","l":"Тип","v":"text","e":"text=Текст,,int=Число,,combo=Список,,editor=Редактор,,image=Изображение,,file=Файл"},{"n":"l","t":"text","l":"Заголовок","v":"","e":""},{"n":"v","t":"text","l":"Значение","v":"","e":""},{"n":"e","t":"text","l":"Дополнительно","v":"","e":""}],"v":[]}',
+            ],
+        ];
+    }
+
 }

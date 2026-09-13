@@ -46,4 +46,36 @@ class FieldDouble extends Field
         return $this->e2n && $ret === '' ? 'NULL' : $ret;
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Дробное число';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'decimals',
+                'label' => 'Число знаков после запятой',
+                'type' => \Simflex\Admin\Fields\FieldInt::class,
+                'help' => '0 - автоматически',
+                'default_value' => '0',
+            ],
+            [
+                'name' => 'dec_point',
+                'label' => 'Разделитель дробной части',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '.',
+            ],
+            [
+                'name' => 'thousands_sep',
+                'label' => 'Разделитель порядков',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => ' ',
+                'default_value' => ' ',
+            ],
+        ];
+    }
+
 }

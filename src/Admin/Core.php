@@ -22,7 +22,7 @@ class Core
     private static $menu_by_link = array();
     private static $menu_cur = false;
     private static $crumbs = array();
-    private static $site_params = false;
+    private static $site_params = array();
 
     private function __construct()
     {
@@ -30,11 +30,11 @@ class Core
     }
 
     /**
-     * @return string like /vendor/glushkovds/simplex-admin/src/Admin
+     * @return string like /vendor/growtask/simflex/src/Admin
      */
     public static function webVendorPath()
     {
-        return str_replace(SF_ROOT_PATH, '', __DIR__);
+        return '/vendor/growtask/simflex/src/Admin';
     }
 
     public static function vendorPath()

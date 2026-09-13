@@ -15,6 +15,7 @@ use Simflex\Admin\Fields\FieldPath;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldVirtual;
 use Simflex\Admin\Fields\Helper;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Admin\Plugins\Alert\Alert;
 
 use Simflex\Admin\Plugins\Pagecontrol\Pagecontrol;
@@ -32,11 +33,11 @@ class Base
 
     public $name = '';
     protected $action = '';
-    protected $tableId = 0;
     protected $table = '';
-    protected $tableData = array();  // struct_table row
+    protected $tableData = array();  // table metadata
     protected $fields = array();     // fields by name
     protected $fks = array();        // forieng key fields
+    protected $blocks = array();     // form field group labels, filled in by form.tpl
     /**
      *
      * @var FieldInt
@@ -114,18 +115,18 @@ class Base
         $this->initTableName();
         $this->initTableData();
 
-        $this->canAdd = $this->tableData['priv_add'] ? User::ican((int)$this->tableData['priv_add']) : true;
+        $this->canAdd = !empty($this->tableData['priv_add']) ? User::ican((int)$this->tableData['priv_add']) : true;
         $this->canCopy = $this->canAdd;
-        $this->canEdit = $this->tableData['priv_edit'] ? User::ican((int)$this->tableData['priv_edit']) : true;
+        $this->canEdit = !empty($this->tableData['priv_edit']) ? User::ican((int)$this->tableData['priv_edit']) : true;
         $this->canEditGroup = $this->canEdit;
-        $this->canDelete = $this->tableData['priv_delete'] ? User::ican((int)$this->tableData['priv_delete']) : true;
+        $this->canDelete = !empty($this->tableData['priv_delete']) ? User::ican((int)$this->tableData['priv_delete']) : true;
     }
 
     protected function initTableName()
     {
         if (empty($this->table)) {
             $row = Core::menuCurItem();
-            if ($row['model']) {
+            if (!empty($row['model'])) {
                 $this->table = $row['model'];
             }
         }
@@ -134,9 +135,7 @@ class Base
 
     protected function initTableData()
     {
-        $q = "SELECT * FROM struct_table WHERE name = '$this->table'";
-        $this->tableData = DB::result($q);
-        $this->tableId = $this->tableData['table_id'];
+        $this->tableData = StructureRepository::table($this->table);
     }
 
     protected function deleteField()
@@ -216,7 +215,7 @@ class Base
     {
         $row = Core::menuCurItem();
 
-        if ($row['model']) {
+        if (!empty($row['model'])) {
             $this->initTable();
 
             $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -313,9 +312,8 @@ class Base
     {
         $field = DB::escape($_REQUEST['field']);
 
-        $q = "SELECT * FROM struct_data WHERE table_id = {$this->tableData['table_id']} AND name = '$field'";
-        $fieldDB = DB::result($q);
-        $fieldParams = unserialize($fieldDB['params']);
+        $fieldDB = StructureRepository::field($this->table, $field);
+        $fieldParams = $fieldDB['params'] ?? [];
         if (@$fieldParams['main']['readonly']) {
             Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", './');
         }
@@ -548,19 +546,11 @@ class Base
 
     protected function initTable()
     {
-        if ($this->tableId) {
+        if ($this->tableData) {
             // TABLE STRUCTURE
-            $q = "
-                SELECT  t1.*, t2.class, '$this->table' `table`
-                FROM struct_data t1
-                JOIN struct_field t2 USING(field_id)
-                WHERE t1.table_id=$this->tableId
-                ORDER BY t1.npp, t1.id
-            ";
-            $fields = DB::assoc($q);
+            $fields = StructureRepository::fields($this->table);
             $pkName = '';
             foreach ($fields as $field) {
-                $field['params'] = unserialize($field['params']);
                 if (!empty($field['params']['main']['filter'])) {
                     $this->is_filter = true;
                 }
@@ -616,14 +606,7 @@ class Base
      */
     protected function tableParamsLoad()
     {
-        $q = "
-            SELECT param_id, param_pid, pos, t1.name, t1.label, t1.params, t2.class, '$this->table' `table`
-            FROM struct_param t1
-            LEFT JOIN struct_field t2 USING(field_id)
-            WHERE table_id = $this->tableId
-        ";
-        $params = DB::assoc($q, 'param_pid', 'param_id');
-        return $params;
+        return StructureRepository::params($this->table);
     }
 
     /**
@@ -718,9 +701,8 @@ class Base
         $pk = (int)$_REQUEST['pk'];
         $field = $_REQUEST['field'];
         if ($pk && isset($this->fields[$field])) {
-            $q = "SELECT * FROM struct_data WHERE table_id = {$this->tableData['table_id']} AND name = '$field'";
-            $fieldDB = DB::result($q);
-            $fieldParams = unserialize($fieldDB['params']);
+            $fieldDB = StructureRepository::field($this->table, $field);
+            $fieldParams = $fieldDB['params'] ?? [];
             if (!@$fieldParams['main']['readonly']) {
                 $q = "UPDATE " . $this->table . " SET $field=($field+1)%2 WHERE " . $this->pk->name . "=" . $pk;
                 DB::query($q);

@@ -328,11 +328,11 @@ class Core
     }
 
     /**
-     * @return string like /vendor/glushkovds/simplex-core/src
+     * @return string like /vendor/growtask/simflex/src
      */
     public static function webVendorPath()
     {
-        return str_replace(SF_ROOT_PATH, '', static::vendorPath());
+        return '/vendor/growtask/simflex/src';
     }
 
     public static function vendorPath()
