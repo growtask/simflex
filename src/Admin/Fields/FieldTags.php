@@ -44,4 +44,14 @@ class FieldTags extends Field
     </div>
 </div>';
             }
+    public static function typeLabel(): string
+    {
+        return 'Теги';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }

@@ -80,4 +80,14 @@ class FieldVirtualTable extends Field
     {
         return '';
     }
+    public static function typeLabel(): string
+    {
+        return 'Виртуальная таблица';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }

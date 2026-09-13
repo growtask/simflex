@@ -183,4 +183,43 @@ DATA;
         return true;
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Изображение';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'path',
+                'label' => 'Адрес',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '/uf/images/{указанный адрес}',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'small',
+                'label' => 'Малый размер',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Формат 200x150. Точный размер - 200x150x1',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'medium',
+                'label' => 'Средний размер',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Формат 400x300. Точный размер - 400x300x1',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'large',
+                'label' => 'Большой размер',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Формат 640x480. Точный размер - 640x480x1',
+                'default_value' => '',
+            ],
+        ];
+    }
+
 }

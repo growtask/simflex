@@ -7,6 +7,7 @@ use Simflex\Core\DB;
 use Simflex\Core\DB\AQ;
 use Simflex\Core\Service;
 use Simflex\Admin\Fields\Field;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldInt extends Field
 {
@@ -34,17 +35,11 @@ class FieldInt extends Field
     public function &tree()
     {
         $tree = array();
-        $q = "
-            SELECT *,
-                (SELECT class FROM struct_field WHERE field_id = s.field_id) class
-            FROM struct_data s
-            WHERE table_id = (SELECT table_id FROM struct_table WHERE name = '{$this->fk->table}')
-        ";
-        $fkTableFields = DB::assoc($q);
+        $fkTableFields = StructureRepository::fields($this->fk->table);
         $fkPID = 0;
         foreach ($fkTableFields as $fkTableField) {
-            if ($fkTableField['class'] == 'FieldInt') {
-                $fkParams = unserialize($fkTableField['params']);
+            if ($fkTableField['class'] == 'FieldInt' || str_ends_with($fkTableField['class'], '\\FieldInt')) {
+                $fkParams = $fkTableField['params'];
                 if (!empty($fkParams['main']['fk_is_pid'])) {
                     $fkPID = $fkTableField['name'];
                     break;
@@ -199,6 +194,52 @@ class FieldInt extends Field
             return parent::filter($value);
         }
 
+    }
+
+    public static function typeLabel(): string
+    {
+        return 'Целое число';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'is_fk',
+                'label' => 'Внешний ключ',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_table',
+                'label' => 'Внешний ключ. Таблица',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_key',
+                'label' => 'Внешний ключ. Ключ',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_label',
+                'label' => 'Внешний ключ. Ярлык',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'fk_is_pid',
+                'label' => 'Внешний ключ. Поле PID',
+                'type' => \Simflex\Admin\Fields\FieldBool::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+        ];
     }
 
 }

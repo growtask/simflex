@@ -3,10 +3,11 @@
 namespace Simflex\Admin\Fields;
 
 
+use Simflex\Admin\Structure\FieldType;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\ForeignKey;
 
-class Field
+class Field implements FieldType
 {
 
     public $form = '';
@@ -54,6 +55,17 @@ class Field
      * @var bool
      */
     public $isVirtual = false; //  FVirtual,  FMultiKey
+
+    public static function typeLabel(): string
+    {
+        $parts = explode('\\', static::class);
+        return end($parts) ?: static::class;
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
 
     public function __construct($row)
     {

@@ -1,0 +1,278 @@
+<?php
+
+namespace Simflex\Admin\Structure\Tables;
+
+use Simflex\Admin\Structure\Data\FieldDefinition;
+use Simflex\Admin\Structure\Data\ParamDefinition;
+use Simflex\Admin\Structure\Data\TableDefinition;
+use Simflex\Admin\Structure\Table;
+
+class ModuleItem extends Table
+{
+    public static function name(): string
+    {
+        return 'module_item';
+    }
+
+    public static function definition(): TableDefinition
+    {
+        return new TableDefinition(
+            name: 'module_item',
+            orderBy: 'npp',
+            orderDesc: false,
+            privAdd: null,
+            privEdit: null,
+            privDelete: null,
+            class: '',
+            fields: [
+                'item_id' => new FieldDefinition(
+                    name: 'item_id',
+                    label: 'ID',
+                    class: \Simflex\Admin\Fields\FieldInt::class,
+                    npp: -2,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '1',
+                            'e2n' => '0',
+                            'hidden' => '1',
+                            'width' => '80',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '1',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                            'width_mob' => '40',
+                            'pos' => '',
+                            'pos_group' => '',
+                            'is_fk' => '0',
+                            'fk_table' => '',
+                            'fk_key' => '',
+                            'fk_label' => '',
+                            'fk_is_pid' => '0',
+                        ],
+                    ],
+                ),
+                'module_id' => new FieldDefinition(
+                    name: 'module_id',
+                    label: 'Модуль',
+                    class: \Simflex\Admin\Fields\FieldInt::class,
+                    npp: 2,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '0',
+                            'width' => '200',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '1',
+                            'fk' => '',
+                            'onchange' => 'onChangeModule(this)',
+                            'is_fk' => '1',
+                            'fk_table' => 'module',
+                            'fk_key' => 'module_id',
+                            'fk_label' => 'name',
+                            'fk_is_pid' => '0',
+                        ],
+                    ],
+                ),
+                'menu_id' => new FieldDefinition(
+                    name: 'menu_id',
+                    label: 'Меню',
+                    class: \Simflex\Admin\Fields\FieldInt::class,
+                    npp: 3,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '1',
+                            'hidden' => '0',
+                            'width' => '200',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '1',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                            'is_fk' => '1',
+                            'fk_table' => 'menu',
+                            'fk_key' => 'menu_id',
+                            'fk_label' => 'name',
+                            'fk_is_pid' => '0',
+                        ],
+                    ],
+                ),
+                'posname' => new FieldDefinition(
+                    name: 'posname',
+                    label: 'Позиция',
+                    class: \Simflex\Admin\Fields\FieldString::class,
+                    npp: 0,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '0',
+                            'width' => '200',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '1',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                        ],
+                    ],
+                ),
+                'active' => new FieldDefinition(
+                    name: 'active',
+                    label: 'Активно',
+                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    npp: -2,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '0',
+                            'width' => '104',
+                            'defaultValue' => '1',
+                            'required' => '0',
+                            'filter' => '1',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                        ],
+                    ],
+                ),
+                'npp' => new FieldDefinition(
+                    name: 'npp',
+                    label: '№ п/п',
+                    class: \Simflex\Admin\Fields\FieldNPP::class,
+                    npp: -1,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '0',
+                            'width' => '107',
+                            'defaultValue' => '0',
+                            'required' => '0',
+                            'filter' => '0',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                        ],
+                    ],
+                ),
+                'name' => new FieldDefinition(
+                    name: 'name',
+                    label: 'Наименование',
+                    class: \Simflex\Admin\Fields\FieldString::class,
+                    npp: 0,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '0',
+                            'width' => '1',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '0',
+                            'onchange' => '',
+                            'readonly' => '0',
+                            'style_cell' => '',
+                            'screen_width' => '0',
+                            'width_mob' => '200',
+                            'pos' => '',
+                            'pos_group' => '',
+                        ],
+                    ],
+                ),
+                'params' => new FieldDefinition(
+                    name: 'params',
+                    label: 'Параметры',
+                    class: \Simflex\Admin\Fields\FieldText::class,
+                    npp: 4,
+                    help: '',
+                    placeholder: '',
+                    params: [
+                        'main' => [
+                            'pk' => '0',
+                            'e2n' => '0',
+                            'hidden' => '1',
+                            'width' => '0',
+                            'defaultValue' => '',
+                            'required' => '0',
+                            'filter' => '0',
+                            'fk' => '',
+                            'onchange' => '',
+                        ],
+                    ],
+                ),
+            ],
+            params: [
+                'module_item_main' => new ParamDefinition(
+                    name: 'module_item_main',
+                    label: 'Параметры',
+                    class: null,
+                    paramId: 27,
+                    paramPid: '',
+                    pos: 'right',
+                    defaultValue: '',
+                    params: [],
+                ),
+                'is_title' => new ParamDefinition(
+                    name: 'is_title',
+                    label: 'Показывать заголовок',
+                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    paramId: 28,
+                    paramPid: '',
+                    pos: 'right',
+                    defaultValue: '1',
+                    params: [],
+                ),
+                'is_wrap' => new ParamDefinition(
+                    name: 'is_wrap',
+                    label: 'Выводить обертку',
+                    class: \Simflex\Admin\Fields\FieldBool::class,
+                    paramId: 29,
+                    paramPid: '',
+                    pos: 'right',
+                    defaultValue: '1',
+                    params: [],
+                ),
+                'cssclass' => new ParamDefinition(
+                    name: 'cssclass',
+                    label: 'CSS Класс',
+                    class: \Simflex\Admin\Fields\FieldString::class,
+                    paramId: 30,
+                    paramPid: '',
+                    pos: 'right',
+                    defaultValue: '',
+                    params: [
+                        'main' => [
+                            'defaultValue' => '',
+                        ],
+                    ],
+                ),
+            ],
+        );
+    }
+}

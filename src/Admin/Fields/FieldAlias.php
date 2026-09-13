@@ -25,4 +25,22 @@ class FieldAlias extends Field
         return '';
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Алиас';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'source',
+                'label' => 'Источник',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Из какого поля таблицы брать значение. Например: name',
+                'default_value' => 'name',
+            ],
+        ];
+    }
+
 }

@@ -190,4 +190,43 @@ HTML;
         return '';
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Связь многие ко многим';
+    }
+
+    public static function typeParams(): array
+    {
+        return [
+            [
+                'name' => 'table_values',
+                'label' => 'Таблица сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'table_relations',
+                'label' => 'Таблица связей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'key',
+                'label' => 'Ключ таблицы сущностей',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => '',
+                'default_value' => '',
+            ],
+            [
+                'name' => 'key_alias',
+                'label' => 'Поле-ярлык у сущности',
+                'type' => \Simflex\Admin\Fields\FieldString::class,
+                'help' => 'Например name у catalog_category',
+                'default_value' => '',
+            ],
+        ];
+    }
+
 }

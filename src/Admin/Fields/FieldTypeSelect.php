@@ -2,30 +2,24 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Fields\Field;
-use Simflex\Core\DB;
+use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldTypeSelect extends Field
 {
     public function input($value)
     {
-        $existing = DB::assoc('SELECT name FROM shared_type');
-
-        $out = '<select name="' . $this->inputName() . '[]" class="form-control cat-select" multiple>';
-        foreach ($existing as $cat) {
-            $out .= '<option ' . (in_array($cat['name'], explode(',', $value)) ? ' selected' : '') . '>' . $cat['name'] . '</option>';
+        $out = '<select name="' . $this->inputName() . '" onchange="' . $this->onchange . '" class="form-control__input">';
+        $out .= '<option value=""></option>';
+        foreach (StructureRepository::fieldTypes() as $type) {
+            $class = $type['class'];
+            $selected = $class === $value ? ' selected' : '';
+            $out .= '<option value="' . htmlspecialchars($class) . '"' . $selected . '>' . htmlspecialchars($type['name']) . '</option>';
         }
         return $out .'</select>';
     }
 
     public function getPOST($simple = false, $group = null)
     {
-        $data = $_POST[$this->inputName()] ?: [];
-        foreach ($data as $val) {
-            if (!DB::result('SELECT COUNT(*) as c FROM shared_type WHERE name = ?', 'c', [$val])) {
-                DB::query('INSERT INTO shared_type (name) VALUES (?)', [$val]);
-            }
-        }
-
-        return "" . DB::escape(implode(',', $data)) . "";
+        return $simple && $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
     }
 }

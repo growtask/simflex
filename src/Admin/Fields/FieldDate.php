@@ -58,4 +58,14 @@ class FieldDate extends Field
 
     }
 
+    public static function typeLabel(): string
+    {
+        return 'Дата';
+    }
+
+    public static function typeParams(): array
+    {
+        return [];
+    }
+
 }
