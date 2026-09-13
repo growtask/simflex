@@ -217,7 +217,7 @@ $artLeftArr = [];
                                                 <?php
                                                 \Simflex\Admin\Fields\Field::setFieldValue(
                                                     $field,
-                                                    $group,
+                                                    false,
                                                     $params,
                                                     $row
                                                 ) ?>

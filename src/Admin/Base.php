@@ -37,6 +37,7 @@ class Base
     protected $tableData = array();  // table metadata
     protected $fields = array();     // fields by name
     protected $fks = array();        // forieng key fields
+    protected $blocks = array();     // form field group labels, filled in by form.tpl
     /**
      *
      * @var FieldInt

@@ -39,7 +39,8 @@ class FieldImage extends FieldFile
         $imgPath = '/uf/images/' . $this->path . 'preview/' . $value;
         $defaultImg = asset('img/default-img.png');
 
-        $imgSize =  filesize($_SERVER['DOCUMENT_ROOT'] . $imgPath);
+        $imgFile = $_SERVER['DOCUMENT_ROOT'] . $imgPath;
+        $imgSize = is_file($imgFile) ? filesize($imgFile) : 0;
         $sizeDenom = 'б';
         if ($imgSize > 1024) {
             $imgSize /= 1024;

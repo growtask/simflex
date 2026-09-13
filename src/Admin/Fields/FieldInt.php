@@ -32,20 +32,31 @@ class FieldInt extends Field
         return sprintf("%.0f", $value);
     }
 
-    public function &tree()
+    /**
+     * Finds the column of $table that is marked as the self-referencing "parent" (fk_is_pid) column.
+     *
+     * @param string $table
+     * @return string Wrapped column name, or '0' if the table has no such column
+     */
+    protected function fkPidColumn(string $table): string
     {
-        $tree = array();
-        $fkTableFields = StructureRepository::fields($this->fk->table);
-        $fkPID = 0;
+        $fkTableFields = StructureRepository::fields($table);
         foreach ($fkTableFields as $fkTableField) {
             if ($fkTableField['class'] == 'FieldInt' || str_ends_with($fkTableField['class'], '\\FieldInt')) {
                 $fkParams = $fkTableField['params'];
                 if (!empty($fkParams['main']['fk_is_pid'])) {
-                    $fkPID = $fkTableField['name'];
-                    break;
+                    return DB::wrapName($fkTableField['name']);
                 }
             }
         }
+
+        return '0';
+    }
+
+    public function &tree()
+    {
+        $tree = array();
+        $fkPID = $this->fkPidColumn($this->fk->table);
 
         $query = (new AQ)
             ->select("{$this->fk->key} id, $fkPID pid, {$this->fk->label} label")
@@ -72,8 +83,9 @@ class FieldInt extends Field
 
 
             if ($this->params['fk_is_pid']) {
-                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from `{$this->params['fk_table']}` limit 20");
-                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, pid from 
+                $pidColumn = $this->fkPidColumn($this->params['fk_table']);
+                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
+                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             } else {
                 $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");

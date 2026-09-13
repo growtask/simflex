@@ -86,7 +86,7 @@ class AdminContent extends Base
 
         $q = "
             SELECT ctp_id + 1000000 as param_id, param_pid, position as pos, t1.group_name as group_name,
-                   t1.name, t1.label, t1.params, t1.field_id as field_type, '$this->table' `table`, default_value, t1.npp
+                   t1.name, t1.label, t1.params, t1.field_type, '$this->table' `table`, default_value, t1.npp
             FROM content_template_param t1
             JOIN content c USING(template_id)
             WHERE c.content_id = $contentId
