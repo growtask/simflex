@@ -77,12 +77,12 @@ class Page
 
         if (!Core::$isAjax) {
             $curmenu = Core::menuCurItem();
-            $q = "
+            $q = '
                 SELECT item_id, module, menu_id, name, 0 is_title, posname, params
                 FROM module_item
                 WHERE active = 1
                 ORDER BY npp, item_id
-            ";
+            ';
             $rows = CorePage::moduleRows(DB::assoc($q), ModuleType::Admin);
             foreach ($rows as $row) {
                 if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {

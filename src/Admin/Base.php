@@ -221,7 +221,7 @@ class Base
                     } elseif (isset($_REQUEST['submit_save_add'])) {
                         header('location: ' . \Simflex\Admin\Core::path() . '?action=form');
                     } else {
-                        header("location: " . \Simflex\Admin\Core::path() . "?save_id=$keyValue");
+                        header('location: ' . \Simflex\Admin\Core::path() . "?save_id=$keyValue");
                     }
                     exit();
                 }

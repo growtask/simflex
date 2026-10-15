@@ -31,12 +31,12 @@ class Page
     {
         $com = Core::getComponent();
 
-        $q = "
+        $q = '
             SELECT item_id, module, menu_id, posname, name, params
             FROM module_item
             WHERE active=1
             ORDER BY npp, item_id
-        ";
+        ';
         $rows = static::moduleRows(DB::assoc($q), ModuleType::Site);
         $curmenu = Core::menuCurItem();
         foreach ($rows as $row) {
