@@ -14,9 +14,10 @@ final class View
      *
      * @param string $file Absolute path to the template
      * @param array<string, mixed> $vars Variables available in the template as $name
-     * @param object|null $context Object available in the template as $this
+     * @param object|string|null $context Object available in the template as $this,
+     *                                    or a class name for self:: and static:: in the template
      */
-    public static function render(string $file, array $vars = [], ?object $context = null): string
+    public static function render(string $file, array $vars = [], object|string|null $context = null): string
     {
         $render = function (string $__file, array $__vars): string {
             extract($__vars, EXTR_SKIP);
@@ -33,8 +34,10 @@ final class View
             return (string)ob_get_clean();
         };
 
-        if ($context) {
+        if (is_object($context)) {
             $render = \Closure::bind($render, $context, $context::class);
+        } elseif ($context) {
+            $render = \Closure::bind($render, null, $context);
         }
 
         return $render($file, $vars);
