@@ -8,6 +8,7 @@ use Simflex\Admin\Page;
 use Simflex\Admin\Plugins\Editor\Editor;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
+use Simflex\Core\ExtensionRegistry;
 
 class ModuleItem extends Base
 {
@@ -20,17 +21,17 @@ class ModuleItem extends Base
 
     protected function moduleParam(): void
     {
-        $moduleId = (int)@$_GET['module_id'];
+        $moduleClass = (string)@$_GET['module'];
         $itemId = (int)@$_GET['item_id'];
 
-        $q = "SELECT * FROM module WHERE module_id = $moduleId";
-        $module = DB::result($q);
+        $module = ExtensionRegistry::module($moduleClass);
+        $moduleClass = $module ? ltrim($moduleClass, '\\') : '';
 
-        $menuTable = $module['type'] == 'site' ? 'menu' : 'admin_menu';
+        $menuTable = ($module['type'] ?? 'site') == 'site' ? 'menu' : 'admin_menu';
         $q = "SELECT menu_id, menu_pid pid, name FROM $menuTable ORDER BY npp, menu_id";
         $menuItems = DB::assoc($q);
 
-        $rows = StructureRepository::extensionParams($module['class'], $this->table);
+        $rows = StructureRepository::extensionParams($moduleClass, $this->table);
         $tableParams = $itemId
             ? (unserialize((string)DB::result('SELECT params FROM module_item WHERE item_id = ?', 'params', [$itemId])) ?: [])
             : [];
@@ -104,10 +105,9 @@ class ModuleItem extends Base
     protected function getParams(): array
     {
         $params = parent::getParams();
-        if (!empty($_POST['module_id'])) {
-            $moduleId = (int)$_POST['module_id'];
-            $class = DB::result('select class from module where module_id = ?', '', [$moduleId]);
-            foreach (StructureRepository::extensionFields($class ?: '', $this->table) as $row) {
+        if (!empty($_POST['module'])) {
+            $class = ExtensionRegistry::module((string)$_POST['module']) ? ltrim((string)$_POST['module'], '\\') : '';
+            foreach (StructureRepository::extensionFields($class, $this->table) as $row) {
                 $field = new $row['class']($row);
                 $value = $field->getPost(true);
                 $value = preg_replace("@^'(.+)'$@", '$1', $value);

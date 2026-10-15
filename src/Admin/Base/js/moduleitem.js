@@ -1,6 +1,6 @@
 function onChangeModule(select) {
-    var moduleId = select.value;
-    var params = {action: 'module_param', module_id: moduleId, item_id: $('#info-key-value').val()};
+    var module = select.value;
+    var params = {action: 'module_param', module: module, item_id: $('#info-key-value').val()};
 
     if (!$('.ajax-params-left').length) {
         $('.row-content .col-main').append('<div class="ajax-params-left">');

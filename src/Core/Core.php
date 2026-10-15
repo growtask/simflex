@@ -69,11 +69,10 @@ class Core
 
     protected static function initMenu(): void
     {
-        $q = 'SELECT t1.*, t2.class
-        FROM menu t1
-        LEFT JOIN component t2 ON t2.component_id=t1.component_id
-        WHERE t1.active=1
-        ORDER BY t1.npp';
+        $q = 'SELECT *, component AS class
+        FROM menu
+        WHERE active=1
+        ORDER BY npp';
 
         $rows = DB::assoc($q);
         foreach ($rows as $row) {

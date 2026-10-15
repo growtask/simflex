@@ -6,8 +6,8 @@ use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\ParamGroup;
 
 /**
- * Module or component with settings edited in the admin panel.
- * Values are stored serialized in module_item.params / component.params.
+ * Module with settings edited in the admin panel.
+ * Values are stored serialized in module_item.params.
  */
 interface HasAdminParams
 {

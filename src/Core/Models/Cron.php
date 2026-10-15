@@ -9,8 +9,6 @@ use Simflex\Core\ModelBase;
  * @property bool active
  * @property string timing
  * @property string name
- * @property int ext_id
- * @property int module_id
  * @property string plugin_name
  * @property string action
  * @property string cparams

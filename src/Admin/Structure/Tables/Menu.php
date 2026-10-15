@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
+use Simflex\Admin\Fields\FieldComponentSelect;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
@@ -83,18 +84,14 @@ class Menu extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'component_id',
-                    class: FieldInt::class,
+                    name: 'component',
+                    class: FieldComponentSelect::class,
                     label: 'Компонент',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
                             filter: true,
                             widthMob: '200',
-                            isFk: true,
-                            fkTable: 'component',
-                            fkKey: 'component_id',
-                            fkLabel: 'name',
                         ),
                     ],
                 ),

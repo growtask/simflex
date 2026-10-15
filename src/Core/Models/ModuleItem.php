@@ -3,21 +3,17 @@
 namespace Simflex\Core\Models;
 
 use Simflex\Core\ModelBase;
-use Simflex\Core\Models\Attrib\FieldOne;
 
 /**
  * @property int item_id
- * @property int module_id
+ * @property string module Module class, see \Simflex\Core\ExtensionRegistry
  * @property int menu_id
  * @property string posname
  * @property boolean active
  * @property int npp
  * @property string name
  * @property string params
- *
- * @property ?Module module
  */
-#[FieldOne('module', Module::class)]
 class ModuleItem extends ModelBase
 {
     protected static string $table = 'module_item';

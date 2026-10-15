@@ -7,7 +7,7 @@ use Simflex\Core\ModelBase;
 /**
  * @property int $menu_id
  * @property int $menu_pid
- * @property int $component_id
+ * @property string $component Component class, see \Simflex\Core\ExtensionRegistry
  * @property bool $active
  * @property bool $hidden
  * @property int $npp

@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\Base\Component;
 use Simflex\Admin\Base\ModuleItem;
 use Simflex\Admin\Base\Struct;
 use Simflex\Admin\Modules\Account\Account;
@@ -10,6 +9,7 @@ use Simflex\Admin\Notify\Collection;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
+use Simflex\Core\Page as CorePage;
 use Simflex\Core\Request;
 use Simflex\Core\User;
 
@@ -67,8 +67,6 @@ class Page
                 self::$driver = new Struct();
             } elseif (in_array($menuCurModel, ['module_item'])) {
                 self::$driver = new ModuleItem();
-            } elseif (in_array($menuCurModel, ['component'])) {
-                self::$driver = new Component();
             } else {
                 self::$driver = new Base();
             }
@@ -79,20 +77,15 @@ class Page
         if (!Core::$isAjax) {
             $curmenu = Core::menuCurItem();
             $q = "
-                SELECT t1.item_id, t1.module_id, t1.menu_id, t1.name, 0 is_title, t1.posname, t2.class, t1.params
-                FROM module_item t1
-                JOIN module t2 using(module_id)
-                WHERE t1.active = 1 and t2.type = 'admin'
-                ORDER BY t1.npp, t1.item_id
+                SELECT item_id, module, menu_id, name, 0 is_title, posname, params
+                FROM module_item
+                WHERE active = 1
+                ORDER BY npp, item_id
             ";
-            $rows = DB::assoc($q);
+            $rows = CorePage::moduleRows(DB::assoc($q), 'admin');
             foreach ($rows as $row) {
                 if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {
-                    $class = $row['class'];
-                    if (strpos($class, '\\') === false) {
-                        $class = "Simflex\Admin\Modules\\$class\\$class";
-                    }
-                    $mod = new $class($row);
+                    $mod = new $row['class']($row);
                     self::$positions[$row['posname']][] = $mod->execute();
                 }
             }

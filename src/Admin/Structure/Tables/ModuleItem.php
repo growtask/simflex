@@ -4,6 +4,7 @@ namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldInt;
+use Simflex\Admin\Fields\FieldModuleSelect;
 use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
@@ -79,18 +80,14 @@ class ModuleItem extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'module_id',
-                    class: FieldInt::class,
+                    name: 'module',
+                    class: FieldModuleSelect::class,
                     label: 'Модуль',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
                             filter: true,
                             onchange: 'onChangeModule(this)',
-                            isFk: true,
-                            fkTable: 'module',
-                            fkKey: 'module_id',
-                            fkLabel: 'name',
                         ),
                     ],
                 ),

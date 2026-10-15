@@ -66,22 +66,6 @@ class Cron extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'ext_id',
-                    class: FieldInt::class,
-                    label: 'Расширение',
-                    help: 'ID компонента',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            width: '180',
-                            isFk: true,
-                            fkTable: 'component',
-                            fkKey: 'component_id',
-                            fkLabel: 'class',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
                     name: 'plugin_name',
                     class: FieldString::class,
                     label: 'Плагин',

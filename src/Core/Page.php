@@ -32,13 +32,12 @@ class Page
         $com = Core::getComponent();
 
         $q = "
-            SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params, t2.postexec
-            FROM module_item t1
-            JOIN module t2 ON t2.module_id=t1.module_id and t2.type = 'site'
-            WHERE t1.active=1
-            ORDER BY t1.npp, t1.item_id
+            SELECT item_id, module, menu_id, posname, name, params
+            FROM module_item
+            WHERE active=1
+            ORDER BY npp, item_id
         ";
-        $rows = DB::assoc($q);
+        $rows = static::moduleRows(DB::assoc($q), 'site');
         $curmenu = Core::menuCurItem();
         foreach ($rows as $row) {
             if (!$row['postexec'] && (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id'])) {
@@ -92,14 +91,35 @@ class Page
 
     public static function moduleById(int $module_id): void
     {
-        $q = 'SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params
-        FROM module_item t1
-        JOIN module t2 ON t2.module_id=t1.module_id
-        WHERE t1.active=1 AND t1.item_id=' . $module_id;
-        if ($row = DB::result($q)) {
-            $module = new $row['class']($row);
+        $q = 'SELECT item_id, module, menu_id, posname, name, params
+        FROM module_item
+        WHERE active=1 AND item_id=' . $module_id;
+        $rows = static::moduleRows(DB::assoc($q));
+        if ($rows) {
+            $module = new $rows[0]['class']($rows[0]);
             echo $module->execute();
         }
+    }
+
+    /**
+     * Adds class and postexec from the modules declared in code, skips the items of unknown modules
+     *
+     * @param string|null $type site|admin
+     */
+    public static function moduleRows(array $rows, ?string $type = null): array
+    {
+        $out = [];
+        foreach ($rows as $row) {
+            $module = ExtensionRegistry::module((string)$row['module']);
+            if (!$module || ($type !== null && $module['type'] !== $type)) {
+                continue;
+            }
+            $row['class'] = ltrim($row['module'], '\\');
+            $row['postexec'] = $module['postexec'];
+            $out[] = $row;
+        }
+
+        return $out;
     }
 
     /**
