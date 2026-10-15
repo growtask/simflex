@@ -113,7 +113,7 @@ class Cache
             return ['array', json_encode($value, JSON_UNESCAPED_UNICODE)];
         }
         if (is_object($value)) {
-            return ['object', self::serialize($value)];
+            return ['object', \serialize($value)];
         }
         return ['null', ''];
     }

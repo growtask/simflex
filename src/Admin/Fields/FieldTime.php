@@ -45,7 +45,7 @@ class FieldTime extends Field
         if ($simple) {
             return $value;
         }
-        $ret = $this->e2n && $value === '' ? 'NULL' : "'" . Time::convert($value, $this->pattern, false) . "'";
+        $ret = $this->e2n && $value === '' ? null : Time::convert($value, $this->pattern, false);
         return $ret;
     }
 

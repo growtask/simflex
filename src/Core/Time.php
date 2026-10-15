@@ -79,7 +79,7 @@ class Time
      */
     public function asGMT(): string
     {
-        return self::convert($this->time, 'gmt');
+        return date(DATE_ATOM, $this->time);
     }
 
     /**
@@ -277,10 +277,10 @@ class Time
                 if (strlen($value) == 16)
                     $value .= ':00';
 
+                // dd/mm/yyyy hh:ii:ss
                 preg_match("/(\d{2})\/(\d{2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2})/", $value, $time_ar);
-                return mktime($time_ar[4], $time_ar[5], $time_ar[6], $time_ar[2], $time_ar[3], $time_ar[1]);
+                return mktime($time_ar[4], $time_ar[5], $time_ar[6], $time_ar[2], $time_ar[1], $time_ar[3]);
 
-                return 0;
                 break;
             case 'time':
                 $tmp = explode(':', $value);
@@ -546,10 +546,10 @@ class Time
 
         $beg_date_u = self::unix($begin_date);
         $end_date_u = self::unix($end_date);
-        $beg_year = self::convert($begin_date, "Y");
-        $end_year = self::convert($end_date, "Y");
-        $beg_month = self::convert($begin_date, "m");
-        $end_month = self::convert($end_date, "m");
+        $beg_year = (int)self::convert($begin_date, "Y", false);
+        $end_year = (int)self::convert($end_date, "Y", false);
+        $beg_month = (int)self::convert($begin_date, "m", false);
+        $end_month = (int)self::convert($end_date, "m", false);
         $ret = [];
 
         switch ($delimiter) {
@@ -562,8 +562,7 @@ class Time
                     $ret[$i]['period'] = $m . ' ' . $y;
                     $ret[$i]['period_sys'] = ($mi + 1 > 9 ? $mi + 1 : "0" . ($mi + 1)) . '.' . $y;
                     $ret[$i]['isnow'] = (int)date("m") == $mi + 1 && (int)date("Y") == $y;
-                    if ($mi < 9)
-                        $mi = '0' . ($mi + 1);
+                    $mi = sprintf('%02d', $mi + 1);
                     $ret[$i]['beg'] = $y . '-' . $mi . '-01 00:00:00';
                     $ret[$i]['end'] = $y . '-' . $mi . '-31 23:59:59';
                 }
@@ -576,8 +575,8 @@ class Time
                     $y = $beg_year + (floor((floor(($beg_month - 1) / 3) + $i) / 4));
                     $qi = (floor(($beg_month - 1) / 3) + $i % 4) % 4 + 1;
                     $ret[$i]['period'] = $qi . ' квартал ' . $y;
-                    $mib = self::zero($qi * 3 - 3);
-                    $mie = self::zero($qi * 3);
+                    $mib = sprintf('%02d', $qi * 3 - 2);
+                    $mie = sprintf('%02d', $qi * 3);
                     $ret[$i]['beg'] = $y . '-' . $mib . '-01 00:00:00';
                     $ret[$i]['end'] = $y . '-' . $mie . '-31 23:59:59';
                 }
@@ -660,12 +659,21 @@ class Time
 
         if (strpos($interval, " ")) {
             $unix = strtotime($interval, $unix);
-            return is_callable("self::$format") && !$toUnix ? self::$format($unix) : self::unix($unix);
         } elseif ((int)$interval) {
             $unix += (int)$interval;
-            return is_callable("self::$format") && !$toUnix ? self::$format($unix) : self::unix($unix);
+        } else {
+            return $value;
         }
-        return $value;
+
+        if ($toUnix) {
+            return $unix;
+        }
+        return match ($format) {
+            'normal' => self::normal($unix),
+            'mysql' => self::mysql($unix),
+            'gmt' => date(DATE_ATOM, $unix),
+            default => $unix,
+        };
     }
 
     /**

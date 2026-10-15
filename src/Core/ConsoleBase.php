@@ -59,7 +59,6 @@ class ConsoleBase
             $command .= ' | grep -v "timeout -s"';
         }
         $command .= ' | wc -l';
-        exec($command, $output);
         return (int)trim(shell_exec($command));
     }
 

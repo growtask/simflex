@@ -11,16 +11,16 @@ class FieldSpamCode extends Field
 
     public function html(): void
     {
-        $val = isset($_POST[$this->form][$this->name]) ? $_POST[$this->form][$this->name] : '';
         echo '<span class="plug-form-spamcode">';
         echo '</span>';
     }
 
     public function &check(): array
     {
+        $formName = $this->form->getName();
         $err = [];
-        $_POST[$this->form][$this->name] = isset($_POST[$this->form][$this->name]) ? $_POST[$this->form][$this->name] : '';
-        if ($_POST[$this->form][$this->name] === '' || $_POST[$this->form][$this->name] !== $_SESSION['spamcode']) {
+        $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
+        if ($_POST[$formName][$this->name] === '' || $_POST[$formName][$this->name] !== ($_SESSION['spamcode'] ?? null)) {
             $err[$this->name][] = "спам-код введен неверно";
         }
         return $err;

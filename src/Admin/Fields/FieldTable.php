@@ -88,7 +88,7 @@ class FieldTable extends Field
 
     public static function makeValue(array $struct, array $values): string
     {
-        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE);
+        return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 
     public function input($value): string

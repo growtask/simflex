@@ -147,12 +147,15 @@ class Core
      * `value (k = 'greeting') = 'Hello {name}'`, then
      * `Core::siteParam('greeting', 'Hello {name}', ['name' => 'John'])` equals to `'Hello John'`
      *
+     * If the setting is not found and $key is given, it is created in `settings` table
+     * with $defaultValue (scalar or null), so it becomes editable in admin panel.
+     *
      * @param string|bool $key false to get all settings, otherwise alias
-     * @param mixed $defultValue Default value if setting not found
+     * @param mixed $defaultValue Default value if setting not found
      * @param array $interp Array of values to interpolate
      * @return array|bool|string|string[] Value of setting
      */
-    public static function siteParam(string|bool $key = false, mixed $defultValue = null, array $interp = []): mixed
+    public static function siteParam(string|bool $key = false, mixed $defaultValue = null, array $interp = []): mixed
     {
         if (!self::$site_params) {
             $q = "SELECT alias, value FROM settings";
@@ -165,11 +168,22 @@ class Core
         if ($key === false) {
             return self::$site_params;
         }
-        if (!isset(self::$site_params[$key])) {
-            self::$site_params[$key] = $defultValue;
-            $q = "INSERT INTO settings(name, alias, value) VALUES('New parameter')";
+        if (!array_key_exists($key, self::$site_params)) {
+            self::$site_params[$key] = $defaultValue;
+            if ($key !== true && $key !== '' && (is_scalar($defaultValue) || is_null($defaultValue))) {
+                $type = match (true) {
+                    is_int($defaultValue) => 'int',
+                    is_bool($defaultValue) => 'bool',
+                    default => 'string',
+                };
+                $value = is_bool($defaultValue) ? (int)$defaultValue : (string)$defaultValue;
+                DB::query(
+                    "INSERT INTO settings (name, alias, value, type, enum_values) VALUES (?, ?, ?, ?, '')",
+                    [$key, $key, $value, $type]
+                );
+            }
         }
-        $value = self::$site_params[$key] ?? $defultValue;
+        $value = self::$site_params[$key] ?? $defaultValue;
         if (is_string($value)) {
             $value = str_replace(
                 array_map(fn($k) => '{' . $k . '}', array_keys($interp)),

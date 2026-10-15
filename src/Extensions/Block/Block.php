@@ -2,7 +2,7 @@
 
 namespace Simflex\Extensions\Block;
 
-use Simflex\Core\ModuleBase;
+use Simflex\Extensions\Code\Code;
 
 /**
  * Выводит любой хранимый HTML-контент, формируемый в HTML редакторе

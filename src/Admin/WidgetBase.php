@@ -2,10 +2,9 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Core\ExtBase;
 use Simflex\Admin\Core;
 
-abstract class WidgetBase extends ExtBase
+abstract class WidgetBase
 {
 
     protected array $data;
@@ -36,7 +35,7 @@ abstract class WidgetBase extends ExtBase
             $content = ob_get_clean();
             if ($content) {
                 ob_start();
-                include $_SERVER['DOCUMENT_ROOT'] . '/admin/theme/tpl/widget.layout.tpl';
+                include __DIR__ . '/theme/tpl/widget.layout.tpl';
                 return ob_get_clean();
             }
         }

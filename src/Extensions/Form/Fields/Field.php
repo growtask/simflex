@@ -2,7 +2,6 @@
 
 namespace Simflex\Extensions\Form\Fields;
 
-use Simflex\Extensions\Form\Fields\SFDB;
 use Simflex\Extensions\Form\ModuleForm;
 use Simflex\Core\DB;
 
@@ -99,10 +98,8 @@ abstract class Field
             $this->v_unique = is_array($this->v_unique) ? $this->v_unique : [];
             $this->v_unique['key'] = isset($this->v_unique['key']) ? (string)$this->v_unique['key'] : '';
             if ($this->v_unique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->v_unique['key'], $key)) {
-                $q = "SELECT COUNT(*) cnt FROM #__" . $key[1] . " WHERE " . $key[2] . "='" . SFDB::escape(
-                        $_POST[$formName][$this->name]
-                    ) . "'";
-                if ((int)DB::result($q, 'cnt') > 0) {
+                $q = "SELECT COUNT(*) cnt FROM " . DB::wrapName($key[1]) . " WHERE " . DB::wrapName($key[2]) . " = ?";
+                if ((int)DB::result($q, 'cnt', [$_POST[$formName][$this->name]]) > 0) {
                     $err[$this->name][] = empty($this->v_unique['comment']) ? "занято" : $this->v_unique['comment'];
                 }
             }

@@ -66,7 +66,7 @@ class AdminContent extends Base
     protected function initTable(): void
     {
         parent::initTable();
-        if ($_GET['action'] ?? '' == 'form') {
+        if (($_GET['action'] ?? '') == 'form') {
             return;
         }
 

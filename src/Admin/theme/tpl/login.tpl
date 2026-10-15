@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="<?=asset('css/styles.min.css');?>" />
         <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
+        <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
         <title>Simflex Admin</title>
     </head>

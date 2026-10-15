@@ -164,7 +164,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public static function enumValues(string $fieldName, bool $withBuffer = true): array
     {
         $closure = fn() => DB::enumValues(static::$table, $fieldName);
-        if ($withBuffer && class_exists(' Buffer')) {
+        if ($withBuffer) {
             return Buffer::getOrSet('enumValues.' . static::$table . ".$fieldName", $closure);
         }
 
@@ -187,7 +187,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         ?string $limit = null,
         bool|string $assocKey = false
     ): array {
-        return static::findAdv()->andWhere($where)->orderBy($orderBy)->limit($limit)->all($assocKey);
+        return static::findAdv()->andWhere($where)->orderBy($orderBy)->limit($limit ?? '')->all($assocKey);
     }
 
     /**

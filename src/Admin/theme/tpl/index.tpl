@@ -5,7 +5,6 @@ use Simflex\Core\Container;
 
 \Simflex\Admin\Plugins\Alert\Alert::init();
 
-Page::js('/theme/default/js/cookie.js');
 Page::coreJs('/theme/js/table.js');
 Page::coreJs('/theme/js/vtable.js');
 
@@ -20,7 +19,7 @@ Page::coreJs('/theme/js/vtable.js');
 
     <link rel="stylesheet" href="<?= asset('css/styles.min.css') ?>"/>
     <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
-    <link rel="shortcut icon" href="<?= asset('img/favicon.ico') ?>" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
     <link rel="stylesheet" href="/vendor/growtask/simflex-file-manager/src/assets/css/styles.css"/>
     <script src="https://cdn.sn9.ru/js/jquery/3.7.1/jquery.min.js"></script>

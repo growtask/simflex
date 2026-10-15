@@ -41,20 +41,6 @@ class FieldEnum extends  FieldString
                                 </div>';
 
         return $select;
-
-        $this->value = $value;
-        $disabled = 1 ? "" : " disabled";
-        $this->select = '<select' . $disabled . ' class=" form-control"' . ($this->onchange ? ' onchange="' . $this->onchange . '"' : '') . ' name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . '>';
-        $values = $this->fetchValues($this->table, $this->name);
-        if ($this->e2n) {
-            $this->select .= '<option value=""></option>';
-        }
-        foreach ($values as $valAlias => $val) {
-            $selected = $value == $valAlias ? ' selected' : '';
-            $this->select .= '<option value="' . $valAlias . '"' . $selected . '>' . $val . '</option>';
-        }
-        $this->select .= '</select>';
-        return $this->select;
     }
 
     protected function fetchValues(): array

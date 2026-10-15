@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 
-use Simflex\Admin\Fields\AdminBase;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
@@ -68,7 +67,7 @@ DATA;
     
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        return $this->e2n && $_POST[$this->name] === '' ? 'NULL' : (int)$_POST[$this->name];
+        return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
     }
 
     public static function typeLabel(): string

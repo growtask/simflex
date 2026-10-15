@@ -167,11 +167,7 @@ class Core
 
     public static function siteParam($key): mixed
     {
-        if (!isset(self::$site_params[$key])) {
-            self::$site_params[$key] = '';
-            $q = "INSERT INTO settings(name, alias, value) VALUES('Новый параметр')";
-        }
-        return isset(self::$site_params[$key]) ? self::$site_params[$key] : '';
+        return self::$site_params[$key] ?? '';
     }
 
 }

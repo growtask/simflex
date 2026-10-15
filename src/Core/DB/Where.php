@@ -124,6 +124,7 @@ class Where implements ArrayAccess
                     foreach ($value as $val) {
                         $values[] = ':' . $idCrc . '_' . $i;
                         $bind[$idCrc . '_' . $i] = $val;
+                        $i++;
                     }
 
                     $values = implode(',', $values);

@@ -73,18 +73,20 @@ class Sms
             $from = $row['sender'];
         }
 
+        $driverId = null;
         if (empty(Core::siteParam('send_deny_sms'))) {
             $driverInstance = self::getDriver();
             if (empty($driverInstance)) {
                 return false;
             }
+            $driverId = (int)$driverInstance->getConfig()['driver_id'];
             $sendResult = $driverInstance->send($phone, $text, $from, $smsId);
         } else {
             $sendResult = ['success' => true, 'driver_sms_id' => '999', 'price' => 1, 'error_text' => '', 'error_code' => 0];
         }
 
         $set = ["time_send = now(), state = '" . ($sendResult['success'] ? 'send' : 'error') . "'"];
-        $set[] = "driver_id = {$driverInstance->getConfig()['driver_id']}";
+        $set[] = "driver_id = " . ($driverId ?? 'NULL');
         if (!empty($sendResult['error_text'])) {
             $set[] = "error_text = '" . DB::escape($sendResult['error_text']) . "'";
             $set[] = "error_code = " . (int)$sendResult['error_code'];
@@ -122,8 +124,15 @@ class Sms
         if (!isset($driverInfo['driver_id'])) {
             return null;
         }
-        include_once dirname(__FILE__) . "/drivers/{$driverInfo['alias']}/driver.class.php";
-        $driverClass = 'Driver' . ucfirst($driverInfo['alias']);
+        // драйверы лежат в Core/Sms/: alias "smpp" => Simflex\Core\Sms\DriverSmpp
+        $driverClass = 'Simflex\\Core\\Sms\\Driver' . ucfirst((string)$driverInfo['alias']);
+        if (!class_exists($driverClass) || !is_subclass_of($driverClass, DriverBase::class)) {
+            Log::error('Sms: driver class {class} not found for alias "{alias}"', [
+                'class' => $driverClass,
+                'alias' => $driverInfo['alias'],
+            ]);
+            return null;
+        }
         return new $driverClass($driverInfo);
     }
 
@@ -144,12 +153,12 @@ class Sms
     public static function renewStates(): void
     {
         $q = "SELECT * FROM sms_log WHERE state = 'send' AND driver_id IS NOT NULL AND driver_sms_id IS NOT NULL LIMIT 100";
-        $rows = [];
+        $rows = DB::assoc($q) ?: [];
         $q = "SELECT * FROM sms_driver WHERE active = 1";
-        $drivers = DB::assoc($q, 'driver_id');
+        $drivers = DB::assoc($q, 'driver_id') ?: [];
         foreach ($rows as $row) {
             if ($driver = $drivers[$row['driver_id']] ?? null) {
-                self::renewState($row, $drivers[$row['driver_id']]);
+                self::renewState($row, $driver);
             } else {
                 $set = ["state = '" . DriverBase::STATE_ERROR . "'"];
                 $set[] = "time_delivery = NOW()";
@@ -161,6 +170,9 @@ class Sms
         }
         foreach ($drivers as $driver) {
             $driverInstance = self::createDriverByInfo($driver);
+            if (!$driverInstance) {
+                continue;
+            }
             try {
                 $driverInstance->readDeliveries();
             } catch (\BadMethodCallException $e) {
@@ -171,7 +183,10 @@ class Sms
 
     private static function renewState($sms, $driverInfo): void
     {
-        $driverInstance = self::getDriver($driverInfo);
+        $driverInstance = self::createDriverByInfo($driverInfo);
+        if (!$driverInstance) {
+            return;
+        }
         try {
             $result = $driverInstance->getState($sms['driver_sms_id']);
         } catch (\BadMethodCallException $e) {

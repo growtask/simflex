@@ -9,7 +9,7 @@ class Request implements \Simflex\Core\DI\Service
     protected bool $isHttps;
     protected string $host;
     protected string $requestMethod;
-    protected array $headers;
+    protected array $headers = [];
     protected array $getParams;
     protected array $postParams;
     protected array $reqParams;
@@ -32,15 +32,15 @@ class Request implements \Simflex\Core\DI\Service
     public function __construct()
     {
         // cache values
-        $this->host = $_SERVER['HTTP_HOST'];
+        $this->host = (string)($_SERVER['HTTP_HOST'] ?? '');
         $this->isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off';
-        $this->requestMethod = $_SERVER['REQUEST_METHOD'];
+        $this->requestMethod = (string)($_SERVER['REQUEST_METHOD'] ?? 'GET');
         $this->getParams = $_GET;
         $this->postParams = $_POST;
         $this->reqParams = $_REQUEST;
         $this->cookies = $_COOKIE;
         $this->files = $_FILES;
-        $this->requestBody = file_get_contents('php://input');
+        $this->requestBody = (string)file_get_contents('php://input');
 
         foreach ($_SERVER as $key => $value) {
             if (str_starts_with($key, 'HTTP_')) {
@@ -50,7 +50,7 @@ class Request implements \Simflex\Core\DI\Service
         }
 
         // parse and compose URL
-        $this->setPath(parse_url($_SERVER['REQUEST_URI'])['path'] ?? '/');
+        $this->setPath(parse_url((string)($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
     }
 
     public function setPath(string $path): void

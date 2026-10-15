@@ -45,7 +45,7 @@ class FieldDateTime extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}.[0-9]{2}$@', $value)) {
             $value = substr($value, 6, 4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2) . ' ' . substr($value, 11, 2) . ':' . substr($value, 14, 2) . ':00';
         }
-        return $this->e2n && $value === '' ? 'NULL' : "" . DB::escape($value) . "";
+        return $this->e2n && $value === '' ? null : "" . DB::escape($value) . "";
     }
 
     public function show($row): void

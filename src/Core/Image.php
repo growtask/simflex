@@ -4,9 +4,6 @@
 namespace Simflex\Core;
 
 
-use Simflex\Core\named;
-use Simflex\Core\PlugFS;
-use Simflex\Core\type;
 use Simflex\Core\File;
 
 class Image extends File
@@ -16,16 +13,26 @@ class Image extends File
     protected string $uploadedFilePath;
 
     /**
-     *
-     * @param type $path
-     * @param type $sizes
+     * @var array<string, string> subdir => "WxH" или "WxHx1" (с обрезкой)
+     */
+    public array $sizes = [];
+
+    /**
+     * @var \GdImage|string|null GD-изображение; для SVG - исходный XML
+     */
+    protected \GdImage|string|false|null $img = null;
+
+    /**
+     * @param string $path
+     * @param array $sizes subdir => "WxH"
      */
     public function __construct($path, $sizes = [])
     {
         parent::__construct($path);
         $this->sizes = is_array($sizes) ? $sizes : [];
         $this->sizes['source'] = '2000x10000';
-        if (!in_array('90x90', [$this->sizes])) {
+        // preview/ используется админкой (FieldImage) для миниатюр, поэтому создается всегда
+        if (!isset($this->sizes['preview'])) {
             $this->sizes['preview'] = '90x90';
         }
     }
@@ -97,6 +104,14 @@ class Image extends File
 
     public function save(): void
     {
+        if (is_string($this->img)) {
+            // SVG - векторное изображение, масштабирование не требуется: кладем исходник во все размеры
+            copy($this->uploadedFilePath, $this->outputMkDirReturnFilePath('raw'));
+            foreach ($this->sizes as $subdir => $_) {
+                file_put_contents($this->outputMkDirReturnFilePath($subdir), $this->img);
+            }
+            return;
+        }
         if ($this->img) {
             copy($this->uploadedFilePath, $this->outputMkDirReturnFilePath('raw'));
             $img = null;
@@ -212,9 +227,11 @@ class Image extends File
 
             $this->img = imagecreatefrompng($filename);
         }
+        // исходник для raw/ в save()
+        $this->uploadedFilePath = $filename;
 
         if ($leaveName) {
-            $this->name = PlugFS::fileName($filename);
+            $this->name = pathinfo($filename, PATHINFO_FILENAME);
         }
     }
 
@@ -277,7 +294,7 @@ class Image extends File
     /**
      *
      * @param string $filename
-     * @param named constant (optional) $image_type (IMAGETYPE_JPEG, IMAGETYPE_GIF, ...)
+     * @param int|false $image_type (optional) IMAGETYPE_JPEG, IMAGETYPE_GIF, ...
      * @param int (optional) $compression Процент сжатия качества
      * @param int (optional) $permissions Только для *nix систем
      */

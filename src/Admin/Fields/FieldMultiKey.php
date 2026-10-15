@@ -3,7 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 
-use Simflex\Admin\Fields\AdminBase;
+use Simflex\Admin\Base;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
@@ -107,10 +107,7 @@ for ($i = 0; $i < count($rows); ++$i) {
         if (!isset(self::$buffer)) {
             $q = "SELECT {$this->params['key']}, {$this->params['key_alias']} FROM {$this->params['table_values']}";
             $values = DB::assoc($q, $this->params['key']);
-            $where = '';
-            if (class_exists('AdminBase')) {
-                $where = AdminBase::$currentWhere;
-            }
+            $where = Base::$currentWhere;
             $q = "
                 SELECT $this->tablePk,
                     (SELECT {$this->params['key_alias']} FROM {$this->params['table_values']} WHERE {$this->params['key']} = r.{$this->params['key']}) label

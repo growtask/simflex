@@ -33,12 +33,14 @@ class FieldCategorySelect extends Field
 
     protected function syncCategories(): void
     {
-        $realCats = DB::assoc('SELECT title as name FROM content WHERE template_id = 6');
-        $existing = DB::assoc('SELECT name FROM shared_category');
+        // DB::assoc возвращает список строк-массивов: array_diff по ним сравнивает "Array" с "Array",
+        // поэтому сравниваем плоские списки имён
+        $realCats = array_column(DB::assoc('SELECT content_id, title FROM content WHERE template_id = 6') ?: [], 'content_id', 'title');
+        $existing = array_column(DB::assoc('SELECT name FROM shared_category') ?: [], 'name');
 
-        $toAdd = array_diff($realCats, $existing);
-        foreach ($toAdd as $cat) {
-            DB::query('INSERT INTO shared_category (name, linked_to) VALUES (?, ?)', [$cat['name'], DB::result('SELECT content_id FROM content WHERE title = ? AND template_id = 6', 'content_id', [$cat['name']])]);
+        $toAdd = array_diff(array_map('strval', array_keys($realCats)), $existing);
+        foreach ($toAdd as $name) {
+            DB::query('INSERT INTO shared_category (name, linked_to) VALUES (?, ?)', [$name, $realCats[$name]]);
         }
     }
 }

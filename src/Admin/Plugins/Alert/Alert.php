@@ -112,7 +112,7 @@ class Alert
     public static function getHTML(string $page = ''): string|false
     {
         ob_start();
-        self::echoAll($page);
+        self::output($page);
         return ob_get_clean();
     }
 
@@ -123,12 +123,10 @@ class Alert
     public static function has(string $page = ''): int|bool
     {
         self::init();
-        $has = false;
-        $has |= isset(self::$s[$page]["error"]) && count(self::$s[$page]["error"]);
-        $has |= isset(self::$s[$page]["success"]) && count(self::$s[$page]["success"]);
-        $has |= isset(self::$s[$page]["warning"]) && count(self::$s[$page]["warning"]);
-        $has |= isset(self::$s[$page]["info"]) && count(self::$s[$page]["info"]);
-        return $has;
+        return !empty(self::$s[$page]["danger"])
+            || !empty(self::$s[$page]["success"])
+            || !empty(self::$s[$page]["warning"])
+            || !empty(self::$s[$page]["info"]);
     }
 
     /**
@@ -138,7 +136,7 @@ class Alert
     public static function hasErrors(string $page = ''): bool
     {
         self::init();
-        return isset(self::$s[$page]["error"]) && count(self::$s[$page]["error"]);
+        return !empty(self::$s[$page]["danger"]);
     }
 
     protected static function echoSpecified(string $page, string $section): void

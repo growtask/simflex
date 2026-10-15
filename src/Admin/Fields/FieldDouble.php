@@ -43,7 +43,7 @@ class FieldDouble extends Field
         }
         $ret = str_replace(',', '.', $ret);
         $ret = preg_replace("@[^\d+\.]@", '', $ret);
-        return $this->e2n && $ret === '' ? 'NULL' : $ret;
+        return $this->e2n && $ret === '' ? null : $ret;
     }
 
     public static function typeLabel(): string

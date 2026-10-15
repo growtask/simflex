@@ -2,9 +2,7 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\DBWhere;
 use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\PlugTime;
 use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldDateTime;
 use Simflex\Admin\Fields\FieldFile;
@@ -997,7 +995,7 @@ class Base
             echo json_encode($json);
             return $json['valid'];
         } else {
-            return count($errors) ? false : true;
+            return count($this->errors) ? false : true;
         }
     }
 
@@ -1064,13 +1062,13 @@ class Base
                 $q = "UPDATE `$this->table` SET params = '" . serialize(
                         $params
                     ) . "' WHERE {$this->pk->name} = {$row['id']}";
-                $success &= DB::query($q);
+                $success = DB::query($q) !== false && $success;
             }
         }
 
         if (count($set)) {
             $q = "UPDATE `$this->table` SET " . implode(', ', $set) . " WHERE {$this->pk->name} in ($ids)";
-            $success &= DB::query($q);
+            $success = DB::query($q) !== false && $success;
         }
 
         if ($success) {
@@ -1254,7 +1252,8 @@ class Base
                     $cinfo = DB::columnInfo($this->table, $field->name);
                     if (empty($cinfo['Extra'])) {
                         $value = $field->getPOST();
-                        if ($value) {
+                        // null — очистка поля (e2n), пустая строка — оставить как есть
+                        if ($value !== '') {
                             $q .= " " . DB::wrapName($field->name) . "=?,";
                             $vals[] = $value;
                         }
@@ -1396,16 +1395,6 @@ class Base
         return $row;
     }
 
-    /**
-     * @param bool [optional = true] $withKeys - Если true, ключи массива будут ID записей
-     */
-    protected function getRows(?DBWhere $where = null, bool $withKeys = true): array|bool
-    {
-        $q = "SELECT * FROM `$this->table` $where";
-        $rows = DB::assoc($q, $withKeys ? $this->pk->name : false);
-        return $rows;
-    }
-
 
     protected function showDetailExtra($row): void
     {
@@ -1426,7 +1415,6 @@ class Base
 
     protected function showDetailGetRow(int $id): array|false|null
     {
-        $this->vfields = $this->fields;
         $q = $this->getSelectSelect() . $this->getSelectFrom() . "\nWHERE `{$this->pk->name}` = $id";
         $row = DB::result($q);
         return $row;

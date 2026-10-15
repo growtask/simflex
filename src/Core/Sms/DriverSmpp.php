@@ -5,7 +5,7 @@ namespace Simflex\Core\Sms;
 use PhpSmpp\Service\Sender as SmppSender;
 use PhpSmpp\SMPP\SMPP;
 use PhpSmpp\SMPP\Unit\Sm;
-use Simflex\Core\Sms\PlugPhone;
+use Simflex\Core\Helpers\Phone;
 use Simflex\Core\Sms\DriverBase;
 
 /**
@@ -36,19 +36,19 @@ class DriverSmpp extends DriverBase
         try {
             $error = '';
             $errorCode = 0;
-            $phone = PlugPhone::extract7($phone);
+            $phone = Phone::extract7($phone);
             $service = new SmppSender([$this->config['url']], $this->config['login'], $this->config['pass'], false);
             $service->client->csmsMethod = \PhpSmpp\SMPP\SmppClient::CSMS_8BIT_UDH;
-            $driverSmsId = $service->send($phone, $text, 'CigMall');
+            $driverSmsId = $service->send($phone, $text, (string)$from);
         } catch (\Throwable $e) {
             $error = $e->getMessage();
             $errorCode = $e->getCode() ?: 500;
             $driverSmsId = 0;
         }
 
-        if (!empty($smpp)) {
+        if (!empty($service)) {
             try {
-                $smpp->close();
+                $service->client->close();
             } catch (\Throwable $e) {
 
             }

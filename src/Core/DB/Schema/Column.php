@@ -138,7 +138,15 @@ class Column extends TableElementBase
             return DB::wrapString($this->params->default);
         }
 
-        return $this->params->default;
+        if (is_null($this->params->default)) {
+            return 'NULL';
+        }
+
+        if (is_bool($this->params->default)) {
+            return $this->params->default ? '1' : '0';
+        }
+
+        return (string)$this->params->default;
     }
 
     /**
@@ -159,7 +167,7 @@ class Column extends TableElementBase
         $sql .= $this->params->isNull ? 'NULL ' : 'NOT NULL ';
 
         if ($this->params->defaultSet) {
-            $sql .= 'DEFAULT ' . $this->prepareDefault();
+            $sql .= 'DEFAULT ' . $this->prepareDefault() . ' ';
         }
 
         if ($this->params->isPrimaryKey) {

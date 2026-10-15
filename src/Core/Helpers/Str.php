@@ -103,7 +103,7 @@ class Str
             case 2:
             case 3:
             case 4:
-                $out .= $isNeuter ? 'я' : ($isMale ? 'а' : (str_ends_with('ч') ? 'и' : 'ы'));
+                $out .= $isNeuter ? 'я' : ($isMale ? 'а' : (preg_match('/[гкхжчшщ]$/u', $s) ? 'и' : 'ы'));
                 break;
             default:
                 $out .= $isNeuter ? 'ий' : ($isMale ? 'ов' : '');

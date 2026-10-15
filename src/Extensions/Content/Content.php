@@ -27,12 +27,14 @@ class Content extends ComponentBase
 
     public function get(string $path = ''): ?ModelContent
     {
-        if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
+        $path = $path ?: Container::getRequest()->getPath();
+        if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path, 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
         }
 
-        if (!$content) {
-            Log::warning('active content with path {path} not found', ['path' => $path ?: Container::getRequest()->getPath()]);
+        // /404 is the service page that missing paths are redirected to
+        if (!$content && $path !== '/404') {
+            Log::warning('active content with path {path} not found', ['path' => $path]);
         }
 
         return $content;

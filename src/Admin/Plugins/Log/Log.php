@@ -9,13 +9,10 @@ class Log
 
     public static function a(string $action, string $data): void
     {
-        $action = DB::escape($action);
-        $data = DB::escape($data);
-        $browser = DB::escape($_SERVER['HTTP_USER_AGENT']);
-        $set = ["action = '$action', ip = '{$_SERVER['REMOTE_ADDR']}', browser = '$browser'"];
-        $set[] = "data = '$data'";
-        $q = "INSERT INTO log SET " . implode(', ', $set);
-        DB::query($q);
+        DB::query(
+            "INSERT INTO log (action, ip, browser, data) VALUES (?, ?, ?, ?)",
+            [$action, (string)($_SERVER['REMOTE_ADDR'] ?? ''), (string)($_SERVER['HTTP_USER_AGENT'] ?? ''), $data]
+        );
     }
 
 }

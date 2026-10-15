@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 
-use Simflex\Core\PlugPunyCode;
 use Simflex\Core\DB;
 use Simflex\Core\Helpers\Phone;
 use Simflex\Core\Mail;
@@ -108,38 +107,38 @@ class User
             return ['success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors)];
         }
 
-        $q = "SELECT user_id FROM user WHERE login = '$login'";
-        $user = DB::result($q, 0);
+        $user = DB::result('SELECT user_id FROM user WHERE login = ?', 0, [$login]);
         if ($user) {
             return ['success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован'];
         }
 
-        $q = "SELECT user_id FROM user WHERE email = '$email'";
-        $user = DB::result($q, 0);
+        $user = DB::result('SELECT user_id FROM user WHERE email = ?', 0, [$email]);
         if ($user) {
             return ['success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован'];
         }
 
         $passMD5 = md5($pass);
         $hash = md5(microtime());
-        $set = ["login = '$login', email = '$email', name = '$name', password = '$passMD5', hash = '$hash'"];
-        $q = "INSERT INTO user SET " . implode(', ', $set);
-        DB::query($q);
+        DB::query(
+            'INSERT INTO user SET login = ?, email = ?, name = ?, password = ?, hash = ?',
+            [$login, $email, $name, $passMD5, $hash]
+        );
         $userId = DB::insertId();
 
         if (!$userId) {
             return ['success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации'];
         }
 
-        $HTTPHost = $_SERVER['HTTP_HOST'];
-        if (class_exists('PlugPunyCode')) {
-            $HTTPHost = PlugPunyCode::httpHost();
+        $HTTPHost = (string)($_SERVER['HTTP_HOST'] ?? '');
+        if (function_exists('idn_to_utf8') && str_contains($HTTPHost, 'xn--')) {
+            $HTTPHost = idn_to_utf8($HTTPHost) ?: $HTTPHost;
         }
 
         // Отправляем письмо об успешной регистрации
-        if ($email) {
+        $mailTpl = $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail/user_create.tpl';
+        if ($email && is_file($mailTpl)) {
             ob_start();
-            include $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail/user_create.tpl';
+            include $mailTpl;
             $html = ob_get_contents();
             ob_end_clean();
             Mail::staticSend($email, "Регистрация на сайте $HTTPHost", $html);

@@ -24,7 +24,8 @@ class ModuleItem extends ModelBase
 
     public function getParams(): array
     {
-        return unserialize($this->params);
+        $params = $this->params ? @unserialize($this->params) : [];
+        return is_array($params) ? $params : [];
     }
 
     public function setParams(array $params): void

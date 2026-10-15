@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 
-use Simflex\Admin\Fields\PlugJQuery;
 use Simflex\Core\Image;
 use Simflex\Admin\Fields\FieldFile;
 
@@ -26,21 +25,13 @@ class FieldImage extends FieldFile
         }
     }
 
-    public function loadUI(bool $onForm = false): void
-    {
-        parent::loadUI($onForm);
-        if (!$onForm && class_exists('PlugJQuery')) {
-            PlugJQuery::plugFancybox();
-        }
-    }
-
     public function input($value): string
     {
-        $imgPath = '/uf/images/' . $this->path . 'preview/' . $value;
         $defaultImg = asset('img/default-img.png');
+        $imgPath = $value ? '/uf/images/' . $this->path . 'preview/' . $value : $defaultImg;
 
         $imgFile = $_SERVER['DOCUMENT_ROOT'] . $imgPath;
-        $imgSize = is_file($imgFile) ? filesize($imgFile) : 0;
+        $imgSize = $value && is_file($imgFile) ? filesize($imgFile) : 0;
         $sizeDenom = 'б';
         if ($imgSize > 1024) {
             $imgSize /= 1024;
@@ -110,48 +101,6 @@ class FieldImage extends FieldFile
 DATA;
 
         return $s;
-
-        // http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image
-        $thumb = $thumbNoImage = "/vendor/growtask/simflex/src/Admin/theme/img/noimage.90x90.gif";
-        $source = '';
-        $imgPath = 'uf/images/' . $this->path . 'preview/' . $value;
-        if (is_file("../$imgPath")) {
-            $thumb = "/$imgPath";
-            $source = '/uf/images/' . $this->path . 'source/' . $value;
-        }
-
-        $s = '<div class="fileinput fileinput-new" data-provides="fileinput" style="float: left">';
-        $s .= '
-            <div class="fileinput-new thumbnail" style="max-width: 90px; max-height: 90px; float: left">
-                ' . ($source ? '<a href="' . $source . '" class="fancybox"><img src="' . $thumb . '" alt="" /></a>' : '<img src="' . $thumb . '" alt="" />') . '
-                <input type="hidden" class="thumb-noimage" value="' . $thumbNoImage . '" />
-            </div>
-            <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 90px; max-height: 90px; float: left"></div>
-        ';
-        if (!$this->readonly) {
-            $s .= '
-                <div style="padding-left: 15px; float: left">
-                    <span class="btn btn-default btn-file">
-                        <span class="fileinput-new"> Выбрать изображение </span>
-                        <span class="fileinput-exists"> Выбрать изображение </span>
-                        <input type="file" name="' . $this->name . '">
-                    </span>
-                    <a href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput"> Отмена </a>
-                </div>
-            ';
-            $s .= '<input type="hidden" name="' . $this->name . '_old" value="' . $value . '" />';
-        }
-        $s .= '</div>';
-        if (is_file("../uf/images/{$this->path}source/$value")) {
-            $s .= '<p class="form-control-static" style="display: block; float: left; padding-left: 20px">';
-            $s .= '<span class="s11">' . round(filesize("../uf/images/{$this->path}source/$value") / 1024) . ' кБ</span>';
-            if (!$this->required && !$this->readonly) {
-                $s .= ' &nbsp; <a href="javascript:;" onclick="deleteField(this)">удалить</a>';
-            }
-            $s .= '</p>';
-        }
-        $s .= '<div class="clearfix"></div>';
-        return $s;
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -168,9 +117,11 @@ DATA;
     public function showDetail($row): string
     {
         $value = $row[$this->name];
+        $defaultImg = asset('img/default-img.png');
+        $src = $value ? '/uf/images/' . $this->path . 'preview/' . $value : $defaultImg;
 
         return '  <div class="table__row-photo">
-                            <img src="/uf/images/'.$this->path.'preview/' . $value . '" onerror="this.src=`'.asset('img/default-img.png').'`" alt="" />
+                            <img src="' . $src . '" onerror="this.src=`' . $defaultImg . '`" alt="" />
                         </div>';
     }
 

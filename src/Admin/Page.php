@@ -37,12 +37,6 @@ class Page
             return;
         }
 
-        $notify = Collection::getInstance();
-        if (isset($_GET['sfnotify'])) {
-            self::$content = $notify->ajaxData();
-            return;
-        }
-
         if ($widgetId = (int)@$_GET['sfwidget']) {
             $q = "SELECT * FROM admin_widget WHERE active = 1 AND widget_id = $widgetId";
             $row = DB::result($q);
@@ -72,7 +66,7 @@ class Page
         if (!self::$driver) {
             // todo: lol fix this
             if (Container::getRequest()->getPath() == '/admin/account/') {
-                self::$driver = new Account([]);
+                self::$driver = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
             } elseif (in_array($menuCurModel, ['module_param', 'content_template_param'])) {
                 self::$driver = new Struct();
             } elseif (in_array($menuCurModel, ['module_item'])) {

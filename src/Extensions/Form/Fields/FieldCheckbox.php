@@ -9,8 +9,9 @@ class FieldCheckbox extends Field
 
     public function html(): void
     {
-        $val = isset($_POST[$this->form][$this->name]) ? $_POST[$this->form][$this->name] : $this->defval;
-        echo '<span class="plug-form-field"><input type="checkbox" name="', $this->form, '[', $this->name, ']', '" ', empty($val) ? '' : 'checked="checked"', ' /></span>';
+        $formName = $this->form->getName();
+        $val = $_POST[$formName][$this->name] ?? $this->defval;
+        echo '<span class="plug-form-field"><input type="checkbox" name="', htmlspecialchars($formName), '[', htmlspecialchars($this->name), ']', '" ', empty($val) ? '' : 'checked="checked"', ' /></span>';
     }
 
 }

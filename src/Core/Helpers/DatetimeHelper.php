@@ -199,14 +199,14 @@ class DatetimeHelper
     public static function toDateTime($mixed): DateTime
     {
         if (is_int($mixed)) {
-            return new DateTime($mixed);
+            return (new DateTime())->setTimestamp($mixed);
         }
         if ($mixed instanceof DateTime) {
             return $mixed;
         }
         try {
             if (is_string($mixed)) {
-                return DateTime::createFromFormat('Y-m-d H:i:s', $mixed);
+                return DateTime::createFromFormat('Y-m-d H:i:s', $mixed) ?: new DateTime($mixed);
             }
         } catch (\Throwable $e) {
             // Will replace exception by next
@@ -224,7 +224,7 @@ class DatetimeHelper
     {
         $format = 'Y-m-d H:i:s';
         if (is_int($mixed)) {
-            return (new DateTime($mixed))->setTimezone(new \DateTimeZone('UTC'))->format($format);
+            return (new DateTime())->setTimestamp($mixed)->setTimezone(new \DateTimeZone('UTC'))->format($format);
         }
         if ($mixed instanceof DateTime) {
             return $mixed->setTimezone(new \DateTimeZone('UTC'))->format($format);

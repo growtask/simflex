@@ -8,14 +8,14 @@ use ReflectionException;
 use Simflex\Core\DI\DIException;
 use Simflex\Core\DI\Injector;
 use Simflex\Core\Log;
-use Simflex\Core\Models\Cron;
+use Simflex\Core\Models\Cron as CronJob;
 use Simflex\Core\Models\CronLog;
 use Simflex\Core\Time;
 
 class Cron
 {
     /**
-     * @var array|Cron[]
+     * @var CronJob[]
      */
     protected array $jobs = [];
 
@@ -26,7 +26,7 @@ class Cron
     public function __construct(protected ?int $jobId)
     {
         $where = $jobId ? ['id' => $jobId] : [];
-        $this->jobs = Cron::find(array_merge($where, ['active' => 1]));
+        $this->jobs = CronJob::find(array_merge($where, ['active' => 1]));
     }
 
     /**
@@ -60,11 +60,11 @@ class Cron
 
     /**
      * Run a cron job
-     * @param Cron $job Cron job
+     * @param CronJob $job Cron job
      * @throws DIException
      * @throws ReflectionException
      */
-    protected function runJob(Cron $job): void
+    protected function runJob(CronJob $job): void
     {
         if (!$this->testTiming($job->timing)) {
             return;

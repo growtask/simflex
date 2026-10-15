@@ -3,12 +3,12 @@
 namespace Simflex\Admin\Base;
 
 
-use Simflex\Admin\Base\SFImage;
 use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Page;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
+use Simflex\Core\Image;
 
 class Struct extends Base
 {
@@ -110,13 +110,27 @@ class Struct extends Base
 
     private function imagesRebuild($table, $fieldName, $dir, $sizesRebuild): void
     {
-        include_once "{$_SERVER['DOCUMENT_ROOT']}/core/sffile.class.php";
-        $q = "SELECT $fieldName FROM $table";
+        if (!$table || !$fieldName) {
+            return;
+        }
+        $dir = trim((string)$dir, '/');
+        $q = "SELECT `$fieldName` FROM `$table`";
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
-            $dir = trim($dir, '/');
-            $img = new SFImage("$dir/", $sizesRebuild);
-            $img->load("{$_SERVER['DOCUMENT_ROOT']}/uf/images/{$dir}/source/{$row[$fieldName]}", true);
+            if (empty($row[$fieldName])) {
+                continue;
+            }
+            // пересобираем из оригинала (raw/), если его нет - из source/
+            $base = "{$_SERVER['DOCUMENT_ROOT']}/uf/images/$dir";
+            $file = "$base/raw/{$row[$fieldName]}";
+            if (!is_file($file)) {
+                $file = "$base/source/{$row[$fieldName]}";
+            }
+            if (!is_file($file) || !@getimagesize($file)) {
+                continue; // нет файла или не растровое изображение (svg)
+            }
+            $img = new Image("$dir/", $sizesRebuild);
+            $img->load($file, true);
             $img->save();
         }
     }
