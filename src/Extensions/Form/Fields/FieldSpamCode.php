@@ -6,7 +6,6 @@ use Simflex\Extensions\Form\Fields\Field;
 
 class FieldSpamCode extends Field
 {
-
     public array|int $vRequired = 1;
 
     public function html(): void
@@ -21,9 +20,8 @@ class FieldSpamCode extends Field
         $err = [];
         $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
         if ($_POST[$formName][$this->name] === '' || $_POST[$formName][$this->name] !== ($_SESSION['spamcode'] ?? null)) {
-            $err[$this->name][] = "спам-код введен неверно";
+            $err[$this->name][] = 'спам-код введен неверно';
         }
         return $err;
     }
-
 }

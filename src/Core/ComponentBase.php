@@ -2,13 +2,11 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\ExtensionBase;
 use Simflex\Core\Path;
 
 abstract class ComponentBase extends ExtensionBase
 {
-
     /**
      * Url опубликованной статики компонента (см. Assets::publish)
      */
@@ -17,9 +15,9 @@ abstract class ComponentBase extends ExtensionBase
         return Path::dirToHref($this->rootDir);
     }
 
-    protected abstract function content();
+    abstract protected function content();
 
-    public final function execute(bool $is_print = false): string|false|null
+    final public function execute(bool $is_print = false): string|false|null
     {
         if ($is_print) {
             $this->content();
@@ -29,5 +27,4 @@ abstract class ComponentBase extends ExtensionBase
             return ob_get_clean();
         }
     }
-
 }

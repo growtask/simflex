@@ -43,7 +43,7 @@ class TelegramApi implements Service
                 '\\{',
                 '\\}',
                 '\\.',
-                '\\!'
+                '\\!',
             ],
             $in
         );
@@ -63,7 +63,7 @@ class TelegramApi implements Service
         $ch->post('https://api.telegram.org/bot' . $cfg->telegram['token'] . '/sendMessage', [
             'chat_id' => $chatId,
             'parse_mode' => 'MarkdownV2',
-            'text' => $message
+            'text' => $message,
         ]);
 
         $ret = json_decode($ch->getResponse() ?? '', true) ?? [];

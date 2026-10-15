@@ -1,14 +1,11 @@
 <?php
 
-
 namespace Simflex\Core;
-
 
 use Simflex\Core\File;
 
 class Image extends File
 {
-
     public string $pathBase = 'images';
     protected string $uploadedFilePath;
 
@@ -41,23 +38,23 @@ class Image extends File
     {
         if (is_uploaded_file($this->uploadedFilePath = $_FILES[$fileName]['tmp_name'])) {
             switch ($_FILES[$fileName]['type']) {
-                case 'image/gif' :
+                case 'image/gif':
                     $this->type = 'gif';
                     $this->img = imagecreatefromgif($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/jpeg' :
+                case 'image/jpeg':
                     $this->type = 'jpg';
                     $this->img = imagecreatefromjpeg($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/pjpeg' :
+                case 'image/pjpeg':
                     $this->type = 'jpg';
                     $this->img = imagecreatefromjpeg($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/webp' :
+                case 'image/webp':
                     $this->type = 'webp';
                     $this->img = imagecreatefromwebp($_FILES[$fileName]['tmp_name']);
                     break;
-                case 'image/png' :
+                case 'image/png':
                     $this->type = 'png';
                     $this->img = imagecreatefrompng($_FILES[$fileName]['tmp_name']);
                     imageAlphaBlending($this->img, false);
@@ -81,7 +78,7 @@ class Image extends File
             $this->type = 'png';
         } elseif ($this->type == IMAGETYPE_WEBP) {
             $this->type = 'webp';
-        }  elseif ($this->type == IMAGETYPE_SVG) {
+        } elseif ($this->type == IMAGETYPE_SVG) {
             $this->type = 'svg';
         }
     }
@@ -181,13 +178,13 @@ class Image extends File
         $typeStr = $this->getTypeStr($this->type);
         $file = $this->outputMkDirReturnFilePath($subdir);
         switch ($typeStr) {
-            case 'gif' :
+            case 'gif':
                 return imagegif($img, $file);
-            case 'jpg' :
+            case 'jpg':
                 return imagejpeg($img, $file, 100);
-            case 'png' :
+            case 'png':
                 return imagepng($img, $file);
-            case 'webp' :
+            case 'webp':
                 return imagewebp($img, $file);
         }
         return null;
@@ -315,5 +312,4 @@ class Image extends File
             chmod($filename, $permissions);
         }
     }
-
 }

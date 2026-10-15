@@ -123,13 +123,13 @@ class Table extends ElementBase
 
     /**
      * Adds an index
-     * 
+     *
      * @param string $name Index name
      */
     public function addIndex(string $name = ''): Index
     {
         $idx = new Index($name);
-        
+
         $this->elements[$name ?: md5(microtime())] = $idx;
         return $idx;
     }
@@ -176,7 +176,7 @@ class Table extends ElementBase
     {
         return $this->addColumn($name, Column::TYPE_LONGTEXT);
     }
-    
+
     public function boolean(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_TINYINT, 1);
@@ -205,12 +205,14 @@ class Table extends ElementBase
     public function enum(string $name, array $items): Column
     {
         return $this->addColumn(
-            $name, Column::TYPE_ENUM . '(' . implode(
+            $name,
+            Column::TYPE_ENUM . '(' . implode(
                 ',',
                 array_map(function ($i) {
                     return "'$i'";
-                }, $items)) . ')'
-            );
+                }, $items)
+            ) . ')'
+        );
     }
 
     // ------------ UTIL ------------ //

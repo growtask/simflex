@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Api;
 
 use Simflex\Core\Container;
@@ -19,7 +20,7 @@ abstract class Base
      */
     protected ?User $user = null;
 
-    public abstract function execute(): string;
+    abstract public function execute(): string;
 
     /**
      * Gets name of the method to execute
@@ -39,7 +40,7 @@ abstract class Base
 
     /**
      * Assert that user is currently authenticated
-     * 
+     *
      * @throws Error
      */
     protected function assertAuthenticated(): User

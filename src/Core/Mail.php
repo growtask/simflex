@@ -11,26 +11,27 @@ use Simflex\Core\DB;
  * @todo Incomplete: there are no migrations for the mail_log table, so this code fails on SQL
  *       in a real environment. To be moved to a separate composer package.
  */
-class Mail {
-
-    const MAIL_TRANSPORT_DAEMON = 1;
-    const MAIL_TRANSPORT_SMTP = 2;
-    const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
-    const MAIL_TRANSPORT_FAKE_ERROR = 4;
+class Mail
+{
+    public const MAIL_TRANSPORT_DAEMON = 1;
+    public const MAIL_TRANSPORT_SMTP = 2;
+    public const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
+    public const MAIL_TRANSPORT_FAKE_ERROR = 4;
 
     private array $data = [
         'to_email' => '', 'to_name' => '', 'from_name' => '', 'from_email' => '', 'as_plain' => false,
         'reply_email' => '', 'reply_name' => '', 'text' => '', 'subject' => '', 'can_answer' => false,
-        'transport' => self::MAIL_TRANSPORT_DAEMON
+        'transport' => self::MAIL_TRANSPORT_DAEMON,
     ];
 
     /**
-     * 
+     *
      * @param string $toEmail
      * @param string $subject
      * @param string $msg
      */
-    public function __construct($toEmail, $subject, $msg) {
+    public function __construct($toEmail, $subject, $msg)
+    {
         $this->data['from_name'] = Core::siteParam('site_name');
         $this->data['from_email'] = "noreply@{$_SERVER['HTTP_HOST']}";
 
@@ -49,39 +50,44 @@ class Mail {
      * @param string $subject
      * @param string $msg
      */
-    public static function create($toEmail, $subject, $msg): static {
+    public static function create($toEmail, $subject, $msg): static
+    {
         $instance = new static($toEmail, $subject, $msg);
         return $instance;
     }
 
-    public function setToName($name): static {
+    public function setToName($name): static
+    {
         $this->data['to_name'] = trim($name);
         return $this;
     }
 
-    public function setTransport($transport): static {
+    public function setTransport($transport): static
+    {
         $this->data['transport'] = $transport;
         return $this;
     }
 
     /**
-     * 
+     *
      * @param string $toEmail
      * @param string $subject
      * @param string $msg
      * @return bool
      */
-    public static function staticSend($toEmail, $subject, $msg): mixed {
+    public static function staticSend($toEmail, $subject, $msg): mixed
+    {
         $instance = new static($toEmail, $subject, $msg);
         return $instance->send();
     }
 
     /**
-     * 
+     *
      * @param string $str Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str2 (optional = '') Имя отправителя. Имеет значение, если $str - это email
      */
-    public function setFrom($str, $str2 = ''): static {
+    public function setFrom($str, $str2 = ''): static
+    {
         if (strpos($str, '<') !== false) {
             $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
@@ -104,7 +110,8 @@ class Mail {
      * Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str
      */
-    public function setReplyTo($str): static {
+    public function setReplyTo($str): static
+    {
         if (strpos($str, '<') !== false) {
             $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
@@ -123,7 +130,8 @@ class Mail {
     /**
      * По умолчанию отправлять как HTML
      */
-    public function setAsPlain(): static {
+    public function setAsPlain(): static
+    {
         $this->data['as_plain'] = true;
         return $this;
     }
@@ -131,17 +139,19 @@ class Mail {
     /**
      * По умолчанию уже отправлять как HTML
      */
-    public function setAsHTML(): static {
+    public function setAsHTML(): static
+    {
         $this->data['as_plain'] = false;
         return $this;
     }
 
     /**
-     * 
+     *
      * @param string $sender Допускается mail@mail.ru или mail@mail.ru:12345
      * @param string $pass (optional = false) указывается, если в $sender нет пароля
      */
-    public function setSMTPSender($sender, $pass = false): static {
+    public function setSMTPSender($sender, $pass = false): static
+    {
         if (!$pass) {
             $tmp = explode(':', (string)$sender, 2);
             $sender = $tmp[0];
@@ -156,7 +166,8 @@ class Mail {
      * Используется чтобы убрать внизу текст "Отвечать на данное письмо ненужно"
      * @param bool $can
      */
-    public function setCanAnswer($can): static {
+    public function setCanAnswer($can): static
+    {
         $this->data['can_answer'] = $can;
         return $this;
     }
@@ -164,7 +175,8 @@ class Mail {
     /**
      * @return bool
      */
-    public function send(): mixed {
+    public function send(): mixed
+    {
         $result = false;
 
         if (!$this->data['as_plain'] && is_file(SF_ROOT_PATH . '/theme/default/mail.tpl')) {
@@ -233,26 +245,28 @@ class Mail {
         return $result;
     }
 
-    private function toLog($result): void {
-        $q = "DELETE FROM mail_log WHERE ADDDATE(time_create,INTERVAL 1 MONTH) < NOW()";
+    private function toLog($result): void
+    {
+        $q = 'DELETE FROM mail_log WHERE ADDDATE(time_create,INTERVAL 1 MONTH) < NOW()';
         DB::query($q);
         $set = ["mail_from = '" . DB::escape($this->data['from_full']) . "', email = '" . DB::escape($this->data['to_full']) . "'"];
         $set[] = "text = '" . DB::escape($this->data['text_utf8']) . "', subject = '" . DB::escape($this->data['subject_ready']) . "'";
-        $set[] = "success = " . (int) $result . ", transport = {$this->data['transport']}";
+        $set[] = 'success = ' . (int) $result . ", transport = {$this->data['transport']}";
         if (!empty($this->data['reply_full'])) {
             $set[] = "reply_to = '" . DB::escape($this->data['reply_full']) . "'";
         }
-        $q = "INSERT INTO mail_log SET " . implode(', ', $set);
+        $q = 'INSERT INTO mail_log SET ' . implode(', ', $set);
         $success = DB::query($q);
     }
 
     /**
      * Отправка через стандартную функцию php mail
      */
-    private function sendDaemon(): bool {
+    private function sendDaemon(): bool
+    {
         $contentType = $this->data['as_plain'] ? 'plain' : 'html';
         $header = "Content-type: text/$contentType; charset=\"windows-1251\"\n";
-        $header .= "MIME-Version: 1.0" . "\n";
+        $header .= 'MIME-Version: 1.0' . "\n";
         $header .= "From: {$this->data['from_full']}\n";
         if ($this->data['reply_email']) {
             $header .= "Reply-To: {$this->data['reply_full']}\n";
@@ -265,7 +279,8 @@ class Mail {
      * Отправка через SMTP (PHPMailer). Сервер берется из Config::$mail (host, port, security).
      * Логин/пароль: setSMTPSender() > Config::$mail (username, password) > параметр сайта "sender" (login:pass).
      */
-    private function sendSMTP(): bool {
+    private function sendSMTP(): bool
+    {
         $cfgMail = Container::getConfig()->mail;
 
         if (empty($this->data['smtp']['login']) && !empty($cfgMail['username']) && !empty($cfgMail['password'])) {
@@ -311,7 +326,8 @@ class Mail {
      * Рекурсивно конвертирует массив или строку. У массива ключи тоже конвертируются
      * @param string|array $mixed
      */
-    private static function utf2win($mixed): array|string|false {
+    private static function utf2win($mixed): array|string|false
+    {
         if (is_array($mixed)) {
             foreach ($mixed as $index => $str) {
                 unset($mixed[$index]);
@@ -321,5 +337,4 @@ class Mail {
         }
         return iconv('utf-8', 'windows-1251', $mixed);
     }
-
 }

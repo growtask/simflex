@@ -2,12 +2,10 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\Log;
 
 class ConsoleBase
 {
-
     /**
      * @param string $job "ext/job" for example
      * @param int|null $maxSame Max parallel processes allowed
@@ -33,7 +31,7 @@ class ConsoleBase
             $tmp[] = '--' . $key . '="' . $value . '"';
         }
         $paramsStr = implode(' ', $tmp);
-        $command = "php " . SF_ROOT_PATH . "/console.php $job $paramsStr > /dev/null 2>&1 &";
+        $command = 'php ' . SF_ROOT_PATH . "/console.php $job $paramsStr > /dev/null 2>&1 &";
         if ($applyTimeout) {
             $command = "timeout -s 9 {$timeout}s $command";
         }
@@ -61,5 +59,4 @@ class ConsoleBase
         $command .= ' | wc -l';
         return (int)trim(shell_exec($command));
     }
-
 }

@@ -53,15 +53,15 @@ class User extends ModelBase
     public function getPrivileges(): array
     {
         return Buffer::getOrSet('user-priv-' . $this->id, function () {
-            $q = "
+            $q = '
                 SELECT priv_id, name
                 FROM user_priv
                 WHERE active=1
                 AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id" . ($this->role_id ? '=' . (int)$this->role_id : " IS NULL") . ")
-                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=" . $this->id . ")
+                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id' . ($this->role_id ? '=' . (int)$this->role_id : ' IS NULL') . ')
+                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=' . $this->id . ')
                 )
-            ";
+            ';
             $r = DB::query($q);
             $ids = $names = [];
             while ($row = DB::fetch($r)) {

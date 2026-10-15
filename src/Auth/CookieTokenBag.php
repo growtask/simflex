@@ -1,16 +1,13 @@
 <?php
 
-
 namespace Simflex\Auth;
-
 
 use Simflex\Core\Cookie\CookieBag;
 use Simflex\Core\Cookie\CookieItem;
 
 class CookieTokenBag extends CookieBag
 {
-
-    const COOKIE_NAME = 'sft';
+    public const COOKIE_NAME = 'sft';
 
     public static function defaultPrefix(): string
     {

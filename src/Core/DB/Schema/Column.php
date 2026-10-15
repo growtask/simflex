@@ -156,11 +156,11 @@ class Column extends TableElementBase
     public function toString(): string
     {
         if (!$this->name) {
-            throw new \Exception("Invalid column name");
+            throw new \Exception('Invalid column name');
         }
 
         if (!$this->type) {
-            throw new \Exception("Invalid data type");
+            throw new \Exception('Invalid data type');
         }
 
         $sql = DB::wrapName($this->name) . ' ' . $this->type . ' ';

@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Base;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
 class FieldMultiKey extends Field
 {
-
     private static array $buffer;
 
     public function __construct($row)
@@ -20,7 +18,7 @@ class FieldMultiKey extends Field
 
     public function input($value): string
     {
-        $fields = ["*"];
+        $fields = ['*'];
 
         $value = (int)@$_GET[$this->tablePk];
         if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
@@ -31,7 +29,7 @@ class FieldMultiKey extends Field
             $fields[] = "(select count(*) from {$this->params['table_relations']} where $this->tablePk = $value and {$this->params['key']} = t.{$this->params['key']}) checked";
         }
 
-        $q = "SELECT " . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
+        $q = 'SELECT ' . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
         $rows = DB::assoc($q);
 
         $valReal = [];
@@ -62,9 +60,9 @@ class FieldMultiKey extends Field
                                                         <ul class="list1__items">
 ';
 
-for ($i = 0; $i < count($rows); ++$i) {
+        for ($i = 0; $i < count($rows); ++$i) {
             echo '<li data-value="'.$rows[$i][(string)$this->params['key']].'" class="list1__item">'.$rows[$i][(string)$this->params['key_alias']].'</li>';
-}
+        }
 
         echo ' </ul>
                                                     </div>
@@ -93,7 +91,7 @@ for ($i = 0; $i < count($rows); ++$i) {
             if (!$value) {
                 continue;
             }
-            
+
             $q = "INSERT INTO {$this->params['table_relations']} set $this->tablePk = $pkValue, {$this->params['key']} = $value";
             DB::query($q);
         }
@@ -220,5 +218,4 @@ HTML;
             ],
         ];
     }
-
 }

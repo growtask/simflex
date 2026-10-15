@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\Image;
 use Simflex\Admin\Fields\FieldFile;
 
 class FieldImage extends FieldFile
 {
-
     public array $sizes = [];
 
     public function __construct($row)
@@ -173,5 +171,4 @@ DATA;
             ],
         ];
     }
-
 }

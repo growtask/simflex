@@ -106,9 +106,9 @@ class FieldTable extends Field
 
         $tmpVal = json_decode($value, true);
         if (!strstr(Container::getRequest()->getPath(), 'content_template_param') && !strstr(
-                Container::getRequest()->getPath(),
-                'structure'
-            ) &&
+            Container::getRequest()->getPath(),
+            'structure'
+        ) &&
             $this->params['struct'] && $tmpVal['s'] != $this->params['struct']) {
             $s = json_decode($this->params['struct'], true);
             $v = json_decode($value, true);
@@ -132,6 +132,7 @@ class FieldTable extends Field
         include 'tpl/table.tpl';
         return ob_get_clean();
     }
+
     public static function typeLabel(): string
     {
         return 'Таблица';
@@ -149,5 +150,4 @@ class FieldTable extends Field
             ],
         ];
     }
-
 }

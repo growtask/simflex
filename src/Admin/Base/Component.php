@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Base;
 
-
 use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Structure\Repository as StructureRepository;
@@ -13,7 +12,6 @@ use Simflex\Core\DB;
  */
 class Component extends Base
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -27,14 +25,12 @@ class Component extends Base
             return;
         }
 
-        $q = "
-            select cp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, p.field_type, '$this->table' `table`
-            from component_param p
-            LEFT JOIN component t on t.component_id = $componentId
-            where p.component_id = $componentId
-        ";
-        $rows = DB::assoc($q, 'param_pid', 'cp_id');
-        $rows = StructureRepository::hydrateFieldClasses($rows);
+        $component = DB::result('select class, params from component where component_id = ?', '', [$componentId]);
+        if (!$component) {
+            return;
+        }
+        $tableParams = unserialize($component['params']) ?: [];
+        $rows = StructureRepository::extensionParams($component['class'], $this->table);
         if (!count($rows)) {
             return;
         }
@@ -51,9 +47,8 @@ class Component extends Base
             $fields = [];
             foreach ($rows[''] as $row) {
                 if ($row['class']) {
-                    $params = unserialize($row['table_params']);
                     $field = Helper::create($row);
-                    $field->value = isset($params[$row['name']]) ? $params[$row['name']] : $field->defaultValue;
+                    $field->value = $tableParams[$row['name']] ?? $field->defaultValue;
                     $fields[] = $field;
                 }
             }
@@ -70,10 +65,9 @@ class Component extends Base
             }
             $group = $row0;
             foreach ($rows[$pid] as $row) {
-                $params = unserialize($row['table_params']);
                 $field = new $row['class']($row);
                 $field->form = $row0['name'];
-                $field->value = isset($params[$row['name']]) ? $params[$row['name']] : $field->defaultValue;
+                $field->value = $tableParams[$row['name']] ?? $field->defaultValue;
                 $fields[] = $field;
             }
             $group['fields'] = $fields;
@@ -86,37 +80,28 @@ class Component extends Base
         $params = parent::getParams();
         if (!empty($_POST['component_id'])) {
             $componentId = (int)$_POST['component_id'];
-            $q = "
-                select cp_id, param_pid, p.name name, p.label label, p.field_type
-                from component_param p
-                where p.component_id = $componentId
-            ";
-            $rows = DB::assoc($q);
-            $rows = StructureRepository::hydrateFieldClasses($rows);
-            foreach ($rows as $row) {
-                if (!$row['class']) {
-                    continue;
-                }
-                $field = new $row['class']($row);
-                if ($row['param_pid']) {
-                    $groupName = '';
-                    foreach ($rows as $row1) {
-                        if ($row1['cp_id'] == $row['param_pid']) {
-                            $groupName = $row1['name'];
-                            break;
-                        }
+            $class = DB::result('select class from component where component_id = ?', '', [$componentId]);
+            $rows = StructureRepository::extensionParams($class ?: '', $this->table);
+            $groups = $rows[''] ?? [];
+            foreach ($rows as $pid => $pidRows) {
+                foreach ($pidRows as $row) {
+                    if (!$row['class']) {
+                        continue;
                     }
-                    $value = $field->getPost(true, $groupName);
-                    $value = preg_replace("@^'(.+)'$@", '$1', $value);
-                    $params[$groupName][$field->name] = $value;
-                } else {
-                    $value = $field->getPost(true);
-                    $value = preg_replace("@^'(.+)'$@", '$1', $value);
-                    $params[$field->name] = $value;
+                    $field = new $row['class']($row);
+                    if ($pid !== '') {
+                        $groupName = $groups[$pid]['name'];
+                        $value = $field->getPost(true, $groupName);
+                        $value = preg_replace("@^'(.+)'$@", '$1', $value);
+                        $params[$groupName][$field->name] = $value;
+                    } else {
+                        $value = $field->getPost(true);
+                        $value = preg_replace("@^'(.+)'$@", '$1', $value);
+                        $params[$field->name] = $value;
+                    }
                 }
             }
         }
         return $params;
     }
-
 }

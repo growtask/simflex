@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\DB;
 
-
 /**
  * Class Expr
  * Use instance of this class to unescape your statement

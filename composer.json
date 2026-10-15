@@ -37,7 +37,6 @@
     "curl/curl": "2.*"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.86"
   },
   "suggest": {
   },

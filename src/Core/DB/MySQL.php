@@ -144,7 +144,7 @@ class MySQL implements Adapter
     public function errorPrepared(): string
     {
         $errorList = [
-            1451 => 'Нельзя удалить запись - имеются связанные записи'
+            1451 => 'Нельзя удалить запись - имеются связанные записи',
         ];
 
         $errNo = $this->errno();

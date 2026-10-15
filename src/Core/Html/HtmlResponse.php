@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Html;
 
 use Simflex\Core\Response;

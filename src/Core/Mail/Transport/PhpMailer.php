@@ -31,7 +31,7 @@ class PhpMailer implements Transport
                 'verify_peer' => false, // this has to be done to support local network mailing (e.g. connecting to 10.x.x.x)
                 'verify_peer_name' => false,
                 'allow_self_signed' => true,
-            ]
+            ],
         ];
 
         if ($cfg->devMode || $cfg->enableLogging) {
@@ -43,14 +43,14 @@ class PhpMailer implements Transport
 
         // fill in addresses
         $mailer->addAddress($mail->to);
-        array_walk($mail->cc, fn (string $str) => $mailer->addCC($str));
-        array_walk($mail->bcc, fn (string $str) => $mailer->addBCC($str));
+        array_walk($mail->cc, fn(string $str) => $mailer->addCC($str));
+        array_walk($mail->bcc, fn(string $str) => $mailer->addBCC($str));
         if ($mail->replyTo) {
             $mailer->addReplyTo($mail->replyTo);
         }
 
         // fill in attachments
-        array_walk($mail->attachments, fn (string $str) => $mailer->addAttachment($str));
+        array_walk($mail->attachments, fn(string $str) => $mailer->addAttachment($str));
 
         // fill body
         $mailer->isHTML();

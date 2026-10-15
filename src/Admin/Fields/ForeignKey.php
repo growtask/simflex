@@ -2,10 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
-
 class ForeignKey
 {
-
     public string $table = '';
     public string $key = '';
     public string $label = '';
@@ -18,5 +16,4 @@ class ForeignKey
         $this->label = $params['fk_label'];
         $this->isPid = !empty($params['fk_is_pid']);
     }
-
 }

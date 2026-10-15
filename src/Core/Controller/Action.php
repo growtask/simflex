@@ -16,7 +16,6 @@ class Action
     public function __construct(
         public string $path,
         public string $httpMethod = 'all',
-    )
-    {
+    ) {
     }
 }

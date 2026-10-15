@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Simflex\Core;
 
 /**
@@ -17,6 +16,6 @@ class Auth
 
     public static function logout(): void
     {
-        
+
     }
 }

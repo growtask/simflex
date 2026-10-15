@@ -60,7 +60,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $query = ModelContent::findAdv()->where([
             'pid' => $id,
-            'active' => 1
+            'active' => 1,
         ]);
 
         if ($except) {
@@ -81,7 +81,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'pid' => $id,
-            'active' => 1
+            'active' => 1,
         ]);
 
         if ($except) {
@@ -108,7 +108,7 @@ class Content extends ComponentBase
         Profiler::traceStart(__CLASS__, __FUNCTION__);
         $children = ModelContent::findAdv()->where([
             'path' => $path,
-            'active' => 1
+            'active' => 1,
         ])->orderBy('title ASC')->all();
 
         foreach ($children as $child) {
@@ -125,7 +125,7 @@ class Content extends ComponentBase
         $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
         $res = ModelContent::findAdv()->where([
             'active' => 1,
-            'pid' => $parent
+            'pid' => $parent,
         ])->orderBy('date DESC')->all();
 
         $children = [];
@@ -162,7 +162,7 @@ class Content extends ComponentBase
         $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
         $children = ModelContent::findAdv()->where([
             'active' => 1,
-            'pid' => $parent
+            'pid' => $parent,
         ])->andWhere(implode(' AND ', $searchStr))->orderBy('date DESC LIMIT ' . $max)->all();
 
         foreach ($children as $c) {
@@ -206,10 +206,10 @@ class Content extends ComponentBase
 
                 // count all values
                 $cnt = DB::result(
-                    "SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                            ' AND ',
-                            $searchStr
-                        )) : ''),
+                    'SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
+                        ' AND ',
+                        $searchStr
+                    )) : ''),
                     'cnt'
                 );
 
@@ -221,14 +221,14 @@ class Content extends ComponentBase
                 $hasPrev = $page > 0;
                 $hasNext = $page < $pages - 1;
 
-                $q = "SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=" . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                            ' AND ',
-                            $searchStr
-                        )) : '');
+                $q = 'SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
+                    ' AND ',
+                    $searchStr
+                )) : '');
                 if (isset($_GET['mob'])) {
-                    $q .= " ORDER BY date DESC LIMIT " . (($page + 1) * $pageCount);
+                    $q .= ' ORDER BY date DESC LIMIT ' . (($page + 1) * $pageCount);
                 } else {
-                    $q .= " ORDER BY date DESC LIMIT " . ($page * $pageCount) . ", " . $pageCount;
+                    $q .= ' ORDER BY date DESC LIMIT ' . ($page * $pageCount) . ', ' . $pageCount;
                 }
                 $q = DB::query($q);
                 $children = [];
@@ -283,5 +283,4 @@ class Content extends ComponentBase
         Log::warning('Content: target template {name} was not found, is this intentional?', ['name' => $name]);
         return __DIR__ . '/tpl/default.tpl';
     }
-
 }

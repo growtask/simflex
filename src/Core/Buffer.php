@@ -2,10 +2,8 @@
 
 namespace Simflex\Core;
 
-
 class Buffer
 {
-
     protected static array $data = [];
 
     public static function getOrSet(string $key, callable $callback): mixed
@@ -22,5 +20,4 @@ class Buffer
             unset(static::$data[$key]);
         }
     }
-
 }

@@ -25,8 +25,8 @@ use Simflex\Core\Models\Enums\Relation;
  */
 abstract class ModelBase implements ArrayAccess, JsonSerializable
 {
-    const FLAG_IGNORE = 1 << 0;
-    const FLAG_SKIP_VIRTUAL = 1 << 1;
+    public const FLAG_IGNORE = 1 << 0;
+    public const FLAG_SKIP_VIRTUAL = 1 << 1;
 
     /**
      * @var array For debugging purposes. Logs inserts, deletions and updates.
@@ -223,7 +223,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public static function findOne(string|array|Where $where, bool $returnModelIfNotFound = false): ?static
     {
         $row = static::findAdv()->where($where)->limit(1)->fetchOne();
-        return $row ?? ($returnModelIfNotFound ? new static : null);
+        return $row ?? ($returnModelIfNotFound ? new static() : null);
     }
 
     /**
@@ -317,9 +317,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             $query = "insert $ignore into " . static::getTableName(true) . ' (';
             $query .= implode(', ', array_map(fn($key) => DB::wrapName($key), $keys)) . ') values (';
             $query .= implode(
-                    ', ',
-                    array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
-                ) . ')';
+                ', ',
+                array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
+            ) . ')';
 
             // fix bindings to remove Expr statements
             $bind = [];
@@ -349,7 +349,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     public static function insertStatic(array $data, int $flags = self::FLAG_SKIP_VIRTUAL): ?static
     {
-        $model = new static;
+        $model = new static();
         if ($model->insert($data, $flags)) {
             $model->reload();
             return $model;
@@ -369,7 +369,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     {
         $success = true;
         foreach ($items as $item) {
-            $model = new static;
+            $model = new static();
             $success &= $model->insert($item, $flags);
         }
 

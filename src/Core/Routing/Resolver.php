@@ -19,7 +19,7 @@ class Resolver
         }
 
         $request = Container::getRequest();
-        if ($route =& $routes[trim($request->getPath(), '/')]) {
+        if ($route = & $routes[trim($request->getPath(), '/')]) {
             return static::makeRoute($route, trim($request->getPath(), '/'));
         }
 
@@ -34,7 +34,7 @@ class Resolver
         }
 
         foreach (array_reverse($uris) as $path) {
-            if ($route =& $routes[$path]) {
+            if ($route = & $routes[$path]) {
                 return static::makeRoute($route, $path);
             }
         }

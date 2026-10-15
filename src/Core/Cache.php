@@ -2,10 +2,8 @@
 
 namespace Simflex\Core;
 
-
 class Cache
 {
-
     protected static string $dir;
 
     protected static function getFilePath(string $key): string
@@ -76,10 +74,10 @@ class Cache
             unlink($fp);
             return null;
         }
-        $value =& $contents[2];
+        $value = & $contents[2];
 
         if ('numeric' == $type) {
-            return (double)$value;
+            return (float)$value;
         }
         if ('string' == $type) {
             return $value;
@@ -117,5 +115,4 @@ class Cache
         }
         return ['null', ''];
     }
-
 }

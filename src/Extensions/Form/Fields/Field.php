@@ -62,7 +62,7 @@ abstract class Field
         /* REQUIED */
         $this->vRequired = is_array($this->vRequired) ? $this->vRequired : [];
         if (!empty($this->vRequired['is']) && $_POST[$formName][$this->name] === '') {
-            $err[$this->name][] = empty($this->vRequired['comment']) ? "обязательно для заполнения" : $this->vRequired['comment'];
+            $err[$this->name][] = empty($this->vRequired['comment']) ? 'обязательно для заполнения' : $this->vRequired['comment'];
         }
 
         if (empty($err[$this->name])) {
@@ -72,7 +72,7 @@ abstract class Field
             $this->vLength['min'] = isset($this->vLength['min']) ? (int)$this->vLength['min'] : 0;
             $this->vLength['max'] = isset($this->vLength['max']) ? (int)$this->vLength['max'] : 0;
             if (($this->vLength['min'] > 0 && $this->vLength['min'] > $len) || ($this->vLength['max'] > 0 && $this->vLength['max'] < $len)) {
-                $err[$this->name][] = empty($this->vLength['comment']) ? "недопустимая длина" : $this->vLength['comment'];
+                $err[$this->name][] = empty($this->vLength['comment']) ? 'недопустимая длина' : $this->vLength['comment'];
             }
 
             /* EQUAL */
@@ -81,7 +81,7 @@ abstract class Field
             if ($this->vEqual['field']) {
                 $_POST[$formName][$this->vEqual['field']] = $_POST[$formName][$this->vEqual['field']] ?? '';
                 if ($_POST[$formName][$this->name] !== $_POST[$formName][$this->vEqual['field']]) {
-                    $err[$this->name][] = empty($this->vEqual['comment']) ? "неверное значение" : $this->vEqual['comment'];
+                    $err[$this->name][] = empty($this->vEqual['comment']) ? 'неверное значение' : $this->vEqual['comment'];
                 }
             }
 
@@ -90,7 +90,7 @@ abstract class Field
                 $this->vMask = is_array($this->vMask) ? $this->vMask : [];
                 $this->vMask['pattern'] = isset($this->vMask['pattern']) ? (string)$this->vMask['pattern'] : '';
                 if ($this->vMask['pattern'] && !preg_match($this->vMask['pattern'], $_POST[$formName][$this->name])) {
-                    $err[$this->name][] = empty($this->vMask['comment']) ? "некорректное значение" : $this->vMask['comment'];
+                    $err[$this->name][] = empty($this->vMask['comment']) ? 'некорректное значение' : $this->vMask['comment'];
                 }
             }
 
@@ -98,9 +98,9 @@ abstract class Field
             $this->vUnique = is_array($this->vUnique) ? $this->vUnique : [];
             $this->vUnique['key'] = isset($this->vUnique['key']) ? (string)$this->vUnique['key'] : '';
             if ($this->vUnique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->vUnique['key'], $key)) {
-                $q = "SELECT COUNT(*) cnt FROM " . DB::wrapName($key[1]) . " WHERE " . DB::wrapName($key[2]) . " = ?";
+                $q = 'SELECT COUNT(*) cnt FROM ' . DB::wrapName($key[1]) . ' WHERE ' . DB::wrapName($key[2]) . ' = ?';
                 if ((int)DB::result($q, 'cnt', [$_POST[$formName][$this->name]]) > 0) {
-                    $err[$this->name][] = empty($this->vUnique['comment']) ? "занято" : $this->vUnique['comment'];
+                    $err[$this->name][] = empty($this->vUnique['comment']) ? 'занято' : $this->vUnique['comment'];
                 }
             }
         }
@@ -128,5 +128,4 @@ abstract class Field
     {
         return $this->label;
     }
-
 }

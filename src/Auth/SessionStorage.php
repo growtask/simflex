@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Simflex\Auth;
-
 
 class SessionStorage
 {
-
     protected static function ensureStarted(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -31,5 +28,4 @@ class SessionStorage
         static::ensureStarted();
         $_SESSION[static::getKey()] = $userId;
     }
-
 }

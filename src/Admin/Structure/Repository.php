@@ -5,6 +5,7 @@ namespace Simflex\Admin\Structure;
 use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\ParamDefinition;
+use Simflex\Admin\Structure\Data\ParamGroup;
 
 class Repository
 {
@@ -54,6 +55,68 @@ class Repository
         foreach ($tableData['params'] as $param) {
             $param = static::normalizeParam($param, $table);
             $out[(string)$param['param_pid']][(string)$param['param_id']] = $param;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Settings of a module/component declared in code (ExtensionBase::adminParams()).
+     *
+     * @param string $class Module/component class; admin modules may be given by short name
+     * @param string $table Admin table the form belongs to
+     * @return array<string, array<string, array>> param_pid => param_id => row.
+     *         Groups have an empty 'class' and are listed under pid ''; their fields under the group id.
+     */
+    public static function extensionParams(string $class, string $table = ''): array
+    {
+        $class = static::extensionClass($class);
+        if (!$class) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($class::adminParams() as $item) {
+            if ($item instanceof ParamGroup) {
+                $groupId = static::stableId($class . '.group.' . $item->name);
+                $out[''][$groupId] = [
+                    'param_id' => $groupId,
+                    'param_pid' => '',
+                    'name' => $item->name,
+                    'label' => $item->label,
+                    'position' => $item->pos,
+                    'help' => '',
+                    'field_type' => '',
+                    'class' => '',
+                    'params' => [],
+                    'table' => $table,
+                ];
+                foreach ($item->fields as $field) {
+                    $row = static::extensionFieldRow($field, $class, $groupId, $table);
+                    $row['position'] = $item->pos;
+                    $out[$groupId][$row['param_id']] = $row;
+                }
+            } else {
+                $row = static::extensionFieldRow($item, $class, '', $table);
+                $out[''][$row['param_id']] = $row;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Flat list of the fields (without groups) of {@see extensionParams()}
+     */
+    public static function extensionFields(string $class, string $table = ''): array
+    {
+        $out = [];
+        foreach (static::extensionParams($class, $table) as $rows) {
+            foreach ($rows as $row) {
+                if ($row['class']) {
+                    $out[] = $row;
+                }
+            }
         }
 
         return $out;
@@ -196,6 +259,30 @@ class Repository
         $field['class'] = static::normalizeFieldType($field['class']);
 
         return $field;
+    }
+
+    protected static function extensionClass(string $class): string
+    {
+        $class = ltrim($class, '\\');
+        if ($class === '') {
+            return '';
+        }
+        if (!str_contains($class, '\\')) {
+            $class = "Simflex\\Admin\\Modules\\$class\\$class";
+        }
+
+        return class_exists($class) && method_exists($class, 'adminParams') ? $class : '';
+    }
+
+    protected static function extensionFieldRow(FieldDefinition $field, string $class, int|string $pid, string $table): array
+    {
+        $row = static::normalizeField($field, $table);
+        $row['param_id'] = static::stableId($class . '.field.' . $pid . '.' . $row['name']);
+        $row['param_pid'] = $pid;
+        $row['position'] = 'left';
+        $row['field_type'] = $row['class'];
+
+        return $row;
     }
 
     protected static function normalizeParam(ParamDefinition $param, string $table): array

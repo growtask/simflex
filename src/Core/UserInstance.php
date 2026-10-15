@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Simflex\Core;
 
 use Simflex\Core\DB;
@@ -13,7 +12,6 @@ use Simflex\Core\DB;
  */
 class UserInstance
 {
-
     public int $id = 0;
     public string $login = '';
     public int $roleId = 0;
@@ -51,7 +49,7 @@ class UserInstance
         unset($_COOKIE[$this->remIdName]);
         unset($_COOKIE[$this->remHashName]);
     }
-    
+
     public function initByModel(\Simflex\Core\Models\User $model): void
     {
         $this->id = $model->getId();
@@ -67,11 +65,11 @@ class UserInstance
             $userId_md5 = DB::escape($_COOKIE[$this->remIdName]);
             $hash = DB::escape($_COOKIE[$this->remHashName]);
             $q = "select user_id `id` from `user` where md5(`user_id`) = '$userId_md5' and $this->dbHashName = '$hash'";
-            if ($userId = DB::result($q, "id")) {
+            if ($userId = DB::result($q, 'id')) {
                 $_SESSION[$this->idName] = $userId;
                 $_SESSION[$this->hashName] = $hash;
-                setcookie($this->remIdName, $_COOKIE[$this->remIdName], time() + 60 * 60 * 24 * 3, "/");
-                setcookie($this->remHashName, $_COOKIE[$this->remHashName], time() + 60 * 60 * 24 * 3, "/");
+                setcookie($this->remIdName, $_COOKIE[$this->remIdName], time() + 60 * 60 * 24 * 3, '/');
+                setcookie($this->remHashName, $_COOKIE[$this->remHashName], time() + 60 * 60 * 24 * 3, '/');
             }
         }
 
@@ -99,8 +97,8 @@ class UserInstance
                     SELECT user_id, role_id, login, $this->dbHashName, r.name role_name
                     FROM user u
                     JOIN user_role r USING(role_id)
-                    WHERE user_id=" . (int)$_SESSION[$this->idName] . " AND u.active=1 AND r.active=1
-                ";
+                    WHERE user_id=" . (int)$_SESSION[$this->idName] . ' AND u.active=1 AND r.active=1
+                ';
             $r = DB::query($q);
             if ($row = DB::fetch($r)) {
                 if ($_SESSION[$this->hashName] === $row[$this->dbHashName]) {
@@ -113,15 +111,15 @@ class UserInstance
         }
 
         if ($this->id) {
-            $q = "
+            $q = '
                 SELECT priv_id, name
                 FROM user_priv
                 WHERE active=1
                 AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id" . ($this->roleId ? '=' . (int)$this->roleId : " IS NULL") . ")
-                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=" . $this->id . ")
+                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id' . ($this->roleId ? '=' . (int)$this->roleId : ' IS NULL') . ')
+                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=' . $this->id . ')
                 )
-            ";
+            ';
             $r = DB::query($q);
             while ($row = DB::fetch($r)) {
                 $this->privIds[(int)$row['priv_id']] = (int)$row['priv_id'];
@@ -141,7 +139,7 @@ class UserInstance
             return false;
         }
         if (!isset($this->info) || !$buffered) {
-            $q = "select * from user where user_id = " . $this->id;
+            $q = 'select * from user where user_id = ' . $this->id;
             $this->info = DB::result($q);
             $this->info['role_name'] = $this->roleName;
         }
@@ -174,5 +172,4 @@ class UserInstance
         }
         return isset($this->privNames[$priv]);
     }
-
 }

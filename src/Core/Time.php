@@ -2,12 +2,10 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\TimeDiff;
 
 class Time
 {
-
     /**
      * Время объекта в секундах
      */
@@ -39,7 +37,7 @@ class Time
             9 => ['name' => 'Сентябрь', 'days' => 30],
             10 => ['name' => 'Октябрь', 'days' => 31],
             11 => ['name' => 'Ноябрь', 'days' => 30],
-            12 => ['name' => 'Декабрь', 'days' => 31]
+            12 => ['name' => 'Декабрь', 'days' => 31],
         ];
     }
 
@@ -66,7 +64,7 @@ class Time
      */
     public function add(string|int $interval): static
     {
-        if (strpos($interval, " ")) {
+        if (strpos($interval, ' ')) {
             $this->time = strtotime($interval, $this->time);
         } elseif ((int)$interval) {
             $this->time += (int)$interval;
@@ -188,10 +186,10 @@ class Time
      */
     public static function user($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
     {
-        $ret = self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
-        $month = self::convert($value, "m", false);
-        $ret = str_replace(" ", " в ", $ret);
-        $ret = str_replace(".$month.", " " . self::$months[(int)$month] . " ", $ret);
+        $ret = self::convert($value, 'd.m.Y', $show_hour_min, $show_sec);
+        $month = self::convert($value, 'm', false);
+        $ret = str_replace(' ', ' в ', $ret);
+        $ret = str_replace(".$month.", ' ' . self::$months[(int)$month] . ' ', $ret);
         return $ret;
     }
 
@@ -204,12 +202,13 @@ class Time
      */
     public static function userfull($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
     {
-        $ret = self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
-        $month = self::convert($value, "m", false);
-        $ret = str_replace(" ", " в ", $ret);
-        $ret = str_replace(".$month.", " " . self::$monthsDat[(int)$month] . " ", $ret);
-        if (!strpos($ret, ":"))
-            $ret .= " года";
+        $ret = self::convert($value, 'd.m.Y', $show_hour_min, $show_sec);
+        $month = self::convert($value, 'm', false);
+        $ret = str_replace(' ', ' в ', $ret);
+        $ret = str_replace(".$month.", ' ' . self::$monthsDat[(int)$month] . ' ', $ret);
+        if (!strpos($ret, ':')) {
+            $ret .= ' года';
+        }
         return $ret;
     }
 
@@ -222,7 +221,7 @@ class Time
      */
     public static function mysql($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
     {
-        return self::convert($value, "Y-m-d", $show_hour_min, $show_sec);
+        return self::convert($value, 'Y-m-d', $show_hour_min, $show_sec);
     }
 
     /**
@@ -234,7 +233,7 @@ class Time
      */
     public static function normal($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
     {
-        return self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
+        return self::convert($value, 'd.m.Y', $show_hour_min, $show_sec);
     }
 
     /**
@@ -248,10 +247,12 @@ class Time
         switch ($format) {
             case 'normal':
 
-                if (strlen($value) == 10)
+                if (strlen($value) == 10) {
                     $value .= ' 00:00:00';
-                if (strlen($value) == 16)
+                }
+                if (strlen($value) == 16) {
                     $value .= ':00';
+                }
 
                 preg_match("/(\d{2}).(\d{2}).(\d{4}) (\d{1,2}):(\d{2}):(\d{2})/", $value, $time_ar);
                 return mktime($time_ar[4], $time_ar[5], $time_ar[6], $time_ar[2], $time_ar[1], $time_ar[3]);
@@ -272,10 +273,12 @@ class Time
                 break;
             case 'excel':
 
-                if (strlen($value) == 10)
+                if (strlen($value) == 10) {
                     $value .= ' 00:00:00';
-                if (strlen($value) == 16)
+                }
+                if (strlen($value) == 16) {
                     $value .= ':00';
+                }
 
                 // dd/mm/yyyy hh:ii:ss
                 preg_match("/(\d{2})\/(\d{2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2})/", $value, $time_ar);
@@ -319,8 +322,9 @@ class Time
         bool|string $show_hour_min = 'auto',
         bool|string $show_sec = 'auto'
     ): string|false|null {
-        if ($value == '-' || $value == '' || $value == ' - ')
+        if ($value == '-' || $value == '' || $value == ' - ') {
             return $value;
+        }
 
         $unix = self::unix($value);
 
@@ -329,9 +333,9 @@ class Time
             return gmdate($format, $unix);
         }
 
-        if (strpos($format, "H") === false) {
+        if (strpos($format, 'H') === false) {
             $from = self::what_format($value);
-            $tmp = explode(":", $value);
+            $tmp = explode(':', $value);
             $has_hm = count($tmp) > 1;
             $has_s = count($tmp) == 3;
             if (
@@ -339,81 +343,100 @@ class Time
                 $show_hour_min === true ||
                 $from == 'unix' && $show_hour_min == 'auto'
             ) {
-                $format .= " H:i";
+                $format .= ' H:i';
                 if (
                     $has_s && $show_sec == 'auto' ||
                     $show_sec === true ||
                     $from == 'unix' && $show_sec == 'auto'
-                )
-                    $format .= ":s";
+                ) {
+                    $format .= ':s';
+                }
             }
         }
 
         $replace = [];
-        if (strpos($format, "X") !== false) {
-            $format = str_replace("X", " @#m#@ ", $format);
-            $replace[] = "X";
+        if (strpos($format, 'X') !== false) {
+            $format = str_replace('X', ' @#m#@ ', $format);
+            $replace[] = 'X';
         }
-        if (strpos($format, "Q") !== false) {
-            $format = str_replace("Q", " @@#m#@@ ", $format);
-            $replace[] = "Q";
+        if (strpos($format, 'Q') !== false) {
+            $format = str_replace('Q', ' @@#m#@@ ', $format);
+            $replace[] = 'Q';
         }
-        if (strpos($format, "E") !== false) {
-            $format = str_replace("E", " @~@#m#@~@ ", $format);
-            $replace[] = "E";
+        if (strpos($format, 'E') !== false) {
+            $format = str_replace('E', ' @~@#m#@~@ ', $format);
+            $replace[] = 'E';
         }
-        if (strpos($format, "R") !== false) {
-            $format = str_replace("R", " @-#w#-@ ", $format);
-            $replace[] = "R";
+        if (strpos($format, 'R') !== false) {
+            $format = str_replace('R', ' @-#w#-@ ', $format);
+            $replace[] = 'R';
         }
-        if (strpos($format, "J") !== false) {
-            $format = str_replace("J", " @--#w#--@ ", $format);
-            $replace[] = "J";
+        if (strpos($format, 'J') !== false) {
+            $format = str_replace('J', ' @--#w#--@ ', $format);
+            $replace[] = 'J';
         }
-        if (strpos($format, "K") !== false) {
-            $format = str_replace("K", " @-_-#m#-_-@ ", $format);
-            $replace[] = "K";
+        if (strpos($format, 'K') !== false) {
+            $format = str_replace('K', ' @-_-#m#-_-@ ', $format);
+            $replace[] = 'K';
         }
 
         $ret = date($format, $unix);
 
         if (count($replace)) {
             foreach ($replace as $L) {
-                if ("X" == $L) {
+                if ('X' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\#(\d+)\#\@ /i', function ($matches) {
-                        return static::$monthsFull[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\#(\d+)\#\@ /i',
+                        function ($matches) {
+                            return static::$monthsFull[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
-                if ("Q" == $L) {
+                if ('Q' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\@\#(\d+)\#\@\@ /i', function ($matches) {
-                        return static::$monthsDat[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\@\#(\d+)\#\@\@ /i',
+                        function ($matches) {
+                            return static::$monthsDat[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
-                if ("E" == $L) {
+                if ('E' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\~\@\#(\d+)\#\@\~\@ /i', function ($matches) {
-                        return static::$monthsFullUCF[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\~\@\#(\d+)\#\@\~\@ /i',
+                        function ($matches) {
+                            return static::$monthsFullUCF[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
-                if ("R" == $L) {
+                if ('R' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\-\#(\d+)\#\-\@ /i', function ($matches) {
-                        return static::$wdays[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\-\#(\d+)\#\-\@ /i',
+                        function ($matches) {
+                            return static::$wdays[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
-                if ("J" == $L) {
+                if ('J' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\-\-\#(\d+)\#\-\-\@ /i', function ($matches) {
-                        return static::$wdaysFullLC[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\-\-\#(\d+)\#\-\-\@ /i',
+                        function ($matches) {
+                            return static::$wdaysFullLC[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
-                if ("K" == $L) {
+                if ('K' == $L) {
                     $ret = preg_replace_callback(
-                        '/ \@\-_\-\#(\d+)\#\-_\-\@ /i', function ($matches) {
-                        return static::$months[(int)$matches[1]];
-                    }, $ret);
+                        '/ \@\-_\-\#(\d+)\#\-_\-\@ /i',
+                        function ($matches) {
+                            return static::$months[(int)$matches[1]];
+                        },
+                        $ret
+                    );
                 }
             }
         }
@@ -433,12 +456,15 @@ class Time
 
             $res_time = self::unix($value1) - self::unix($value2);
 
-            if ($to == 'unix')
+            if ($to == 'unix') {
                 return $res_time;
-            if ($to == 'normal')
+            }
+            if ($to == 'normal') {
                 return self::sub_time($res_time, $show_sec);
-        } else
+            }
+        } else {
             return '-';
+        }
     }
 
     /**
@@ -493,7 +519,7 @@ class Time
             return $value;
         }
         $res = [];
-        preg_match("/([0-9]*:)?([0-9]+):([0-9]+)/", $value, $res);
+        preg_match('/([0-9]*:)?([0-9]+):([0-9]+)/', $value, $res);
         $unixtime = intval($res[1]) * 3600 + $res[2] * 60 + $res[3];
         return $unixtime;
     }
@@ -546,10 +572,10 @@ class Time
 
         $beg_date_u = self::unix($begin_date);
         $end_date_u = self::unix($end_date);
-        $beg_year = (int)self::convert($begin_date, "Y", false);
-        $end_year = (int)self::convert($end_date, "Y", false);
-        $beg_month = (int)self::convert($begin_date, "m", false);
-        $end_month = (int)self::convert($end_date, "m", false);
+        $beg_year = (int)self::convert($begin_date, 'Y', false);
+        $end_year = (int)self::convert($end_date, 'Y', false);
+        $beg_month = (int)self::convert($begin_date, 'm', false);
+        $end_month = (int)self::convert($end_date, 'm', false);
         $ret = [];
 
         switch ($delimiter) {
@@ -560,8 +586,8 @@ class Time
                     $mi = ($beg_month - 1 + $i % 12) % 12;
                     $m = self::$monthsFull[$mi + 1];
                     $ret[$i]['period'] = $m . ' ' . $y;
-                    $ret[$i]['period_sys'] = ($mi + 1 > 9 ? $mi + 1 : "0" . ($mi + 1)) . '.' . $y;
-                    $ret[$i]['isnow'] = (int)date("m") == $mi + 1 && (int)date("Y") == $y;
+                    $ret[$i]['period_sys'] = ($mi + 1 > 9 ? $mi + 1 : '0' . ($mi + 1)) . '.' . $y;
+                    $ret[$i]['isnow'] = (int)date('m') == $mi + 1 && (int)date('Y') == $y;
                     $mi = sprintf('%02d', $mi + 1);
                     $ret[$i]['beg'] = $y . '-' . $mi . '-01 00:00:00';
                     $ret[$i]['end'] = $y . '-' . $mi . '-31 23:59:59';
@@ -569,8 +595,9 @@ class Time
                 break;
             case 2:
                 $cnt = floor(($end_date_u - $beg_date_u) / 8035200) + 1;
-                if ($end_month - $beg_month <= 3 && (($beg_month - 1) % 3) != 0)
+                if ($end_month - $beg_month <= 3 && (($beg_month - 1) % 3) != 0) {
                     $cnt++;
+                }
                 for ($i = 0; $i < $cnt; $i++) {
                     $y = $beg_year + (floor((floor(($beg_month - 1) / 3) + $i) / 4));
                     $qi = (floor(($beg_month - 1) / 3) + $i % 4) % 4 + 1;
@@ -605,8 +632,9 @@ class Time
         $precision = 3;
         $pagetime = round(microtime(1) - self::$timestamp, $precision);
         $pagetime = number_format($pagetime, $precision, '.', '');
-        if ($pagetime > 60)
+        if ($pagetime > 60) {
             $pagetime = self::sub_time($pagetime);
+        }
         return $pagetime;
     }
 
@@ -616,7 +644,7 @@ class Time
     public static function wday($value): string
     {
         $unix = self::unix($value);
-        $wday = self::$wdays[date("w", $unix)];
+        $wday = self::$wdays[date('w', $unix)];
         return $wday;
     }
 
@@ -626,7 +654,7 @@ class Time
     public static function wdayFull($value): string
     {
         $unix = self::unix($value);
-        $wday = self::$wdaysFull[date("w", $unix)];
+        $wday = self::$wdaysFull[date('w', $unix)];
         return $wday;
     }
 
@@ -640,7 +668,7 @@ class Time
     {
         $value = self::mysql($value, 'auto', $show_sec);
         $value = self::unix($value);
-        $format = $show_sec ? "H:i:s" : "H:i";
+        $format = $show_sec ? 'H:i:s' : 'H:i';
         $time = date($format, $value);
         return $time;
     }
@@ -657,7 +685,7 @@ class Time
         $format = self::what_format($value);
         $unix = self::unix($value);
 
-        if (strpos($interval, " ")) {
+        if (strpos($interval, ' ')) {
             $unix = strtotime($interval, $unix);
         } elseif ((int)$interval) {
             $unix += (int)$interval;

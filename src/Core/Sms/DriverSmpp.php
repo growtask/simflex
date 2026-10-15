@@ -17,8 +17,7 @@ use Simflex\Core\Sms\DriverBase;
  */
 class DriverSmpp extends DriverBase
 {
-
-    const STATES = [
+    public const STATES = [
         SMPP::STATE_ENROUTE => self::STATE_SEND,
         SMPP::STATE_DELIVERED => self::STATE_DELIVERY,
         SMPP::STATE_EXPIRED => self::STATE_ERROR,
@@ -62,7 +61,7 @@ class DriverSmpp extends DriverBase
             'driver_sms_id' => $driverSmsId,
             'price' => 1,
             'error_code' => $errorCode,
-            'error_text' => $error
+            'error_text' => $error,
         ];
     }
 
@@ -84,5 +83,4 @@ class DriverSmpp extends DriverBase
             ]);
         });
     }
-
 }

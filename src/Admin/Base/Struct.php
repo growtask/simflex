@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Base;
 
-
 use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Page;
@@ -12,7 +11,6 @@ use Simflex\Core\Image;
 
 class Struct extends Base
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -134,5 +132,4 @@ class Struct extends Base
             $img->save();
         }
     }
-
 }

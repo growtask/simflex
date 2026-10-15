@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
 class FieldNPP extends Field
 {
-
     public function show($row): void
     {
         $value = $row[$this->name];
@@ -54,9 +52,9 @@ DATA;
                     }
                 }
                 $q = "SELECT MAX($this->name) FROM $this->table" . (count($where) ? ' WHERE ' . implode(
-                            ' AND ',
-                            $where
-                        ) : '');
+                    ' AND ',
+                    $where
+                ) : '');
                 $max = DB::result($q, 0);
                 $value = $max + 1;
             }
@@ -64,7 +62,7 @@ DATA;
 
         return parent::input($value);
     }
-    
+
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
@@ -79,5 +77,4 @@ DATA;
     {
         return [];
     }
-
 }

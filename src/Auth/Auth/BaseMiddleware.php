@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Auth\Auth;
-
 
 use JetBrains\PhpStorm\Deprecated;
 use Simflex\Core\Middleware\Handler;
@@ -10,7 +8,6 @@ use Simflex\Core\Models\User;
 
 abstract class BaseMiddleware implements Handler
 {
-
     /**
      * @var class-string<User>
      */
@@ -21,5 +18,4 @@ abstract class BaseMiddleware implements Handler
     {
         $this->userModelClass = $userModelClass;
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\DB;
 use Simflex\Core\Helpers\Phone;
 use Simflex\Core\Mail;
@@ -149,8 +148,8 @@ class User
         Sms::send($login, $smsText);
 
         if ($userId) {
-            setcookie("user_id", $userId, time() + 3600 * 24 * 365, '/');
-            setcookie("user_hash", $hash, time() + 3600 * 24 * 365, '/');
+            setcookie('user_id', $userId, time() + 3600 * 24 * 365, '/');
+            setcookie('user_hash', $hash, time() + 3600 * 24 * 365, '/');
             $_SESSION['user_id'] = $userId;
             $_SESSION['user_hash'] = $hash;
             self::login();
@@ -165,5 +164,4 @@ class User
         $GLOBALS[UserInstance::class]['password'] = $password;
         static::login();
     }
-
 }

@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\FieldString;
 
-class FieldEnum extends  FieldString
+class FieldEnum extends FieldString
 {
-
     protected string $changeURL = '';
 
     public function input($value): string
@@ -82,7 +80,7 @@ class FieldEnum extends  FieldString
     public function filter($value): void
     {
         if ($this->filter) {
-            $select =  '<div class="form-control form-control--sm">
+            $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown">
                             <div class="form-control__dropdown-top">
                                 <input class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="filter[' . $this->name . ']" >
@@ -125,7 +123,7 @@ class FieldEnum extends  FieldString
 
         $value = @$values[$value0];
 
-        $select =  '<div class="form-control form-control--sm">
+        $select = '<div class="form-control form-control--sm">
                         <div class="form-control__dropdown">
                             <div class="form-control__dropdown-top">
                                 <input data-enum="'.$this->tablePk.'" data-enumv="'.$pkValue.'" class="form-control__dropdown-input" value="'.$value.'" type="hidden" name="'.$this->name.'" >
@@ -169,5 +167,4 @@ class FieldEnum extends  FieldString
             ],
         ];
     }
-
 }

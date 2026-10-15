@@ -24,8 +24,7 @@ class JoinClause
         ?string $joinColumn2 = null,
         string $type = 'INNER',
         string|array|Where|Expr|null $extraOnConditions = null
-    )
-    {
+    ) {
         $this->table = (is_subclass_of($table, ModelBase::class)) ? $table::getTableName() : (string)$table;
         $this->joinColumn1 = $joinColumn1;
         $this->joinColumn2 = $joinColumn2;

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Simflex\Core;
 
 use Simflex\Core\Core;
@@ -56,8 +55,8 @@ class Container
     public static function getUser(): ?\Simflex\Core\Models\User
     {
         if (
-            !($called =& static::$registry['authHandlerCalled'])
-            && ($authHandler =& static::$registry['authHandler'])
+            !($called = & static::$registry['authHandlerCalled'])
+            && ($authHandler = & static::$registry['authHandler'])
             && is_callable($authHandler)
         ) {
             $authHandler();

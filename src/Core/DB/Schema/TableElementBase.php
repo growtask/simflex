@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB\Schema\ElementBase;

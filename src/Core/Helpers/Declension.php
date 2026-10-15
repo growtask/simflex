@@ -4,7 +4,6 @@ namespace Simflex\Core\Helpers;
 
 class Declension
 {
-
     /**
      * Выдает слово из параметров $form1 - $form3 в зависимости от числа $count
      * @param string $form1 Пример: 'день', 'рубль'
@@ -53,5 +52,4 @@ class Declension
     {
         return self::byCount($count, 'месяц', 'месяца', 'месяцев');
     }
-
 }

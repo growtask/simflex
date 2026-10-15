@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
 class FieldDateTime extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -26,9 +24,9 @@ class FieldDateTime extends Field
     public function input($value): string
     {
         $value = \Simflex\Core\Time::normal($value, true, false);
-        $classes = ["form-control input-medium"];
+        $classes = ['form-control input-medium'];
         if (!$this->readonly) {
-            $classes[] = "form-datetimepicker";
+            $classes[] = 'form-datetimepicker';
         }
 
         return '<div id="calendar" class="form-control form-control--sm">
@@ -45,7 +43,7 @@ class FieldDateTime extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}.[0-9]{2}$@', $value)) {
             $value = substr($value, 6, 4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2) . ' ' . substr($value, 11, 2) . ':' . substr($value, 14, 2) . ':00';
         }
-        return $this->e2n && $value === '' ? null : "" . DB::escape($value) . "";
+        return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
     }
 
     public function show($row): void
@@ -66,5 +64,4 @@ class FieldDateTime extends Field
     {
         return [];
     }
-
 }

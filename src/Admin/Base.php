@@ -15,7 +15,6 @@ use Simflex\Admin\Fields\FieldVirtual;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Admin\Plugins\Alert\Alert;
-
 use Simflex\Admin\Plugins\Pagecontrol\Pagecontrol;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
@@ -28,7 +27,6 @@ use Simflex\Core\User;
 
 class Base
 {
-
     public string $name = '';
     protected string $action = '';
     protected string $table = '';
@@ -51,7 +49,7 @@ class Base
     protected int $pOn = 20;
     protected int $pCount = 0;
     protected bool $isFilter = false;
-    static protected bool $isInit = false;
+    protected static bool $isInit = false;
     protected array $actionHandlers = [
         '' => ['method' => 'show'],
         'form' => ['method' => 'form'],
@@ -104,7 +102,7 @@ class Base
         }
 
         // filter this
-        $this->ids = implode(',', array_filter(array_map(fn ($val) => intval($val), explode(',', $this->ids))));
+        $this->ids = implode(',', array_filter(array_map(fn($val) => intval($val), explode(',', $this->ids))));
 
         $this->initTableName();
         $this->initTableData();
@@ -151,7 +149,7 @@ class Base
 
             DB::query("UPDATE $this->table SET params = ? WHERE $keyName = $keyValue", [$data]);
             exit(
-            json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue])
+                json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue])
             );
         }
         $field = $this->fields[$fieldName];
@@ -159,7 +157,7 @@ class Base
         $row = DB::result($q);
         $success = $field->delete($row[$field->name]);
         if ($success) {
-            $q = "UPDATE " . $this->table . " SET " . $field->name . "='' WHERE $keyName = $keyValue";
+            $q = 'UPDATE ' . $this->table . ' SET ' . $field->name . "='' WHERE $keyName = $keyValue";
             $success = DB::query($q);
         }
         echo json_encode(['success' => !!$success]);
@@ -193,7 +191,7 @@ class Base
         $q = DB::query(
             "select {$this->pk->name}, {$field->params['name']} from {$this->table} where {$field->params['name']} like ? limit 50",
             [
-                '%' . $_REQUEST['text'] . '%'
+                '%' . $_REQUEST['text'] . '%',
             ]
         );
 
@@ -248,7 +246,7 @@ class Base
 
     protected function widgets(): void
     {
-        $q = "SELECT * FROM admin_widget WHERE active = 1 ORDER BY npp, widget_id";
+        $q = 'SELECT * FROM admin_widget WHERE active = 1 ORDER BY npp, widget_id';
         $rows = DB::assoc($q);
         echo count($rows) ? '<div class="widgets">' : '';
         foreach ($rows as $row) {
@@ -264,7 +262,7 @@ class Base
     protected function beforeChangeENUM(Field $field, $row, $newValue): mixed
     {
         if (!$this->canEdit) {
-            Alert::error("В этом разделе запрещено редактировать записи", './');
+            Alert::error('В этом разделе запрещено редактировать записи', './');
         }
         if ($field->readonly) {
             Alert::error("Поле <b>{$field->label}</b> только для чтения!", './');
@@ -282,7 +280,7 @@ class Base
         $newValue = $_REQUEST['newstatus'];
         $field = $this->fields[$fieldName] ?? null;
         if (!$field) {
-            Alert::error("Некорректный запрос. Поле не найдено.", './');
+            Alert::error('Некорректный запрос. Поле не найдено.', './');
         }
 
         $id = (int)$_REQUEST[$this->pk->name];
@@ -338,7 +336,7 @@ class Base
         }
     }
 
-    public final function execute(bool $is_print = false): string|false|null
+    final public function execute(bool $is_print = false): string|false|null
     {
         if ($is_print) {
             $this->content();
@@ -373,7 +371,7 @@ class Base
             $ar[] = $i;
         }
 
-        $ret = "SELECT " . ($this->selectAll ? '*' : join(', ', $ar));
+        $ret = 'SELECT ' . ($this->selectAll ? '*' : join(', ', $ar));
         return $ret;
     }
 
@@ -382,7 +380,7 @@ class Base
         $q = "\r\nFROM `" . $this->table . '`';
         foreach ($this->fks as $field) {
             if ($field->fk->table != $this->table) {
-                $q .= "\r\n" . ($field->isnull ? "LEFT " : "") . "JOIN " . $field->fk->table . " " . $field->fk->table . $field->name . " ON " . $field->fk->table . $field->name . "." . $field->fk->key . "=" . $this->table . "." . $field->name;
+                $q .= "\r\n" . ($field->isnull ? 'LEFT ' : '') . 'JOIN ' . $field->fk->table . ' ' . $field->fk->table . $field->name . ' ON ' . $field->fk->table . $field->name . '.' . $field->fk->key . '=' . $this->table . '.' . $field->name;
             }
         }
         return $q;
@@ -405,17 +403,17 @@ class Base
         if ($this->order2) {
             $order[] = $this->order2;
         }
-        return count($order) ? "\r\nORDER BY " . join(', ', $order) : "";
+        return count($order) ? "\r\nORDER BY " . join(', ', $order) : '';
     }
 
     protected function getSelectLimit(): string
     {
-        return $this->isHierarchy ? "" : "\r\nLIMIT " . $this->p * $this->pOn . ", " . $this->pOn;
+        return $this->isHierarchy ? '' : "\r\nLIMIT " . $this->p * $this->pOn . ', ' . $this->pOn;
     }
 
     protected function getQueryCount(): string
     {
-        $q = "SELECT COUNT(*) cnt";
+        $q = 'SELECT COUNT(*) cnt';
         $q .= $this->getSelectFrom();
         $q .= $this->getSelectWhere();
         return $q;
@@ -445,7 +443,7 @@ class Base
             $_SESSION[$this->table]['filter'][$field->name] = isset($_REQUEST['filter'][$field->name]) ? $_REQUEST['filter'][$field->name] : $_SESSION[$this->table]['filter'][$field->name];
             if ($_SESSION[$this->table]['filter'][$field->name] !== '') {
                 if ($_SESSION[$this->table]['filter'][$field->name] === 'null') {
-                    $this->where[] = '' . $this->table . '.' . $field->name . " IS NULL";
+                    $this->where[] = '' . $this->table . '.' . $field->name . ' IS NULL';
                 } else {
                     $this->isHierarchy = false;
                     if ($field instanceof FieldDateTime) {
@@ -461,9 +459,9 @@ class Base
                             $this->where[] = "$this->table.$field->name like '%$fval%'";
                         } else {
                             $this->where[] = "$this->table.$field->name " . (strpos(
-                                    $fval,
-                                    '%'
-                                ) === false ? '=' : 'like') . " '$fval'";
+                                $fval,
+                                '%'
+                            ) === false ? '=' : 'like') . " '$fval'";
                         }
                     }
                 }
@@ -474,7 +472,6 @@ class Base
     public function show(): void
     {
         $this->prepareWhere();
-
 
         $q = $this->getQueryCount();
         $cnt = DB::result($q, 'cnt');
@@ -667,15 +664,15 @@ class Base
             /* SYSTEM FILTER */
             if ($field->name == 'priv_id' && !User::ican('dev')) {
                 if ($field->isnull) {
-                    $this->whereSys[] = "(" . $this->table . ".priv_id IN(" . join(',', User::privIds())
-                        . ") OR " . $this->table . ".priv_id IS NULL)";
+                    $this->whereSys[] = '(' . $this->table . '.priv_id IN(' . join(',', User::privIds())
+                        . ') OR ' . $this->table . '.priv_id IS NULL)';
                 } else {
-                    $this->whereSys[] = "" . $this->table . ".priv_id IN(" . join(',', User::privIds()) . ")";
+                    $this->whereSys[] = '' . $this->table . '.priv_id IN(' . join(',', User::privIds()) . ')';
                 }
             }
             if ($field->name == 'role_id' && !User::ican('dev')) {
-                $this->whereSys[] = "" . $this->table
-                    . ".role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(" . join(',', User::privIds()) . "))";
+                $this->whereSys[] = '' . $this->table
+                    . '.role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(' . join(',', User::privIds()) . '))';
             }
         }
     }
@@ -688,11 +685,11 @@ class Base
             $fieldDB = StructureRepository::field($this->table, $field);
             $fieldParams = $fieldDB['params'] ?? [];
             if (!@$fieldParams['main']['readonly']) {
-                $q = "UPDATE " . $this->table . " SET $field=($field+1)%2 WHERE " . $this->pk->name . "=" . $pk;
+                $q = 'UPDATE ' . $this->table . " SET $field=($field+1)%2 WHERE " . $this->pk->name . '=' . $pk;
                 DB::query($q);
             }
 
-            $q = "SELECT $field val FROM `" . $this->table . "` WHERE " . $this->pk->name . "=" . $pk;
+            $q = "SELECT $field val FROM `" . $this->table . '` WHERE ' . $this->pk->name . '=' . $pk;
             $row = DB::result($q);
             if (isset($row['val'])) {
                 echo $row['val'] ? '1' : '0';
@@ -751,8 +748,8 @@ class Base
         $pk = 0;
         if (!empty($_REQUEST[$this->pk->name])) {
             $pk = (int)$_REQUEST[$this->pk->name];
-            $where[] = $this->pk->name . "=" . $pk;
-            $q = "SELECT * FROM `" . $this->table . "` WHERE " . join(' AND ', $where);
+            $where[] = $this->pk->name . '=' . $pk;
+            $q = 'SELECT * FROM `' . $this->table . '` WHERE ' . join(' AND ', $where);
             if ($rrow = DB::result($q)) {
                 $row = $rrow;
                 if ($this->title) {
@@ -781,7 +778,7 @@ class Base
         if ($isGroup) {
             $title = 'Редактирование нескольких записей';
             $ids = DB::escape($_GET['ids']);
-            $q = "SELECT * FROM `$this->table` WHERE {$this->pk->name} in (" . $ids . ")";
+            $q = "SELECT * FROM `$this->table` WHERE {$this->pk->name} in (" . $ids . ')';
             $rows = DB::assoc($q);
             foreach ($this->fields as $field) {
                 $vars = [];
@@ -861,7 +858,7 @@ class Base
         if (Core::$isAjax) {
             if (!empty($_REQUEST['field']) && isset($this->fields[$_REQUEST['field']]) && $pk) {
                 $field = $this->fields[$_REQUEST['field']];
-                $q = "UPDATE `" . $this->table . "` SET " . $field->name . "='' WHERE " . join(' AND ', $where);
+                $q = 'UPDATE `' . $this->table . '` SET ' . $field->name . "='' WHERE " . join(' AND ', $where);
                 DB::query($q);
                 $field->delete($row[$field->name]);
                 exit();
@@ -971,7 +968,7 @@ class Base
                 Alert::error(DB::error());
             }
         }
-        header("location: ./");
+        header('location: ./');
         exit;
     }
 
@@ -1108,7 +1105,7 @@ class Base
 
             DB::query($q[0], $q[1]);
             if (DB::errno()) {
-                $this->errors[] = "Введенные данные некорректны";
+                $this->errors[] = 'Введенные данные некорректны';
                 $this->errors[] = DB::error();
             } else {
                 if (empty($_POST[$this->pk->name])) {
@@ -1129,22 +1126,22 @@ class Base
                 if ($field_path && $field_alias) {
                     if ($this->pid) {
                         $where = $this->whereSys;
-                        $where[] = "" . $this->table . "." . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
-                        $q = "
-                            SELECT " . $this->table . "." . $this->pk->name . ", " . $this->table . "." . $this->pid->name . ", " . $this->table . "." . $field_alias->name . ", t2." . $field_path->name . "
-                            FROM `" . $this->table . "`
-                            LEFT JOIN " . $this->table . " t2 ON t2." . $this->pk->name . " = " . $this->table . "." . $this->pid->name . "
-                            WHERE " . join(" AND ", $where) . "
-                        ";
+                        $where[] = '' . $this->table . '.' . $this->pk->name . '=' . (int)$_POST[$this->pk->name];
+                        $q = '
+                            SELECT ' . $this->table . '.' . $this->pk->name . ', ' . $this->table . '.' . $this->pid->name . ', ' . $this->table . '.' . $field_alias->name . ', t2.' . $field_path->name . '
+                            FROM `' . $this->table . '`
+                            LEFT JOIN ' . $this->table . ' t2 ON t2.' . $this->pk->name . ' = ' . $this->table . '.' . $this->pid->name . '
+                            WHERE ' . join(' AND ', $where) . '
+                        ';
                         $row = DB::result($q);
                         $path = $row['path'] ? $row['path'] . $row['alias'] . '/' : '/' . $row['alias'] . '/';
                         $path = preg_replace('@\/+@', '/', $path);
                         $row[$field_path->name] = $path;
 
-                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(
-                                " AND ",
-                                $where
-                            );
+                        $q = 'UPDATE ' . $this->table . ' SET ' . $field_path->name . "='" . $path . "' WHERE " . join(
+                            ' AND ',
+                            $where
+                        );
                         DB::query($q);
 
                         $steck[] = $row;
@@ -1153,21 +1150,21 @@ class Base
                         while ($i < count($steck)) {
                             $cur = $steck[$i];
                             $where = $this->whereSys;
-                            $where[] = "" . $this->table . "." . $this->pid->name . "=" . $cur[$this->pk->name];
-                            $q = "
-                                SELECT " . $this->pk->name . ", " . $field_alias->name . ", " . $field_path->name . "
-                                FROM `" . $this->table . "`
-                                WHERE " . join(" AND ", $where) . "
-                            ";
+                            $where[] = '' . $this->table . '.' . $this->pid->name . '=' . $cur[$this->pk->name];
+                            $q = '
+                                SELECT ' . $this->pk->name . ', ' . $field_alias->name . ', ' . $field_path->name . '
+                                FROM `' . $this->table . '`
+                                WHERE ' . join(' AND ', $where) . '
+                            ';
                             $rows = DB::assoc($q);
                             foreach ($rows as $row) {
                                 if ($row[$field_path->name] != $cur[$field_path->name] . $row[$field_alias->name] . '/') {
                                     $counter++;
                                     $path = $cur[$field_path->name] . $row[$field_alias->name] . '/';
                                     $where = $this->whereSys;
-                                    $where[] = "" . $this->table . "." . $this->pk->name . "=" . $row[$this->pk->name];
-                                    $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path
-                                        . "' WHERE " . join(" AND ", $where);
+                                    $where[] = '' . $this->table . '.' . $this->pk->name . '=' . $row[$this->pk->name];
+                                    $q = 'UPDATE ' . $this->table . ' SET ' . $field_path->name . "='" . $path
+                                        . "' WHERE " . join(' AND ', $where);
                                     DB::query($q);
                                     $row[$field_path->name] = $path;
 
@@ -1178,12 +1175,12 @@ class Base
                         }
                     } else {
                         $where = $this->whereSys;
-                        $where[] = "" . $this->table . "." . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
+                        $where[] = '' . $this->table . '.' . $this->pk->name . '=' . (int)$_POST[$this->pk->name];
                         $path = '/' . $_POST[$field_alias->name] . '/';
-                        $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(
-                                " AND ",
-                                $where
-                            );
+                        $q = 'UPDATE ' . $this->table . ' SET ' . $field_path->name . "='" . $path . "' WHERE " . join(
+                            ' AND ',
+                            $where
+                        );
                         DB::query($q);
                     }
                 }
@@ -1227,19 +1224,19 @@ class Base
                 $values[] = '?';
             }
         }
-        $q = "INSERT INTO `" . $this->table . "` (" . implode(', ', $keys) . ") VALUES (" . implode(
-                ', ',
-                $values
-            ) . ")";
+        $q = 'INSERT INTO `' . $this->table . '` (' . implode(', ', $keys) . ') VALUES (' . implode(
+            ', ',
+            $values
+        ) . ')';
         return [$q, $vals];
     }
 
     protected function getQueryUpdate(): array
     {
-        $q = "SELECT * FROM `" . $this->table . "` WHERE " . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
+        $q = 'SELECT * FROM `' . $this->table . '` WHERE ' . $this->pk->name . '=' . (int)$_POST[$this->pk->name];
         $row = DB::result($q);
 
-        $q = "UPDATE `" . $this->table . "` SET";
+        $q = 'UPDATE `' . $this->table . '` SET';
         $vals = [];
         foreach ($this->fields as $field) {
             if ($field->isVirtual) {
@@ -1247,12 +1244,12 @@ class Base
             } elseif (!$field->readonly) {
                 if ($field->name == 'params') {
                     $params = $this->getParams();
-                    $q .= " " . DB::wrapName($field->name) . "=?,";
+                    $q .= ' ' . DB::wrapName($field->name) . '=?,';
                     $vals[] = serialize($params);
                 } elseif ($field instanceof FieldPassword) {
                     $value = $field->getPOST();
                     if ($value) {
-                        $q .= " " . DB::wrapName($field->name) . "=?,";
+                        $q .= ' ' . DB::wrapName($field->name) . '=?,';
                         $vals[] = $value;
                     }
                 } elseif ($field instanceof FieldDateTime) {
@@ -1261,24 +1258,24 @@ class Base
                         $value = $field->getPOST();
                         // null — очистка поля (e2n), пустая строка — оставить как есть
                         if ($value !== '') {
-                            $q .= " " . DB::wrapName($field->name) . "=?,";
+                            $q .= ' ' . DB::wrapName($field->name) . '=?,';
                             $vals[] = $value;
                         }
                     }
                 } elseif ($field instanceof FieldFile) {
                     if ($value = trim($field->getPOST(), "'")) {
-                        $q .= " `" . $field->name . "`=?,";
+                        $q .= ' `' . $field->name . '`=?,';
                         $vals[] = $value;
                     }
                 } else {
                     $value = $field->getPOST();
-                    $q .= " " . DB::wrapName($field->name) . "=?,";
+                    $q .= ' ' . DB::wrapName($field->name) . '=?,';
                     $vals[] = $value;
                 }
             }
         }
         $q = substr($q, 0, -1);
-        $q .= " WHERE " . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
+        $q .= ' WHERE ' . $this->pk->name . '=' . (int)$_POST[$this->pk->name];
 
         return [$q, $vals];
     }
@@ -1326,8 +1323,8 @@ class Base
     protected function deleteItem(int $id): string
     {
         $where = $this->whereSys;
-        $where[] = $this->pk->name . "=" . (int)$id;
-        $q = "DELETE FROM `" . $this->table . "` WHERE " . join(' AND ', $where);
+        $where[] = $this->pk->name . '=' . (int)$id;
+        $q = 'DELETE FROM `' . $this->table . '` WHERE ' . join(' AND ', $where);
         DB::query($q);
         return DB::errno() ? DB::errno() . ': ' . DB::error() : '';
     }
@@ -1355,10 +1352,10 @@ class Base
                 if ($field instanceof FieldImage) {
                     $dir = 'images';
                 }
-                $q = "SELECT " . $field->name . " FROM `" . $this->table . "` WHERE " . $this->pk->name . " IN (" . join(
-                        ',',
-                        $ids
-                    ) . ")";
+                $q = 'SELECT ' . $field->name . ' FROM `' . $this->table . '` WHERE ' . $this->pk->name . ' IN (' . join(
+                    ',',
+                    $ids
+                ) . ')';
                 $rows = DB::assoc($q);
                 foreach ($rows as $row) {
                     if ($row[$field->name] && is_file($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $row[$field->name])) {
@@ -1386,7 +1383,7 @@ class Base
                 Alert::success("#$id &mdash; Успех. Запись удалена");
             }
         }
-        header("location: ./");
+        header('location: ./');
         exit;
     }
 
@@ -1401,7 +1398,6 @@ class Base
         $row = DB::result($q);
         return $row;
     }
-
 
     protected function showDetailExtra($row): void
     {

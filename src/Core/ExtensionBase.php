@@ -2,18 +2,28 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\Core;
 
 abstract class ExtensionBase
 {
-
     /**
      * Путь до расширения в файловой системе
      * @var string
      */
     protected string $rootDir;
     protected string $root = '';
+
+    /**
+     * Settings of the module/component edited in the admin panel.
+     * Values are stored serialized in module_item.params / component.params.
+     *
+     * @return array<\Simflex\Admin\Structure\Data\FieldDefinition|\Simflex\Admin\Structure\Data\ParamGroup>
+     *         FieldDefinition goes to the common "Параметры" block, ParamGroup makes its own block
+     */
+    public static function adminParams(): array
+    {
+        return [];
+    }
 
     public function __construct()
     {
@@ -32,7 +42,7 @@ abstract class ExtensionBase
             }
             $ext = strtolower($ext);
 
-            $menu =  Core::menu('by_ext');
+            $menu = Core::menu('by_ext');
             if (isset($menu[$ext]) && is_array($menu[$ext])) {
                 $this->root = $menu[$ext][0]['link'];
                 $n = count($menu[$ext]);
@@ -50,5 +60,4 @@ abstract class ExtensionBase
     {
         return str_replace('//', '/', $this->root() . $link);
     }
-
 }

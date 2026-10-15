@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Auth\Auth;
-
 
 use JetBrains\PhpStorm\Deprecated;
 use Simflex\Core\Models\User;
@@ -46,5 +44,4 @@ class Chain extends \Simflex\Core\Middleware\Chain
     {
         return $this->userModelClass;
     }
-
 }

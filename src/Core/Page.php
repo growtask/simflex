@@ -2,13 +2,11 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\Core;
 use Simflex\Core\DB;
 
 class Page
 {
-
     protected static string $menu = '';
     protected static string $content = '';
     protected static array $positions = [];
@@ -97,10 +95,10 @@ class Page
 
     public static function moduleById(int $module_id): void
     {
-        $q = "SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params
+        $q = 'SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params
         FROM module_item t1
         JOIN module t2 ON t2.module_id=t1.module_id
-        WHERE t1.active=1 AND t1.item_id=" . $module_id;
+        WHERE t1.active=1 AND t1.item_id=' . $module_id;
         if ($row = DB::result($q)) {
             $module = new $row['class']($row);
             echo $module->execute();
@@ -183,18 +181,18 @@ class Page
     public static function title(): string
     {
         return str_replace(
-                '<br/>',
-                '',
-                htmlspecialchars(self::$seoTitle)
-            ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
+            '<br/>',
+            '',
+            htmlspecialchars(self::$seoTitle)
+        ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
     }
 
     public static function meta(): void
     {
         $title = self::$override['title'] ?: self::$seoTitle;
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
-                'site_name'
-            ) : '');
+            'site_name'
+        ) : '');
         echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
         echo self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
 
@@ -281,8 +279,7 @@ class Page
         ?string $keywords = '',
         bool $final = false,
         ?string $metatags = ''
-    ): void
-    {
+    ): void {
         if (!self::$seoIs) {
             self::$seoTitle = $title;
             self::$seoDescription = $description ? $description : self::$seoDescription;
@@ -291,5 +288,4 @@ class Page
             self::$seoIs = $final;
         }
     }
-
 }

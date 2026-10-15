@@ -31,7 +31,7 @@ class DB
     private static function create(): Adapter
     {
         $class = Container::getConfig()->db['adapter'];
-        return new $class;
+        return new $class();
     }
 
     /**

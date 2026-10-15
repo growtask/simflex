@@ -11,7 +11,6 @@ use Simflex\Core\Helpers\Str;
  */
 class Service
 {
-
     private static array $list = [];
 
     private function __construct()
@@ -55,5 +54,4 @@ class Service
     {
         return Str::translite($string);
     }
-
 }

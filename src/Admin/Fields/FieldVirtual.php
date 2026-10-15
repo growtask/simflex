@@ -2,12 +2,10 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Fields\Field;
 
 class FieldVirtual extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -98,5 +96,4 @@ class FieldVirtual extends Field
             ],
         ];
     }
-
 }

@@ -7,25 +7,25 @@ spl_autoload_register(function ($className): void {
     $fname = substr($className, 8);
     if (strpos($className, 'admin') === 0) {
         switch (substr($className, 5, 3)) {
-            case 'com' :
+            case 'com':
                 $path = 'com/' . substr($className, 3) . '/';
                 break;
-            case 'mod' :
+            case 'mod':
                 $path = 'mod/' . substr($className, 8) . '/';
                 break;
-            case 'plu' :
+            case 'plu':
                 $path = 'plug/' . substr($className, 9) . '/';
                 $fname = substr($className, 9);
                 break;
-            case 'wid' :
+            case 'wid':
                 include_once 'core/sfadminwidgetbase.class.php';
                 $matches = [];
-                preg_match_all("@[A-Z][a-z]+@", $classNameRaw, $matches);
+                preg_match_all('@[A-Z][a-z]+@', $classNameRaw, $matches);
                 $extname = $matches[0][2];
                 $path = SF_ROOT_PATH . "/ext/$extname/admin/widget/";
                 $fname = implode('', array_slice($matches[0], 3));
                 break;
-            case 'not' :
+            case 'not':
                 $fname = substr($className, 11);
                 $path = SF_ROOT_PATH . "/ext/$fname/admin/notify.class.php";
                 if (is_file($path)) {

@@ -25,7 +25,7 @@ class Migrator extends ConsoleBase
             if (($path['extension'] ?? '') == 'php') {
                 $this->migrationFiles[$path['filename']] = [
                     'file' => 'database/migrations/' . $file,
-                    'name' => $path['filename']
+                    'name' => $path['filename'],
                 ];
             }
         }
@@ -120,7 +120,9 @@ class Migrator extends ConsoleBase
             $class->up($schema);
             if (!$schema->commit()) {
                 Log::critical('Failed to up migration {migration}', ['migration' => $migration]);
-                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                Log::critical(
+                    'Query: {query}, error: {error}',
+                    ['query' => DB::getLastQuery(), 'error' => DB::error()]
                 );
 
                 $schema->rollback();
@@ -134,7 +136,9 @@ class Migrator extends ConsoleBase
             if (!$dbMigration->insert(['file' => $migration])) {
                 $class->down($schema);
                 if (!$schema->commit()) {
-                    Log::emergency('Failed to down migration {migration} after DB failure', ['migration' => $migration]
+                    Log::emergency(
+                        'Failed to down migration {migration} after DB failure',
+                        ['migration' => $migration]
                     );
                     return;
                 }
@@ -175,7 +179,9 @@ class Migrator extends ConsoleBase
             $class->down($schema);
             if (!$schema->commit()) {
                 Log::critical('Failed to down migration {migration}', ['migration' => $migration->file]);
-                Log::critical('Query: {query}, error: {error}', ['query' => DB::getLastQuery(), 'error' => DB::error()]
+                Log::critical(
+                    'Query: {query}, error: {error}',
+                    ['query' => DB::getLastQuery(), 'error' => DB::error()]
                 );
                 return;
             }

@@ -11,13 +11,12 @@ use Simflex\Core\Time;
  */
 abstract class DriverBase
 {
+    public const ERROR_NO_MONEY = 1;
 
-    const ERROR_NO_MONEY = 1;
-
-    const STATE_NEW = 'new';
-    const STATE_SEND = 'send';
-    const STATE_DELIVERY = 'delivery';
-    const STATE_ERROR = 'error';
+    public const STATE_NEW = 'new';
+    public const STATE_SEND = 'send';
+    public const STATE_DELIVERY = 'delivery';
+    public const STATE_ERROR = 'error';
 
     protected array $config;
 
@@ -70,15 +69,14 @@ abstract class DriverBase
             $set[] = "time_delivery = '$time'";
         }
         if (self::STATE_ERROR == $result['state']) {
-            $set[] = "error_code = " . (int)$result['error_code'];
+            $set[] = 'error_code = ' . (int)$result['error_code'];
             $set[] = "error_text = '{$result['error_text']}'";
         }
-        $q = "
-            UPDATE sms_log SET " . implode(', ', $set) . " 
+        $q = '
+            UPDATE sms_log SET ' . implode(', ', $set) . " 
             WHERE driver_sms_id = '$driverSmsId'
             AND driver_id = {$this->config['driver_id']}
         ";
         DB::query($q);
     }
-
 }

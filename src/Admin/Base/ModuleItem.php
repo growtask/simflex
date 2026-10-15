@@ -2,17 +2,15 @@
 
 namespace Simflex\Admin\Base;
 
-
 use Simflex\Admin\Base;
 use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Page;
-use Simflex\Admin\Plugins\Editor\Editor;;
+use Simflex\Admin\Plugins\Editor\Editor;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
 
 class ModuleItem extends Base
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -32,15 +30,10 @@ class ModuleItem extends Base
         $q = "SELECT menu_id, menu_pid pid, name FROM $menuTable ORDER BY npp, menu_id";
         $menuItems = DB::assoc($q);
 
-        $q = "
-            select mp_id, param_pid, p.name, p.help, p.label, p.position, p.params params, t.params table_params, p.field_type, '$this->table' `table`
-            from module_param p
-            LEFT JOIN module_item t on item_id = $itemId
-            WHERE p.module_id = $moduleId
-            ORDER BY p.npp
-        ";
-        $rows = DB::assoc($q, 'param_pid', 'mp_id');
-        $rows = StructureRepository::hydrateFieldClasses($rows);
+        $rows = StructureRepository::extensionParams($module['class'], $this->table);
+        $tableParams = $itemId
+            ? (unserialize((string)DB::result('SELECT params FROM module_item WHERE item_id = ?', 'params', [$itemId])) ?: [])
+            : [];
         if (count($rows)) {
 
             $positions = ['left' => '', 'right' => ''];
@@ -57,15 +50,14 @@ class ModuleItem extends Base
             if ($hasWithoutGroup) {
                 foreach ($rows[''] as $row) {
                     if ($row['class']) {
-                        $params = unserialize($row['table_params']);
                         $field = Helper::create($row);
-                        $field->value = isset($params[$row['name']]) ? $params[$row['name']] : $field->defaultValue;
+                        $field->value = $tableParams[$row['name']] ?? $field->defaultValue;
                         $fields[] = $field;
                     }
                 }
                 $group = ['label' => 'Параметры'];
                 $group['fields'] = $fields;
-                $portletClass = "field-params-nogroup";
+                $portletClass = 'field-params-nogroup';
                 ob_start();
                 if (!empty($field->params['editor_full']) && !$editorInited) {
                     Editor::tinymce('full');
@@ -81,9 +73,8 @@ class ModuleItem extends Base
                     continue;
                 }
                 foreach ($rows[$pid] as $row) {
-                    $params = unserialize($row['table_params']);
                     $field = new $row['class']($row);
-                    $field->value = isset($params[$row['name']]) ? $params[$row['name']] : $field->defaultValue;
+                    $field->value = $tableParams[$row['name']] ?? $field->defaultValue;
                     $fields[] = $field;
                 }
 
@@ -115,15 +106,8 @@ class ModuleItem extends Base
         $params = parent::getParams();
         if (!empty($_POST['module_id'])) {
             $moduleId = (int)$_POST['module_id'];
-            $q = "
-                select p.name name, p.label label, p.field_type
-                from module_param p
-                WHERE p.module_id = $moduleId
-                ORDER BY p.npp
-            ";
-            $rows = DB::assoc($q);
-            $rows = StructureRepository::hydrateFieldClasses($rows);
-            foreach ($rows as $row) {
+            $class = DB::result('select class from module where module_id = ?', '', [$moduleId]);
+            foreach (StructureRepository::extensionFields($class ?: '', $this->table) as $row) {
                 $field = new $row['class']($row);
                 $value = $field->getPost(true);
                 $value = preg_replace("@^'(.+)'$@", '$1', $value);
@@ -132,5 +116,4 @@ class ModuleItem extends Base
         }
         return $params;
     }
-
 }

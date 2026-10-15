@@ -7,14 +7,12 @@ use Simflex\Core\Helpers\Phone;
 use Simflex\Core\Core;
 use Simflex\Core\Sms\DriverBase;
 
-
 /**
  * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
  *       in a real environment. To be moved to a separate composer package.
  */
 class Sms
 {
-
     protected static ?DriverBase $driver = null;
 
     /**
@@ -90,14 +88,14 @@ class Sms
         }
 
         $set = ["time_send = now(), state = '" . ($sendResult['success'] ? 'send' : 'error') . "'"];
-        $set[] = "driver_id = " . ($driverId ?? 'NULL');
+        $set[] = 'driver_id = ' . ($driverId ?? 'NULL');
         if (!empty($sendResult['error_text'])) {
             $set[] = "error_text = '" . DB::escape($sendResult['error_text']) . "'";
-            $set[] = "error_code = " . (int)$sendResult['error_code'];
+            $set[] = 'error_code = ' . (int)$sendResult['error_code'];
         } else {
             $set[] = "driver_sms_id = '{$sendResult['driver_sms_id']}', price = {$sendResult['price']}";
         }
-        $q = "UPDATE sms_log set " . implode(', ', $set) . " WHERE sms_id = $smsId";
+        $q = 'UPDATE sms_log set ' . implode(', ', $set) . " WHERE sms_id = $smsId";
         DB::query($q);
         return !empty($sendResult['error_text']) ? $sendResult['error_text'] : true;
     }
@@ -105,7 +103,7 @@ class Sms
     public static function getDriver(): ?DriverBase
     {
         if (empty(static::$driver)) {
-            $q = "SELECT * FROM sms_driver WHERE active = 1 LIMIT 1";
+            $q = 'SELECT * FROM sms_driver WHERE active = 1 LIMIT 1';
             $driverInfo = DB::result($q);
             static::setDriverByInfo($driverInfo);
         }
@@ -158,17 +156,17 @@ class Sms
     {
         $q = "SELECT * FROM sms_log WHERE state = 'send' AND driver_id IS NOT NULL AND driver_sms_id IS NOT NULL LIMIT 100";
         $rows = DB::assoc($q) ?: [];
-        $q = "SELECT * FROM sms_driver WHERE active = 1";
+        $q = 'SELECT * FROM sms_driver WHERE active = 1';
         $drivers = DB::assoc($q, 'driver_id') ?: [];
         foreach ($rows as $row) {
             if ($driver = $drivers[$row['driver_id']] ?? null) {
                 self::renewState($row, $driver);
             } else {
                 $set = ["state = '" . DriverBase::STATE_ERROR . "'"];
-                $set[] = "time_delivery = NOW()";
+                $set[] = 'time_delivery = NOW()';
                 $set[] = "error_text = 'Driver disabled'";
-                $set[] = "error_code = 403";
-                $q = "UPDATE sms_log SET " . implode(', ', $set) . " WHERE sms_id = {$row['sms_id']}";
+                $set[] = 'error_code = 403';
+                $q = 'UPDATE sms_log SET ' . implode(', ', $set) . " WHERE sms_id = {$row['sms_id']}";
                 DB::query($q);
             }
         }
@@ -203,7 +201,7 @@ class Sms
         if (DriverBase::STATE_ERROR == $result['state']) {
             $set[] = "error_text = '{$result['error_text']}'";
         }
-        $q = "UPDATE sms_log SET " . implode(', ', $set) . " WHERE sms_id = {$sms['sms_id']}";
+        $q = 'UPDATE sms_log SET ' . implode(', ', $set) . " WHERE sms_id = {$sms['sms_id']}";
         DB::query($q);
     }
 
@@ -212,9 +210,8 @@ class Sms
      */
     public static function checkBalance(): bool
     {
-        $q = "SELECT error_code FROM sms_log ORDER BY sms_id DESC LIMIT 1";
+        $q = 'SELECT error_code FROM sms_log ORDER BY sms_id DESC LIMIT 1';
         $lastErrorCode = (int)DB::result($q, 0);
         return DriverBase::ERROR_NO_MONEY === $lastErrorCode;
     }
-
 }

@@ -6,5 +6,4 @@ use Simflex\Extensions\Form\Fields\Field;
 
 class FieldString extends Field
 {
-
 }

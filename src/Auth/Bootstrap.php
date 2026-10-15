@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Auth;
-
 
 use Simflex\Auth\Auth\Chain;
 use Simflex\Auth\SignOut\CookieMiddleware;

@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\Time;
 use Simflex\Admin\Fields\Field;
 
 class FieldTime extends Field
 {
-
     private string $pattern;
 
     public function __construct($row)
@@ -32,9 +30,9 @@ class FieldTime extends Field
     public function input($value): string
     {
         $value = $value ? Time::convert($value, $this->pattern, false) : '';
-        $classes = ["form-control"];
+        $classes = ['form-control'];
         if (!$this->readonly) {
-            $classes[] = "form-timepicker" . (@$this->params['use_seconds'] ? '-seconds' : '');
+            $classes[] = 'form-timepicker' . (@$this->params['use_seconds'] ? '-seconds' : '');
         }
         return '<input class="' . implode(' ', $classes) . '" type="text" name="' . $this->inputName() . '" value="' . $value . '"' . ($this->readonly ? ' readonly' : '') . ' />';
     }
@@ -72,5 +70,4 @@ class FieldTime extends Field
             ],
         ];
     }
-
 }

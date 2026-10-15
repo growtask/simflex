@@ -55,13 +55,13 @@ class Core
                 exit();
             }
         } else {
-            $q = "SELECT title, description, keywords, metatags FROM seo WHERE link=@SITE_LINK";
+            $q = 'SELECT title, description, keywords, metatags FROM seo WHERE link=@SITE_LINK';
             if ($row = DB::result($q)) {
                 Page::seo($row['title'], $row['description'], $row['keywords'], true, $row['metatags']);
             }
         }
 
-        $q = "SELECT alias, value FROM settings";
+        $q = 'SELECT alias, value FROM settings';
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
             self::$siteParams[$row['alias']] = $row['value'];
@@ -72,11 +72,11 @@ class Core
 
     protected static function initMenu(): void
     {
-        $q = "SELECT t1.*, t2.class
+        $q = 'SELECT t1.*, t2.class
         FROM menu t1
         LEFT JOIN component t2 ON t2.component_id=t1.component_id
         WHERE t1.active=1
-        ORDER BY t1.npp";
+        ORDER BY t1.npp';
 
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
@@ -120,7 +120,8 @@ class Core
     {
         $uri = Container::getRequest()->getUrlParts();
 
-        $i = count($uri) - 2 - $i;;
+        $i = count($uri) - 2 - $i;
+        ;
         return $uri[$i] ?? '';
     }
 
@@ -158,7 +159,7 @@ class Core
     public static function siteParam(string|bool $key = false, mixed $defaultValue = null, array $interp = []): mixed
     {
         if (!self::$siteParams) {
-            $q = "SELECT alias, value FROM settings";
+            $q = 'SELECT alias, value FROM settings';
             $rows = DB::assoc($q);
             foreach ($rows as $row) {
                 self::$siteParams[$row['alias']] = $row['value'];
@@ -266,11 +267,11 @@ class Core
     public static function menu(string $type = 'tree'): array
     {
         switch ($type) {
-            case 'by_id' :
+            case 'by_id':
                 return self::$menuById;
-            case 'by_link' :
+            case 'by_link':
                 return self::$menuByLink;
-            case 'by_ext' :
+            case 'by_ext':
                 return self::$menuByExt;
         }
         return self::$menuTree;
@@ -304,7 +305,7 @@ class Core
     public static function error404(): void
     {
         $config = Container::getConfig();
-        header("HTTP/1.0 404 Not Found");
+        header('HTTP/1.0 404 Not Found');
         Page::seo('Error 404');
         if (is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl')) {
             self::$contentOnly = true;
@@ -342,5 +343,4 @@ class Core
     {
         return realpath(__DIR__ . '/..');
     }
-
 }

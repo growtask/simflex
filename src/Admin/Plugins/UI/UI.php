@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Plugins\UI;
 
-
 use Simflex\Admin\Core;
 use Simflex\Core\Container;
 
 class UI
 {
-
     public static function datePicker(): void
     {
         static::js('/theme/ui/datepicker/bootstrap-datepicker.js', 5);
@@ -51,5 +49,4 @@ class UI
     {
         Container::getPage()::css(Core::webVendorPath() . $file, $idx);
     }
-
 }

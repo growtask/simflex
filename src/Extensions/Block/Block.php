@@ -9,4 +9,5 @@ use Simflex\Extensions\Code\Code;
  */
 class Block extends Code
 {
+    protected static bool $editorFull = true;
 }

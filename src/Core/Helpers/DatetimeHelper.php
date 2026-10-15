@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\Helpers;
 
-
 use DateTime;
 
 class DatetimeHelper
@@ -13,7 +12,7 @@ class DatetimeHelper
      */
     public static function timeToIso8601Duration(string $time): string
     {
-        $ret = "PT";
+        $ret = 'PT';
         $arr = array_reverse(explode(':', $time));
         $ct = count($arr);
         if ($h = (int)$arr[2] ?? 0) {
@@ -135,7 +134,7 @@ class DatetimeHelper
      */
     public static function dateIntervalToSeconds(\DateInterval $dateInterval): int
     {
-        $reference = new \DateTimeImmutable;
+        $reference = new \DateTimeImmutable();
         $endTime = $reference->add($dateInterval);
         return $endTime->getTimestamp() - $reference->getTimestamp();
     }

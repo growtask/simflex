@@ -2,12 +2,10 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Fields\FieldInt;
 
 class FieldBool extends FieldInt
 {
-
     public string $style = 'text-align:center;';
     public mixed $defaultValue = 0;
 
@@ -19,7 +17,7 @@ class FieldBool extends FieldInt
                                         <div class="form-control__switch-slider"></div>
                                     </label>
                                 </div>';
-         }
+    }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
@@ -80,5 +78,4 @@ DATA;
     {
         return [];
     }
-
 }

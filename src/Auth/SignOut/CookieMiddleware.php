@@ -7,7 +7,6 @@ use Simflex\Core\Middleware\Handler;
 
 class CookieMiddleware implements Handler
 {
-
     /**
      * @inheritDoc
      */

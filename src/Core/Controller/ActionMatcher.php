@@ -20,8 +20,7 @@ class ActionMatcher
     public function __construct(
         public Action $action,
         public string $methodName
-    )
-    {
+    ) {
     }
 
     /**

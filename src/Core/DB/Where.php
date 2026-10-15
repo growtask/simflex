@@ -111,7 +111,7 @@ class Where implements ArrayAccess
         $bind = $oldBinds;
         $result = [];
         foreach ($data as $index => $value) {
-            $wrappedIndex = implode('.', array_map(fn ($i) => DB::wrapName($i), explode('.', $index)));
+            $wrappedIndex = implode('.', array_map(fn($i) => DB::wrapName($i), explode('.', $index)));
             $idCrc = 'id_' . (string)crc32($wrappedIndex);
 
             if (is_array($value) && !$value) {
@@ -120,7 +120,8 @@ class Where implements ArrayAccess
                 $result[] = "$wrappedIndex IS NULL";
             } elseif ((string)$index !== (string)(int)$index) {
                 if (is_array($value)) {
-                    $values = []; $i = 0;
+                    $values = [];
+                    $i = 0;
                     foreach ($value as $val) {
                         $values[] = ':' . $idCrc . '_' . $i;
                         $bind[$idCrc . '_' . $i] = $val;
@@ -161,5 +162,4 @@ class Where implements ArrayAccess
         $this->data = array_filter(array_merge($myArr['result'], $otherArr['result']));
         $this->bind = array_merge($myArr['bind'], $otherArr['bind']);
     }
-
 }

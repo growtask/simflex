@@ -4,7 +4,6 @@ namespace Simflex\Admin\Plugins\Pagecontrol;
 
 class Pagecontrol
 {
-
     private int $p = 0;
     private int $pOn = 0;
     private int $pCount = 0;
@@ -48,5 +47,4 @@ class Pagecontrol
             include dirname(__FILE__) . '/tpl/control.tpl';
         }
     }
-
 }

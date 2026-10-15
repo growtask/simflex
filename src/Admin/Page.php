@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin;
 
-
 use Simflex\Admin\Base;
 use Simflex\Admin\Base\Component;
 use Simflex\Admin\Base\ModuleItem;
@@ -18,7 +17,6 @@ use Simflex\Core\User;
 
 class Page
 {
-
     protected static string $menu = '';
     protected static string $content = '';
     protected static array $positions = [];
@@ -67,7 +65,7 @@ class Page
             // todo: lol fix this
             if (Container::getRequest()->getPath() == Core::url('account/')) {
                 self::$driver = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
-            } elseif (in_array($menuCurModel, ['module_param', 'content_template_param'])) {
+            } elseif ($menuCurModel === 'content_template_param') {
                 self::$driver = new Struct();
             } elseif (in_array($menuCurModel, ['module_item'])) {
                 self::$driver = new ModuleItem();
@@ -198,5 +196,4 @@ class Page
     {
         Collection::getInstance()->content();
     }
-
 }

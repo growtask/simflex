@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\File;
 use Simflex\Admin\Fields\Field;
 
 class FieldFile extends Field
 {
-
     public string $path = '';
 
     public function __construct($row)
@@ -68,7 +66,6 @@ class FieldFile extends Field
         $activeClass = $value ? 'form-control__file--active' : '';
         $activeText = $value ? $value : 'Перетащите или загрузите файл';
         $activeDisplay = $value ? 'display: block' : '';
-
 
         if ($this->readonly) {
             $s = '';
@@ -184,5 +181,4 @@ class FieldFile extends Field
             ],
         ];
     }
-
 }

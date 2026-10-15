@@ -2,12 +2,10 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Fields\Field;
 
 class FieldDouble extends Field
 {
-
     private function doubleFormat($value, bool $showMode = false): string
     {
         if ($showMode && !$value || $value === null) {
@@ -15,10 +13,10 @@ class FieldDouble extends Field
         }
         $decimals = $this->params['decimals'];
         if (!$decimals) {
-            $tmp = explode('.', (double)$value);
+            $tmp = explode('.', (float)$value);
             $decimals = isset($tmp[1]) ? strlen($tmp[1]) : 0;
         }
-        return number_format((double)$value, $decimals, $this->params['dec_point'], $showMode ? $this->params['thousands_sep'] : '');
+        return number_format((float)$value, $decimals, $this->params['dec_point'], $showMode ? $this->params['thousands_sep'] : '');
     }
 
     public function input($value): string
@@ -77,5 +75,4 @@ class FieldDouble extends Field
             ],
         ];
     }
-
 }

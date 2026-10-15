@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Models\Enums;
 
 enum Relation

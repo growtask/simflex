@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\DB;
 
-
 use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\DB\JoinClause;
@@ -16,7 +15,6 @@ use Simflex\Core\ModelBase;
  */
 class AQ
 {
-
     protected string|array $select = '*';
     protected string $from;
     protected string $fromAlias = '';
@@ -218,7 +216,7 @@ class AQ
         if (empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
         }
-        return (new $this->modelClass)->fill($row);
+        return (new $this->modelClass())->fill($row);
     }
 
     /**
@@ -245,7 +243,7 @@ class AQ
                     $payload = $row[$this->scalarColumn];
                 }
             } else {
-                $payload = (new $this->modelClass)->fill($row);
+                $payload = (new $this->modelClass())->fill($row);
             }
 
             if ($assocKey === true) {
@@ -323,10 +321,8 @@ class AQ
         string $joinColumn1,
         ?string $joinColumn2 = null,
         string|array|Where|Expr|null $extraOnConditions = null
-    ): static
-    {
+    ): static {
         $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, 'LEFT', $extraOnConditions);
         return $this;
     }
-
 }

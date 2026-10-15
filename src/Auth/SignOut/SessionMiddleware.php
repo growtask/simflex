@@ -7,7 +7,6 @@ use Simflex\Core\Middleware\Handler;
 
 class SessionMiddleware implements Handler
 {
-
     /**
      * @inheritDoc
      */

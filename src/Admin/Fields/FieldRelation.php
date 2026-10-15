@@ -132,6 +132,7 @@ class FieldRelation extends Field
 
         return '';
     }
+
     public static function typeLabel(): string
     {
         return 'Двусторонняя связь';
@@ -177,5 +178,4 @@ class FieldRelation extends Field
             ],
         ];
     }
-
 }

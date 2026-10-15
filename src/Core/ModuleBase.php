@@ -2,13 +2,11 @@
 
 namespace Simflex\Core;
 
-
 use Simflex\Core\Core;
 use Simflex\Core\ExtensionBase;
 
 abstract class ModuleBase extends ExtensionBase
 {
-
     protected int $id = 0;
     protected string $name = '';
     protected string $title = '';
@@ -27,9 +25,9 @@ abstract class ModuleBase extends ExtensionBase
         $this->params['is_wrap'] = isset($this->params['is_wrap']) ? $this->params['is_wrap'] : 0;
     }
 
-    protected abstract function content(): void;
+    abstract protected function content(): void;
 
-    public final function execute(): string
+    final public function execute(): string
     {
         if (Core::ajax()) {
             ob_start();
@@ -57,5 +55,4 @@ abstract class ModuleBase extends ExtensionBase
         }
         return '';
     }
-
 }

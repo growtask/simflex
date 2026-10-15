@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
@@ -22,7 +23,7 @@ class FieldVirtualTable extends Field
         if (!($_REQUEST[$this->tablePk] ?? 0)) {
             return '<p><em>Для редактирования этой таблицы сначала создайте запись</em></p>';
         }
-        
+
         $value = $this->getValue();
         $jsId = (string)crc32($this->inputName());
         $total = $this->getCount();
@@ -43,7 +44,7 @@ class FieldVirtualTable extends Field
         $vv = [];
         $q = DB::query($this->query);
         while ($r = DB::fetch($q)) {
-            foreach ($r as $k=>$v) {
+            foreach ($r as $k => $v) {
                 if ($k == 'img_json') {
                     $js = json_decode($v, true)['v'] ?? ['v' => ['npp' => 0, 'img' => asset('img/default-img.png')]];
                     usort($js, function ($a, $b) {
@@ -80,6 +81,7 @@ class FieldVirtualTable extends Field
     {
         return '';
     }
+
     public static function typeLabel(): string
     {
         return 'Виртуальная таблица';
@@ -89,5 +91,4 @@ class FieldVirtualTable extends Field
     {
         return [];
     }
-
 }

@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\ForeignKey;
 
 class Field
 {
-
     public string $form = '';
     public string $name = '';
     public string $label = '';
@@ -76,14 +74,14 @@ class Field
         $this->setWidth(@$params['width']);
 
         if ($params['width_mob'] ?? '') {
-            $this->widthMob = (double)$params['width_mob'];
+            $this->widthMob = (float)$params['width_mob'];
         }
 
         if (!empty($params['pk'])) {
             $this->pk = (bool)$params['pk'];
         }
         if (!empty($params['is_fk'])) {
-            $this->fk = new  ForeignKey($params);
+            $this->fk = new ForeignKey($params);
         }
         if (!empty($params['style_col'])) {
             $this->styleCol['from_param'] = $params['style_col'];
@@ -135,7 +133,7 @@ class Field
      */
     public function setWidth($width): void
     {
-        $this->width = (empty($width) || (int)$width == 0) ? 0 : (double)$width;
+        $this->width = (empty($width) || (int)$width == 0) ? 0 : (float)$width;
         $this->isVisible = $this->width > 0;
         $this->styleCol['width'] = $this->width > 1
             ? 'width: ' . $this->width . 'px'
@@ -250,5 +248,4 @@ class Field
     {
         return '' . $this->table . '.' . $this->name;
     }
-
 }

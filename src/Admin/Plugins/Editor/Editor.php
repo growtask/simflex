@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Plugins\Editor;
 
-
 use Simflex\Admin\Core;
 use Simflex\Core\Container;
 
@@ -14,7 +13,6 @@ use Simflex\Core\Container;
  */
 class Editor
 {
-
     public static array $inited = [];
 
     public static function tinymce(string $type, string $css_class = ''): void
@@ -57,8 +55,6 @@ tinymce.init({
 </style>
 HTML;
 
-
         self::$inited[$type] = true;
     }
-
 }

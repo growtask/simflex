@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
 class FieldColor extends Field

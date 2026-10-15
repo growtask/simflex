@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Core\Cookie;
-
 
 class CookieItem
 {
@@ -20,10 +18,10 @@ class CookieItem
     public function save(): void
     {
         if (headers_sent()) {
-            throw new \Exception("Cannot modify header information - headers already sent");
+            throw new \Exception('Cannot modify header information - headers already sent');
         }
         $_COOKIE[$this->key] = $this->value;
-        setcookie($this->key, $this->value, $this->expires ? $this->expires->getTimestamp() : 0, "/");
+        setcookie($this->key, $this->value, $this->expires ? $this->expires->getTimestamp() : 0, '/');
     }
 
     public function setExpires(\DateTime $expires): static
@@ -42,5 +40,4 @@ class CookieItem
         $this->value = $value;
         return $this;
     }
-
 }

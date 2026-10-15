@@ -9,7 +9,6 @@ use Simflex\Core\ModuleBase;
 
 class Account extends ModuleBase
 {
-
     public function content(): void
     {
         $user = Container::getUser();
@@ -25,7 +24,7 @@ class Account extends ModuleBase
                 $params[] = md5((string)$_POST['password']);
             }
             $params[] = $user->getId();
-            $q = "UPDATE user SET " . implode(', ', $set) . " WHERE user_id = ?";
+            $q = 'UPDATE user SET ' . implode(', ', $set) . ' WHERE user_id = ?';
             $success = DB::query($q, $params);
             if ($success) {
                 Alert::success('Данные успешно обновлены', './');
@@ -42,5 +41,4 @@ class Account extends ModuleBase
         ];
         include 'tpl/index.tpl';
     }
-
 }

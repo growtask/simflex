@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Simflex\Auth\Auth;
 
 use Simflex\Core\Container;
 
 class BasicAuthMiddleware extends BaseMiddleware
 {
-
     /**
      * @inheritDoc
      */
@@ -26,5 +24,4 @@ class BasicAuthMiddleware extends BaseMiddleware
         }
         return $next($payload);
     }
-
 }

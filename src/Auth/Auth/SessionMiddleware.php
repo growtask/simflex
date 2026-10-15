@@ -8,7 +8,6 @@ use Simflex\Core\Models\User;
 
 class SessionMiddleware extends BaseMiddleware
 {
-
     /**
      * @inheritDoc
      */

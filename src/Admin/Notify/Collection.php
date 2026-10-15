@@ -2,19 +2,17 @@
 
 namespace Simflex\Admin\Notify;
 
-
 /**
  * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
  */
 class Collection
 {
-
     private static self $instance;
 
     public static function getInstance(): static
     {
         if (empty(self::$instance)) {
-            self::$instance = new static;
+            self::$instance = new static();
         }
         return self::$instance;
     }
@@ -47,5 +45,4 @@ class Collection
             }
         }
     }
-
 }

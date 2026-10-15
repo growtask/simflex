@@ -2,13 +2,11 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Fields\Field;
 use Simflex\Core\Helpers\Str;
 
 class FieldPassword extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -58,5 +56,4 @@ HTML;
     {
         return [];
     }
-
 }

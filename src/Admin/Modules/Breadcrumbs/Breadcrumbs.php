@@ -7,7 +7,6 @@ use Simflex\Core\ModuleBase;
 
 class Breadcrumbs extends ModuleBase
 {
-
     protected string $name = 'breadcrumbs';
 
     public function content(): void
@@ -15,5 +14,4 @@ class Breadcrumbs extends ModuleBase
         $crumbs = Container::getCore()::crumbs();
         include 'tpl/crumbs.tpl';
     }
-
 }

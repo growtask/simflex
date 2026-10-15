@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Core\DB;
 use Simflex\Core\DB\AQ;
 use Simflex\Core\Service;
@@ -11,7 +10,6 @@ use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldInt extends Field
 {
-
     public mixed $defaultValue = 0;
 
     public string $filterAndWhere = '';
@@ -29,7 +27,7 @@ class FieldInt extends Field
 
     protected function bigint($value): string
     {
-        return sprintf("%.0f", $value);
+        return sprintf('%.0f', $value);
     }
 
     /**
@@ -57,7 +55,7 @@ class FieldInt extends Field
         $tree = [];
         $fkPID = $this->fkPidColumn($this->fk->table);
 
-        $query = (new AQ)
+        $query = (new AQ())
             ->select("{$this->fk->key} id, $fkPID pid, {$this->fk->label} label")
             ->from($this->fk->table)
             ->orderBy($this->fk->key);
@@ -149,7 +147,7 @@ class FieldInt extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        return $this->e2n && $_POST[$this->name] === '' ? NULL : (int)$_POST[$this->name];
+        return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
     }
 
     public function filter($value): void
@@ -181,7 +179,6 @@ class FieldInt extends Field
             if ($sel) {
                 $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
             }
-
 
             $select .= '</div>
                         </div>
@@ -239,5 +236,4 @@ class FieldInt extends Field
             ],
         ];
     }
-
 }

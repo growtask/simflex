@@ -2,12 +2,10 @@
 
 namespace Simflex\Core;
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //// FILE
 class File
 {
-
     public string|false $name = false;
     public string|int|false $type = false;
     public string $path = '';
@@ -48,10 +46,10 @@ class File
             $mas = [];
             $ext = explode('.', $_FILES[$fileName]['name']);
             $ext = $ext[count($ext) - 1];
-                if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $ext)) {
-                    $this->type = $ext;
-                    return true;
-                }
+            if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $ext)) {
+                $this->type = $ext;
+                return true;
+            }
         }
         return false;
     }
@@ -89,5 +87,4 @@ class File
         }
         return false;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Models;
 
 use Simflex\Core\ModelBase;

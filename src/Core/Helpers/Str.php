@@ -11,7 +11,7 @@ class Str
             ' ',
             '-',
             preg_replace(
-                "/[^A-Za-z0-9\\- ]/",
+                '/[^A-Za-z0-9\\- ]/',
                 '',
                 $tl->transliterate($str)
             )

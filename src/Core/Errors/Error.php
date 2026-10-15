@@ -13,14 +13,13 @@ use Throwable;
  */
 class Error extends \Error
 {
-
     /**
      * @var array Дополнительные необязательные параметры, например, для кастомизации текста ошибки.
      */
     public array $params = [];
 
     /** @inheritDoc */
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null, array $params = [])
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, array $params = [])
     {
         parent::__construct($message, $code, $previous);
         $this->params = $params;
@@ -84,7 +83,7 @@ class Error extends \Error
                 'code' => $e->getPrevious()->getCode(),
                 'message' => $e->getPrevious()->getMessage(),
                 'class' => get_class($e->getPrevious()),
-                'file' => $e->getPrevious()->getFile() . ':' . $e->getPrevious()->getLine()
+                'file' => $e->getPrevious()->getFile() . ':' . $e->getPrevious()->getLine(),
             ] : null,
         ];
     }

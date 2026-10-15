@@ -18,7 +18,6 @@ use Simflex\Core\ModuleBase;
 
 class ModuleForm extends ModuleBase
 {
-
     protected string $name;
     protected string $submitButtonText;
     /** @var Field[] */
@@ -60,13 +59,13 @@ class ModuleForm extends ModuleBase
                 $subject = 'Заполненная форма ' . $this->title;
 
                 $rows = [];
-                $rows[] = "Отправлено со страницы " . Container::getRequest()->getFullUrl();
-                $rows[] = "";
+                $rows[] = 'Отправлено со страницы ' . Container::getRequest()->getFullUrl();
+                $rows[] = '';
                 foreach ($this->fields as $field) {
                     $rows[] = $field->getLabel() . ': ' . $field->getPOST();
                 }
-                $rows[] = "";
-                $rows[] = "---";
+                $rows[] = '';
+                $rows[] = '---';
                 $rows[] = 'Simplex Framework';
                 if (Mail::create($to, $subject, join("\r\n", $rows))->setAsPlain()->send()) {
                     Alert::success('Ваше сообщение отправлено, Мы ответим Вам в ближайшее время');

@@ -9,7 +9,6 @@ use Simflex\Auth\Models\UserAuth;
 
 class CookieMiddleware extends BaseMiddleware
 {
-
     /**
      * @inheritDoc
      */

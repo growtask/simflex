@@ -1,31 +1,32 @@
 <?php
+
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
 
 class FieldTags extends Field
 {
-    public  array $values = [];
+    public array $values = [];
 
-            public function input($value): string
-            {
-                if (!$this->values) {
-                    // load shit
-                    $q = DB::query('SELECT DISTINCT ' . $this->name . ' FROM ' . $this->table);
-                    while ($r = DB::fetch($q)) {
-                        if (!$r[$this->name]) {
-                            continue;
-                        }
-
-                        foreach (explode(',', $r[$this->name]) as $i) {
-                            $this->values[] = $i;
-                        }
-
-                        $this->values = array_unique($this->values);
-                    }
+    public function input($value): string
+    {
+        if (!$this->values) {
+            // load shit
+            $q = DB::query('SELECT DISTINCT ' . $this->name . ' FROM ' . $this->table);
+            while ($r = DB::fetch($q)) {
+                if (!$r[$this->name]) {
+                    continue;
                 }
-                ob_start();
-                echo '<div class="form-control__tags" data-readonly="false">
+
+                foreach (explode(',', $r[$this->name]) as $i) {
+                    $this->values[] = $i;
+                }
+
+                $this->values = array_unique($this->values);
+            }
+        }
+        ob_start();
+        echo '<div class="form-control__tags" data-readonly="false">
 <input class="form-control__tags-value" value="'.$value.'" type="hidden" name="'.$this->name.'">
 <ul class="form-control__tags-list">
     <input type="text" class="form-control__tags-input">
@@ -36,16 +37,17 @@ class FieldTags extends Field
         <li class="list1__item list1__item--add-new" data-value="" style="display: none"><strong>Добавить <span></span></strong></li>
 ';
 
-                foreach ($this->values as $row) {
-                    echo '<li data-value="'.$row.'" class="list1__item">' .$row. '</li>';
-                }
+        foreach ($this->values as $row) {
+            echo '<li data-value="'.$row.'" class="list1__item">' .$row. '</li>';
+        }
 
-                echo ' </ul>
+        echo ' </ul>
         </div>
     </div>
 </div>';
-                return (string)ob_get_clean();
-            }
+        return (string)ob_get_clean();
+    }
+
     public static function typeLabel(): string
     {
         return 'Теги';
@@ -55,5 +57,4 @@ class FieldTags extends Field
     {
         return [];
     }
-
 }

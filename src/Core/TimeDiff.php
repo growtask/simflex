@@ -1,14 +1,11 @@
 <?php
 
-
 namespace Simflex\Core;
-
 
 use Simflex\Core\Helpers\Declension;
 
 class TimeDiff
 {
-
     private \DateInterval $value;
 
     public function __construct(\DateInterval $value)
@@ -52,5 +49,4 @@ class TimeDiff
     {
         return $this->value;
     }
-
 }

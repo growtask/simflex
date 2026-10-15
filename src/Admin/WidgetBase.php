@@ -6,7 +6,6 @@ use Simflex\Admin\Core;
 
 abstract class WidgetBase
 {
-
     protected array $data;
     protected int $id;
 
@@ -16,14 +15,14 @@ abstract class WidgetBase
         $this->id = (int)$this->data['widget_id'];
     }
 
-    protected abstract function content(): void;
+    abstract protected function content(): void;
 
     protected function actions(): void
     {
 
     }
 
-    public final function execute(): string|false
+    final public function execute(): string|false
     {
         if (Core::ajax()) {
             ob_start();
@@ -41,5 +40,4 @@ abstract class WidgetBase
         }
         return '';
     }
-
 }

@@ -2,41 +2,40 @@
 
 namespace Simflex\Core\Errors;
 
-
 use Simflex\Core\Errors\Error;
 
 class ErrorCodes
 {
     /** @var int Дефолтная ошибка приложения */
-    const APP_INTERNAL_ERROR = 1000;
+    public const APP_INTERNAL_ERROR = 1000;
 
     /** @var int Метод не найден */
-    const APP_METHOD_NOT_FOUND = 1001;
+    public const APP_METHOD_NOT_FOUND = 1001;
 
     /** @var int Неподдерживаемый тип ответа */
-    const APP_UNSUPPORTED_RESPONSE_TYPE = 1002;
+    public const APP_UNSUPPORTED_RESPONSE_TYPE = 1002;
 
     /** @var int Неподдерживаемый ответ */
-    const APP_UNSUPPORTED_RESPONSE = 1003;
+    public const APP_UNSUPPORTED_RESPONSE = 1003;
 
     /** @var int Не авторизован */
-    const APP_UNAUTHORIZED = 1004;
+    public const APP_UNAUTHORIZED = 1004;
 
-    const BASIC_ERROR_MESSAGES = [
+    public const BASIC_ERROR_MESSAGES = [
         self::APP_INTERNAL_ERROR => 'An internal server error has occurred. Try again later',
         self::APP_METHOD_NOT_FOUND => 'Requested method was not found',
         self::APP_UNSUPPORTED_RESPONSE => 'Unsupported response: {content}',
         self::APP_UNSUPPORTED_RESPONSE_TYPE => 'Unsupported response type: {class}',
-        self::APP_UNAUTHORIZED => 'Unauthorized'
+        self::APP_UNAUTHORIZED => 'Unauthorized',
     ];
 
-    const BASIC_ERROR_HTTP_CODES = [
+    public const BASIC_ERROR_HTTP_CODES = [
         self::APP_METHOD_NOT_FOUND => 404,
-        self::APP_UNAUTHORIZED => 403
+        self::APP_UNAUTHORIZED => 403,
     ];
 
-    const ERROR_MESSAGES = [];
-    const ERROR_HTTP_CODES = [];
+    public const ERROR_MESSAGES = [];
+    public const ERROR_HTTP_CODES = [];
 
     /**
      * @param array $params Дополнительные необязательные параметры, например, для кастомизации текста ошибки.

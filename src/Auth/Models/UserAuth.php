@@ -12,7 +12,6 @@ use Simflex\Core\ModelBase;
  */
 class UserAuth extends ModelBase
 {
-
     protected static string $table = 'user_auth';
     protected static string $primaryKeyName = 'auth_id';
 
@@ -20,7 +19,7 @@ class UserAuth extends ModelBase
     {
         $token = md5(microtime());
         $useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        $model = new static;
+        $model = new static();
         $success = $model->insert([
             'user_id' => $userId,
             'token' => $token,
@@ -46,9 +45,8 @@ class UserAuth extends ModelBase
     {
         return $this->update([
             'time_expires' => new Expr("NOW() + INTERVAL $validInterval"),
-            'time_last_login' => new Expr("NOW()"),
+            'time_last_login' => new Expr('NOW()'),
             'ip' => static::getRemoteAddr(),
         ]);
     }
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Core\Cookie;
-
 
 use Simflex\Core\Cookie\CookieItem;
 

@@ -2,12 +2,10 @@
 
 namespace Simflex\Admin\Plugins\Alert;
 
-
 use Simflex\Core\Session;
 
 class Alert
 {
-
     protected static array $s;
     protected static bool $isInited = false;
 
@@ -35,9 +33,9 @@ class Alert
     public static function error(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
-        self::pushMsg($page, "danger", $mixed);
+        self::pushMsg($page, 'danger', $mixed);
         if ($goto) {
-            header("location: " . $goto);
+            header('location: ' . $goto);
             exit;
         }
     }
@@ -50,9 +48,9 @@ class Alert
     public static function warning(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
-        self::pushMsg($page, "warning", $mixed);
+        self::pushMsg($page, 'warning', $mixed);
         if ($goto) {
-            header("location: " . $goto);
+            header('location: ' . $goto);
             exit;
         }
     }
@@ -66,9 +64,9 @@ class Alert
     public static function success(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
-        self::pushMsg($page, "success", $mixed);
+        self::pushMsg($page, 'success', $mixed);
         if ($goto) {
-            header("location: " . $goto);
+            header('location: ' . $goto);
             exit;
         }
     }
@@ -82,9 +80,9 @@ class Alert
     public static function info(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
-        self::pushMsg($page, "info", $mixed);
+        self::pushMsg($page, 'info', $mixed);
         if ($goto) {
-            header("location: " . $goto);
+            header('location: ' . $goto);
             exit;
         }
     }
@@ -96,10 +94,10 @@ class Alert
     public static function output(string $page = ''): void
     {
         self::init();
-        self::echoSpecified($page, "danger");
-        self::echoSpecified($page, "success");
-        self::echoSpecified($page, "warning");
-        self::echoSpecified($page, "info");
+        self::echoSpecified($page, 'danger');
+        self::echoSpecified($page, 'success');
+        self::echoSpecified($page, 'warning');
+        self::echoSpecified($page, 'info');
 
         Session::set('admin.alerts', []);
     }
@@ -123,10 +121,10 @@ class Alert
     public static function has(string $page = ''): int|bool
     {
         self::init();
-        return !empty(self::$s[$page]["danger"])
-            || !empty(self::$s[$page]["success"])
-            || !empty(self::$s[$page]["warning"])
-            || !empty(self::$s[$page]["info"]);
+        return !empty(self::$s[$page]['danger'])
+            || !empty(self::$s[$page]['success'])
+            || !empty(self::$s[$page]['warning'])
+            || !empty(self::$s[$page]['info']);
     }
 
     /**
@@ -136,19 +134,19 @@ class Alert
     public static function hasErrors(string $page = ''): bool
     {
         self::init();
-        return !empty(self::$s[$page]["danger"]);
+        return !empty(self::$s[$page]['danger']);
     }
 
     protected static function echoSpecified(string $page, string $section): void
     {
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
-            $txt = "";
+            $txt = '';
             if (count(self::$s[$page][$section]) == 1) {
                 foreach (self::$s[$page][$section] as $txt) {
                     break;
                 }
             } else {
-                $txt = "<ul><li>" . implode("</li><li>", self::$s[$page][$section]) . "</li></ul>";
+                $txt = '<ul><li>' . implode('</li><li>', self::$s[$page][$section]) . '</li></ul>';
             }
             if ($txt) {
                 switch ($section) {
@@ -190,5 +188,4 @@ class Alert
 
         Session::set('admin.alerts', self::$s);
     }
-
 }

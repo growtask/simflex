@@ -209,7 +209,7 @@ class Cli
                 "\t- {name} - {help}",
                 [
                     'name' => $this->formatParameterName($param, $idx++),
-                    'help' => $help ? $help->help : 'No help provided.'
+                    'help' => $help ? $help->help : 'No help provided.',
                 ]
             );
         }

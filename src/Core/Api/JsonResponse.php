@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core\Api;
 
 use Simflex\Core\Errors\Error;
@@ -97,7 +98,7 @@ class JsonResponse extends Response
                 'error' => [
                     'code' => $this->errorCode,
                     'message' => $this->errorMessage,
-                ]
+                ],
             ] + $this->data;
     }
 }

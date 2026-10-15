@@ -6,7 +6,6 @@ use Simflex\Extensions\Form\Fields\Field;
 
 class FieldPassword extends Field
 {
-
     public function html(): void
     {
         $formName = $this->form->getName();
@@ -15,5 +14,4 @@ class FieldPassword extends Field
             $val
         ), '" /></span>';
     }
-
 }

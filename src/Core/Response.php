@@ -1,4 +1,5 @@
 <?php
+
 namespace Simflex\Core;
 
 use JetBrains\PhpStorm\NoReturn;
@@ -50,7 +51,7 @@ abstract class Response implements \Simflex\Core\DI\Service
     {
         $this->cookies[$name] = [
             'value' => $value,
-            'options' => $options
+            'options' => $options,
         ];
 
         return $this;
@@ -134,5 +135,5 @@ abstract class Response implements \Simflex\Core\DI\Service
         }
     }
 
-    protected abstract function makeBody(): string;
+    abstract protected function makeBody(): string;
 }

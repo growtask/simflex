@@ -28,7 +28,7 @@ class StdLogger extends AbstractLogger
             'magenta' => 45,
             'cyan' => 46,
             'light_gray' => 47,
-        ]
+        ],
     ];
 
     protected function toString(mixed $object): string

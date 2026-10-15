@@ -13,7 +13,6 @@ use Simflex\Core\Errors\Error;
  */
 class ErrorCollection implements \ArrayAccess
 {
-
     /**
      * @var Error[]
      */
@@ -85,6 +84,4 @@ class ErrorCollection implements \ArrayAccess
     {
         return $this->offsetExists($offset) ? $this->errors[$offset] : null;
     }
-
-
 }

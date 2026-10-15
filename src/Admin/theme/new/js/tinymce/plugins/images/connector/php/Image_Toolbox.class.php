@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Image_Toolbox.class.php -- PHP image manipulation class
  *
@@ -28,6 +29,7 @@
 // $Id: Image_Toolbox.class.php,v 1.9 2003/12/05 19:34:01 pappkamerad Exp $
 
 namespace Simflex\Admin\Plugins\Editor\tinymce\plugins\images\connector\php;
+
 if (!defined('IMAGE_TOOLBOX_DEFAULT_JPEG_QUALITY')) {
     define('IMAGE_TOOLBOX_DEFAULT_JPEG_QUALITY', 75);
 }
@@ -75,7 +77,6 @@ if (!defined('IMAGE_TOOLBOX_BLEND_OVERLAY')) {
  */
 class Image_Toolbox
 {
-
     /**
      * The prefix for every error message
      *
@@ -94,18 +95,18 @@ class Image_Toolbox
         1 => [
             'ext' => 'gif',
             'mime' => 'image/gif',
-            'supported' => 0
+            'supported' => 0,
         ],
         2 => [
             'ext' => 'jpg',
             'mime' => 'image/jpeg',
-            'supported' => 0
+            'supported' => 0,
         ],
         3 => [
             'ext' => 'png',
             'mime' => 'image/png',
-            'supported' => 0
-        ]
+            'supported' => 0,
+        ],
     ];
 
     /**
@@ -133,8 +134,8 @@ class Image_Toolbox
             'type' => 0,
             'output_type' => 0,
             'indexedcolors' => 0,
-            'color' => -1
-        ]
+            'color' => -1,
+        ],
     ];
 
     /**
@@ -160,7 +161,7 @@ class Image_Toolbox
      * <i>integer</i> <b>$height</b> imageheight of new image to be created<br>
      * <i>string</i> <b>$fillcolor</b> optional fill the new image with this color (hexformat, e.g. '#FF0000')<br>
      */
-    function Image_Toolbox()
+    public function Image_Toolbox()
     {
         $args = func_get_args();
         $argc = func_num_args();
@@ -226,7 +227,7 @@ class Image_Toolbox
      *
      * @return array
      */
-    function getServerFeatures()
+    public function getServerFeatures()
     {
         $features = [];
         $features['gd_version'] = $this->_gd_version_number;
@@ -247,7 +248,7 @@ class Image_Toolbox
      * <i>integer</i> <b>$height</b> imageheight of new image to be created<br>
      * <i>string</i> <b>$fillcolor</b> optional fill the new image with this color (hexformat, e.g. '#FF0000')<br>
      */
-    function newImage()
+    public function newImage()
     {
         $args = func_get_args();
         $argc = func_num_args();
@@ -271,87 +272,98 @@ class Image_Toolbox
      * @access private
      * @return array associative array with info about the GD library of the server
      */
-    function _gd_info()
+    public function _gd_info()
     {
         $array = [
-            "GD Version" => "",
-            "FreeType Support" => false,
-            "FreeType Linkage" => "",
-            "T1Lib Support" => false,
-            "GIF Read Support" => false,
-            "GIF Create Support" => false,
-            "JPG Support" => false,
-            "PNG Support" => false,
-            "WBMP Support" => false,
-            "XBM Support" => false
+            'GD Version' => '',
+            'FreeType Support' => false,
+            'FreeType Linkage' => '',
+            'T1Lib Support' => false,
+            'GIF Read Support' => false,
+            'GIF Create Support' => false,
+            'JPG Support' => false,
+            'PNG Support' => false,
+            'WBMP Support' => false,
+            'XBM Support' => false,
         ];
 
         $gif_support = 0;
         ob_start();
-        eval("phpinfo();");
+        eval('phpinfo();');
         $info = ob_get_contents();
         ob_end_clean();
 
         foreach (explode("\n", $info) as $line) {
-            if (strpos($line, "GD Version") !== false)
-                $array["GD Version"] = trim(str_replace("GD Version", "", strip_tags($line)));
-            if (strpos($line, "FreeType Support") !== false)
-                $array["FreeType Support"] = trim(str_replace("FreeType Support", "", strip_tags($line)));
-            if (strpos($line, "FreeType Linkage") !== false)
-                $array["FreeType Linkage"] = trim(str_replace("FreeType Linkage", "", strip_tags($line)));
-            if (strpos($line, "T1Lib Support") !== false)
-                $array["T1Lib Support"] = trim(str_replace("T1Lib Support", "", strip_tags($line)));
-            if (strpos($line, "GIF Read Support") !== false)
-                $array["GIF Read Support"] = trim(str_replace("GIF Read Support", "", strip_tags($line)));
-            if (strpos($line, "GIF Create Support") !== false)
-                $array["GIF Create Support"] = trim(str_replace("GIF Create Support", "", strip_tags($line)));
-            if (strpos($line, "GIF Support") !== false)
-                $gif_support = trim(str_replace("GIF Support", "", strip_tags($line)));
-            if (strpos($line, "JPG Support") !== false)
-                $array["JPG Support"] = trim(str_replace("JPG Support", "", strip_tags($line)));
-            if (strpos($line, "PNG Support") !== false)
-                $array["PNG Support"] = trim(str_replace("PNG Support", "", strip_tags($line)));
-            if (strpos($line, "WBMP Support") !== false)
-                $array["WBMP Support"] = trim(str_replace("WBMP Support", "", strip_tags($line)));
-            if (strpos($line, "XBM Support") !== false)
-                $array["XBM Support"] = trim(str_replace("XBM Support", "", strip_tags($line)));
+            if (strpos($line, 'GD Version') !== false) {
+                $array['GD Version'] = trim(str_replace('GD Version', '', strip_tags($line)));
+            }
+            if (strpos($line, 'FreeType Support') !== false) {
+                $array['FreeType Support'] = trim(str_replace('FreeType Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'FreeType Linkage') !== false) {
+                $array['FreeType Linkage'] = trim(str_replace('FreeType Linkage', '', strip_tags($line)));
+            }
+            if (strpos($line, 'T1Lib Support') !== false) {
+                $array['T1Lib Support'] = trim(str_replace('T1Lib Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'GIF Read Support') !== false) {
+                $array['GIF Read Support'] = trim(str_replace('GIF Read Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'GIF Create Support') !== false) {
+                $array['GIF Create Support'] = trim(str_replace('GIF Create Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'GIF Support') !== false) {
+                $gif_support = trim(str_replace('GIF Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'JPG Support') !== false) {
+                $array['JPG Support'] = trim(str_replace('JPG Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'PNG Support') !== false) {
+                $array['PNG Support'] = trim(str_replace('PNG Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'WBMP Support') !== false) {
+                $array['WBMP Support'] = trim(str_replace('WBMP Support', '', strip_tags($line)));
+            }
+            if (strpos($line, 'XBM Support') !== false) {
+                $array['XBM Support'] = trim(str_replace('XBM Support', '', strip_tags($line)));
+            }
         }
 
-        if ($gif_support === "enabled") {
-            $array["GIF Read Support"] = true;
-            $array["GIF Create Support"] = true;
+        if ($gif_support === 'enabled') {
+            $array['GIF Read Support'] = true;
+            $array['GIF Create Support'] = true;
         }
 
-        if ($array["FreeType Support"] === "enabled") {
-            $array["FreeType Support"] = true;
+        if ($array['FreeType Support'] === 'enabled') {
+            $array['FreeType Support'] = true;
         }
 
-        if ($array["T1Lib Support"] === "enabled") {
-            $array["T1Lib Support"] = true;
+        if ($array['T1Lib Support'] === 'enabled') {
+            $array['T1Lib Support'] = true;
         }
 
-        if ($array["GIF Read Support"] === "enabled") {
-            $array["GIF Read Support"] = true;
+        if ($array['GIF Read Support'] === 'enabled') {
+            $array['GIF Read Support'] = true;
         }
 
-        if ($array["GIF Create Support"] === "enabled") {
-            $array["GIF Create Support"] = true;
+        if ($array['GIF Create Support'] === 'enabled') {
+            $array['GIF Create Support'] = true;
         }
 
-        if ($array["JPG Support"] === "enabled") {
-            $array["JPG Support"] = true;
+        if ($array['JPG Support'] === 'enabled') {
+            $array['JPG Support'] = true;
         }
 
-        if ($array["PNG Support"] === "enabled") {
-            $array["PNG Support"] = true;
+        if ($array['PNG Support'] === 'enabled') {
+            $array['PNG Support'] = true;
         }
 
-        if ($array["WBMP Support"] === "enabled") {
-            $array["WBMP Support"] = true;
+        if ($array['WBMP Support'] === 'enabled') {
+            $array['WBMP Support'] = true;
         }
 
-        if ($array["XBM Support"] === "enabled") {
-            $array["XBM Support"] = true;
+        if ($array['XBM Support'] === 'enabled') {
+            $array['XBM Support'] = true;
         }
 
         return $array;
@@ -364,7 +376,7 @@ class Image_Toolbox
      * @param string $hex color value in hexformat (e.g. '#FF0000')
      * @return integer color value in PHP format
      */
-    function _hexToPHPColor($hex)
+    public function _hexToPHPColor($hex)
     {
         $length = strlen($hex);
         $dr = hexdec(substr($hex, $length - 6, 2));
@@ -381,7 +393,7 @@ class Image_Toolbox
      * @param string $hex color value in hexformat (e.g. '#FF0000')
      * @return array associative array with color values in dezimal format (fields: 'red', 'green', 'blue')
      */
-    function _hexToDecColor($hex)
+    public function _hexToDecColor($hex)
     {
         $length = strlen($hex);
         $color['red'] = hexdec(substr($hex, $length - 6, 2));
@@ -402,7 +414,7 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _addImage($argc, $args)
+    public function _addImage($argc, $args)
     {
         if (($argc == 2 || $argc == 3) && is_int($args[0]) && is_int($args[1]) && (is_string($args[2]) || !isset($args[2]))) {
             //neues leeres bild mit width und height (fillcolor optional)
@@ -441,7 +453,7 @@ class Image_Toolbox
      * @param string $filename imagefile to load
      * @return array associative array with the loaded filedata
      */
-    function _loadFile($filename)
+    public function _loadFile($filename)
     {
         if (file_exists($filename)) {
             $info = getimagesize($filename);
@@ -518,7 +530,7 @@ class Image_Toolbox
      * @param bool $dither use dither
      * @return bool true on success, otherwise false
      */
-    function output($output_type = false, $output_quality = false, $dither = false)
+    public function output($output_type = false, $output_quality = false, $dither = false)
     {
         if ($output_type === false) {
             $output_type = $this->_img['main']['output_type'];
@@ -633,7 +645,7 @@ class Image_Toolbox
      * @param bool $dither use dither
      * @return bool true on success, otherwise false
      */
-    function save($filename, $output_type = false, $output_quality = false, $dither = false)
+    public function save($filename, $output_type = false, $output_quality = false, $dither = false)
     {
         if ($output_type === false) {
             $output_type = $this->_img['main']['output_type'];
@@ -737,7 +749,7 @@ class Image_Toolbox
      * @param string|integer $method resize method
      * @return bool true on success, otherwise false
      */
-    function setResizeMethod($method)
+    public function setResizeMethod($method)
     {
         switch ($method) {
             case 1:
@@ -804,7 +816,7 @@ class Image_Toolbox
      * @param string $bgcolor background fillcolor (hexformat, e.g. '#FF0000')
      * @return bool true on success, otherwise false
      */
-    function newOutputSize($width, $height, $mode = 0, $autorotate = false, $bgcolor = '#000000')
+    public function newOutputSize($width, $height, $mode = 0, $autorotate = false, $bgcolor = '#000000')
     {
         return true;
         if ($width > 0 && $height > 0 && is_int($width) && is_int($height)) {
@@ -839,13 +851,13 @@ class Image_Toolbox
 
                 if ($this->_img['main']['width'] / $this->_img['target']['width'] >= $this->_img['main']['height'] / $this->_img['target']['height']) {
                     $cpy_h = $this->_img['main']['height'];
-                    $cpy_w = (integer)$this->_img['main']['height'] * $this->_img['target']['aspectratio'];
-                    $cpy_w_offset = (integer)($this->_img['main']['width'] - $cpy_w) / 2;
+                    $cpy_w = (int)$this->_img['main']['height'] * $this->_img['target']['aspectratio'];
+                    $cpy_w_offset = (int)($this->_img['main']['width'] - $cpy_w) / 2;
                     $cpy_h_offset = 0;
                 } else {
                     $cpy_w = $this->_img['main']['width'];
-                    $cpy_h = (integer)$this->_img['main']['width'] / $this->_img['target']['aspectratio'];
-                    $cpy_h_offset = (integer)($this->_img['main']['height'] - $cpy_h) / 2;
+                    $cpy_h = (int)$this->_img['main']['width'] / $this->_img['target']['aspectratio'];
+                    $cpy_h_offset = (int)($this->_img['main']['height'] - $cpy_h) / 2;
                     $cpy_w_offset = 0;
                 }
             } elseif ($mode == 2) {
@@ -853,14 +865,14 @@ class Image_Toolbox
                 $final_aspectratio = $width / $height;
                 if ($final_aspectratio < $this->_img['main']['aspectratio']) {
                     $this->_img['target']['width'] = $width;
-                    $this->_img['target']['height'] = (integer)$width / $this->_img['main']['aspectratio'];
+                    $this->_img['target']['height'] = (int)$width / $this->_img['main']['aspectratio'];
                     $cpy_w_offset2 = 0;
-                    $cpy_h_offset2 = (integer)(($height - $this->_img['target']['height']) / 2);
+                    $cpy_h_offset2 = (int)(($height - $this->_img['target']['height']) / 2);
                 } else {
                     $this->_img['target']['height'] = $height;
-                    $this->_img['target']['width'] = (integer)$height * $this->_img['main']['aspectratio'];
+                    $this->_img['target']['width'] = (int)$height * $this->_img['main']['aspectratio'];
                     $cpy_h_offset2 = 0;
-                    $cpy_w_offset2 = (integer)(($width - $this->_img['target']['width']) / 2);
+                    $cpy_w_offset2 = (int)(($width - $this->_img['target']['width']) / 2);
                 }
                 $this->_img['target']['aspectratio'] = $this->_img['main']['aspectratio'];
                 $cpy_w = $this->_img['main']['width'];
@@ -882,10 +894,10 @@ class Image_Toolbox
             ($width >= $height) ? ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_HORIZONTAL) : ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_VERTICAL);
             if ($width != 0) {
                 $this->_img['target']['width'] = $width;
-                $this->_img['target']['height'] = (integer)$width / $this->_img['main']['aspectratio'];
+                $this->_img['target']['height'] = (int)$width / $this->_img['main']['aspectratio'];
             } else {
                 $this->_img['target']['height'] = $height;
-                $this->_img['target']['width'] = (integer)$height * $this->_img['main']['aspectratio'];
+                $this->_img['target']['width'] = (int)$height * $this->_img['main']['aspectratio'];
             }
             $this->_img['target']['aspectratio'] = $this->_img['main']['aspectratio'];
 
@@ -922,7 +934,7 @@ class Image_Toolbox
         foreach ($this->_img['target'] as $key => $value) {
             $this->_img['main'][$key] = $value;
         }
-        unset ($this->_img['target']);
+        unset($this->_img['target']);
 
         return true;
     }
@@ -940,7 +952,7 @@ class Image_Toolbox
      * <i>integer</i> <b>$height</b> imageheight of new image to be created<br>
      * <i>string</i> <b>$fillcolor</b> optional fill the new image with this color (hexformat, e.g. '#FF0000')<br>
      */
-    function addImage()
+    public function addImage()
     {
         $args = func_get_args();
         $argc = func_num_args();
@@ -993,11 +1005,11 @@ class Image_Toolbox
      * @param integer $mode blend mode.
      * @param integer $percent alpha value
      */
-    function blend($x = 0, $y = 0, $mode = IMAGE_TOOLBOX_BLEND_COPY, $percent = 100)
+    public function blend($x = 0, $y = 0, $mode = IMAGE_TOOLBOX_BLEND_COPY, $percent = 100)
     {
         if (is_string($x) || is_string($y)) {
-            list($xalign, $xalign_offset) = explode(" ", $x);
-            list($yalign, $yalign_offset) = explode(" ", $y);
+            list($xalign, $xalign_offset) = explode(' ', $x);
+            list($yalign, $yalign_offset) = explode(' ', $y);
         }
         if (is_string($x)) {
             switch ($xalign) {
@@ -1072,7 +1084,7 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _imageBlend($mode, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $percent)
+    public function _imageBlend($mode, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $percent)
     {
         if ($mode == IMAGE_TOOLBOX_BLEND_COPY) {
             if ($percent == 100) {
@@ -1109,7 +1121,7 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _calculateBlendvalue($mode, $colorrgb1, $colorrgb2)
+    public function _calculateBlendvalue($mode, $colorrgb1, $colorrgb2)
     {
         switch ($mode) {
             case IMAGE_TOOLBOX_BLEND_MULTIPLY:
@@ -1172,108 +1184,108 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _iso2uni($isoline)
+    public function _iso2uni($isoline)
     {
         $iso2uni = [
-            173 => "&#161;",
-            155 => "&#162;",
-            156 => "&#163;",
-            15 => "&#164;",
-            157 => "&#165;",
-            124 => "&#166;",
-            21 => "&#167;",
-            249 => "&#168;",
-            184 => "&#169;",
-            166 => "&#170;",
-            174 => "&#171;",
-            170 => "&#172;",
-            169 => "&#174;",
-            238 => "&#175;",
-            248 => "&#176;",
-            241 => "&#177;",
-            253 => "&#178;",
-            252 => "&#179;",
-            239 => "&#180;",
-            230 => "&#181;",
-            20 => "&#182;",
-            250 => "&#183;",
-            247 => "&#184;",
-            251 => "&#185;",
-            167 => "&#186;",
-            175 => "&#187;",
-            172 => "&#188;",
-            171 => "&#189;",
-            243 => "&#190;",
-            168 => "&#191;",
-            183 => "&#192;",
-            181 => "&#193;",
-            182 => "&#194;",
-            199 => "&#195;",
-            142 => "&#196;",
-            143 => "&#197;",
-            146 => "&#198;",
-            128 => "&#199;",
-            212 => "&#200;",
-            144 => "&#201;",
-            210 => "&#202;",
-            211 => "&#203;",
-            141 => "&#204;",
-            161 => "&#205;",
-            140 => "&#206;",
-            139 => "&#207;",
-            209 => "&#208;",
-            165 => "&#209;",
-            227 => "&#210;",
-            224 => "&#211;",
-            226 => "&#212;",
-            229 => "&#213;",
-            153 => "&#214;",
-            158 => "&#215;",
-            157 => "&#216;",
-            235 => "&#217;",
-            233 => "&#218;",
-            234 => "&#219;",
-            154 => "&#220;",
-            237 => "&#221;",
-            232 => "&#222;",
-            225 => "&#223;",
-            133 => "&#224;",
-            160 => "&#225;",
-            131 => "&#226;",
-            198 => "&#227;",
-            132 => "&#228;",
-            134 => "&#229;",
-            145 => "&#230;",
-            135 => "&#231;",
-            138 => "&#232;",
-            130 => "&#233;",
-            136 => "&#234;",
-            137 => "&#235;",
-            141 => "&#236;",
-            161 => "&#237;",
-            140 => "&#238;",
-            139 => "&#239;",
-            208 => "&#240;",
-            164 => "&#241;",
-            149 => "&#242;",
-            162 => "&#243;",
-            147 => "&#244;",
-            228 => "&#245;",
-            148 => "&#246;",
-            246 => "&#247;",
-            155 => "&#248;",
-            151 => "&#249;",
-            163 => "&#250;",
-            150 => "&#251;",
-            129 => "&#252;",
-            236 => "&#253;",
-            231 => "&#254;",
-            152 => "&#255;"
+            173 => '&#161;',
+            155 => '&#162;',
+            156 => '&#163;',
+            15 => '&#164;',
+            157 => '&#165;',
+            124 => '&#166;',
+            21 => '&#167;',
+            249 => '&#168;',
+            184 => '&#169;',
+            166 => '&#170;',
+            174 => '&#171;',
+            170 => '&#172;',
+            169 => '&#174;',
+            238 => '&#175;',
+            248 => '&#176;',
+            241 => '&#177;',
+            253 => '&#178;',
+            252 => '&#179;',
+            239 => '&#180;',
+            230 => '&#181;',
+            20 => '&#182;',
+            250 => '&#183;',
+            247 => '&#184;',
+            251 => '&#185;',
+            167 => '&#186;',
+            175 => '&#187;',
+            172 => '&#188;',
+            171 => '&#189;',
+            243 => '&#190;',
+            168 => '&#191;',
+            183 => '&#192;',
+            181 => '&#193;',
+            182 => '&#194;',
+            199 => '&#195;',
+            142 => '&#196;',
+            143 => '&#197;',
+            146 => '&#198;',
+            128 => '&#199;',
+            212 => '&#200;',
+            144 => '&#201;',
+            210 => '&#202;',
+            211 => '&#203;',
+            141 => '&#204;',
+            161 => '&#205;',
+            140 => '&#206;',
+            139 => '&#207;',
+            209 => '&#208;',
+            165 => '&#209;',
+            227 => '&#210;',
+            224 => '&#211;',
+            226 => '&#212;',
+            229 => '&#213;',
+            153 => '&#214;',
+            158 => '&#215;',
+            157 => '&#216;',
+            235 => '&#217;',
+            233 => '&#218;',
+            234 => '&#219;',
+            154 => '&#220;',
+            237 => '&#221;',
+            232 => '&#222;',
+            225 => '&#223;',
+            133 => '&#224;',
+            160 => '&#225;',
+            131 => '&#226;',
+            198 => '&#227;',
+            132 => '&#228;',
+            134 => '&#229;',
+            145 => '&#230;',
+            135 => '&#231;',
+            138 => '&#232;',
+            130 => '&#233;',
+            136 => '&#234;',
+            137 => '&#235;',
+            141 => '&#236;',
+            161 => '&#237;',
+            140 => '&#238;',
+            139 => '&#239;',
+            208 => '&#240;',
+            164 => '&#241;',
+            149 => '&#242;',
+            162 => '&#243;',
+            147 => '&#244;',
+            228 => '&#245;',
+            148 => '&#246;',
+            246 => '&#247;',
+            155 => '&#248;',
+            151 => '&#249;',
+            163 => '&#250;',
+            150 => '&#251;',
+            129 => '&#252;',
+            236 => '&#253;',
+            231 => '&#254;',
+            152 => '&#255;',
         ];
         for ($i = 0; $i < strlen($isoline); $i++) {
             $thischar = substr($isoline, $i, 1);
             $new = $iso2uni[ord($thischar)];
-            $uniline .= ($new != "") ? $new : $thischar;
+            $uniline .= ($new != '') ? $new : $thischar;
         }
         return $uniline;
     }
@@ -1301,11 +1313,11 @@ class Image_Toolbox
      * @param string|integer $y vertical postion in pixel.
      * @param integer $angle rotation of the text.
      */
-    function addText($text, $font, $size, $color, $x, $y, $angle = 0)
+    public function addText($text, $font, $size, $color, $x, $y, $angle = 0)
     {
         global $HTTP_SERVER_VARS;
 
-        if (substr($font, 0, 1) == DIRECTORY_SEPARATOR || (substr($font, 1, 1) == ":" && (substr($font, 2, 1) == "\\" || substr($font, 2, 1) == "/"))) {
+        if (substr($font, 0, 1) == DIRECTORY_SEPARATOR || (substr($font, 1, 1) == ':' && (substr($font, 2, 1) == '\\' || substr($font, 2, 1) == '/'))) {
             $prepath = '';
         } else {
             $prepath = substr($HTTP_SERVER_VARS['SCRIPT_FILENAME'], 0, strrpos($HTTP_SERVER_VARS['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR;
@@ -1315,8 +1327,8 @@ class Image_Toolbox
             $textsize = imagettfbbox($size, $angle, $prepath . $font, $text);
             $textwidth = abs($textsize[2]);
             $textheight = abs($textsize[7]);
-            list($xalign, $xalign_offset) = explode(" ", $x);
-            list($yalign, $yalign_offset) = explode(" ", $y);
+            list($xalign, $xalign_offset) = explode(' ', $x);
+            list($yalign, $yalign_offset) = explode(' ', $y);
         }
         if (is_string($x)) {
             switch ($xalign) {
@@ -1359,7 +1371,7 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _imageCopyResampledWorkaround(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
+    public function _imageCopyResampledWorkaround(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
     {
         /*
         for ($i = 0; $i < imagecolorstotal($src_img); $i++)
@@ -1384,9 +1396,9 @@ class Image_Toolbox
                 $c3 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int)$sX + $scaleX2, (int)$sY + $scaleY2));
                 $c4 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int)$sX + $scaleX2, (int)$sY));
 
-                $red = (integer)(($c1['red'] + $c2['red'] + $c3['red'] + $c4['red']) / 4);
-                $green = (integer)(($c1['green'] + $c2['green'] + $c3['green'] + $c4['green']) / 4);
-                $blue = (integer)(($c1['blue'] + $c2['blue'] + $c3['blue'] + $c4['blue']) / 4);
+                $red = (int)(($c1['red'] + $c2['red'] + $c3['red'] + $c4['red']) / 4);
+                $green = (int)(($c1['green'] + $c2['green'] + $c3['green'] + $c4['green']) / 4);
+                $blue = (int)(($c1['blue'] + $c2['blue'] + $c3['blue'] + $c4['blue']) / 4);
 
                 $color = ImageColorClosest($dst_img, $red, $green, $blue);
                 ImageSetPixel($dst_img, $dst_x + $i - $src_x, $dst_y + $j - $src_y, $color);
@@ -1399,7 +1411,7 @@ class Image_Toolbox
      *
      * @access private
      */
-    function _imageCopyResampledWorkaround2(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
+    public function _imageCopyResampledWorkaround2(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
     {
         ImagePaletteCopy($dst_img, $src_img);
         $rX = $src_w / $dst_w;

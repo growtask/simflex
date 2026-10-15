@@ -1,14 +1,11 @@
 <?php
 
-
 namespace Simflex\Core\Middleware;
-
 
 use Simflex\Core\Middleware\Handler;
 
 class Chain implements Handler
 {
-
     /** @var Handler[] */
     protected array $middlewares = [];
 
@@ -35,5 +32,4 @@ class Chain implements Handler
             return $payload;
         });
     }
-
 }

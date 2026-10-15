@@ -2,14 +2,12 @@
 
 namespace Simflex\Admin\Fields;
 
-
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 
 class FieldDate extends Field
 {
-
     public function __construct($row)
     {
         parent::__construct($row);
@@ -29,14 +27,14 @@ class FieldDate extends Field
     public function input($value): string
     {
         $value = \Simflex\Core\Time::normal($value ?: time());
-        $classes = ["form-control"];
+        $classes = ['form-control'];
         if (!$this->readonly) {
-            $classes[] = "form-datepicker";
+            $classes[] = 'form-datepicker';
         }
         return '<div id="calendar" class="form-control form-control--sm">
                                     <input value="'.date('Y-m-d', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="date" class="form-control__input">
                                 </div>';
-     }
+    }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
@@ -47,7 +45,7 @@ class FieldDate extends Field
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4}$@', $value)) {
             $value = substr($value, -4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2);
         }
-        return $this->e2n && $value === '' ? NULL : "" . DB::escape($value) . "";
+        return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
     }
 
     public function show($row): void
@@ -67,5 +65,4 @@ class FieldDate extends Field
     {
         return [];
     }
-
 }

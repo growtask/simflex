@@ -8,7 +8,6 @@
 
 use Simflex\Admin\Structure\Tables\AdminMenu;
 use Simflex\Admin\Structure\Tables\Component;
-use Simflex\Admin\Structure\Tables\ComponentParam;
 use Simflex\Admin\Structure\Tables\Content;
 use Simflex\Admin\Structure\Tables\ContentTemplate;
 use Simflex\Admin\Structure\Tables\ContentTemplateParam;
@@ -17,7 +16,6 @@ use Simflex\Admin\Structure\Tables\Log;
 use Simflex\Admin\Structure\Tables\Menu;
 use Simflex\Admin\Structure\Tables\Module;
 use Simflex\Admin\Structure\Tables\ModuleItem;
-use Simflex\Admin\Structure\Tables\ModuleParam;
 use Simflex\Admin\Structure\Tables\Seo;
 use Simflex\Admin\Structure\Tables\Settings;
 use Simflex\Admin\Structure\Tables\User;
@@ -29,7 +27,6 @@ use Simflex\Admin\Structure\Tables\UserRolePriv;
 return [
     'admin_menu' => AdminMenu::class,
     'component' => Component::class,
-    'component_param' => ComponentParam::class,
     'content' => Content::class,
     'content_template' => ContentTemplate::class,
     'content_template_param' => ContentTemplateParam::class,
@@ -38,7 +35,6 @@ return [
     'menu' => Menu::class,
     'module' => Module::class,
     'module_item' => ModuleItem::class,
-    'module_param' => ModuleParam::class,
     'seo' => Seo::class,
     'settings' => Settings::class,
     'user' => User::class,

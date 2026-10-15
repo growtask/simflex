@@ -141,5 +141,5 @@ abstract class ConfigBase
     /**
      * Load config data
      */
-    public abstract function load(): void;
+    abstract public function load(): void;
 }

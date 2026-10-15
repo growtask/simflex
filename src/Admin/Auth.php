@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Simflex\Admin;
-
 
 use Simflex\Admin\Plugins\Log\Log;
 
@@ -17,9 +15,8 @@ use Simflex\Core\Models\User;
 
 class Auth
 {
-
-    const REMEMBER_ME_INTERVAL = '1 WEEK';
-    const LOGIN_PRIV = 'simplex_admin';
+    public const REMEMBER_ME_INTERVAL = '1 WEEK';
+    public const LOGIN_PRIV = 'simplex_admin';
 
     public static function login($login, $password, bool $isRemember, string $redirect): void
     {
@@ -32,12 +29,12 @@ class Auth
             $redirect = '/';
         }
         if (preg_match('@^[0-9a-z\@\-\.]+$@i', $login)) {
-            $q = "SELECT u.*
+            $q = 'SELECT u.*
                     FROM user u
                     JOIN user_role r ON r.role_id=u.role_id
                     WHERE login=:login
                       AND u.active=1
-                      AND r.active=1";
+                      AND r.active=1';
             $row = DB::result($q, '', ['login' => strtolower($login)]);
             if ($row && md5($password) === $row['password']) {
                 $user = (new User())->fill($row);

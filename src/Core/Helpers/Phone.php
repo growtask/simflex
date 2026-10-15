@@ -4,14 +4,13 @@ namespace Simflex\Core\Helpers;
 
 class Phone
 {
-
     /**
      * Извлекает номер телефона из строки, выдает в формате 89001002030
      * @param string $phone
      */
     public static function extract($phone): string|int
     {
-        $phone = preg_replace("@[^0-9]+@", "", $phone);
+        $phone = preg_replace('@[^0-9]+@', '', $phone);
         $len = strlen($phone);
         if ($len === 10) {
             $phone = '8' . $phone;
@@ -30,7 +29,7 @@ class Phone
      */
     public static function extract7($phone): string|int
     {
-        $phone = preg_replace("@[^0-9]+@", "", $phone);
+        $phone = preg_replace('@[^0-9]+@', '', $phone);
         $len = strlen($phone);
         if ($len === 10) {
             $phone = '7' . $phone;
@@ -51,9 +50,9 @@ class Phone
             return '';
         }
         if ('3412' === substr($phone, 1, 4)) {
-            $phone = preg_replace("/(\d)(\d{4})(\d{2})(\d{2})(\d{2})/", "$1 ($2) $3-$4-$5", $phone);
+            $phone = preg_replace("/(\d)(\d{4})(\d{2})(\d{2})(\d{2})/", '$1 ($2) $3-$4-$5', $phone);
         } else {
-            $phone = preg_replace("/(\d)(\d{3})(\d{3})(\d{2})(\d{2})/", "$1 ($2) $3-$4-$5", $phone);
+            $phone = preg_replace("/(\d)(\d{3})(\d{3})(\d{2})(\d{2})/", '$1 ($2) $3-$4-$5', $phone);
         }
         return $phone;
     }
@@ -100,5 +99,4 @@ class Phone
 
         return $phones;
     }
-
 }

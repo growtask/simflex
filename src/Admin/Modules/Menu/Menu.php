@@ -7,7 +7,6 @@ use Simflex\Core\ModuleBase;
 
 class Menu extends ModuleBase
 {
-
     protected string $name = 'menu';
 
     public function content(): void
@@ -15,5 +14,4 @@ class Menu extends ModuleBase
         $menu = Container::getCore()::menu();
         include dirname(__FILE__) . '/tpl/menu.tpl';
     }
-
 }

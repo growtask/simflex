@@ -52,7 +52,7 @@ class Schema
 
         $columns = DB::query('select * from information_schema.COLUMNS where TABLE_NAME = ? and TABLE_SCHEMA = ?', [
             $name,
-            Container::getConfig()->db['name']
+            Container::getConfig()->db['name'],
         ]);
 
         while ($col = DB::fetch($columns)) {
@@ -114,7 +114,7 @@ class Schema
             throw new \Exception('Table ' . $name . ' does not exist');
         }
 
-        $this->awaitingDelete[] = $this->tables[$name]  ?? $this->sessionCreated[$name];
+        $this->awaitingDelete[] = $this->tables[$name] ?? $this->sessionCreated[$name];
     }
 
     public function table(string $name, callable $fn): void

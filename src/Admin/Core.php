@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin;
 
-
 use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\Html\HtmlRequest;
@@ -12,7 +11,6 @@ use Simflex\Admin\Page;
 
 class Core
 {
-
     public static bool $ajax = false;
     public static bool $isAjax = false;
     private static array $uri = [];
@@ -113,12 +111,12 @@ class Core
         }
 
         $privIds = array_map('intval', $user->getPrivileges()['ids'] ?? []) ?: [0];
-        $q = "
+        $q = '
             SELECT menu_id, menu_pid, link, name, model, icon, hidden
             FROM admin_menu
-            WHERE priv_id IN(" . join(',', $privIds) . ")
+            WHERE priv_id IN(' . join(',', $privIds) . ')
             ORDER BY npp, menu_id
-        ";
+        ';
         $rows = DB::assoc($q) ?: [];
         foreach ($rows as $row) {
             // ссылки хранятся относительно корня админки
@@ -139,12 +137,11 @@ class Core
             }
         }
 
-        $q = "SELECT alias, value FROM settings";
+        $q = 'SELECT alias, value FROM settings';
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
             self::$siteParams[$row['alias']] = $row['value'];
         }
-
 
         DB::bind(['SITE_PATH' => self::$path]);
     }
@@ -215,5 +212,4 @@ class Core
     {
         return self::$siteParams[$key] ?? '';
     }
-
 }

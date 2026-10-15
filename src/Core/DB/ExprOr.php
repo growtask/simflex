@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\DB;
 
-
 use Simflex\Core\DB;
 
 /**
@@ -36,12 +35,12 @@ class ExprOr extends Expr
                 continue;
             }
 
-            $column = implode('.', array_map(fn ($i) => DB::wrapName($i), explode('.', $key)));
+            $column = implode('.', array_map(fn($i) => DB::wrapName($i), explode('.', $key)));
             if (is_null($value)) {
                 $values[] = "$column IS NULL";
             } elseif (is_array($value)) {
                 if ($value) {
-                    $values[] = "$column IN (" . implode(',', array_map(fn ($v) => DB::wrapString((string)$v), $value)) . ')';
+                    $values[] = "$column IN (" . implode(',', array_map(fn($v) => DB::wrapString((string)$v), $value)) . ')';
                 }
             } else {
                 $values[] = "$column = " . DB::wrapString((string)$value);
