@@ -2,8 +2,6 @@
 
 namespace Simflex\Core\Cookie;
 
-use Simflex\Core\Cookie\CookieItem;
-
 class CookieBag
 {
     protected string $prefix = '';

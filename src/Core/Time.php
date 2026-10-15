@@ -2,8 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\TimeDiff;
-
 class Time
 {
     /**

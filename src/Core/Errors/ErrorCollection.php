@@ -2,8 +2,6 @@
 
 namespace Simflex\Core\Errors;
 
-use Simflex\Core\Errors\Error;
-
 /**
  * Class ErrorCollection реализует интерфейс массива. Представляет собой список ошибок.
  * Можно например так

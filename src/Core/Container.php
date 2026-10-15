@@ -2,10 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Core;
-use Simflex\Core\Page;
-use Simflex\Core\User;
-
 /**
  * Class Container
  *

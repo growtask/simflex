@@ -6,7 +6,6 @@ use ArrayAccess;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\DB;
-use Simflex\Core\Log;
 
 class Where implements ArrayAccess
 {

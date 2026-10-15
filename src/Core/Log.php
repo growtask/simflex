@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 use Psr\Log\LoggerInterface;
-use Simflex\Core\Container;
 
 /**
  * PSR-3 logger facade

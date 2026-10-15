@@ -6,7 +6,6 @@ use Exception;
 use Simflex\Core\Buffer;
 use Simflex\Core\DB;
 use Simflex\Core\ModelBase;
-use Simflex\Core\Models\UserRole;
 
 /**
  * User model

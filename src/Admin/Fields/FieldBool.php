@@ -2,8 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\FieldInt;
-
 class FieldBool extends FieldInt
 {
     public string $style = 'text-align:center;';

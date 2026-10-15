@@ -4,9 +4,6 @@ namespace Simflex\Core\DB;
 
 use Simflex\Core\Container;
 use Simflex\Core\DB;
-use Simflex\Core\DB\JoinClause;
-use Simflex\Core\DB\Where;
-use Simflex\Core\Log;
 use Simflex\Core\ModelBase;
 
 /**

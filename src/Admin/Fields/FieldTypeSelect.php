@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldTypeSelect extends Field

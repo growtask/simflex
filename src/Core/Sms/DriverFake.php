@@ -2,8 +2,6 @@
 
 namespace Simflex\Core\Sms;
 
-use Simflex\Core\Sms\DriverBase;
-
 /**
  * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
  *       in a real environment. To be moved to a separate composer package.

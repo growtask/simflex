@@ -2,8 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Core;
-
 abstract class ExtensionBase implements HasAdminParams
 {
     /**

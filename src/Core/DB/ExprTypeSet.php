@@ -3,7 +3,6 @@
 namespace Simflex\Core\DB;
 
 use Simflex\Core\DB;
-use Simflex\Core\DB\Expr;
 
 /**
  * Class ExprTypeSet

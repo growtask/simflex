@@ -2,8 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
-
 class FieldPasswordVisible extends Field
 {
     public function __construct($row)

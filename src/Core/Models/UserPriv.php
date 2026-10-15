@@ -4,7 +4,6 @@ namespace Simflex\Core\Models;
 
 use Exception;
 use Simflex\Core\DB\Where;
-use Simflex\Core\Log;
 use Simflex\Core\ModelBase;
 
 /**

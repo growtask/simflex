@@ -2,8 +2,6 @@
 
 namespace Simflex\Core\Middleware;
 
-use Simflex\Core\Middleware\Handler;
-
 class Chain implements Handler
 {
     /** @var Handler[] */

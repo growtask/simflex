@@ -5,7 +5,6 @@ namespace Simflex\Extensions\Content\Model;
 use Simflex\Core\Buffer;
 use Simflex\Core\DB\AQ;
 use Simflex\Core\ModelBase;
-use Simflex\Extensions\Content\Model\ModelContentTemplate;
 
 /**
  * @property int $content_id

@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\FieldString;
 
 class FieldEnum extends FieldString
 {

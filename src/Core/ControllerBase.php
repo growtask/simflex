@@ -3,10 +3,8 @@
 namespace Simflex\Core;
 
 use ReflectionClass;
-use Simflex\Core\ComponentBase;
 use Simflex\Core\Controller\Action;
 use Simflex\Core\Controller\ActionMatcher;
-use Simflex\Core\Core;
 
 /**
  * Automatic controller

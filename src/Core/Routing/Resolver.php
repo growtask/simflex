@@ -4,7 +4,6 @@ namespace Simflex\Core\Routing;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Simflex\Core\Container;
-use Simflex\Core\Routing\Route;
 
 class Resolver
 {

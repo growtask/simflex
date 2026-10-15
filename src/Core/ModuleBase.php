@@ -2,9 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Core;
-use Simflex\Core\ExtensionBase;
-
 abstract class ModuleBase extends ExtensionBase
 {
     protected int $id = 0;

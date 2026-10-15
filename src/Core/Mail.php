@@ -4,8 +4,6 @@ namespace Simflex\Core;
 
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
-use Simflex\Core\Core;
-use Simflex\Core\DB;
 
 /**
  * @todo Incomplete: there are no migrations for the mail_log table, so this code fails on SQL

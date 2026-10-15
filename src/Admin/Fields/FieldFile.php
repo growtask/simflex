@@ -4,7 +4,6 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\File;
-use Simflex\Admin\Fields\Field;
 
 class FieldFile extends Field
 {

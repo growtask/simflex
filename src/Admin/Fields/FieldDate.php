@@ -4,7 +4,6 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\Field;
 
 class FieldDate extends Field
 {

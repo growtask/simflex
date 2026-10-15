@@ -7,7 +7,6 @@ use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldDateTime;
 use Simflex\Admin\Fields\FieldFile;
 use Simflex\Admin\Fields\FieldImage;
-use Simflex\Admin\Core;
 use Simflex\Admin\Fields\FieldPassword;
 use Simflex\Admin\Fields\FieldPath;
 use Simflex\Admin\Fields\FieldString;

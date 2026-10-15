@@ -3,7 +3,6 @@
 namespace Simflex\Core\Controller;
 
 use Simflex\Core\Container;
-use Simflex\Core\Log;
 
 /**
  * Combines Action and method name.

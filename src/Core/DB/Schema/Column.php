@@ -4,8 +4,6 @@ namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB;
 use Simflex\Core\DB\Schema\Params\ColumnParams;
-use Simflex\Core\DB\Schema\Table;
-use Simflex\Core\DB\Schema\TableElementBase;
 
 class Column extends TableElementBase
 {

@@ -2,8 +2,6 @@
 
 namespace Simflex\Extensions\Form\Fields;
 
-use Simflex\Extensions\Form\Fields\Field;
-
 class FieldSpamCode extends Field
 {
     public array|int $vRequired = 1;

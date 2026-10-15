@@ -2,9 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Core;
-use Simflex\Core\DB;
-
 class Page
 {
     protected static string $menu = '';

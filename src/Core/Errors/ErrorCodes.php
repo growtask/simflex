@@ -2,8 +2,6 @@
 
 namespace Simflex\Core\Errors;
 
-use Simflex\Core\Errors\Error;
-
 class ErrorCodes
 {
     /** @var int Дефолтная ошибка приложения */

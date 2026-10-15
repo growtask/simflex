@@ -4,7 +4,6 @@ namespace Simflex\Core\Errors;
 
 use RuntimeException;
 use Simflex\Core\Log;
-use Simflex\Core\Errors\ErrorCodes;
 use Throwable;
 
 /**

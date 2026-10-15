@@ -2,8 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\File;
-
 class Image extends File
 {
     public string $pathBase = 'images';

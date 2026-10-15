@@ -2,8 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
-
 class FieldDouble extends Field
 {
     private function doubleFormat($value, bool $showMode = false): string

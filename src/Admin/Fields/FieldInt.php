@@ -4,8 +4,6 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
 use Simflex\Core\DB\AQ;
-use Simflex\Core\Service;
-use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldInt extends Field

@@ -4,7 +4,6 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
 use Simflex\Core\Service;
-use Simflex\Admin\Fields\Field;
 
 class FieldAlias extends Field
 {

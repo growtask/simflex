@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 use Simflex\Core\DB\Adapter;
-use Simflex\Core\User;
 
 /**
  * Class DB

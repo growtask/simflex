@@ -2,8 +2,6 @@
 
 namespace Simflex\Extensions\Form\Fields;
 
-use Simflex\Extensions\Form\Fields\Field;
-
 class FieldPassword extends Field
 {
     public function html(): void

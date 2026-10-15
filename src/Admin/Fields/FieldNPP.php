@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\Field;
 
 class FieldNPP extends Field
 {

@@ -3,7 +3,6 @@
 namespace Simflex\Core\DB\Schema;
 
 use Simflex\Core\DB;
-use Simflex\Core\DB\Schema\ElementBase;
 use Simflex\Core\DB\Schema\Params\ConstraintParams;
 
 class Constraint extends ElementBase

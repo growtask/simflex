@@ -2,9 +2,7 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\DB;
 use Simflex\Core\Helpers\Phone;
-use Simflex\Core\Core;
 use Simflex\Core\Sms\DriverBase;
 
 /**

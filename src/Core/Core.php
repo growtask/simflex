@@ -2,12 +2,9 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\Container;
-use Simflex\Core\DB;
 use Simflex\Core\DI\Injector;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
-use Simflex\Core\Page;
 use Simflex\Core\Routing\Resolver;
 
 class Core

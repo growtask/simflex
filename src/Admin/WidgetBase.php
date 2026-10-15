@@ -2,8 +2,6 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\Core;
-
 abstract class WidgetBase
 {
     protected array $data;

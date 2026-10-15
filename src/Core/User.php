@@ -2,11 +2,7 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\DB;
 use Simflex\Core\Helpers\Phone;
-use Simflex\Core\Mail;
-use Simflex\Core\Sms;
-use Simflex\Core\UserInstance;
 
 /**
  * Class User

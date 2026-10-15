@@ -2,9 +2,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\ExtensionBase;
-use Simflex\Core\Path;
-
 abstract class ComponentBase extends ExtensionBase
 {
     /**

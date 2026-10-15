@@ -3,7 +3,6 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\Editor\Editor;
-use Simflex\Admin\Fields\Field;
 
 class FieldText extends Field
 {

@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\DB;
 
-use Simflex\Core\DB\Where;
 use Simflex\Core\ModelBase;
 
 class JoinClause

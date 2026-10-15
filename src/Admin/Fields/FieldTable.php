@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Fields\Field;
 use Simflex\Core\Container;
 
 class FieldTable extends Field

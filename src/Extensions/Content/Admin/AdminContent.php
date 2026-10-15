@@ -6,7 +6,6 @@ use Simflex\Admin\Base;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
-use Simflex\Core\Image;
 use Simflex\Extensions\Content\Model\ModelContent;
 
 class AdminContent extends Base

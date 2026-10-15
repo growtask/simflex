@@ -6,7 +6,6 @@ use PhpSmpp\Service\Sender as SmppSender;
 use PhpSmpp\SMPP\SMPP;
 use PhpSmpp\SMPP\Unit\Sm;
 use Simflex\Core\Helpers\Phone;
-use Simflex\Core\Sms\DriverBase;
 
 /**
  * Class DriverSmpp

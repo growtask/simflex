@@ -4,7 +4,6 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Base;
 use Simflex\Core\DB;
-use Simflex\Admin\Fields\Field;
 
 class FieldMultiKey extends Field
 {

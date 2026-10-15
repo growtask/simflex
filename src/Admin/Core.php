@@ -6,8 +6,6 @@ use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
-use Simflex\Admin\Auth;
-use Simflex\Admin\Page;
 
 class Core
 {
