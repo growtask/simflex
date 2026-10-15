@@ -4,7 +4,7 @@ namespace Simflex\Core;
 
 use Simflex\Core\Core;
 
-abstract class ExtensionBase
+abstract class ExtensionBase implements HasAdminParams
 {
     /**
      * Путь до расширения в файловой системе
@@ -13,13 +13,6 @@ abstract class ExtensionBase
     protected string $rootDir;
     protected string $root = '';
 
-    /**
-     * Settings of the module/component edited in the admin panel.
-     * Values are stored serialized in module_item.params / component.params.
-     *
-     * @return array<\Simflex\Admin\Structure\Data\FieldDefinition|\Simflex\Admin\Structure\Data\ParamGroup>
-     *         FieldDefinition goes to the common "Параметры" block, ParamGroup makes its own block
-     */
     public static function adminParams(): array
     {
         return [];

@@ -6,6 +6,7 @@ use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\ParamDefinition;
 use Simflex\Admin\Structure\Data\ParamGroup;
+use Simflex\Core\HasAdminParams;
 
 class Repository
 {
@@ -261,6 +262,9 @@ class Repository
         return $field;
     }
 
+    /**
+     * @return class-string<HasAdminParams>|''
+     */
     protected static function extensionClass(string $class): string
     {
         $class = ltrim($class, '\\');
@@ -271,7 +275,7 @@ class Repository
             $class = "Simflex\\Admin\\Modules\\$class\\$class";
         }
 
-        return class_exists($class) && method_exists($class, 'adminParams') ? $class : '';
+        return is_a($class, HasAdminParams::class, true) ? $class : '';
     }
 
     protected static function extensionFieldRow(FieldDefinition $field, string $class, int|string $pid, string $table): array
