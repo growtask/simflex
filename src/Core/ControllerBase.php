@@ -9,7 +9,8 @@ use Simflex\Core\Controller\ActionMatcher;
 /**
  * Automatic controller
  *
- * Use Action attribute to create attributes within child class
+ * Use Action attribute to create attributes within child class.
+ * Action methods return HTML as a string, they do not output it
  * @see Action
  */
 class ControllerBase extends ComponentBase
@@ -26,9 +27,9 @@ class ControllerBase extends ComponentBase
     }
 
     /**
-     * Fallback method
+     * Fallback method, returns HTML when no action was matched
      */
-    protected function fallback(): void
+    protected function fallback(): string
     {
         // redirect to 404
         $this->response->redirectNow('/404');
@@ -66,12 +67,11 @@ class ControllerBase extends ComponentBase
         return null;
     }
 
-    protected function content(): void
+    protected function content(): string
     {
         $maybeAction = $this->resolve();
         if (!$maybeAction) {
-            $this->fallback();
-            return;
+            return $this->fallback();
         }
 
         $vars = $maybeAction->getVars();
@@ -94,7 +94,7 @@ class ControllerBase extends ComponentBase
             }
         }
 
-        // invoke the method
-        $method->invoke($this, ...$varPos);
+        // invoke the method, actions return HTML
+        return (string)$method->invoke($this, ...$varPos);
     }
 }

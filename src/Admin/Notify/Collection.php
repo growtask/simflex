@@ -2,6 +2,8 @@
 
 namespace Simflex\Admin\Notify;
 
+use Simflex\Core\View;
+
 /**
  * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
  */
@@ -24,11 +26,10 @@ class Collection
 
     }
 
-    public function content(): void
+    public function content(): string
     {
         $this->collect();
-        $cnt = count($this->items);
-        include 'tpl/index.tpl';
+        return View::render(__DIR__ . '/tpl/index.tpl', ['cnt' => count($this->items)], $this);
     }
 
     private function collect(): void

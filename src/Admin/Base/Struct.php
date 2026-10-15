@@ -22,7 +22,7 @@ class Struct extends Base
     /**
      * Выводим доп. параметры по типу поля
      */
-    protected function fieldParam(): void
+    protected function fieldParam(): string
     {
         $fieldType = (string)@$_GET['field_type'];
         $fieldName = DB::escape(@$_GET['field_name']);
@@ -33,7 +33,7 @@ class Struct extends Base
         $rows = StructureRepository::fieldParamsByType($fieldType);
 
         if (!count($rows)) {
-            return;
+            return '';
         }
 
         $stored = DB::result("SELECT params FROM $table WHERE $keyName = ?", '', [$keyValue]);
@@ -51,7 +51,7 @@ class Struct extends Base
         $group = ['label' => 'Доп. параметры'];
         $group['fields'] = $fields;
         $portletClass = "field-params-$fieldName";
-        include 'tpl/form.portlet.tpl';
+        return $this->render(__DIR__ . '/tpl/form.portlet.tpl', get_defined_vars());
     }
 
     protected function getParams(): array

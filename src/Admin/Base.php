@@ -23,6 +23,7 @@ use Simflex\Core\Image;
 use Simflex\Core\Service;
 use Simflex\Core\Time;
 use Simflex\Core\User;
+use Simflex\Core\View;
 
 class Base
 {
@@ -129,7 +130,7 @@ class Base
         $this->tableData = StructureRepository::table($this->table);
     }
 
-    protected function deleteField(): void
+    protected function deleteField(): string
     {
         $fieldName = DB::escape(@$_GET['field_name']);
         $keyName = $this->pk->name;
@@ -139,7 +140,7 @@ class Base
             // TODO: do this properly!
             $data = DB::result('SELECT params FROM `' . $this->table . "` WHERE $keyName = $keyValue");
             if (!$data) {
-                exit(json_encode(['success' => false]));
+                return json_encode(['success' => false]);
             }
 
             $data = unserialize($data['params']);
@@ -147,9 +148,7 @@ class Base
             $data = serialize($data);
 
             DB::query("UPDATE $this->table SET params = ? WHERE $keyName = $keyValue", [$data]);
-            exit(
-                json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue])
-            );
+            return json_encode(['success' => true, 'd' => $data, 't' => $this->table, 'k' => $keyName, 'v' => $keyValue]);
         }
         $field = $this->fields[$fieldName];
         $q = "select $field->name from `$this->table` where $keyName = $keyValue";
@@ -159,7 +158,7 @@ class Base
             $q = 'UPDATE ' . $this->table . ' SET ' . $field->name . "='' WHERE $keyName = $keyValue";
             $success = DB::query($q);
         }
-        echo json_encode(['success' => !!$success]);
+        return json_encode(['success' => !!$success]);
     }
 
     public function uploadImg(): never
@@ -202,7 +201,10 @@ class Base
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
-    public function content(): void
+    /**
+     * Section content: the result of the requested action. Actions return HTML (or JSON for ajax requests)
+     */
+    public function content(): string
     {
         $row = Core::menuCurItem();
 
@@ -223,39 +225,47 @@ class Base
                     }
                     exit();
                 }
-            } else {
-                if (isset($this->actionHandlers[$action])) {
-                    $method = $this->actionHandlers[$action]['method'];
-                    if (method_exists($this, $method)) {
-                        $this->$method();
-                    } else {
-                        echo Core::siteParam('error404');
-                    }
-                } elseif (method_exists($this, $action)) {
-                    $this->$action();
-                } else {
-                    echo Core::siteParam('error404');
-                }
+                return '';
             }
-        } else {
-            $this->widgets();
-            $this->index();
+
+            $method = isset($this->actionHandlers[$action]) ? $this->actionHandlers[$action]['method'] : $action;
+            if (!method_exists($this, $method)) {
+                return (string)Core::siteParam('error404');
+            }
+            $out = $this->$method();
+            return is_string($out) ? $out : '';
         }
+
+        return $this->widgets() . $this->index();
     }
 
-    protected function widgets(): void
+    protected function widgets(): string
     {
         $q = 'SELECT * FROM admin_widget WHERE active = 1 ORDER BY npp, widget_id';
         $rows = DB::assoc($q);
-        echo count($rows) ? '<div class="widgets">' : '';
+        if (!count($rows)) {
+            return '';
+        }
+        $html = '';
         foreach ($rows as $row) {
             if (!$row['priv_id'] || User::ican((int)$row['priv_id'])) {
                 $class = $row['class'];
                 $widget = new $class($row);
-                echo $widget->execute();
+                $html .= $widget->execute();
             }
         }
-        echo count($rows) ? '</div>' : '';
+        return '<div class="widgets">' . $html . '</div>';
+    }
+
+    /**
+     * Renders the template into a string, $this in the template is the section
+     *
+     * @param string $file Absolute path to the template
+     * @param array<string, mixed> $vars Variables available in the template as $name
+     */
+    protected function render(string $file, array $vars = []): string
+    {
+        return View::render($file, $vars, $this);
     }
 
     protected function beforeChangeENUM(Field $field, $row, $newValue): mixed
@@ -325,25 +335,20 @@ class Base
         exit;
     }
 
-    private function index(): void
+    private function index(): string
     {
         $cur = Core::menuCurItem();
         $cur_id = isset($cur['menu_id']) ? $cur['menu_id'] : 0;
         $menu = Core::menu();
-        if (isset($menu[$cur_id])) {
-            include dirname(__FILE__) . '/Base/tpl/index.tpl';
+        if (!isset($menu[$cur_id])) {
+            return '';
         }
+        return $this->render(__DIR__ . '/Base/tpl/index.tpl', get_defined_vars());
     }
 
-    final public function execute(bool $is_print = false): string|false|null
+    final public function execute(): string
     {
-        if ($is_print) {
-            $this->content();
-        } else {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        }
+        return $this->content();
     }
 
     protected function getSelectSelect(): string
@@ -468,7 +473,7 @@ class Base
         }
     }
 
-    public function show(): void
+    public function show(): string
     {
         $this->prepareWhere();
 
@@ -520,15 +525,12 @@ class Base
 
         $saveId = (int)@$_GET['save_id'];
 
-        include dirname(__FILE__) . '/Base/tpl/show.tpl';
+        return $this->render(__DIR__ . '/Base/tpl/show.tpl', get_defined_vars());
     }
 
-    /**
-     * Use echo
-     */
-    protected function showCell(Field $field, array $row): void
+    protected function showCell(Field $field, array $row): string
     {
-        echo $field->show($row);
+        return $field->show($row);
     }
 
     protected function initTable(): void
@@ -626,21 +628,19 @@ class Base
         }
     }
 
-    protected function filter(): void
+    protected function filter(): string
     {
-        if ($this->isFilter) {
-            include dirname(__FILE__) . '/Base/tpl/filter.tpl';
-        }
+        return $this->isFilter ? $this->render(__DIR__ . '/Base/tpl/filter.tpl') : '';
     }
 
-    protected function filterExtra(bool $addClearfix = true): void
+    protected function filterExtra(bool $addClearfix = true): string
     {
-        include 'Base/tpl/filter.extra.tpl';
+        return $this->render(__DIR__ . '/Base/tpl/filter.extra.tpl', ['addClearfix' => $addClearfix]);
     }
 
-    protected function filterField(Field $field): void
+    protected function filterField(Field $field): string
     {
-        $field->filter($_REQUEST['filter'][$field->name] ?? '');
+        return $field->filter($_REQUEST['filter'][$field->name] ?? '');
     }
 
     public function addField($field): void
@@ -676,7 +676,10 @@ class Base
         }
     }
 
-    public function boolChange(): mixed
+    /**
+     * Toggles the boolean field, returns the new value ('1' / '0') or 'error'
+     */
+    public function boolChange(): string
     {
         $pk = (int)$_REQUEST['pk'];
         $field = $_REQUEST['field'];
@@ -691,15 +694,13 @@ class Base
             $q = "SELECT $field val FROM `" . $this->table . '` WHERE ' . $this->pk->name . '=' . $pk;
             $row = DB::result($q);
             if (isset($row['val'])) {
-                echo $row['val'] ? '1' : '0';
-                return $row['val'];
+                return $row['val'] ? '1' : '0';
             }
         }
-        echo 'error';
-        return -1;
+        return 'error';
     }
 
-    public function form(): void
+    public function form(): string
     {
         if (isset($_GET['ids']) && count(explode(',', $_GET['ids'])) == 1) {
             header("location: ?action=form&{$this->pk->name}={$_GET['ids']}");
@@ -728,9 +729,10 @@ class Base
                 unset($this->fields[$index]);
             }
         }
+        $ui = '';
         foreach ($this->fields as $field) {
             $row[$field->name] = $field->defval();
-            $field->loadUI(true);
+            $ui .= $field->loadUI(true);
         }
 
         foreach ($this->fks as $field) {
@@ -870,7 +872,7 @@ class Base
         }
 
         $this->formBeforeOutput($row);
-        include dirname(__FILE__) . '/Base/tpl/form.tpl';
+        return $ui . $this->render(__DIR__ . '/Base/tpl/form.tpl', get_defined_vars());
     }
 
     protected function formBeforeOutput(array &$row): void
@@ -885,14 +887,14 @@ class Base
         return $field->input($field->value ?: @$row[$field->name]);
     }
 
-    public function showActions(): void
+    public function showActions(): string
     {
-        include 'Base/tpl/show.actions.tpl';
+        return $this->render(__DIR__ . '/Base/tpl/show.actions.tpl');
     }
 
-    public function rowActions($row, $i): void
+    public function rowActions($row, $i): string
     {
-        include 'Base/tpl/show.actions.row.tpl';
+        return $this->render(__DIR__ . '/Base/tpl/show.actions.row.tpl', ['row' => $row, 'i' => $i]);
     }
 
     public function searchInt(): array
@@ -971,7 +973,19 @@ class Base
         exit;
     }
 
-    public function validate(): int|bool
+    /**
+     * Ajax action: validates the posted form, returns JSON {valid, errors}
+     */
+    public function validate(): string
+    {
+        $json = ['valid' => $this->isValid() ? 1 : 0];
+        foreach ($this->errors as $field => $errors) {
+            $json['errors'][$field] = join('<br />', $errors);
+        }
+        return json_encode($json);
+    }
+
+    public function isValid(): bool
     {
         foreach ($this->fields as $field) {
             if ($errors = $field->check()) {
@@ -980,19 +994,7 @@ class Base
                 }
             }
         }
-        if (Core::$isAjax) {
-            $json = [];
-            $json['valid'] = count($this->errors) ? 0 : 1;
-            if (count($this->errors)) {
-                foreach ($this->errors as $field => $errors) {
-                    $json['errors'][$field] = join('<br />', $errors);
-                }
-            }
-            echo json_encode($json);
-            return $json['valid'];
-        } else {
-            return count($this->errors) ? false : true;
-        }
+        return !count($this->errors);
     }
 
     public function saveGroup(): string
@@ -1091,7 +1093,7 @@ class Base
             return $this->saveGroup();
         }
 
-        if ($this->validate()) {
+        if ($this->isValid()) {
             foreach ($this->fields as $index => $field) {
                 if ($field instanceof FieldVirtual) {
                     unset($this->fields[$index]);
@@ -1386,8 +1388,9 @@ class Base
         exit;
     }
 
-    protected function portlets(string $position = 'right'): void
+    protected function portlets(string $position = 'right'): string
     {
+        return '';
     }
 
     protected function getRow(int|string $id): array|false|null
@@ -1398,21 +1401,23 @@ class Base
         return $row;
     }
 
-    protected function showDetailExtra($row): void
+    protected function showDetailExtra($row): string
     {
+        return '';
     }
 
-    public function showDetail(): never
+    public function showDetail(): string
     {
         $id = (int)@$_GET['id'];
-        $row = $this->showDetailGetRow($id);
-        include $this->showDetailGetTpl();
-        exit;
+        return $this->render($this->showDetailGetTpl(), ['row' => $this->showDetailGetRow($id)]);
     }
 
+    /**
+     * Absolute path to the record detail template
+     */
     protected function showDetailGetTpl(): string
     {
-        return 'Base/tpl/show.detail.tpl';
+        return __DIR__ . '/Base/tpl/show.detail.tpl';
     }
 
     protected function showDetailGetRow(int $id): array|false|null

@@ -90,7 +90,7 @@ class FieldMultiKey extends Field
         return '';
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         $pkValue = (int)$row[$this->tablePk];
         if (!isset(self::$buffer)) {
@@ -110,17 +110,17 @@ class FieldMultiKey extends Field
             }
         }
 
-        echo $this->cell((string)@self::$buffer[$pkValue]);
+        return $this->cell((string)@self::$buffer[$pkValue]);
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         $value = DB::escape($value);
 
         if ($this->table == 'catalog_product') {
             // a dumb hack again...
             if (!$value) {
-                return;
+                return '';
             }
 
             $q = DB::query(
@@ -143,7 +143,7 @@ class FieldMultiKey extends Field
             }
         }
 
-        echo $this->dropdown([
+        return $this->dropdown([
             'name' => 'filter[' . $this->name . ']',
             'value' => $value,
             'action' => 'searchMultiKey',

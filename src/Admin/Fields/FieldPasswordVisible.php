@@ -12,9 +12,9 @@ class FieldPasswordVisible extends Field
         }
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->render('password-visible');
+        return $this->render('password-visible');
     }
 
     public static function typeLabel(): string

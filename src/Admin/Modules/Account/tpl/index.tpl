@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="content__body" data-simplebar>
-        <?php \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
+        <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
         <label class="data-point">
             Роль
             <div class="form-control form-control--sm">

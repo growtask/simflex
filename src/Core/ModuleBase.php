@@ -38,34 +38,27 @@ abstract class ModuleBase extends ExtensionBase
         $this->params['is_wrap'] = isset($this->params['is_wrap']) ? $this->params['is_wrap'] : 0;
     }
 
-    abstract protected function content(): void;
+    /**
+     * Module content. Returns HTML, does not output it
+     */
+    abstract protected function content(): string;
 
     final public function execute(): string
     {
-        if (Core::ajax()) {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        } else {
-            ob_start();
-            $this->content();
-            $content = ob_get_clean();
-            if ($content) {
-                ob_start();
-                if ($this->params['is_wrap']) {
-                    echo '<div id="', $this->params['css_id'], '" class="module-base module-', $this->name, isset($this->params['cssclass']) ? " {$this->params['cssclass']}" : '', '">';
-                    echo $this->params['is_title'] ? '<h2>' . $this->title . '</h2>' : '';
-                    echo '<div class="module-body">';
-                    echo $content;
-                    echo '</div>';
-                    echo '</div>';
-                } else {
-                    echo $this->params['is_title'] ? '<h2>' . $this->title . '</h2>' : '';
-                    echo $content;
-                }
-                return ob_get_clean();
-            }
+        $content = $this->content();
+        if (Core::ajax() || $content === '') {
+            return $content;
         }
-        return '';
+
+        $title = $this->params['is_title'] ? '<h2>' . $this->title . '</h2>' : '';
+        if (!$this->params['is_wrap']) {
+            return $title . $content;
+        }
+
+        $class = 'module-base module-' . $this->name . (isset($this->params['cssclass']) ? " {$this->params['cssclass']}" : '');
+        return '<div id="' . $this->params['css_id'] . '" class="' . $class . '">'
+            . $title
+            . '<div class="module-body">' . $content . '</div>'
+            . '</div>';
     }
 }

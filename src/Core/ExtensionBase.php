@@ -56,6 +56,17 @@ abstract class ExtensionBase implements HasAdminParams
         return $this->root;
     }
 
+    /**
+     * Renders the template into a string, $this in the template is the extension
+     *
+     * @param string $file Absolute path to the template
+     * @param array<string, mixed> $vars Variables available in the template as $name
+     */
+    protected function render(string $file, array $vars = []): string
+    {
+        return View::render($file, $vars, $this);
+    }
+
     protected function link($link): string
     {
         return str_replace('//', '/', $this->root() . $link);

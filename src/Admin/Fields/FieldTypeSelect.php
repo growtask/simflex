@@ -22,9 +22,9 @@ class FieldTypeSelect extends Field
         ]);
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->cell(htmlspecialchars($this->typeName((string)$row[$this->name])));
+        return $this->cell(htmlspecialchars($this->typeName((string)$row[$this->name])));
     }
 
     public function showDetail($row): ?string

@@ -6,8 +6,8 @@ use Simflex\Core\ComponentBase;
 
 class DefaultStub extends ComponentBase
 {
-    protected function content(): void
+    protected function content(): string
     {
-        echo 'This is DefaultStub component';
+        return 'This is DefaultStub component';
     }
 }

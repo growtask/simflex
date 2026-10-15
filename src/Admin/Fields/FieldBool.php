@@ -22,9 +22,9 @@ class FieldBool extends FieldInt
         return $this->e2n && empty($postValue) ? 0 : (isset($postValue) ? 1 : 0);
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->render('bool-show', ['checked' => (bool)$row[$this->name]]);
+        return $this->render('bool-show', ['checked' => (bool)$row[$this->name]]);
     }
 
     public function showDetail($row): string
@@ -33,15 +33,16 @@ class FieldBool extends FieldInt
         return $value ? 'Да' : 'Нет';
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         if ($this->filter) {
-            echo $this->dropdown([
+            return $this->dropdown([
                 'name' => 'filter[' . $this->name . ']',
                 'value' => $value,
                 'items' => [['1', 'Да'], ['0', 'Нет'], ['', '—']],
             ]);
         }
+        return '';
     }
 
     public static function typeLabel(): string

@@ -135,10 +135,7 @@ class User
         // Отправляем письмо об успешной регистрации
         $mailTpl = SF_ROOT_PATH . '/theme/default/mail/user_create.tpl';
         if ($email && is_file($mailTpl)) {
-            ob_start();
-            include $mailTpl;
-            $html = ob_get_contents();
-            ob_end_clean();
+            $html = View::render($mailTpl, get_defined_vars());
             Mail::staticSend($email, "Регистрация на сайте $HTTPHost", $html);
         }
 

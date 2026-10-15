@@ -206,7 +206,7 @@ class Core
             include 'theme/tpl/denied.tpl';
         } elseif ($user) {
             if (self::ajax()) {
-                Page::content();
+                echo Page::content();
             } else {
                 include 'theme/tpl/index.tpl';
             }

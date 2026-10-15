@@ -22,9 +22,9 @@ class FieldDouble extends Field
         return $this->render('input', ['value' => $this->doubleFormat($value)] + $this->inputVars());
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->cell($this->doubleFormat($row[$this->name], true));
+        return $this->cell($this->doubleFormat($row[$this->name], true));
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

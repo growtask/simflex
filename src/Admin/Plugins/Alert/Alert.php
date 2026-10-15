@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Plugins\Alert;
 
 use Simflex\Core\Session;
+use Simflex\Core\View;
 
 class Alert
 {
@@ -88,30 +89,20 @@ class Alert
     }
 
     /**
-     * Вывести все накопившиеся сообщения по идентификатору
+     * Получить все накопившиеся сообщения по идентификатору и очистить буфер. Формат HTML
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @return string HTML
      */
-    public static function output(string $page = ''): void
+    public static function getHTML(string $page = ''): string
     {
         self::init();
-        self::echoSpecified($page, 'danger');
-        self::echoSpecified($page, 'success');
-        self::echoSpecified($page, 'warning');
-        self::echoSpecified($page, 'info');
+        $html = self::renderSection($page, 'danger')
+            . self::renderSection($page, 'success')
+            . self::renderSection($page, 'warning')
+            . self::renderSection($page, 'info');
 
         Session::set('admin.alerts', []);
-    }
-
-    /**
-     * Получить все накопившиеся сообщения по идентификатору. Формат HTML
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
-     * @return string|false HTML
-     */
-    public static function getHTML(string $page = ''): string|false
-    {
-        ob_start();
-        self::output($page);
-        return ob_get_clean();
+        return $html;
     }
 
     /**
@@ -137,8 +128,9 @@ class Alert
         return !empty(self::$s[$page]['danger']);
     }
 
-    protected static function echoSpecified(string $page, string $section): void
+    protected static function renderSection(string $page, string $section): string
     {
+        $html = '';
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = '';
             if (count(self::$s[$page][$section]) == 1) {
@@ -169,10 +161,11 @@ class Alert
                         break;
                 }
 
-                include dirname(__FILE__) . '/alert.tpl';
+                $html = View::render(__DIR__ . '/alert.tpl', ['type' => $type, 'title' => $title, 'txt' => $txt]);
                 self::$s[$page][$section] = [];
             }
         }
+        return $html;
     }
 
     protected static function pushMsg(string $page, string $section, array|string $mixed): void

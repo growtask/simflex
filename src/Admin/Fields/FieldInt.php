@@ -133,17 +133,17 @@ class FieldInt extends Field
         return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         if (!$this->filter) {
-            return;
+            return '';
         }
         if ($this->fk) {
             $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             $sel = DB::fetch($sel) ?: [];
 
-            echo $this->dropdown([
+            return $this->dropdown([
                 'name' => 'filter[' . $this->name . ']',
                 'value' => $value,
                 'action' => 'searchInt',
@@ -151,7 +151,7 @@ class FieldInt extends Field
                 'items' => $sel ? [[$sel['id'], $sel['name']]] : [],
             ]);
         } else {
-            parent::filter($value);
+            return parent::filter($value);
         }
     }
 

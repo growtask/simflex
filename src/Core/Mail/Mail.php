@@ -2,6 +2,8 @@
 
 namespace Simflex\Core\Mail;
 
+use Simflex\Core\View;
+
 /**
  * Mail object.
  */
@@ -55,9 +57,7 @@ class Mail
      */
     public function setBodyFromTemplate(string $templatePath, array $data = [], bool $strip = true): void
     {
-        ob_start();
-        include $templatePath;
-        $this->body = ob_get_clean();
+        $this->body = View::render($templatePath, ['data' => $data], $this);
 
         if ($strip) {
             // replace </p> and <br/> with \n

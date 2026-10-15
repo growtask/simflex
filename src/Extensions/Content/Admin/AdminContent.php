@@ -10,25 +10,27 @@ use Simflex\Extensions\Content\Model\ModelContent;
 
 class AdminContent extends Base
 {
-    public function content(): void
+    public function content(): string
     {
         if (!Container::getRequest()->isAjax() || !isset($_FILES['file'])) {
-            parent::content();
-            return;
+            return parent::content();
         }
-        $this->ajaxUpload();
+        return $this->ajaxUpload();
     }
 
-    public function ajaxUpload(): void
+    /**
+     * Saves the uploaded file, returns its url
+     */
+    public function ajaxUpload(): string
     {
         if (!Container::getRequest()->isAjax()) {
-            die('');
+            return '';
         }
 
         if (!str_starts_with($_FILES['file']['type'], 'image') && !str_starts_with($_FILES['file']['type'], 'video')) {
             $name = $_FILES['file']['name'];
             copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/uf/files/content/' . $name);
-            exit('/uf/files/content/' . $name);
+            return '/uf/files/content/' . $name;
         }
 
         $ext = '';
@@ -59,7 +61,7 @@ class AdminContent extends Base
         $name = md5(time()) . '.' . $ext;
         copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/uf/images/content/source/' . $name);
 
-        exit('/uf/images/content/source/' . $name);
+        return '/uf/images/content/source/' . $name;
     }
 
     protected function initTable(): void

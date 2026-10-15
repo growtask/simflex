@@ -93,32 +93,22 @@ class Page
         }
     }
 
-    public static function content(): void
+    public static function content(): string
     {
-        echo self::$content;
+        return self::$content;
     }
 
-    public static function position(string $posname): void
+    public static function position(string $posname): string
     {
-        if ($posname && !empty(self::$positions[$posname])) {
-            $i = 0;
-            foreach (self::$positions[$posname] as $mod_content) {
-                if ($mod_content) {
-                    if ($i) {
-                        echo '<hr class="module-separator" />';
-                    }
-                    echo $mod_content;
-                    $i++;
-                }
-            }
+        if (!$posname || empty(self::$positions[$posname])) {
+            return '';
         }
+        return implode('<hr class="module-separator" />', array_filter(self::$positions[$posname], 'strlen'));
     }
 
-    public static function module(string $modname): void
+    public static function module(string $modname): string
     {
-        if ($modname && !empty(self::$modules[$modname])) {
-            echo self::$modules[$modname];
-        }
+        return $modname ? (self::$modules[$modname] ?? '') : '';
     }
 
     public static function css(string $file, int $idx = 100): void
@@ -159,33 +149,34 @@ class Page
         static::js($file, $idx);
     }
 
-    public static function meta(): void
+    public static function meta(): string
     {
-        echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />', "\r\n";
+        $html = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\r\n";
 
         ksort(self::$css);
         foreach (self::$css as $css_arr) {
             foreach ($css_arr as $css) {
-                echo '<link type="text/css" rel="stylesheet" href="', $css, '" />', "\r\n";
+                $html .= '<link type="text/css" rel="stylesheet" href="' . $css . '" />' . "\r\n";
             }
         }
         ksort(self::$js);
         foreach (self::$js as $js_arr) {
             foreach ($js_arr as $js) {
-                echo '<script type="text/javascript" src="', $js, '"></script>', "\r\n";
+                $html .= '<script type="text/javascript" src="' . $js . '"></script>' . "\r\n";
             }
         }
 
         if (Container::getConfig()->devMode) {
-            Container::get('debugbar')->renderHead();
+            $html .= Container::get('debugbar')->renderHead();
         }
+        return $html;
     }
 
     /**
      * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
      */
-    public static function notifications(): void
+    public static function notifications(): string
     {
-        Collection::getInstance()->content();
+        return Collection::getInstance()->content();
     }
 }

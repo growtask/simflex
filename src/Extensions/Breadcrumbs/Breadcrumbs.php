@@ -11,7 +11,7 @@ class Breadcrumbs extends ModuleBase
     protected array $crumbs = [];
     protected static array $skip = [];
 
-    protected function content(): void
+    protected function content(): string
     {
         $arr = [];
         $menu = Core::menu('by_id');
@@ -44,8 +44,9 @@ class Breadcrumbs extends ModuleBase
                 $crumbs[] = $i + 1 < $cnt ? '<a href="' . $crumb['link'] . '">' . $crumb['name'] . '</a>' : '<span>' . $crumb['name'] . '</span>';
                 $i++;
             }
-            include dirname(__FILE__) . '/breadcrumbs.tpl';
+            return $this->render(__DIR__ . '/breadcrumbs.tpl', ['crumbs' => $crumbs]);
         }
+        return '';
     }
 
     public static function get(): array

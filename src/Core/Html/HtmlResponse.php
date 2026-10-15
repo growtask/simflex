@@ -3,6 +3,7 @@
 namespace Simflex\Core\Html;
 
 use Simflex\Core\Response;
+use Simflex\Core\View;
 
 class HtmlResponse extends Response
 {
@@ -27,11 +28,7 @@ class HtmlResponse extends Response
     public function addContentFromTemplate(string $templatePath, array $params): void
     {
         if (file_exists($templatePath)) {
-            extract($params, EXTR_SKIP);
-
-            ob_start();
-            include $templatePath;
-            $this->addContent(ob_get_clean());
+            $this->addContent(View::render($templatePath, $params, $this));
         }
     }
 

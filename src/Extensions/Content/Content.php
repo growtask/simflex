@@ -174,7 +174,7 @@ class Content extends ComponentBase
         return $children;
     }
 
-    protected function content(): void
+    protected function content(): string
     {
         Profiler::traceStart($this, __FUNCTION__);
 
@@ -239,7 +239,7 @@ class Content extends ComponentBase
                 }
             }
 
-            include static::findTemplateFile($content->template_path ?? 'default.tpl');
+            $html = $this->render(static::findTemplateFile($content->template_path ?? 'default.tpl'), get_defined_vars());
         } else {
             if ($link == '/404') {
                 http_response_code(404);
@@ -251,10 +251,11 @@ class Content extends ComponentBase
 
             // load home here to avoid issues with templater
             $content = $this->get('/');
-            include self::findTemplateFile('base/404.tpl');
+            $html = $this->render(self::findTemplateFile('base/404.tpl'), get_defined_vars());
         }
 
         Profiler::traceEnd($this, __FUNCTION__);
+        return $html;
     }
 
     protected function breadcrumbs($content): void

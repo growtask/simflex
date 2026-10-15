@@ -9,11 +9,11 @@ use Simflex\Core\ModuleBase;
 
 class Account extends ModuleBase
 {
-    public function content(): void
+    public function content(): string
     {
         $user = Container::getUser();
         if (!$user) {
-            return;
+            return '';
         }
 
         if (isset($_POST['email'], $_POST['name'])) {
@@ -35,6 +35,6 @@ class Account extends ModuleBase
             'name' => $user->name,
             'email' => $user->email,
         ];
-        include 'tpl/index.tpl';
+        return $this->render(__DIR__ . '/tpl/index.tpl', ['data' => $data]);
     }
 }

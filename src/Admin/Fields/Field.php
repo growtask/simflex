@@ -2,6 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
+use Simflex\Core\View;
+
 class Field
 {
     public string $form = '';
@@ -168,10 +170,7 @@ class Field
      */
     protected function render(string $tpl, array $vars = []): string
     {
-        extract($vars, EXTR_SKIP);
-        ob_start();
-        include __DIR__ . '/tpl/' . $tpl . '.tpl';
-        return (string)ob_get_clean();
+        return View::render(__DIR__ . '/tpl/' . $tpl . '.tpl', $vars, $this);
     }
 
     protected function inputVars(): array
@@ -240,13 +239,13 @@ class Field
         return $errors;
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
         $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
-            echo $this->render('link', [
+            return $this->render('link', [
                 'href' => '?action=form&' . $this->tablePk . '=' . $this->pkValue,
                 'class' => 'table__row-' . $this->name,
                 'label' => $value,
@@ -254,7 +253,7 @@ class Field
             ]);
         } else {
             $isNumericReal = $this->isNumeric || ((string)intval($value) == $value);
-            echo $this->cell($value, $isNumericReal ? 'num' : 'text');
+            return $this->cell($value, $isNumericReal ? 'num' : 'text');
         }
     }
 
@@ -277,20 +276,25 @@ class Field
         return $this->defaultValue;
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         if ($this->filter) {
             $inExtra = $this->width == 0;
-            echo $this->render('filter', [
+            return $this->render('filter', [
                 'name' => $this->name,
                 'placeholder' => $inExtra ? $this->label : '',
                 'value' => $value,
             ]);
         }
+        return '';
     }
 
-    public function loadUI(bool $onForm = false): void
+    /**
+     * Registers the field assets, returns HTML required by the field UI (init scripts)
+     */
+    public function loadUI(bool $onForm = false): string
     {
+        return '';
     }
 
     public function selectQueryField(): string

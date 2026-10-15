@@ -1,9 +1,7 @@
 <?php
 
 $showRightCol = (bool)count($this->params['right']);
-ob_start();
-$this->portlets('right');
-$rightPortletsHTML = ob_get_clean();
+$rightPortletsHTML = $this->portlets('right');
 $showRightCol |= (bool)$rightPortletsHTML;
 $artificial = false;
 $artificialGroups = [];
@@ -105,8 +103,7 @@ $artLeftArr = [];
             </div>
 
             <div class="content__body" data-simplebar>
-                <?php
-                \Simflex\Admin\Plugins\Alert\Alert::output(); ?>
+                <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
                 <?php
                 if (count($this->errors)): ?>
                     <div class="content__notification notification notification--active notification--error">
@@ -289,8 +286,7 @@ $artLeftArr = [];
                 </div>
 
                 <?= $this->extraLeft ?>
-                <?php
-                $this->portlets('left') ?>
+                <?= $this->portlets('left') ?>
             </div>
             <div class="content__btns">
                 <button name="submit_apply" type="submit" class="content__btn-save BtnPrimarySm BtnIconLeft">

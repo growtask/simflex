@@ -10,7 +10,7 @@ class FieldVirtual extends Field
         $this->isVirtual = true;
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         $value = $row[$this->name];
         if ($this->params['text']) {
@@ -41,7 +41,7 @@ class FieldVirtual extends Field
             }
             $value = $this->render('link', ['href' => $href, 'class' => '', 'label' => $value, 'blank' => false]);
         }
-        echo $value;
+        return (string)$value;
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

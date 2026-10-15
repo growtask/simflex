@@ -22,18 +22,18 @@ class FieldFile extends Field
         }
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         if ($row[$this->name]) {
-            echo $this->render('link', [
+            return $this->render('link', [
                 'href' => '/uf/files/' . $this->params['path'] . '/' . $row[$this->name],
                 'class' => '',
                 'label' => $row[$this->name],
                 'blank' => false,
             ]);
-            return;
+            return '';
         }
-        parent::show($row);
+        return parent::show($row);
     }
 
     public function getValue($value): string
@@ -46,11 +46,12 @@ class FieldFile extends Field
         ]);
     }
 
-    public function loadUI(bool $onForm = false): void
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::fileInput();
         }
+        return '';
     }
 
     public function input($value): string

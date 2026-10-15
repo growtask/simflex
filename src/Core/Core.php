@@ -251,7 +251,7 @@ class Core
     public static function execute(): void
     {
         if (self::$contentOnly) {
-            Page::content();
+            echo Page::content();
         } else {
             $config = Container::getConfig();
             if (isset($_REQUEST['print']) && is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/print.tpl')) {
@@ -302,17 +302,19 @@ class Core
         return self::$menuById[self::$componentMenuId]['name'];
     }
 
-    public static function error404(): void
+    /**
+     * Sets the 404 status and returns the error page HTML
+     */
+    public static function error404(): string
     {
         $config = Container::getConfig();
         header('HTTP/1.0 404 Not Found');
         Page::seo('Error 404');
         if (is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl')) {
             self::$contentOnly = true;
-            include SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl';
-        } else {
-            echo self::siteParam('error404');
+            return View::render(SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl');
         }
+        return (string)self::siteParam('error404');
     }
 
     public static function isHttps(): bool

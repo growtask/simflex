@@ -6,6 +6,7 @@ use PhpSmpp\Service\Sender as SmppSender;
 use PhpSmpp\SMPP\SMPP;
 use PhpSmpp\SMPP\Unit\Sm;
 use Simflex\Core\Helpers\Phone;
+use Simflex\Core\Log;
 
 /**
  * Class DriverSmpp
@@ -69,7 +70,7 @@ class DriverSmpp extends DriverBase
         $service = new \PhpSmpp\Service\Listener([$this->config['url']], $this->config['login'], $this->config['pass'], true);
         $service->listenOnce(function (Sm $sm) {
             if (!($sm instanceof \PhpSmpp\SMPP\Unit\DeliverReceiptSm)) {
-                echo "not receipt\n";
+                Log::debug('SMPP: skipped a unit that is not a delivery receipt');
                 return;
             }
 

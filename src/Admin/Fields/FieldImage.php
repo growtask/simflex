@@ -62,9 +62,9 @@ class FieldImage extends FieldFile
         return end($path);
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->showDetail($row);
+        return (string)$this->showDetail($row);
     }
 
     public function showDetail($row): string

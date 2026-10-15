@@ -18,19 +18,21 @@ class FieldText extends Field
         }
     }
 
-    public function loadUI(bool $onForm = false): void
+    public function loadUI(bool $onForm = false): string
     {
+        $html = '';
         if ($onForm) {
             if ($this->readonly) {
-                Editor::tinymce('readonly', 'sf-editor-readonly');
+                $html .= Editor::tinymce('readonly', 'sf-editor-readonly');
             }
             if ('mini' == $this->editor) {
-                Editor::tinymce('mini', 'sf-editor-mini');
+                $html .= Editor::tinymce('mini', 'sf-editor-mini');
             }
             if ('full' == $this->editor) {
-                Editor::tinymce('full', 'sf-editor-full');
+                $html .= Editor::tinymce('full', 'sf-editor-full');
             }
         }
+        return $html;
     }
 
     public function input($value): string

@@ -32,7 +32,7 @@ abstract class Field
         $this->required = $required;
     }
 
-    public function html(): void
+    public function html(): string
     {
         $formName = $this->form->getName();
         $val = $_POST[$formName][$this->name] ?? $this->defval;
@@ -45,12 +45,10 @@ abstract class Field
             $tmp[] = $key . '="' . htmlspecialchars($value) . '"';
         }
         if ($this->isText) {
-            echo '<span class="plug-form-field"><textarea ' . implode(' ', $tmp) . ' cols="20" rows="4">', htmlspecialchars(
-                $val
-            ), '</textarea></span>';
-        } else {
-            echo '<span class="plug-form-field"><input ' . implode(' ', $tmp) . ' /></span>';
+            return '<span class="plug-form-field"><textarea ' . implode(' ', $tmp) . ' cols="20" rows="4">'
+                . htmlspecialchars($val) . '</textarea></span>';
         }
+        return '<span class="plug-form-field"><input ' . implode(' ', $tmp) . ' /></span>';
     }
 
     public function &check(): array

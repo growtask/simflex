@@ -16,11 +16,12 @@ class FieldDate extends Field
         }
     }
 
-    public function loadUI(bool $onForm = false): void
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::datePicker();
         }
+        return '';
     }
 
     public function input($value): string
@@ -45,9 +46,9 @@ class FieldDate extends Field
         return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->cell($row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '');
+        return $this->cell($row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '');
     }
 
     public static function typeLabel(): string

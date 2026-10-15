@@ -6,9 +6,9 @@ use Simflex\Core\DB;
 
 class FieldNPP extends Field
 {
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->render('npp', [
+        return $this->render('npp', [
             'name' => $this->name,
             'tablePk' => $this->tablePk,
             'value' => $row[$this->name],

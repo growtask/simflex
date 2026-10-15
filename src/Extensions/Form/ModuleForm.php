@@ -125,9 +125,9 @@ class ModuleForm extends ModuleBase
         return $this->name;
     }
 
-    protected function content(): void
+    protected function content(): string
     {
-        include static::findTemplateFile($this->formTpl);
+        return $this->render(static::findTemplateFile($this->formTpl));
     }
 
     protected static function findTemplateFile(string $name): string

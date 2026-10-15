@@ -40,14 +40,14 @@ class DebugBar implements Service
         $this->debugBar->addCollector($collector);
     }
 
-    public function renderHead(): void
+    public function renderHead(): string
     {
-        echo $this->renderer()->renderHead();
+        return $this->renderer()->renderHead();
     }
 
-    public function render(): void
+    public function render(): string
     {
-        echo $this->renderer()->render();
+        return $this->renderer()->render();
     }
 
     /**

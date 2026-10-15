@@ -12,16 +12,13 @@ abstract class ComponentBase extends ExtensionBase
         return Path::dirToHref($this->rootDir);
     }
 
-    abstract protected function content();
+    /**
+     * Component content. Returns HTML, does not output it
+     */
+    abstract protected function content(): string;
 
-    final public function execute(bool $is_print = false): string|false|null
+    final public function execute(): string
     {
-        if ($is_print) {
-            $this->content();
-        } else {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        }
+        return $this->content();
     }
 }

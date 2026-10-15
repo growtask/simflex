@@ -4,6 +4,7 @@ namespace Simflex\Core\Alert\Site;
 
 use Simflex\Core\Core;
 use Simflex\Core\Page;
+use Simflex\Core\View;
 
 class Alert
 {
@@ -109,30 +110,19 @@ class Alert
     }
 
     /**
-     * Вывести все накопившиеся сообщения по идентификатору
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
-     */
-    public static function output(string $page = ''): void
-    {
-        self::init();
-        self::echoSpecified($page, 'error');
-        self::echoSpecified($page, 'success');
-        self::echoSpecified($page, 'warning');
-        self::echoSpecified($page, 'info');
-        self::echoSpecified($page, 'text');
-        echo "\n" . '<div class="alert-buffer"' . ($page ? ' id="alert-buffer-' . $page . '"' : '') . '></div>' . "\n";
-    }
-
-    /**
-     * Получить все накопившиеся сообщения по идентификатору. Формат HTML
+     * Получить все накопившиеся сообщения по идентификатору и очистить буфер. Формат HTML
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      * @return string HTML
      */
     public static function getHTML(string $page = ''): string
     {
-        ob_start();
-        self::output($page);
-        return ob_get_clean();
+        self::init();
+        return self::renderSection($page, 'error')
+            . self::renderSection($page, 'success')
+            . self::renderSection($page, 'warning')
+            . self::renderSection($page, 'info')
+            . self::renderSection($page, 'text')
+            . "\n" . '<div class="alert-buffer"' . ($page ? ' id="alert-buffer-' . $page . '"' : '') . '></div>' . "\n";
     }
 
     /**
@@ -161,8 +151,9 @@ class Alert
         return isset(self::$s[$page]['error']) && count(self::$s[$page]['error']);
     }
 
-    protected static function echoSpecified(string $page, string $section): void
+    protected static function renderSection(string $page, string $section): string
     {
+        $html = '';
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = '';
             if (count(self::$s[$page][$section]) == 1) {
@@ -173,14 +164,13 @@ class Alert
                 $txt = '<ul><li>' . implode('</li><li>', self::$s[$page][$section]) . '</li></ul>';
             }
             if ($txt) {
-                if ($section == 'text') {
-                    echo $txt;
-                } else {
-                    include dirname(__FILE__) . '/alert.tpl';
-                }
+                $html = $section == 'text'
+                    ? $txt
+                    : View::render(__DIR__ . '/alert.tpl', ['section' => $section, 'txt' => $txt]);
                 self::$s[$page][$section] = [];
             }
         }
+        return $html;
     }
 
     protected static function pushMsg(string $page, string $section, array|string $mixed): void

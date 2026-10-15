@@ -20,9 +20,9 @@ class Breadcrumbs extends ModuleBase
 
     protected string $name = 'breadcrumbs';
 
-    public function content(): void
+    public function content(): string
     {
         $crumbs = Container::getCore()::crumbs();
-        include 'tpl/crumbs.tpl';
+        return $this->render(__DIR__ . '/tpl/crumbs.tpl', ['crumbs' => $crumbs]);
     }
 }

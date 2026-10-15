@@ -8,7 +8,7 @@
             <div class="header__breadcrumbs">
                 <div class="breadcrumbs">
                     <ul class="breadcrumbs__list">
-                        <?php \Simflex\Admin\Page::position('breadcrumbs'); ?>
+                        <?= \Simflex\Admin\Page::position('breadcrumbs') ?>
                     </ul>
                 </div>
             </div>

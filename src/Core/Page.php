@@ -61,27 +61,20 @@ class Page
         }
     }
 
-    public static function content(): void
+    public static function content(): string
     {
-        echo self::$content;
+        return self::$content;
     }
 
     /**
      * @param string $delimiter (optional = '') разделитель, например: '<hr/>'
      */
-    public static function position(string $posname, string $delimiter = ''): void
+    public static function position(string $posname, string $delimiter = ''): string
     {
-        if ($posname && !empty(self::$positions[$posname])) {
-            $i = 0;
-
-            $counter = count(self::$positions[$posname]);
-            foreach (self::$positions[$posname] as $mod) {
-                echo $mod;
-                if ($counter-- > 1) {
-                    echo $delimiter;
-                }
-            }
+        if (!$posname || empty(self::$positions[$posname])) {
+            return '';
         }
+        return implode($delimiter, self::$positions[$posname]);
     }
 
     public static function module($modname): false
@@ -89,7 +82,7 @@ class Page
         return false;
     }
 
-    public static function moduleById(int $module_id): void
+    public static function moduleById(int $module_id): string
     {
         $q = 'SELECT item_id, module, menu_id, posname, name, params
         FROM module_item
@@ -97,8 +90,9 @@ class Page
         $rows = static::moduleRows(DB::assoc($q));
         if ($rows) {
             $module = new $rows[0]['class']($rows[0]);
-            echo $module->execute();
+            return $module->execute();
         }
+        return '';
     }
 
     /**
@@ -204,27 +198,25 @@ class Page
         ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
     }
 
-    public static function meta(): void
+    public static function meta(): string
     {
         $title = self::$override['title'] ?: self::$seoTitle;
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
             'site_name'
         ) : '');
-        echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
-        echo self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
-
-        self::metaCSS();
-
-        echo self::$metaRaw;
-
-        echo '<meta charset="utf-8">', "\r\n";
+        $html = '<title>' . str_replace('<br/>', '', htmlspecialchars($title)) . $sname . '</title>' . "\r\n";
+        $html .= self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
+        $html .= self::metaCSS();
+        $html .= self::$metaRaw;
+        $html .= '<meta charset="utf-8">' . "\r\n";
 
         if (Container::getConfig()->devMode) {
-            Container::get('debugbar')->renderHead();
+            $html .= Container::get('debugbar')->renderHead();
         }
+        return $html;
     }
 
-    public static function metaCSS(): void
+    public static function metaCSS(): string
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'css.' : '';
@@ -237,6 +229,7 @@ class Page
                 self::$css[1][] = "/cache/css/$v.min.css";
             }
         }
+        $html = '';
         ksort(self::$css);
         foreach (self::$css as $css_arr) {
             foreach ($css_arr as $css) {
@@ -246,13 +239,15 @@ class Page
                 if ($std && strpos($css, 'http') === false) {
                     $css = "http://$sub$std$css";
                 }
-                echo '<link type="text/css" rel="preload" as="style" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
-                echo '<link type="text/css" rel="stylesheet" href="', $css, $v ? '?v=' . $v : '', '" />', "\r\n";
+                $href = $css . ($v ? '?v=' . $v : '');
+                $html .= '<link type="text/css" rel="preload" as="style" href="' . $href . '" />' . "\r\n";
+                $html .= '<link type="text/css" rel="stylesheet" href="' . $href . '" />' . "\r\n";
             }
         }
+        return $html;
     }
 
-    public static function metaJS(): void
+    public static function metaJS(): string
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'js.' : '';
@@ -265,11 +260,12 @@ class Page
                 self::$js[1][] = "/cache/js/$v.min.js";
             }
         }
+        $html = '';
         ksort(self::$js);
         foreach (self::$js as $js_arr) {
             foreach ($js_arr as $js) {
                 if (is_array($js) && 'inline' === (string)@$js['type']) {
-                    echo '<script type="text/javascript" defer>', $js['value'], '</script>', "\r\n";
+                    $html .= '<script type="text/javascript" defer>' . $js['value'] . '</script>' . "\r\n";
                     continue;
                 }
                 if ($hasCache && isset($cache[trim($js)])) {
@@ -278,16 +274,15 @@ class Page
                 if ($std && strpos($js, 'http') === false) {
                     $js = "http://$sub$std$js";
                 }
-                echo '<script type="text/javascript" defer src="', $js, $v && strpos(
-                    $js,
-                    'http'
-                ) === false ? '?v=' . $v : '', '"></script>', "\r\n";
+                $src = $js . ($v && strpos($js, 'http') === false ? '?v=' . $v : '');
+                $html .= '<script type="text/javascript" defer src="' . $src . '"></script>' . "\r\n";
             }
         }
 
         if (Container::getConfig()->devMode) {
-            Container::get('debugbar')->render();
+            $html .= Container::get('debugbar')->render();
         }
+        return $html;
     }
 
     public static function seo(

@@ -63,15 +63,16 @@ class FieldEnum extends FieldString
         return $buffer;
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         if ($this->filter) {
-            echo $this->dropdown([
+            return $this->dropdown([
                 'name' => 'filter[' . $this->name . ']',
                 'value' => $value,
                 'items' => $this->dropdownItems(true),
             ]);
         }
+        return '';
     }
 
     public function showDetail($row): ?string
@@ -81,11 +82,11 @@ class FieldEnum extends FieldString
         return @$values[$value];
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         $values = $this->fetchValues();
 
-        echo $this->dropdown([
+        return $this->dropdown([
             'name' => $this->name,
             'value' => @$values[$row[$this->name]],
             'data' => ['data-enum' => $this->tablePk, 'data-enumv' => $row[$this->tablePk]],

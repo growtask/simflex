@@ -50,8 +50,7 @@ Page::coreJs('/theme/js/vtable.js');
         echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
         Simflex Admin </title>
 
-    <?php
-    Page::meta() ?>
+    <?= Page::meta() ?>
 </head>
 
 <body>
@@ -62,8 +61,7 @@ Page::coreJs('/theme/js/vtable.js');
         <?php
         include 'partial/sidebar.tpl'; ?>
         <div class="layout__content">
-            <?php
-            Page::content(); ?>
+            <?= Page::content() ?>
         </div>
     </div>
     <?php
@@ -131,10 +129,6 @@ include 'modals/point.tpl'; ?>
     fileManager.apiBase = '<?= \Simflex\Admin\Core::url('fm') ?>';
 </script>
 
-<?php
-if (Container::getConfig()->devMode) {
-    Container::get('debugbar')->render();
-}
-?>
+<?= Container::getConfig()->devMode ? Container::get('debugbar')->render() : '' ?>
 </body>
 </html>

@@ -13,11 +13,12 @@ class FieldDateTime extends Field
         $this->defaultValue = !empty($this->params['defaultValue']) ? $this->params['defaultValue'] : date('Y-m-d H:i');
     }
 
-    public function loadUI(bool $onForm = false): void
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::dateTimePicker();
         }
+        return '';
     }
 
     public function input($value): string
@@ -42,10 +43,10 @@ class FieldDateTime extends Field
         return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
     }
 
-    public function show($row): void
+    public function show($row): string
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
-        echo $this->cell(str_replace(' ', '<br/>', $value));
+        return $this->cell(str_replace(' ', '<br/>', $value));
     }
 
     public static function typeLabel(): string

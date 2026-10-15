@@ -29,17 +29,17 @@ abstract class FieldExtensionSelect extends Field
         ]);
     }
 
-    public function filter($value): void
+    public function filter($value): string
     {
         if (!$this->filter) {
-            return;
+            return '';
         }
 
         $options = [['', $this->label, false]];
         foreach ($this->options() as $class => $name) {
             $options[] = [$class, $name, $class === $value];
         }
-        echo $this->render('select', [
+        return $this->render('select', [
             'name' => 'filter[' . $this->name . ']',
             'onchange' => null,
             'class' => 'form-control__input',
@@ -49,9 +49,9 @@ abstract class FieldExtensionSelect extends Field
         ]);
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        echo $this->cell((string)$this->showDetail($row));
+        return $this->cell((string)$this->showDetail($row));
     }
 
     public function showDetail($row): ?string

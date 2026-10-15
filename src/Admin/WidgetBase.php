@@ -2,6 +2,8 @@
 
 namespace Simflex\Admin;
 
+use Simflex\Core\View;
+
 abstract class WidgetBase
 {
     protected array $data;
@@ -13,29 +15,26 @@ abstract class WidgetBase
         $this->id = (int)$this->data['widget_id'];
     }
 
-    abstract protected function content(): void;
+    /**
+     * Widget content. Returns HTML, does not output it
+     */
+    abstract protected function content(): string;
 
-    protected function actions(): void
+    /**
+     * Widget header actions HTML
+     */
+    protected function actions(): string
     {
-
+        return '';
     }
 
-    final public function execute(): string|false
+    final public function execute(): string
     {
-        if (Core::ajax()) {
-            ob_start();
-            $this->content();
-            return ob_get_clean();
-        } else {
-            ob_start();
-            $this->content();
-            $content = ob_get_clean();
-            if ($content) {
-                ob_start();
-                include __DIR__ . '/theme/tpl/widget.layout.tpl';
-                return ob_get_clean();
-            }
+        $content = $this->content();
+        if (Core::ajax() || $content === '') {
+            return $content;
         }
-        return '';
+
+        return View::render(__DIR__ . '/theme/tpl/widget.layout.tpl', ['content' => $content], $this);
     }
 }

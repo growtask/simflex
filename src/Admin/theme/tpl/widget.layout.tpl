@@ -4,7 +4,7 @@
             <div class="caption">
                 <i class="icon-bar-chart"></i><?php echo $this->data['name'] ?>
             </div>
-            <?php $this->actions() ?>
+            <?= $this->actions() ?>
             <!--            <div class="actions">
                             <div data-toggle="buttons" class="btn-group">
                                 <label class="btn btn-default btn-sm active">

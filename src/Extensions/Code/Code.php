@@ -39,8 +39,8 @@ class Code extends ModuleBase
         ];
     }
 
-    protected function content(): void
+    protected function content(): string
     {
-        echo $this->params['content'] ?? '';
+        return (string)($this->params['content'] ?? '');
     }
 }

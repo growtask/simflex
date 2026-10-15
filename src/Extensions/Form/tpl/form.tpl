@@ -1,8 +1,8 @@
-<?
+<?php
 
 /** @var \Simflex\Extensions\Form\ModuleForm $this */
-\Simflex\Core\Alert\Site\Alert::output();
 ?>
+<?= \Simflex\Core\Alert\Site\Alert::getHTML() ?>
 <?php
 if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
     <?= $this->params['text_before'] ?? '' ?>
@@ -16,7 +16,7 @@ if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
                             echo $field->getLabel(), $field->vRequired ? ' <span>*</span>' : ''; ?></label></td>
                     <td>
                         <?php
-                        $field->html();
+                        echo $field->html();
                         echo '<div class="plug-form-error">';
                         if (isset($this->errors[$field->getName()])) {
                             foreach ($this->errors[$field->getName()] as $err) {

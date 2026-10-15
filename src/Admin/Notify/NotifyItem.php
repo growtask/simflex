@@ -2,6 +2,8 @@
 
 namespace Simflex\Admin\Notify;
 
+use Simflex\Core\View;
+
 /**
  * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
  */
@@ -19,8 +21,8 @@ class NotifyItem
         $href ? $this->href = $href : null;
     }
 
-    public function html(): void
+    public function html(): string
     {
-        include 'tpl/item.tpl';
+        return View::render(__DIR__ . '/tpl/item.tpl', [], $this);
     }
 }

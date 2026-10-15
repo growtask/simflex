@@ -19,11 +19,12 @@ class FieldTime extends Field
         }
     }
 
-    public function loadUI(bool $onForm = false): void
+    public function loadUI(bool $onForm = false): string
     {
         if ($onForm) {
             UI::timePicker();
         }
+        return '';
     }
 
     public function input($value): string
@@ -50,10 +51,9 @@ class FieldTime extends Field
         return $ret;
     }
 
-    public function show($row): void
+    public function show($row): string
     {
-        $value = $row[$this->name] ? Time::convert($row[$this->name], $this->pattern, false) : '';
-        echo $value;
+        return $row[$this->name] ? (string)Time::convert($row[$this->name], $this->pattern, false) : '';
     }
 
     public static function typeLabel(): string

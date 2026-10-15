@@ -21,7 +21,7 @@ class ModuleItem extends Base
         $this->actionHandlers['module_param'] = ['method' => 'moduleParam'];
     }
 
-    protected function moduleParam(): void
+    protected function moduleParam(): string
     {
         $moduleClass = (string)@$_GET['module'];
         $itemId = (int)@$_GET['item_id'];
@@ -61,13 +61,11 @@ class ModuleItem extends Base
                 $group = ['label' => 'Параметры'];
                 $group['fields'] = $fields;
                 $portletClass = 'field-params-nogroup';
-                ob_start();
                 if (!empty($field->params['editor_full']) && !$editorInited) {
-                    Editor::tinymce('full');
+                    $positions['right'] .= Editor::tinymce('full');
                     $editorInited = true;
                 }
-                include 'tpl/form.portlet.tpl';
-                $positions['right'] .= ob_get_clean();
+                $positions['right'] .= $this->render(__DIR__ . '/tpl/form.portlet.tpl', get_defined_vars());
             }
 
             foreach ($rows[''] as $pid => $row0) {
@@ -84,13 +82,11 @@ class ModuleItem extends Base
                 $group = ['label' => $row0['label']];
                 $group['fields'] = $fields;
                 $portletClass = "field-params-{$row0['name']}";
-                ob_start();
                 if (!empty($field->params['editor_full']) && !$editorInited) {
-                    Editor::tinymce('full');
+                    $positions[$row0['position']] .= Editor::tinymce('full');
                     $editorInited = true;
                 }
-                include 'tpl/form.portlet.tpl';
-                $positions[$row0['position']] .= ob_get_clean();
+                $positions[$row0['position']] .= $this->render(__DIR__ . '/tpl/form.portlet.tpl', get_defined_vars());
             }
         }
 
@@ -101,7 +97,7 @@ class ModuleItem extends Base
         }
         $positions['menu_items'] = implode("\n", $menuOptions);
 
-        echo json_encode($positions);
+        return json_encode($positions);
     }
 
     protected function getParams(): array

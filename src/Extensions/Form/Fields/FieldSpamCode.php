@@ -6,10 +6,9 @@ class FieldSpamCode extends Field
 {
     public array|int $vRequired = 1;
 
-    public function html(): void
+    public function html(): string
     {
-        echo '<span class="plug-form-spamcode">';
-        echo '</span>';
+        return '<span class="plug-form-spamcode"></span>';
     }
 
     public function &check(): array
