@@ -2,18 +2,18 @@
 
 namespace Simflex\Admin\Structure\Data;
 
-class FieldDefinition
+readonly class FieldDefinition
 {
     /**
      * @param array{main?: FieldParams} $params
      */
     public function __construct(
-        public readonly string $name,
-        public readonly string $class,
-        public readonly ?string $label = null,
-        public readonly string $help = '',
-        public readonly string $placeholder = '',
-        public readonly array $params = [],
+        public string $name,
+        public string $class,
+        public ?string $label = null,
+        public string $help = '',
+        public string $placeholder = '',
+        public array $params = [],
     ) {
     }
 
