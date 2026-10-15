@@ -167,14 +167,14 @@ class Mail {
     public function send(): mixed {
         $result = false;
 
-        if (!$this->data['as_plain'] && is_file($_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail.tpl')) {
+        if (!$this->data['as_plain'] && is_file(SF_ROOT_PATH . '/theme/default/mail.tpl')) {
             ob_start();
             $toEmail = $this->data['to_email'];
             $httpHost = "http://{$_SERVER['HTTP_HOST']}";
 
             $mailContent = $this->data['text'];
             $canAnswer = $this->data['can_answer'];
-            include $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail.tpl';
+            include SF_ROOT_PATH . '/theme/default/mail.tpl';
             $this->data['text'] = ob_get_clean();
 
             $siteParams = Core::siteParam();

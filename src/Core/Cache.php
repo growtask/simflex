@@ -11,7 +11,7 @@ class Cache
     protected static function getFilePath(string $key): string
     {
         if (empty(static::$dir)) {
-            static::$dir = "{$_SERVER['DOCUMENT_ROOT']}/uf/files/cache";
+            static::$dir = SF_ROOT_PATH . '/cache/data';
             if (!is_dir(static::$dir)) {
                 if (!@mkdir(static::$dir, 0777, true)) {
                     throw new \Exception('Cannot create cache dir ' . static::$dir);

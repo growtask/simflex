@@ -30,11 +30,12 @@ class Core
     }
 
     /**
-     * @return string like /vendor/growtask/simflex/src/Admin
+     * Url опубликованной статики админки ядра (см. Assets::publish)
+     * @return string like /cache/assets/1a2b3c4d5e6f7a8b/Admin
      */
     public static function webVendorPath(): string
     {
-        return '/vendor/growtask/simflex/src/Admin';
+        return \Simflex\Core\Core::webVendorPath() . '/Admin';
     }
 
     public static function vendorPath(): string

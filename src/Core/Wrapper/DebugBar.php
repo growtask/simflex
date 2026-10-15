@@ -7,9 +7,11 @@ use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\JavascriptRenderer;
 use DebugBar\OpenHandler;
 use DebugBar\StandardDebugBar;
 use DebugBar\Storage\FileStorage;
+use Simflex\Core\Assets;
 use Simflex\Core\Container;
 use Simflex\Core\DI\Service;
 
@@ -43,12 +45,22 @@ class DebugBar implements Service
 
     public function renderHead(): void
     {
-        echo $this->debugBar->getJavascriptRenderer()->renderHead();
+        echo $this->renderer()->renderHead();
     }
 
     public function render(): void
     {
-        echo $this->debugBar->getJavascriptRenderer()->render();
+        echo $this->renderer()->render();
+    }
+
+    /**
+     * Ресурсы DebugBar лежат в vendor и публикуются в SF_PUBLIC_PATH
+     */
+    protected function renderer(): JavascriptRenderer
+    {
+        $renderer = $this->debugBar->getJavascriptRenderer();
+        $renderer->setBaseUrl(Assets::publish($renderer->getBasePath()));
+        return $renderer;
     }
 
     public function getMessages(): MessagesCollector

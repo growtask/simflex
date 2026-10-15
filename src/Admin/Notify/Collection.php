@@ -35,7 +35,7 @@ class Collection
 
     private function collect(): void
     {
-        $extRoot = $_SERVER['DOCUMENT_ROOT'] . '/ext';
+        $extRoot = SF_ROOT_PATH . '/ext';
         $exts = array_slice(scandir($extRoot), 2);
         foreach ($exts as $ext) {
             $class = 'AdminNotify' . ucfirst($ext);

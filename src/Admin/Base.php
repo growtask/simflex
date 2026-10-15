@@ -1361,12 +1361,12 @@ class Base
                     ) . ")";
                 $rows = DB::assoc($q);
                 foreach ($rows as $row) {
-                    if ($row[$field->name] && is_file('../uf/' . $dir . '/' . $field->path . $row[$field->name])) {
-                        unlink('../uf/' . $dir . '/' . $field->path . $row[$field->name]);
+                    if ($row[$field->name] && is_file($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $row[$field->name])) {
+                        unlink($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $row[$field->name]);
                         if (isset($field->sizes)) {
                             foreach ($field->sizes as $size) {
-                                if (is_file('../uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name])) {
-                                    unlink('../uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name]);
+                                if (is_file($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name])) {
+                                    unlink($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name]);
                                 }
                             }
                         }

@@ -21,8 +21,10 @@ Page::coreJs('/theme/js/vtable.js');
     <link rel="stylesheet" href="<?= asset('../fonts/inter.css') ?>"/>
     <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
-    <link rel="stylesheet" href="/vendor/growtask/simflex-file-manager/src/assets/css/styles.css"/>
+    <?php $fmAssets = \Simflex\Core\Assets::publish(SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/assets'); ?>
+    <link rel="stylesheet" href="<?= $fmAssets ?>/css/styles.css"/>
     <script src="https://cdn.sn9.ru/js/jquery/3.7.1/jquery.min.js"></script>
+    <script>window.sfAdminUrl = '<?= \Simflex\Admin\Core::webVendorPath() ?>';</script>
 
     <noscript>
         <style>
@@ -122,11 +124,11 @@ include 'modals/point.tpl'; ?>
 <script src="<?= asset('js/app.min.js'); ?>"></script>
 <script src="<?= asset('js/extra.js'); ?>"></script>
 
-<script src="/vendor/growtask/simflex-file-manager/src/assets/js/app.js"></script>
+<script src="<?= $fmAssets ?>/js/app.js"></script>
 <script>
-    fileManager.assetsDir = '/vendor/growtask/simflex-file-manager/src/assets';
+    fileManager.assetsDir = '<?= $fmAssets ?>';
     fileManager.rootDir = '/uf';
-    fileManager.apiBase = '/fm.php';
+    fileManager.apiBase = '/admin/fm';
 </script>
 
 <?php

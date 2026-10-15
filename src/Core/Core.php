@@ -253,12 +253,12 @@ class Core
             Page::content();
         } else {
             $config = Container::getConfig();
-            if (isset($_REQUEST['print']) && is_file('theme/' . $config->theme . '/print.tpl')) {
-                include 'theme/' . $config->theme . '/print.tpl';
+            if (isset($_REQUEST['print']) && is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/print.tpl')) {
+                include SF_ROOT_PATH . '/theme/' . $config->theme . '/print.tpl';
                 return;
             }
-            if (is_file('theme/' . $config->theme . '/index.tpl')) {
-                include 'theme/' . $config->theme . '/index.tpl';
+            if (is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/index.tpl')) {
+                include SF_ROOT_PATH . '/theme/' . $config->theme . '/index.tpl';
             }
         }
     }
@@ -306,9 +306,9 @@ class Core
         $config = Container::getConfig();
         header("HTTP/1.0 404 Not Found");
         Page::seo('Error 404');
-        if (is_file('theme/' . $config->theme . '/404.tpl')) {
+        if (is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl')) {
             self::$content_only = true;
-            include 'theme/' . $config->theme . '/404.tpl';
+            include SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl';
         } else {
             echo self::siteParam('error404');
         }
@@ -330,11 +330,12 @@ class Core
     }
 
     /**
-     * @return string like /vendor/growtask/simflex/src
+     * Url опубликованной статики ядра (см. Assets::publish)
+     * @return string like /cache/assets/1a2b3c4d5e6f7a8b
      */
     public static function webVendorPath(): string
     {
-        return '/vendor/growtask/simflex/src';
+        return Assets::publish(SF_CORE_ROOT_PATH);
     }
 
     public static function vendorPath(): string|false

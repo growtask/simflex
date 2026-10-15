@@ -22,12 +22,12 @@ spl_autoload_register(function ($className): void {
                 $matches = [];
                 preg_match_all("@[A-Z][a-z]+@", $classNameRaw, $matches);
                 $extname = $matches[0][2];
-                $path = "{$_SERVER['DOCUMENT_ROOT']}/ext/$extname/admin/widget/";
+                $path = SF_ROOT_PATH . "/ext/$extname/admin/widget/";
                 $fname = implode('', array_slice($matches[0], 3));
                 break;
             case 'not' :
                 $fname = substr($className, 11);
-                $path = "{$_SERVER['DOCUMENT_ROOT']}/ext/$fname/admin/notify.class.php";
+                $path = SF_ROOT_PATH . "/ext/$fname/admin/notify.class.php";
                 if (is_file($path)) {
                     include_once $path;
                     return;

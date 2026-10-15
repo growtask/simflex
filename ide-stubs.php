@@ -16,7 +16,13 @@ exit('IDE stubs file, do not include');
 define('SF_ROOT_PATH', dirname(__DIR__, 3));
 
 /**
+ * Корень веб-сервера: SF_ROOT_PATH . '/public'. Задаётся в constants.php шаблона.
+ * Там лежат только index.php и статика; статика ядра и пакетов публикуется туда через Simflex\Core\Assets.
+ */
+define('SF_PUBLIC_PATH', SF_ROOT_PATH . '/public');
+
+/**
  * Текущая точка входа (SF_LOCATION_SITE / SF_LOCATION_ADMIN / SF_LOCATION_CLI / SF_LOCATION_API).
- * Задаётся в точках входа шаблона: index.php, Admin/index.php, console.php, cron.php, fm.php.
+ * Задаётся в точках входа шаблона: public/index.php, console.php, cron.php.
  */
 define('SF_LOCATION', SF_LOCATION_SITE);

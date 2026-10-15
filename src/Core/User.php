@@ -135,7 +135,7 @@ class User
         }
 
         // Отправляем письмо об успешной регистрации
-        $mailTpl = $_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail/user_create.tpl';
+        $mailTpl = SF_ROOT_PATH . '/theme/default/mail/user_create.tpl';
         if ($email && is_file($mailTpl)) {
             ob_start();
             include $mailTpl;

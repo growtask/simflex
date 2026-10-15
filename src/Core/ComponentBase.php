@@ -10,15 +10,11 @@ abstract class ComponentBase extends ExtensionBase
 {
 
     /**
-     * Путь до компонента в строке браузера
-     * @var string
+     * Url опубликованной статики компонента (см. Assets::publish)
      */
-    protected string $rootHref;
-
-    public function __construct()
+    protected function rootHref(): string
     {
-        parent::__construct();
-        $this->rootHref = Path::dirToHref($this->rootDir);
+        return Path::dirToHref($this->rootDir);
     }
 
     protected abstract function content();

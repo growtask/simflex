@@ -33,7 +33,7 @@ class ConsoleBase
             $tmp[] = '--' . $key . '="' . $value . '"';
         }
         $paramsStr = implode(' ', $tmp);
-        $command = "php {$_SERVER['DOCUMENT_ROOT']}/console.php $job $paramsStr > /dev/null 2>&1 &";
+        $command = "php " . SF_ROOT_PATH . "/console.php $job $paramsStr > /dev/null 2>&1 &";
         if ($applyTimeout) {
             $command = "timeout -s 9 {$timeout}s $command";
         }

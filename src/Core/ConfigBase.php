@@ -83,7 +83,7 @@ abstract class ConfigBase
     /**
      * @var string Log path
      */
-    public string $logPath = SF_ROOT_PATH . '/uf/log';
+    public string $logPath = SF_ROOT_PATH . '/log';
 
     /**
      * @var array{routes: string, events: string, services: string} Data providers for autoloading
