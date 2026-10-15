@@ -324,23 +324,23 @@ class phpExifReader
      * @access    private
      *
      */
-    public array $ImageInfo = array();
+    public array $ImageInfo = [];
 
     public int $MotorolaOrder = 0;
     public int $ExifImageWidth = 0; //
     public float $FocalplaneXRes = 0; //
     public float $FocalplaneUnits = 0; //
-    public array $sections = array();
+    public array $sections = [];
     public int $currSection = 0;
     /** Stores total number fo Sections */
 
-    public array $BytesPerFormat = array(0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8);
+    public array $BytesPerFormat = [0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8];
 
-    public array $ReadMode = array(
+    public array $ReadMode = [
         "READ_EXIF" => 1,
         "READ_IMAGE" => 2,
         "READ_ALL" => 3
-    );
+    ];
 
     public int $ImageReadMode = 3;
     /** related to $RealMode arrays values */
@@ -470,7 +470,7 @@ class phpExifReader
         $tmpTestLevel = 0;
         /** Examines each byte one-by-one */
         while (!feof($fp)) {
-            $data = array();
+            $data = [];
             for ($a = 0; $a < 7; $a++) {
                 $marker = fgetc($fp);
                 if (ord($marker) != 0xff) break;
@@ -505,7 +505,7 @@ class phpExifReader
             }
             $this->sections[$this->currSection]["size"] = $itemlen;
 
-            $tmpDataArr = array();
+            $tmpDataArr = [];
             /** Temporary Array */
 
             $tmpStr = fread($fp, $itemlen - 2);
@@ -726,7 +726,7 @@ class phpExifReader
     {
 
         $NumDirEntries = 0;
-        $ValuePtr = array();
+        $ValuePtr = [];
 
         $NumDirEntries = $this->Get16u($DirStart[0], $DirStart[1]);
 
@@ -949,7 +949,7 @@ class phpExifReader
 
                 case TAG_WHITEBALANCE:
                     $tmp = (int)$this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("1" => "Sunny", "2" => "fluorescent", "3" => "incandescent");
+                    $tmpArr = ["1" => "Sunny", "2" => "fluorescent", "3" => "incandescent"];
                     $this->ImageInfo['h']["whiteBalance"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Cloudy");
                     break;
@@ -957,14 +957,14 @@ class phpExifReader
                 case TAG_METERING_MODE:
                     $tmp = (int)$this->ConvertAnyFormat($ValuePtr, $Format);
 
-                    $tmpArr = array("2" => "center weight", "3" => "spot", "5" => "matrix");
+                    $tmpArr = ["2" => "center weight", "3" => "spot", "5" => "matrix"];
                     $this->ImageInfo['h']["meteringMode"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
 
                 case TAG_EXPOSURE_PROGRAM:
                     $tmp = (int)$this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("2" => "program (auto)", "3" => "aperture priority (semi-auto)", "4" => "shutter priority (semi-auto)");
+                    $tmpArr = ["2" => "program (auto)", "3" => "aperture priority (semi-auto)", "4" => "shutter priority (semi-auto)"];
                     $this->ImageInfo['h']["exposure"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
 
@@ -978,7 +978,7 @@ class phpExifReader
 
                 case TAG_COMPRESSION_LEVEL:
                     $tmp = (int)$this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("1" => "Basic", "2" => "Normal", "4" => "Fine");
+                    $tmpArr = ["1" => "Basic", "2" => "Normal", "4" => "Fine"];
                     $this->ImageInfo['h']["jpegQuality"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
@@ -1007,7 +1007,7 @@ class phpExifReader
                     break;
                 case TAG_RESOLUTION_UNIT:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("2" => "Inches", "3" => "Centimeters");
+                    $tmpArr = ["2" => "Inches", "3" => "Centimeters"];
 
                     $this->ImageInfo['h']["resolutionUnit"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
@@ -1030,7 +1030,7 @@ class phpExifReader
                 case TAG_COMPONENT_CONFIG: // need more tests for this
                     $tmp = (int)$this->ConvertAnyFormat($ValuePtr, $Format);
 
-                    $tmpArr = array("0" => "Does Not Exists", "1" => "Y", "2" => "Cb", "3" => "Cr", "4" => "R", "5" => "G", "6" => "B");
+                    $tmpArr = ["0" => "Does Not Exists", "1" => "Y", "2" => "Cb", "3" => "Cr", "4" => "R", "5" => "G", "6" => "B"];
 
                     if (strlen($tmp) < 4) {
                         $this->ImageInfo['h']["componentConfig"] = $tmpArr["0"];
@@ -1208,10 +1208,10 @@ class phpExifReader
 
                 case TAG_SENSING_METHOD:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("1" => "Not Defined", "2" => "One-chip color area sensor", "3" => "Two-chip color area sensor",
+                    $tmpArr = ["1" => "Not Defined", "2" => "One-chip color area sensor", "3" => "Two-chip color area sensor",
                         "4" => "Three -chip color area sensor", "5" => "Color sequential area sensor",
                         "6" => "Trilinear sensor", "7" => "Color sequential linear sensor"
-                    );
+                    ];
 
                     $this->ImageInfo['h']["sensing"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
@@ -1231,7 +1231,7 @@ class phpExifReader
                     break;
                 case TAG_EXPOSURE_MODE:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array('Auto Exposure', 'Manual Exposure', 'Auto Bracket');
+                    $tmpArr = ['Auto Exposure', 'Manual Exposure', 'Auto Bracket'];
                     $this->ImageInfo['h']["exposureMode"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
@@ -1247,37 +1247,37 @@ class phpExifReader
                     break;
                 case TAG_SCREEN_CAP_TYPE:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("Standard", "Landscape", "Portrait", "Night Scene");
+                    $tmpArr = ["Standard", "Landscape", "Portrait", "Night Scene"];
                     $this->ImageInfo['h']["screenCaptureType"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
                 case TAG_GAIN_CONTROL:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("None", "Low Gain Up", "High Gain Up", "Low Gain Down", "High Gain Down");
+                    $tmpArr = ["None", "Low Gain Up", "High Gain Up", "Low Gain Down", "High Gain Down"];
                     $this->ImageInfo['h']["gainControl"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
                 case TAG_CONTRAST:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("Normal", "Soft", "Hard");
+                    $tmpArr = ["Normal", "Soft", "Hard"];
                     $this->ImageInfo['h']["contrast"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
                 case TAG_SATURATION:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("Normal", "Low Saturation", "High Saturation");
+                    $tmpArr = ["Normal", "Low Saturation", "High Saturation"];
                     $this->ImageInfo['h']["saturation"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
                 case TAG_SHARPNESS:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("Normal", "Soft", "Hard");
+                    $tmpArr = ["Normal", "Soft", "Hard"];
                     $this->ImageInfo['h']["sharpness"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
                 case TAG_DIST_RANGE:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("Unknown", "Macro", "Close View", "Distant View");
+                    $tmpArr = ["Unknown", "Macro", "Close View", "Distant View"];
                     $this->ImageInfo['h']["distanceRange"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
@@ -1292,7 +1292,7 @@ class phpExifReader
                     break;
                 case TAG_COMPRESS_SCHEME:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("1" => "Uncompressed", "6" => "JPEG compression (thumbnails only)");
+                    $tmpArr = ["1" => "Uncompressed", "6" => "JPEG compression (thumbnails only)"];
                     $this->ImageInfo['h']["compressScheme"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
@@ -1311,7 +1311,7 @@ class phpExifReader
                 case TAG_IMAGE_PHOTO_INT:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
                     $this->ImageInfo['h']["jpegPhotometricInt"] = $tmp;
-                    $tmpArr = array("2" => "RGB", "6" => "YCbCr");
+                    $tmpArr = ["2" => "RGB", "6" => "YCbCr"];
                     $this->ImageInfo['h']["jpegPhotometricInt"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
 
@@ -1334,7 +1334,7 @@ class phpExifReader
                     break;
                 case TAG_IMAGE_P_CONFIG:
                     $tmp = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $tmpArr = array("1" => "Chunky Format", "2" => "Planar Format");
+                    $tmpArr = ["1" => "Chunky Format", "2" => "Planar Format"];
                     $this->ImageInfo['h']["jpegPlanarConfig"] =
                         (isset($tmpArr["$tmp"]) ? $tmpArr["$tmp"] : "Reserved");
                     break;
@@ -1577,7 +1577,7 @@ class phpExifReader
                 } else {
                     $Value = (double)($Num / $Den);
                 }
-                return array($Value, array($Num, $Den));
+                return [$Value, [$Num, $Den]];
                 break;
             }
 
@@ -1682,7 +1682,7 @@ class phpExifReader
 
             // Note: The descriptions here are the same as the name of the command line
             // ption to pass to jpegtran to right the image
-            $OrientTab = array(
+            $OrientTab = [
                 "Undefined",
                 "Normal",           // 1
                 "flip horizontal",  // left right reversed mirror
@@ -1692,7 +1692,7 @@ class phpExifReader
                 "rotate 90",        // rotate 90 cw to right it.
                 "transverse",       // flipped about top-right <--> bottom-left axis
                 "rotate 270",       // rotate 270 to right it.
-            );
+            ];
 
             $retArr["orientation"] = $OrientTab[$this->ImageInfo[TAG_ORIENTATION]];
         }

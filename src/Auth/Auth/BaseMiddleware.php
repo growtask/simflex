@@ -16,11 +16,8 @@ abstract class BaseMiddleware implements Handler
      */
     protected string $userModelClass = User::class;
 
-    /**
-     * @param string $userModelClass
-     */
     #[Deprecated('Use Factory override instead')]
-    public function setUserModelClass($userModelClass): void
+    public function setUserModelClass(string $userModelClass): void
     {
         $this->userModelClass = $userModelClass;
     }

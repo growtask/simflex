@@ -36,19 +36,18 @@ class File
         $this->name = $this->genName();
     }
 
-    protected function genName()
+    protected function genName(): string
     {
         $a = explode(' ', microtime());
         return substr($a[1], 2, 7) . substr($a[0], 2, 4);
     }
 
-    public function loadPost($fileName)
+    public function loadPost(string $fileName)
     {
         if (is_uploaded_file($_FILES[$fileName]['tmp_name'])) {
-            $mas = array();
+            $mas = [];
             $ext = explode('.', $_FILES[$fileName]['name']);
             $ext = $ext[count($ext) - 1];
-                //$this->name = str_replace('.'.$mas[1], '', $_FILES[$fileName]['name']);
                 if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $ext)) {
                     $this->type = $ext;
                     return true;
@@ -57,12 +56,12 @@ class File
         return false;
     }
 
-    public function save()
+    public function save(): void
     {
 
     }
 
-    public function getName()
+    public function getName(): string
     {
 
         $ret = '';

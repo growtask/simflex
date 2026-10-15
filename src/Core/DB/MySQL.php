@@ -48,12 +48,7 @@ class MySQL implements Adapter
         $query->execute();
     }
 
-    /**
-     * @param string $q
-     * @param array $params
-     * @return false|PDOStatement
-     */
-    public function query(string $q, array $params = [])
+    public function query(string $q, array $params = []): PDOStatement|false
     {
         $_ENV['lastq'] = $q;
 
@@ -63,7 +58,7 @@ class MySQL implements Adapter
         return $query->execute($params) ? $query : false;
     }
 
-    public function fetch($result)
+    public function fetch(mixed $result): array|false|null
     {
         if (!$result) {
             return null;
@@ -86,11 +81,8 @@ class MySQL implements Adapter
 
     /**
      * @param bool|PDOStatement $result
-     * @param int|string $field
-     *
-     * @return bool|array
      */
-    public function result($result, $field = '')
+    public function result(mixed $result, int|string $field = ''): mixed
     {
         if (!$result) {
             return false;

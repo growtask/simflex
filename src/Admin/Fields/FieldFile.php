@@ -25,7 +25,7 @@ class FieldFile extends Field
         }
     }
 
-    public function show($row)
+    public function show($row): void
     {
         if ($row[$this->name]) {
             echo '<a href="/uf/files/' . $this->params['path'] . '/' . $row[$this->name] . '">' . $row[$this->name] . '</a>';
@@ -34,19 +34,19 @@ class FieldFile extends Field
         parent::show($row);
     }
 
-    public function getValue($value)
+    public function getValue($value): string
     {
         return $value === '' ? '&nbsp;' : '<a href="/' . $this->path . $value . '" target="_blank">' . $value . '</a>';
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
         if ($onForm) {
             UI::fileInput();
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $filePath = '/uf/files/' . $value;
         $fileSize = filesize($_SERVER['DOCUMENT_ROOT'] . $filePath);
@@ -132,25 +132,16 @@ class FieldFile extends Field
             ';
             $s .= '<input type="hidden" name="' . $this->name . '_old" value="' . $value . '" />';
         }
-//        if (is_file('../uf/files/' . $this->path . $value)) {
-//            $s .= '<p class="form-control-static" style="vertical-align: middle; padding-left: 20px">';
-//            $s .= '<span class="s11">' . round(filesize('../uf/files/' . $this->path . $value) / 1024) . ' кБ</span>';
-//            $s .= ' &nbsp; <a href="/uf/files/' . $this->path . $value . '" target="_blank">смотреть</a>';
-//            if (!$this->required && !$this->readonly) {
-//                $s .= ' &nbsp; <a href="javascript:;" onclick="deleteField(this)">удалить</a>';
-//            }
-//            $s .= '</p>';
-//        }
         return $s;
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $path = explode('/', $_POST[$this->name]);
         return end($path);
     }
 
-    public function delete($name)
+    public function delete($name): bool
     {
         if ($this->required || $this->readonly) {
             return false;
@@ -160,9 +151,9 @@ class FieldFile extends Field
         return true;
     }
 
-    public function check()
+    public function check(): array
     {
-        $errors = array();
+        $errors = [];
         $aCore = class_exists('AdminCore') ? 'AdminCore' : null;
         if ($aCore && $aCore::ajax()) {
             if ($this->required && empty($_REQUEST[$this->name]) && empty($_REQUEST[$this->name . '_old'])) {

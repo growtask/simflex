@@ -11,15 +11,16 @@ use Simflex\Extensions\Content\Model\ModelContent;
 
 class AdminContent extends Base
 {
-    public function content()
+    public function content(): void
     {
         if (!Container::getRequest()->isAjax() || !isset($_FILES['file'])) {
-            return parent::content();
+            parent::content();
+            return;
         }
         $this->ajaxUpload();
     }
 
-    public function ajaxUpload()
+    public function ajaxUpload(): void
     {
         if (!Container::getRequest()->isAjax()) {
             die('');
@@ -62,7 +63,7 @@ class AdminContent extends Base
         exit('/uf/images/content/source/' . $name);
     }
 
-    protected function initTable()
+    protected function initTable(): void
     {
         parent::initTable();
         if ($_GET['action'] ?? '' == 'form') {
@@ -79,7 +80,7 @@ class AdminContent extends Base
         };
     }
 
-    protected function tableParamsLoad()
+    protected function tableParamsLoad(): array
     {
         $contentId = (int)($_REQUEST[$this->pk->name] ?? 0);
         $params = parent::tableParamsLoad();

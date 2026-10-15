@@ -12,7 +12,7 @@ class SessionMiddleware extends BaseMiddleware
     /**
      * @inheritDoc
      */
-    public function handle($payload, \Closure $next)
+    public function handle(mixed $payload, \Closure $next): mixed
     {
         if ($payload) {
             return $next($payload);

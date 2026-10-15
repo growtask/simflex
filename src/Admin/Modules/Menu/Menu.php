@@ -10,7 +10,7 @@ class Menu extends ModuleBase
 
     protected string $name = 'menu';
 
-    public function content()
+    public function content(): void
     {
         $menu = Container::getCore()::menu();
         include dirname(__FILE__) . '/tpl/menu.tpl';

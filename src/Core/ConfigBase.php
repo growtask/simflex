@@ -102,10 +102,8 @@ abstract class ConfigBase
 
     /**
      * Getter for user-defined data
-     * @param string $name
-     * @return mixed
      */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         return $this->extra[$name] ?? null;
     }
@@ -132,7 +130,6 @@ abstract class ConfigBase
 
     /**
      * Load config data
-     * @return void
      */
     public abstract function load(): void;
 }

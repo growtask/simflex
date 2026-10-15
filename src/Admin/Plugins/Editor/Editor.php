@@ -15,9 +15,9 @@ use Simflex\Core\Container;
 class Editor
 {
 
-    public static array $inited = array();
+    public static array $inited = [];
 
-    public static function tinymce($type, $css_class = '')
+    public static function tinymce(string $type, string $css_class = ''): void
     {
         $tinyMcePath = Core::webVendorPath() . '/Plugins/Editor/tinymce/tinymce.min.js';
         Container::getPage()::js($tinyMcePath . '" referrerpolicy="origin', 10);

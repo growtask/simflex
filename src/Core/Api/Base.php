@@ -19,15 +19,11 @@ abstract class Base
      */
     protected ?User $user = null;
 
-    /**
-     * @return string
-     */
     public abstract function execute(): string;
 
     /**
      * Gets name of the method to execute
      *
-     * @return string
      * @throws \Simflex\Core\Errors\Error
      */
     protected function getMethodName(): string
@@ -45,7 +41,6 @@ abstract class Base
      * Assert that user is currently authenticated
      * 
      * @throws Error
-     * @return User
      */
     protected function assertAuthenticated(): User
     {

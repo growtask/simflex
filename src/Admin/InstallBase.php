@@ -20,12 +20,12 @@ abstract class InstallBase {
         $this->installDir = $istallDir;
     }
 
-    public function install() {
+    public function install(): bool {
         $success = $this->copyFiles() && $this->initDB();
         return $success;
     }
 
-    protected function copyFiles() {
+    protected function copyFiles(): mixed {
         $type = $this->type == self::TYPE_EXT ? 'ext' : 'plug';
         $dest = "{$_SERVER['DOCUMENT_ROOT']}/$type/$this->destDir";
         if (is_dir($dest)) {
@@ -35,11 +35,11 @@ abstract class InstallBase {
         return $success;
     }
 
-    protected function initDB() {
+    protected function initDB(): bool {
         return true;
     }
 
-    protected static function queryFromFile($file, $replaces = array(), $debug = false) {
+    protected static function queryFromFile(string $file, array $replaces = [], bool $debug = false): int|bool {
         $success = true;
         $qr = file_get_contents($file);
         if (count($replaces)) {

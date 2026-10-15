@@ -21,7 +21,7 @@ class FieldText extends Field
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
         if ($onForm) {
             if ($this->readonly) {
@@ -36,7 +36,7 @@ class FieldText extends Field
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
         return '<div class="form-control form-control--sm">
                                     <textarea class="form-control__textarea '.($this->readonly ? ' sf-editor-readonly' : ''). ($this->editor ? ' sf-editor-' . $this->editor : '').'" placeholder="' . $this->placeholder . '"

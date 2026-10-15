@@ -8,17 +8,11 @@ class Route
     {
     }
 
-    /**
-     * @return string
-     */
     public function getComponentClassName(): string
     {
         return $this->componentClassName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getComponentAction(): ?string
     {
         return $this->componentAction;

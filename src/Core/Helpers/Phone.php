@@ -2,17 +2,14 @@
 
 namespace Simflex\Core\Helpers;
 
-use Simflex\Core\Helpers\bigint;
-
 class Phone
 {
 
     /**
      * Извлекает номер телефона из строки, выдает в формате 89001002030
      * @param string $phone
-     * @return double
      */
-    public static function extract($phone)
+    public static function extract($phone): string|int
     {
         $phone = preg_replace("@[^0-9]+@", "", $phone);
         $len = strlen($phone);
@@ -30,9 +27,8 @@ class Phone
     /**
      * Извлекает номер телефона из строки, выдает в формате 79001002030
      * @param string $phone
-     * @return double
      */
-    public static function extract7($phone)
+    public static function extract7($phone): string|int
     {
         $phone = preg_replace("@[^0-9]+@", "", $phone);
         $len = strlen($phone);
@@ -46,10 +42,9 @@ class Phone
 
     /**
      * Форматирует телефон в человекопонятный вид
-     * @param bigint $phone
-     * @return string
+     * @param string|int $phone
      */
-    public static function format($phone)
+    public static function format($phone): string
     {
         $phone = self::extract($phone);
         if (!$phone) {
@@ -67,13 +62,12 @@ class Phone
      * Извлекает из текста телефонные номера
      * @param string $text
      * @param bool $format (optional = false) - формитировать в человеческий вид
-     * @return array
      */
-    public static function parse($text, $format = false)
+    public static function parse($text, bool $format = false): array
     {
-        $phones = array();
+        $phones = [];
         $contacts = $text;
-        $matches = array();
+        $matches = [];
         preg_match_all("@[78][\-\s\(\)]{0,3}(\d{2,3}[\-\s\(\)]{0,3}){4}@", $contacts, $matches);
         if (count($matches[0])) {
             foreach ($matches[0] as $match) {
@@ -87,7 +81,7 @@ class Phone
                 }
             }
         }
-        $matches = array();
+        $matches = [];
         preg_match_all("@2(\d{2,3}[\-\s\(\)]{0,3}){3}@", $contacts, $matches);
         if (count($matches[0])) {
             foreach ($matches[0] as $match) {

@@ -51,11 +51,7 @@ class Resolver
         throw new \Exception("Can't resolve route {$request->getPath()}");
     }
 
-    /**
-     * @param array $menuByLink
-     * @return Resolver
-     */
-    public function setMenuByLink(array $menuByLink): Resolver
+    public function setMenuByLink(array $menuByLink): static
     {
         $this->menuByLink = $menuByLink;
         return $this;
@@ -87,10 +83,6 @@ class Resolver
         return ['class' => $class, 'path' => $path];
     }
 
-    /**
-     * @param string|array|Route $route
-     * @return Route
-     */
     protected static function makeRoute(array|Route|string $route, string $baseUri): Route
     {
         if (is_string($route)) {

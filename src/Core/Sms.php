@@ -11,21 +11,16 @@ use Simflex\Core\Sms\DriverBase;
 class Sms
 {
 
-    /** @var DriverBase */
     protected static ?DriverBase $driver = null;
 
     /**
-     *
-     * @param string $phone
-     * @param string $text
      * @param string $from [optional = ''] Если '', берем значение из настроек сайта: sms_sender
      * @param string $extra [optional = ''] - например номер заказа, чтобы потом можно было отследить
      * @param int $lastSendTimeout [optional = 0] Лимит времени в секундах после последней отправки смс на этот номер
      * @return boolean|string отправлено или нет, если сервис вернул ошибку, функция вернет эту ошибку в виде строки
      */
-    public static function send($phone, $text, $from = '', $extra = '', $lastSendTimeout = 0)
+    public static function send($phone, string $text, string $from = '', $extra = '', int $lastSendTimeout = 0): string|bool
     {
-
         if (!$from) {
             $from = Core::siteParam('sms_sender');
         }
@@ -35,7 +30,6 @@ class Sms
             return 'Not correct phone';
         }
 
-        $lastSendTimeout = (int)$lastSendTimeout;
         if ($lastSendTimeout) {
             $q = "
                 SELECT * FROM sms_log WHERE phone = $phone 
@@ -54,7 +48,7 @@ class Sms
         ";
         $success = DB::query($q);
         if (!$success) {
-            return 'Server error'; //false;
+            return 'Server error';
         }
         $smsId = DB::insertId();
 
@@ -63,11 +57,9 @@ class Sms
     }
 
     /**
-     *
-     * @param int $smsId
      * @return boolean|string отправлено или нет, если сервис вернул ошибку, функция вернет эту ошибку в виде строки
      */
-    private static function sendById($smsId, $phone = false, $text = false, $from = false)
+    private static function sendById($smsId, $phone = false, $text = false, $from = false): string|bool
     {
         $smsId = (int)$smsId;
         if (!$smsId) {
@@ -104,11 +96,7 @@ class Sms
         return !empty($sendResult['error_text']) ? $sendResult['error_text'] : true;
     }
 
-    /**
-     *
-     * @return DriverBase
-     */
-    public static function getDriver()
+    public static function getDriver(): ?DriverBase
     {
         if (empty(static::$driver)) {
             $q = "SELECT * FROM sms_driver WHERE active = 1 LIMIT 1";
@@ -120,18 +108,16 @@ class Sms
 
     /**
      * @param array $driverInfo data from sms_driver
-     * @return void
      */
-    protected static function setDriverByInfo($driverInfo)
+    protected static function setDriverByInfo($driverInfo): void
     {
         static::$driver = static::createDriverByInfo($driverInfo);
     }
 
     /**
      * @param array $driverInfo data from sms_driver
-     * @return DriverBase
      */
-    protected static function createDriverByInfo($driverInfo)
+    protected static function createDriverByInfo($driverInfo): ?DriverBase
     {
         if (!isset($driverInfo['driver_id'])) {
             return null;
@@ -141,10 +127,7 @@ class Sms
         return new $driverClass($driverInfo);
     }
 
-    /**
-     * @param string $driverAlias
-     */
-    public static function setDriver($driverAlias)
+    public static function setDriver(string $driverAlias): void
     {
         $driverAlias = DB::escape($driverAlias);
         $q = "SELECT * FROM sms_driver WHERE alias = '$driverAlias' LIMIT 1";
@@ -152,17 +135,16 @@ class Sms
         static::setDriverByInfo($driverInfo);
     }
 
-    public static function resend($smsId)
+    public static function resend($smsId): string|bool
     {
-//        return rand(0, 1) == 1 ? true : 'Нет денег';
         $result = self::sendById($smsId);
         return $result;
     }
 
-    public static function renewStates()
+    public static function renewStates(): void
     {
         $q = "SELECT * FROM sms_log WHERE state = 'send' AND driver_id IS NOT NULL AND driver_sms_id IS NOT NULL LIMIT 100";
-        $rows = [];//DB::assoc($q);
+        $rows = [];
         $q = "SELECT * FROM sms_driver WHERE active = 1";
         $drivers = DB::assoc($q, 'driver_id');
         foreach ($rows as $row) {
@@ -187,7 +169,7 @@ class Sms
         }
     }
 
-    private static function renewState($sms, $driverInfo)
+    private static function renewState($sms, $driverInfo): void
     {
         $driverInstance = self::getDriver($driverInfo);
         try {
@@ -207,10 +189,9 @@ class Sms
     }
 
     /**
-     *
      * @return bool true - деньги кончились, false - все ок
      */
-    public static function checkBalance()
+    public static function checkBalance(): bool
     {
         $q = "SELECT error_code FROM sms_log ORDER BY sms_id DESC LIMIT 1";
         $lastErrorCode = (int)DB::result($q, 0);

@@ -2,12 +2,8 @@
 
 $req = \Simflex\Core\Container::getRequest(); ?>
 <div class="table__pagination">
-    <div class="table__pagination-text">Показаны записи: с <?= $this->p * $this->p_on + 1 ?> по <?= min(
-            array($this->count, $this->p * $this->p_on + $this->p_on)
-        ) ?> из <?= $this->count ?></div>
-    <div class="table__pagination-text-mobile">с <?= $this->p * $this->p_on + 1 ?> по <?= min(
-            array($this->count, $this->p * $this->p_on + $this->p_on)
-        ) ?> из <?= $this->count ?></div>
+    <div class="table__pagination-text">Показаны записи: с <?= $this->p * $this->p_on + 1 ?> по <?= min($this->count, $this->p * $this->p_on + $this->p_on) ?> из <?= $this->count ?></div>
+    <div class="table__pagination-text-mobile">с <?= $this->p * $this->p_on + 1 ?> по <?= min($this->count, $this->p * $this->p_on + $this->p_on) ?> из <?= $this->count ?></div>
     <div class="table__pagination-btns">
         <?php
         if ($this->p != 0): ?>

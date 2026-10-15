@@ -48,7 +48,7 @@ class ModuleForm extends ModuleBase
         $this->maybeSubmit();
     }
 
-    protected function maybeSubmit()
+    protected function maybeSubmit(): void
     {
         if ($this->submitted()) {
             if ($this->validate()) {
@@ -97,7 +97,7 @@ class ModuleForm extends ModuleBase
 
     public function validate(): bool
     {
-        $errors = array();
+        $errors = [];
         foreach ($this->fields as $field) {
             $errors = array_merge($errors, $field->check());
         }
@@ -105,7 +105,7 @@ class ModuleForm extends ModuleBase
         return !count($this->errors);
     }
 
-    protected function fillFields(array $fields)
+    protected function fillFields(array $fields): void
     {
         $this->fields = [];
         foreach ($fields as $fieldRaw) {
@@ -121,15 +121,12 @@ class ModuleForm extends ModuleBase
         }
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    protected function content()
+    protected function content(): void
     {
         include static::findTemplateFile($this->formTpl);
     }

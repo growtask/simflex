@@ -3,7 +3,6 @@
 namespace Simflex\Core;
 
 
-use Simflex\Core\type;
 use Simflex\Core\TimeDiff;
 
 class Time
@@ -11,39 +10,37 @@ class Time
 
     /**
      * Время объекта в секундах
-     * @var int
      */
     private int $time = 0;
-    public static array $wdays = array('ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ');
-    public static array $wdaysFull = array('Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота');
-    public static array $wdaysFullLC = array('воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота');
-    public static array $months = array('', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек');
-    public static array $monthsDat = array('', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
-    public static array $monthsFull = array('', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь');
-    public static array $monthsFullUCF = array('', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
+    public static array $wdays = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+    public static array $wdaysFull = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+    public static array $wdaysFullLC = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+    public static array $months = ['', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    public static array $monthsDat = ['', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    public static array $monthsFull = ['', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+    public static array $monthsFullUCF = ['', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
     /**
      * Индекс января = 1
-     * @var type
      */
-    public static array $daysInMonth = array(1 => 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    public static array $daysInMonth = [1 => 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-    public static function getMonths()
+    public static function getMonths(): array
     {
-        return array(
-            1 => array('name' => 'Январь', 'days' => 31),
-            2 => array('name' => 'Февраль', 'days' => 28),
-            3 => array('name' => 'Март', 'days' => 31),
-            4 => array('name' => 'Апрель', 'days' => 30),
-            5 => array('name' => 'Май', 'days' => 31),
-            6 => array('name' => 'Июнь', 'days' => 30),
-            7 => array('name' => 'Июль', 'days' => 31),
-            8 => array('name' => 'Август', 'days' => 31),
-            9 => array('name' => 'Сентябрь', 'days' => 30),
-            10 => array('name' => 'Октябрь', 'days' => 31),
-            11 => array('name' => 'Ноябрь', 'days' => 30),
-            12 => array('name' => 'Декабрь', 'days' => 31)
-        );
+        return [
+            1 => ['name' => 'Январь', 'days' => 31],
+            2 => ['name' => 'Февраль', 'days' => 28],
+            3 => ['name' => 'Март', 'days' => 31],
+            4 => ['name' => 'Апрель', 'days' => 30],
+            5 => ['name' => 'Май', 'days' => 31],
+            6 => ['name' => 'Июнь', 'days' => 30],
+            7 => ['name' => 'Июль', 'days' => 31],
+            8 => ['name' => 'Август', 'days' => 31],
+            9 => ['name' => 'Сентябрь', 'days' => 30],
+            10 => ['name' => 'Октябрь', 'days' => 31],
+            11 => ['name' => 'Ноябрь', 'days' => 30],
+            12 => ['name' => 'Декабрь', 'days' => 31]
+        ];
     }
 
     public function __construct($time = false)
@@ -57,9 +54,8 @@ class Time
 
     /**
      * Создает объект класса
-     * @return Time
      */
-    public static function create($time = false)
+    public static function create($time = false): static
     {
         return new static($time);
     }
@@ -67,9 +63,8 @@ class Time
     /**
      * Добавляет к дате интервал
      * @param string|int $interval - или строка типа "+1 year" или число секунд (3600)
-     * @return Time
      */
-    public function add($interval)
+    public function add(string|int $interval): static
     {
         if (strpos($interval, " ")) {
             $this->time = strtotime($interval, $this->time);
@@ -81,18 +76,16 @@ class Time
 
     /**
      * Вернуть в формате GMT
-     * @return string
      */
-    public function asGMT()
+    public function asGMT(): string
     {
         return self::convert($this->time, 'gmt');
     }
 
     /**
      * Вернуть в формате unixtime, в секундах
-     * @return int
      */
-    public function asUnix()
+    public function asUnix(): int
     {
         return $this->time;
     }
@@ -101,9 +94,8 @@ class Time
      * Вернуть в формате MySQL
      * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
-     * @return string
      */
-    public function asMySQL($showHourMin = 'auto', $showSec = false)
+    public function asMySQL(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
         return self::convert($this->time, 'Y-m-d H:i:s', $showHourMin, $showSec);
     }
@@ -112,9 +104,8 @@ class Time
      * Вернуть в читаемом формате: 31.12.1999 00:00:00
      * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
-     * @return string
      */
-    public function asNormal($showHourMin = 'auto', $showSec = false)
+    public function asNormal(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
         return self::convert($this->time, 'd.m.Y H:i:s', $showHourMin, $showSec);
     }
@@ -123,9 +114,8 @@ class Time
      * Вернуть в читаемом формате: 31 янв 1999 00:00:00
      * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
-     * @return string
      */
-    public function asUser($showHourMin = 'auto', $showSec = false)
+    public function asUser(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
         return self::convert($this->time, 'd K Y H:i:s', $showHourMin, $showSec);
     }
@@ -134,18 +124,16 @@ class Time
      * Вернуть в читаемом формате: 31 января 1999 00:00:00
      * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
-     * @return string
      */
-    public function asUserFull($showHourMin = 'auto', $showSec = false)
+    public function asUserFull(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
         return self::convert($this->time, 'd Q Y H:i:s', $showHourMin, $showSec);
     }
 
     /**
      * Вернуть год-месяц 1999-01
-     * @return string
      */
-    public function asYearMonth()
+    public function asYearMonth(): string
     {
         return self::convert($this->time, 'Y-m', false);
     }
@@ -157,14 +145,13 @@ class Time
      * <b>Q</b> = полный месяц по русски в дательном падеже, <b>E</b> = полный месяц по русски в именительном падеже, первая буква заглавная
      * <b>K</b> = 3 буквы месяца
      * Например "Y-m-d"
-     * @return mixed
      */
-    public function format($format)
+    public function format(string $format): string
     {
         return self::convert($this->time, $format, false);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->asMySQL();
     }
@@ -174,7 +161,7 @@ class Time
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
      * @return string: normal, mysql, excel, unix
      */
-    public static function what_format($value)
+    public static function what_format($value): string
     {
         if (strpos(' ' . $value, 'T')) {
             $from = 'gmt';
@@ -198,9 +185,8 @@ class Time
      * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
-     * @return type
      */
-    public static function user($value, $show_hour_min = 'auto', $show_sec = false)
+    public static function user($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
     {
         $ret = self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
         $month = self::convert($value, "m", false);
@@ -215,9 +201,8 @@ class Time
      * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
-     * @return type
      */
-    public static function userfull($value, $show_hour_min = 'auto', $show_sec = false)
+    public static function userfull($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
     {
         $ret = self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
         $month = self::convert($value, "m", false);
@@ -234,9 +219,8 @@ class Time
      * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
-     * @return type
      */
-    public static function mysql($value, $show_hour_min = 'auto', $show_sec = 'auto')
+    public static function mysql($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
     {
         return self::convert($value, "Y-m-d", $show_hour_min, $show_sec);
     }
@@ -247,9 +231,8 @@ class Time
      * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
-     * @return type
      */
-    public static function normal($value, $show_hour_min = 'auto', $show_sec = 'auto')
+    public static function normal($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
     {
         return self::convert($value, "d.m.Y", $show_hour_min, $show_sec);
     }
@@ -259,7 +242,7 @@ class Time
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
      * @return int
      */
-    public static function unix($value)
+    public static function unix($value): mixed
     {
         $format = self::what_format($value);
         switch ($format) {
@@ -329,11 +312,13 @@ class Time
      * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
      * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
-     * @return mixed
      */
-    public static function convert($value, $format, $show_hour_min = 'auto', $show_sec = 'auto')
-    {
-
+    public static function convert(
+        $value,
+        string $format,
+        bool|string $show_hour_min = 'auto',
+        bool|string $show_sec = 'auto'
+    ): string|false|null {
         if ($value == '-' || $value == '' || $value == ' - ')
             return $value;
 
@@ -364,7 +349,7 @@ class Time
             }
         }
 
-        $replace = array();
+        $replace = [];
         if (strpos($format, "X") !== false) {
             $format = str_replace("X", " @#m#@ ", $format);
             $replace[] = "X";
@@ -441,9 +426,8 @@ class Time
      * @param mixed $value2 - которое вычитаем
      * @param string $to - формат времени на выходе
      * @param boolean $show_sec - выводить секунды или нет
-     * @return type
      */
-    public static function sub_times($value1, $value2, $to = 'unix', $show_sec = true)
+    public static function sub_times($value1, $value2, string $to = 'unix', bool $show_sec = true): int|float|string|null
     {
         if ($value1 != '-' && $value2 != '-') {
 
@@ -461,10 +445,9 @@ class Time
      * вход: 129; выход 02:09
      * @param int $res_time
      * @param boolean $show_sec - выводить секунды или нет
-     * @return string
      * @deprecated use secondsToTime
      */
-    public static function sub_time($res_time, $show_sec = true)
+    public static function sub_time($res_time, bool $show_sec = true): string
     {
         return static::secondsToTime($res_time, $show_sec);
     }
@@ -473,9 +456,8 @@ class Time
      * вход: 129; выход 02:09
      * @param int $seconds
      * @param boolean $showSec - выводить секунды или нет
-     * @return string
      */
-    public static function secondsToTime($seconds, $showSec = true)
+    public static function secondsToTime($seconds, bool $showSec = true): string
     {
         $secondsCalc = abs(round($seconds));
         $hour = (int)floor($secondsCalc / 3600);
@@ -505,12 +487,12 @@ class Time
      * @param string $value
      * @return int
      */
-    public static function unixtimeFromTime($value)
+    public static function unixtimeFromTime($value): mixed
     {
         if (!$value) {
             return $value;
         }
-        $res = array();
+        $res = [];
         preg_match("/([0-9]*:)?([0-9]+):([0-9]+)/", $value, $res);
         $unixtime = intval($res[1]) * 3600 + $res[2] * 60 + $res[3];
         return $unixtime;
@@ -556,15 +538,9 @@ class Time
      * [end] => 2008-02-31 23:59:59
      * )
      * )
-     * @param type $begin_date
-     * @param type $end_date
-     * @param type $delimiter
-     * @return string
-     * @global type $months
      */
-    public static function form_dates($begin_date, $end_date, $delimiter)
+    public static function form_dates($begin_date, $end_date, $delimiter): array
     {
-
         $beg_date = self::mysql($begin_date, true, true);
         $end_date = self::mysql($end_date, true, true);
 
@@ -574,7 +550,7 @@ class Time
         $end_year = self::convert($end_date, "Y");
         $beg_month = self::convert($begin_date, "m");
         $end_month = self::convert($end_date, "m");
-        $ret = array();
+        $ret = [];
 
         switch ($delimiter) {
             case 1:
@@ -620,12 +596,12 @@ class Time
 
     protected static float $timestamp;
 
-    public static function startTimer()
+    public static function startTimer(): void
     {
         self::$timestamp = microtime(1);
     }
 
-    public static function getExecTime()
+    public static function getExecTime(): string
     {
         $precision = 3;
         $pagetime = round(microtime(1) - self::$timestamp, $precision);
@@ -637,10 +613,8 @@ class Time
 
     /**
      * Возвращает день недели в двухбуквенном формате (ПН, ВТ, СР...)
-     * @param mixed $value
-     * @return string
      */
-    public static function wday($value)
+    public static function wday($value): string
     {
         $unix = self::unix($value);
         $wday = self::$wdays[date("w", $unix)];
@@ -649,10 +623,8 @@ class Time
 
     /**
      * Возвращает день недели полностью
-     * @param mixed $value
-     * @return string
      */
-    public static function wdayFull($value)
+    public static function wdayFull($value): string
     {
         $unix = self::unix($value);
         $wday = self::$wdaysFull[date("w", $unix)];
@@ -665,7 +637,7 @@ class Time
      * @param bool (optional = auto) $show_sec
      * @return string 12:34 или 12:34:56
      */
-    public static function extractTime($value, $show_sec = 'auto')
+    public static function extractTime($value, bool|string $show_sec = 'auto'): string
     {
         $value = self::mysql($value, 'auto', $show_sec);
         $value = self::unix($value);
@@ -681,7 +653,7 @@ class Time
      * @param bool (optional = false) $toUnix - перевести в unix формат или нет. Со значением true отработает быстрее
      * @return string|int
      */
-    public static function addInterval($value, $interval, $toUnix = false)
+    public static function addInterval($value, string|int $interval, bool $toUnix = false): mixed
     {
         $format = self::what_format($value);
         $unix = self::unix($value);
@@ -700,9 +672,8 @@ class Time
      * Вычисляет разницу между двумя датами
      * @param string|int|Time $value
      * @param bool $dropTime [optional = false] не учитывать часы минуты
-     * @return TimeDiff
      */
-    public function diff($value, $dropTime = false)
+    public function diff($value, bool $dropTime = false): TimeDiff
     {
         $shoHourMin = $dropTime ? false : 'auto';
         $datetime1 = new \DateTime($this->asMySQL($shoHourMin));
@@ -717,7 +688,7 @@ class Time
      * @param string $forDate format Y-m-d (mysql)
      * @return string format Y-m-d (mysql)
      */
-    public static function weekStart($forDate)
+    public static function weekStart(string $forDate): string
     {
         $dateTime = new \DateTime($forDate);
         $dateTime->setISODate((int)$dateTime->format('o'), (int)$dateTime->format('W'), 1);
@@ -729,7 +700,7 @@ class Time
      * @param string $forDate format Y-m-d (mysql)
      * @return string format Y-m-d (mysql)
      */
-    public static function weekEnd($forDate)
+    public static function weekEnd(string $forDate): string
     {
         $dateTime = new \DateTime($forDate);
         $dateTime->setISODate((int)$dateTime->format('o'), (int)$dateTime->format('W'), 7);

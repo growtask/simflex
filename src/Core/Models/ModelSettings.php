@@ -18,7 +18,7 @@ class ModelSettings extends ModelBase
     protected static string $table = 'settings';
     protected static string $primaryKeyName = 'setting_id';
 
-    public static function get(string $key)
+    public static function get(string $key): mixed
     {
         return static::findOne(['alias' => $key])['value'] ?? null;
     }

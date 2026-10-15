@@ -37,9 +37,8 @@ class User extends ModelBase
 
     /**
      * @param int|string $priv User privilege id or name
-     * @return bool
      */
-    public function ican($priv)
+    public function ican(int|string $priv): bool
     {
         $privileges = $this->getPrivileges();
         if (is_int($priv)) {
@@ -51,7 +50,7 @@ class User extends ModelBase
     /**
      * @return array ids => 1,2,3, names => priv1, priv2
      */
-    public function getPrivileges()
+    public function getPrivileges(): array
     {
         return Buffer::getOrSet('user-priv-' . $this->id, function () {
             $q = "
@@ -74,12 +73,9 @@ class User extends ModelBase
     }
 
     /**
-     * @param \Simflex\Core\DB\AQ $AQ
-     * @param array $privileges
-     * @return void
      * @example User::findAdv()->modify('hasPrivileges', ['priv_name'])->all()
      */
-    public static function aqModifyHasPrivileges(\Simflex\Core\DB\AQ $AQ, array $privileges)
+    public static function aqModifyHasPrivileges(\Simflex\Core\DB\AQ $AQ, array $privileges): void
     {
         if (empty($privileges)) {
             return;

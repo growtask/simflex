@@ -17,7 +17,7 @@ class FieldVirtualTable extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         if (!($_REQUEST[$this->tablePk] ?? 0)) {
             return '<p><em>Для редактирования этой таблицы сначала создайте запись</em></p>';
@@ -33,12 +33,12 @@ class FieldVirtualTable extends Field
         return ob_get_clean();
     }
 
-    public function getCount()
+    public function getCount(): mixed
     {
         return DB::result($this->queryCount, 0);
     }
 
-    public function getValue()
+    public function getValue(): string|false
     {
         $vv = [];
         $q = DB::query($this->query);
@@ -76,7 +76,7 @@ class FieldVirtualTable extends Field
         ]);
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return '';
     }

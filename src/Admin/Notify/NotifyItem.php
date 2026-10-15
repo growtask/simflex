@@ -9,7 +9,7 @@ class NotifyItem
     private string $text = '';
     private string $icon = 'bolt';
     private string $href = 'javascript:;';
-    private array $data = array();
+    private array $data = [];
 
     public function __construct($text, $href = '', $icon = '')
     {
@@ -18,7 +18,7 @@ class NotifyItem
         $href ? $this->href = $href : null;
     }
 
-    public function html()
+    public function html(): void
     {
         include 'tpl/item.tpl';
     }

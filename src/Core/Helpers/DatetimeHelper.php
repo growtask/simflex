@@ -32,7 +32,7 @@ class DatetimeHelper
      * @param string $time 01:30:00
      * @return int 5400
      */
-    public static function timeToSeconds(string $time)
+    public static function timeToSeconds(string $time): int
     {
         $ret = 0;
         $arr = array_reverse(explode(':', $time));
@@ -60,7 +60,6 @@ class DatetimeHelper
 
     /**
      * @param string $time PT1H30M
-     * @return \DateInterval
      * @throws \Exception
      */
     public static function iso8601DurationToDateInterval(string $time): \DateInterval
@@ -68,10 +67,6 @@ class DatetimeHelper
         return (new \DateInterval($time));
     }
 
-    /**
-     * @param int $seconds
-     * @return \DateInterval
-     */
     public static function secondsToDateInterval(int $seconds): \DateInterval
     {
         return static::iso8601DurationToDateInterval(static::secondsToIso8601Duration($seconds));
@@ -89,7 +84,6 @@ class DatetimeHelper
 
     /**
      * @param string $time PT1H30M
-     * @param int $default
      * @return int seconds
      */
     public static function iso8601DurationToSecondsSilent(string $time, int $default): int
@@ -136,7 +130,6 @@ class DatetimeHelper
     }
 
     /**
-     * @param \DateInterval $dateInterval
      * @return int seconds
      * @throws \Exception
      */
@@ -148,21 +141,21 @@ class DatetimeHelper
     }
 
     /**
-     * @param $time 05:00:00
+     * @param string $time 05:00:00
      * @return string 05:00Z
      * @throws \Exception
      */
-    public static function sqlTimeToIso8601Time($time): string
+    public static function sqlTimeToIso8601Time(string $time): string
     {
         return (new DateTime($time))->format('H:i') . 'Z';
     }
 
     /**
-     * @param $time 05:00:00
+     * @param string $time 05:00:00
      * @return string 05:00
      * @throws \Exception
      */
-    public static function sqlTimeToShortSqlTime($time): string
+    public static function sqlTimeToShortSqlTime(string $time): string
     {
         return (new DateTime($time))->format('H:i');
     }
@@ -179,7 +172,6 @@ class DatetimeHelper
 
     /**
      * Also changes timezone to UTC
-     * @param string $time
      * @return string 2007-03-02T19:00:00Z -> 2007-03-02 19:00:00,
      *                2007-03-02T19:00:00+01:00 -> 2007-03-02 18:00:00
      * @throws \Exception
@@ -190,7 +182,6 @@ class DatetimeHelper
     }
 
     /**
-     * @param string $time
      * @return string 2007-03-02T19:00:00Z -> 2007-03-02 19:00:00,
      *                2007-03-02T19:00:00+01:00 -> 2007-03-02 19:00:00
      * @throws \Exception
@@ -203,7 +194,6 @@ class DatetimeHelper
     /**
      * Convert any datetime format to DateTime instance
      * @param int|string|DateTime $mixed
-     * @return DateTime
      * @throws \Exception
      */
     public static function toDateTime($mixed): DateTime
@@ -228,7 +218,6 @@ class DatetimeHelper
      * Convert any datetime format to string Y-m-d H:i:s
      * Also changes timezone to UTC
      * @param int|string|DateTime $mixed
-     * @return string
      * @throws \Exception
      */
     public static function toSqlFormat($mixed): string
@@ -249,27 +238,4 @@ class DatetimeHelper
         }
         throw new \Exception('Unknown datetime format: ' . var_export($mixed, true));
     }
-
-    /**
-     * @param string $startDate 2000-01-01
-     * @param string $endDate 2000-01-03
-     * @return array [2000-01-01, 2000-01-02, 2000-01-03]
-     * @throws \Exception
-     */
-//    public static function dateRange($startDate, $endDate)
-//    {
-//        $start = static::toDateTime($startDate);
-//        $end = static::toDateTime($endDate);
-//        if ($start->gt($end)) {
-//            return [$startDate];
-//        }
-//        $dates = [];
-//        $date = $start;
-//        while ($date->lte($end)) {
-//            $dates[] = $date->format('Y-m-d');
-//            $date->addDay();
-//        }
-//        return $dates;
-//    }
-
 }

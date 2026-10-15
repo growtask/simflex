@@ -91,7 +91,6 @@ class Core
     }
 
     /**
-     * @return bool
      * @deprecated use Request::isAjax() instead
      */
     public static function ajax(): bool
@@ -100,8 +99,6 @@ class Core
     }
 
     /**
-     * @param false $i
-     * @return array|string
      * @deprecated use Request::getUrlParts() instead
      */
     public static function uri(int|false $i = false): array|string
@@ -117,11 +114,9 @@ class Core
     }
 
     /**
-     * @param $i
-     * @return mixed|string
      * @deprecated use Request::getUrlParts() instead
      */
-    public static function uri_r($i)
+    public static function uri_r($i): string
     {
         $uri = Container::getRequest()->getUrlParts();
 
@@ -130,12 +125,9 @@ class Core
     }
 
     /**
-     * @param int $beg
-     * @param int $len
-     * @return array|string|string[]
      * @deprecated use Request::getPath() instead
      */
-    public static function path($beg = 0, $len = 0)
+    public static function path(int $beg = 0, int $len = 0): string
     {
         $path = Container::getRequest()->getPath();
         $uri = self::uri();
@@ -160,7 +152,7 @@ class Core
      * @param array $interp Array of values to interpolate
      * @return array|bool|string|string[] Value of setting
      */
-    public static function siteParam($key = false, $defultValue = null, array $interp = [])
+    public static function siteParam(string|bool $key = false, mixed $defultValue = null, array $interp = []): mixed
     {
         if (!self::$site_params) {
             $q = "SELECT alias, value FROM settings";
@@ -188,7 +180,7 @@ class Core
         return $value;
     }
 
-    public static function getComponent()
+    public static function getComponent(): object
     {
         $route = (new Resolver())
             ->setMenuByLink(self::$menu_by_link) // for deprecated routing by menu database table
@@ -201,7 +193,7 @@ class Core
         return new $componentClass(...Injector::resolveClass($componentClass));
     }
 
-    public static function getComponentAPI()
+    public static function getComponentAPI(): object|false
     {
         $class = '';
         $path = '/';
@@ -235,13 +227,13 @@ class Core
     /**
      * @return string[]
      */
-    public static function getExtensions()
+    public static function getExtensions(): array
     {
         $exts = array_slice(scandir(SF_ROOT_PATH . '/Extensions'), 2);
         return $exts;
     }
 
-    public static function execute()
+    public static function execute(): void
     {
         if (self::$content_only) {
             Page::content();
@@ -257,7 +249,7 @@ class Core
         }
     }
 
-    public static function menu($type = 'tree')
+    public static function menu(string $type = 'tree'): array
     {
         switch ($type) {
             case 'by_id' :
@@ -270,32 +262,32 @@ class Core
         return self::$menu_tree;
     }
 
-    public static function menuCurItem()
+    public static function menuCurItem(): ?array
     {
         return self::$menu_cur;
     }
 
-    public static function componentPath()
+    public static function componentPath(): string
     {
         return self::path(self::$component_level);
     }
 
-    public static function componentLevel()
+    public static function componentLevel(): int
     {
         return self::$component_level;
     }
 
-    public static function componentMenuID()
+    public static function componentMenuID(): int
     {
         return self::$component_menu_id;
     }
 
-    public static function componentTitle()
+    public static function componentTitle(): ?string
     {
         return self::$menu_by_id[self::$component_menu_id]['name'];
     }
 
-    public static function error404()
+    public static function error404(): void
     {
         $config = Container::getConfig();
         header("HTTP/1.0 404 Not Found");
@@ -308,11 +300,7 @@ class Core
         }
     }
 
-    /**
-     *
-     * @return bool
-     */
-    public static function isHttps()
+    public static function isHttps(): bool
     {
         return !empty($_SERVER['HTTPS']);
     }
@@ -322,7 +310,7 @@ class Core
      * @param bool $withSlashDots [optional = false] ://
      * @return string https / http
      */
-    public static function httpProtocol($withSlashDots = false)
+    public static function httpProtocol(bool $withSlashDots = false): string
     {
         return (self::isHttps() ? 'https' : 'http') . ($withSlashDots ? '://' : '');
     }
@@ -330,12 +318,12 @@ class Core
     /**
      * @return string like /vendor/growtask/simflex/src
      */
-    public static function webVendorPath()
+    public static function webVendorPath(): string
     {
         return '/vendor/growtask/simflex/src';
     }
 
-    public static function vendorPath()
+    public static function vendorPath(): string|false
     {
         return realpath(__DIR__ . '/..');
     }

@@ -15,18 +15,14 @@ abstract class DriverBase
     const STATE_DELIVERY = 'delivery';
     const STATE_ERROR = 'error';
 
-    /** @var array */
     protected array $config;
 
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }
 
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -38,14 +34,14 @@ abstract class DriverBase
      * @param string $from
      * @return array  bool success, mixed driver_sms_id, float price, string error_text, int error_code
      */
-    abstract public function send($phone, $text, $from, $smsId = 0);
+    abstract public function send($phone, $text, $from, $smsId = 0): array|bool;
 
     /**
      * Получение статуса СМС
      * @param mixed $driverSmsId Идентификатор СМС в системе сервиса СМС-отправки
      * @return array string state, string error_text, time
      */
-    public function getState($driverSmsId)
+    public function getState($driverSmsId): array
     {
         throw new \BadMethodCallException('Not implemented!');
     }
@@ -53,7 +49,7 @@ abstract class DriverBase
     /**
      * Чтение входящих сообщений о доставке
      */
-    public function readDeliveries()
+    public function readDeliveries(): void
     {
         throw new \BadMethodCallException('Not implemented!');
     }
@@ -62,7 +58,7 @@ abstract class DriverBase
      * @param string $driverSmsId
      * @param array $result [string state, mixed time, error_code, error_text]
      */
-    protected function updateState($driverSmsId, $result)
+    protected function updateState($driverSmsId, array $result): void
     {
         $set = ["state = '{$result['state']}'"];
         if (self::STATE_DELIVERY == $result['state']) {

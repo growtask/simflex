@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\Field;
 class FieldNPP extends Field
 {
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $row[$this->name];
         $pkValue = $row[$this->tablePk];
@@ -39,14 +39,14 @@ class FieldNPP extends Field
 DATA;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         if (!isset($_REQUEST[$this->tablePk])) {
             // TODO: make it nice
             if ($this->table == 'catalog_product') {
                 $value = 1;
             } else {
-                $where = array();
+                $where = [];
                 if ($filter = @$_SESSION[$this->table]['filter']) {
                     foreach ($filter as $fname => $fval) {
                         if ($fval) {
@@ -66,7 +66,7 @@ DATA;
         return parent::input($value);
     }
     
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $this->e2n && $_POST[$this->name] === '' ? 'NULL' : (int)$_POST[$this->name];
     }

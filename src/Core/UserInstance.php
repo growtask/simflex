@@ -3,7 +3,6 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\type;
 use Simflex\Core\DB;
 
 /**
@@ -19,8 +18,8 @@ class UserInstance
     public string $login = '';
     public int $role_id = 0;
     public string $role_name = '';
-    private array $priv_ids = array();
-    private array $priv_names = array();
+    private array $priv_ids = [];
+    private array $priv_names = [];
     private array|false $info;
     private string $idName;
     private string $hashName;
@@ -28,16 +27,13 @@ class UserInstance
     private string $remIdName;
     private string $remHashName;
 
-    /**
-     *
-     * @param type $idName
-     * @param type $hashName
-     * @param type $dbHashName
-     * @param type $remIdName
-     * @param type $remHashName
-     */
-    public function __construct($idName, $hashName, $dbHashName, $remIdName, $remHashName)
-    {
+    public function __construct(
+        string $idName,
+        string $hashName,
+        string $dbHashName,
+        string $remIdName,
+        string $remHashName
+    ) {
         $this->idName = $idName;
         $this->hashName = $hashName;
         $this->dbHashName = $dbHashName;
@@ -46,7 +42,7 @@ class UserInstance
         $this->login();
     }
 
-    public function logout()
+    public function logout(): void
     {
         $_SESSION[$this->idName] = 0;
         $_SESSION[$this->hashName] = '';
@@ -56,7 +52,8 @@ class UserInstance
         unset($_COOKIE[$this->remHashName]);
     }
     
-    public function initByModel(\Simflex\Core\Models\User $model){
+    public function initByModel(\Simflex\Core\Models\User $model): void
+    {
         $this->id = $model->getId();
         $this->login = $model->login;
         $this->role_id = $model->roleId;
@@ -64,7 +61,7 @@ class UserInstance
         $this->login();
     }
 
-    private function login()
+    private function login(): void
     {
         if (!isset($_SESSION[$this->idName]) && isset($_COOKIE[$this->remIdName]) && isset($_COOKIE[$this->remHashName])) {
             $userId_md5 = DB::escape($_COOKIE[$this->remIdName]);
@@ -136,10 +133,9 @@ class UserInstance
     /**
      * Возвращает информацию о пользователе
      * @param string|false $field (optional) - если указано, возвращает конкретное поле
-     * @param bool $buffered
      * @return false|array|string
      */
-    public function info($field = false, $buffered = true)
+    public function info(string|false $field = false, bool $buffered = true): mixed
     {
         if (!$this->id) {
             return false;
@@ -158,17 +154,17 @@ class UserInstance
         return $ret;
     }
 
-    public function privIds()
+    public function privIds(): array
     {
-        return count($this->priv_ids) ? $this->priv_ids : array(0);
+        return count($this->priv_ids) ? $this->priv_ids : [0];
     }
 
-    public function privNames()
+    public function privNames(): array
     {
-        return count($this->priv_names) ? $this->priv_names : array('');
+        return count($this->priv_names) ? $this->priv_names : [''];
     }
 
-    public function ican($priv)
+    public function ican(string|int|bool $priv): array|bool
     {
         if (false === $priv) {
             return $this->priv_names;

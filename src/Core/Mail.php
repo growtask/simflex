@@ -15,12 +15,12 @@ class Mail {
     const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
     const MAIL_TRANSPORT_FAKE_ERROR = 4;
 
-    private static array $connect = array('host' => 'smtp.yandex.ru', 'port' => 465, 'fromru' => 'Mail');
-    private array $data = array(
+    private static array $connect = ['host' => 'smtp.yandex.ru', 'port' => 465, 'fromru' => 'Mail'];
+    private array $data = [
         'to_email' => '', 'to_name' => '', 'from_name' => '', 'from_email' => '', 'as_plain' => false,
         'reply_email' => '', 'reply_name' => '', 'text' => '', 'subject' => '', 'can_answer' => false,
         'transport' => self::MAIL_TRANSPORT_DAEMON
-    );
+    ];
 
     /**
      * 
@@ -46,19 +46,18 @@ class Mail {
      * @param string $toEmail
      * @param string $subject
      * @param string $msg
-     * @return Mail
      */
-    public static function create($toEmail, $subject, $msg) {
+    public static function create($toEmail, $subject, $msg): static {
         $instance = new static($toEmail, $subject, $msg);
         return $instance;
     }
 
-    public function setToName($name) {
+    public function setToName($name): static {
         $this->data['to_name'] = trim($name);
         return $this;
     }
 
-    public function setTransport($transport) {
+    public function setTransport($transport): static {
         $this->data['transport'] = $transport;
         return $this;
     }
@@ -70,7 +69,7 @@ class Mail {
      * @param type $msg
      * @return bool
      */
-    public static function staticSend($toEmail, $subject, $msg) {
+    public static function staticSend($toEmail, $subject, $msg): mixed {
         $instance = new static($toEmail, $subject, $msg);
         return $instance->send();
     }
@@ -79,11 +78,10 @@ class Mail {
      * 
      * @param string $str Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str2 (optional = '') Имя отправителя. Имеет значение, если $str - это email
-     * @return \Mail
      */
-    public function setFrom($str, $str2 = '') {
+    public function setFrom($str, $str2 = ''): static {
         if (strpos($str, '<') !== false) {
-            $matches = array();
+            $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
             if (count($matches)) {
                 $this->data['from_name'] = trim($matches[0]);
@@ -103,11 +101,10 @@ class Mail {
     /**
      * Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
      * @param string $str
-     * @return \Mail
      */
-    public function setReplyTo($str) {
+    public function setReplyTo($str): static {
         if (strpos($str, '<') !== false) {
-            $matches = array();
+            $matches = [];
             preg_match('@(.*)\s?<(.*)>@Ui', $str, $matches);
             if (count($matches)) {
                 $this->data['reply_name'] = trim($matches[0]);
@@ -124,7 +121,7 @@ class Mail {
     /**
      * По умолчанию отправлять как HTML
      */
-    public function setAsPlain() {
+    public function setAsPlain(): static {
         $this->data['as_plain'] = true;
         return $this;
     }
@@ -132,7 +129,7 @@ class Mail {
     /**
      * По умолчанию уже отправлять как HTML
      */
-    public function setAsHTML() {
+    public function setAsHTML(): static {
         $this->data['as_plain'] = false;
         return $this;
     }
@@ -141,34 +138,31 @@ class Mail {
      * 
      * @param string $sender Допускается mail@mail.ru или mail@mail.ru:12345
      * @param string $pass (optional = false) указывается, если в $sender нет пароля
-     * @return \Mail
      */
-    public function setSMTPSender($sender, $pass = false) {
+    public function setSMTPSender($sender, $pass = false): static {
         if (!$pass) {
             $tmp = explode(':', $sender);
             $sender = $tmp[0];
             $pass = $tmp[1];
         }
         $this->data['from_email'] = $sender;
-        $this->data['smtp'] = array('login' => $sender, 'pass' => $pass);
+        $this->data['smtp'] = ['login' => $sender, 'pass' => $pass];
         return $this;
     }
 
     /**
      * Используется чтобы убрать внизу текст "Отвечать на данное письмо ненужно"
      * @param bool $can
-     * @return \Mail
      */
-    public function setCanAnswer($can) {
+    public function setCanAnswer($can): static {
         $this->data['can_answer'] = $can;
         return $this;
     }
 
     /**
-     * 
      * @return bool
      */
-    public function send() {
+    public function send(): mixed {
         $result = false;
 
         if (!$this->data['as_plain'] && is_file($_SERVER['DOCUMENT_ROOT'] . '/theme/default/mail.tpl')) {
@@ -246,10 +240,10 @@ class Mail {
         return $result;
     }
 
-    private function toLog($result) {
+    private function toLog($result): void {
         $q = "DELETE FROM mail_log WHERE ADDDATE(time_create,INTERVAL 1 MONTH) < NOW()";
         DB::query($q);
-        $set = array("mail_from = '" . DB::escape($this->data['from_full']) . "', email = '" . DB::escape($this->data['to_full']) . "'");
+        $set = ["mail_from = '" . DB::escape($this->data['from_full']) . "', email = '" . DB::escape($this->data['to_full']) . "'"];
         $set[] = "text = '" . DB::escape($this->data['text_utf8']) . "', subject = '" . DB::escape($this->data['subject_ready']) . "'";
         $set[] = "success = " . (int) $result . ", transport = {$this->data['transport']}";
         if (!empty($this->data['reply_full'])) {
@@ -261,9 +255,8 @@ class Mail {
 
     /**
      * Отправка через стандартную функцию php mail
-     * @return type
      */
-    private function sendDaemon() {
+    private function sendDaemon(): bool {
         $contentType = $this->data['as_plain'] ? 'plain' : 'html';
         $header = "Content-type: text/$contentType; charset=\"windows-1251\"\n";
         $header .= "MIME-Version: 1.0" . "\n";
@@ -272,15 +265,14 @@ class Mail {
             $header .= "Reply-To: {$this->data['reply_full']}\n";
         }
         $header .= "Subject: {$this->data['subject_ready']}";
-        //$header .= "Content-type: text/$contentType; charset=\"windows-1251\"\n";
         return mail($this->data['to_full'], $this->data['subject_ready'], $this->data['text'], $header);
     }
 
     /**
      * Отправка через SMTP
-     * @return bool 
+     * @return bool
      */
-    private function sendSMTP() {
+    private function sendSMTP(): mixed {
 
         $canSend = true;
 
@@ -324,18 +316,18 @@ class Mail {
         $date = strftime("%a, %d %b %Y %H:%M:%S %z");
 
         $contentType = $this->data['as_plain'] ? 'plain' : 'html';
-        $headers = array(
+        $headers = [
             "From: {$this->data['from_full']}",
             "To: {$this->data['to_full']}",
             "Subject: {$this->data['subject_ready']}",
             "Date: " . $date,
             "Content-type: text/$contentType; charset=windows-1251"
-        );
+        ];
         if ($this->data['reply_email']) {
             $headers[] = "Reply-To: {$this->data['reply_full']}";
         }
 
-        $res = $smtp->SendMessage($this->data['smtp']['login'], array($this->data['to_email']), $headers, $this->data['text']);
+        $res = $smtp->SendMessage($this->data['smtp']['login'], [$this->data['to_email']], $headers, $this->data['text']);
         if (@$_ENV['debug']) {
             echo $smtp->error;
         }
@@ -345,9 +337,8 @@ class Mail {
     /**
      * Рекурсивно конвертирует массив или строку. У массива ключи тоже конвертируются
      * @param string|array $mixed
-     * @return string|array
      */
-    private static function utf2win($mixed) {
+    private static function utf2win($mixed): array|string|false {
         if (is_array($mixed)) {
             foreach ($mixed as $index => $str) {
                 unset($mixed[$index]);

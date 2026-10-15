@@ -115,7 +115,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Loads relations from reflection to local cache for speed
-     * @return void
      */
     protected function loadRelations(): void
     {
@@ -161,10 +160,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Get enum values for field
-     *
-     * @param string $fieldName
-     * @param bool $withBuffer
-     * @return array
      */
     public static function enumValues(string $fieldName, bool $withBuffer = true): array
     {
@@ -244,9 +239,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Fill model with data
-     *
-     * @param array $data
-     * @return static
      */
     public function fill(array $data): static
     {
@@ -263,7 +255,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Invoked after model data is filled
-     * @return void
      */
     protected function afterFill(): void
     {
@@ -296,7 +287,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param array|null $data Data override
      * @param int $flags Insert flags
-     * @return bool
      */
     public function insert(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
@@ -436,8 +426,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
     /**
      * Delete model from database
-     *
-     * @return bool
      */
     public function delete(): bool
     {
@@ -465,7 +453,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * @throws Exception
      */
-    public static function bulkDelete($where, bool $viaModels = false): bool
+    public static function bulkDelete(string|array|Where $where, bool $viaModels = false): bool
     {
         if ($viaModels) {
             $success = true;
@@ -539,7 +527,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param string|array $text Error text or array with 'text' and 'code' keys
      * @param int|null $code Error code
-     * @return void
      */
     protected function setError(
         #[ArrayShape(['text' => 'string', 'code' => 'int'])] string|array $text,
@@ -579,7 +566,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after insert
      *
      * @param bool $success Insert result
-     * @return void
      */
     protected function afterInsert(bool $success): void
     {
@@ -603,7 +589,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after update
      *
      * @param bool $success Update result
-     * @return void
      */
     protected function afterUpdate(bool $success): void
     {
@@ -627,7 +612,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      *
      * @param bool $success Delete result
      * @param array $oldData Old model data
-     * @return void
      */
     protected function afterDelete(bool $success, array $oldData): void
     {
@@ -650,7 +634,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * Invoked after save
      *
      * @param bool $success Save result
-     * @return void
      */
     protected function afterSave(bool $success): void
     {
@@ -743,7 +726,6 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return array
      * @see Core/DB/HowTo/UsingModifiers.md
      */
     public static function aqModifiersDefault(): array

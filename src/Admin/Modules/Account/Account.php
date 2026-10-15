@@ -10,10 +10,10 @@ use Simflex\Core\User;
 class Account extends ModuleBase
 {
 
-    public function content()
+    public function content(): void
     {
         if (count($data = DB::escape($_POST))) {
-            $set = array("email = '{$data['email']}', name = '{$data['name']}'");
+            $set = ["email = '{$data['email']}', name = '{$data['name']}'"];
             if ($data['password']) {
                 $password = md5($data['password']);
                 $set[] = "password = '$password'";

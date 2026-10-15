@@ -3,7 +3,7 @@ namespace Simflex\Admin\Fields;
 
 class FieldColor extends Field
 {
-    public function input($value)
+    public function input($value): string
     {
         $value = $this->value ?: $value;
         return '<div class="form-control form-control--sm">

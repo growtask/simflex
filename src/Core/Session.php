@@ -13,7 +13,7 @@ class Session
         }
     }
 
-    public static function get($key)
+    public static function get(string $key): mixed
     {
         if (!static::$init) {
             static::ensureStarted();
@@ -25,7 +25,7 @@ class Session
         return static::$data[$key] ?? null;
     }
 
-    public static function getAll()
+    public static function getAll(): array
     {
         if (!static::$init) {
             static::ensureStarted();
@@ -37,7 +37,7 @@ class Session
         return static::$data;
     }
 
-    public static function set($key, $value)
+    public static function set(string $key, mixed $value): void
     {
         static::ensureStarted();
         if (!static::$init) {

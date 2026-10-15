@@ -9,7 +9,7 @@ use Simflex\Core\Sms\DriverBase;
 class DriverFake extends DriverBase
 {
 
-    public function send($phone, $text, $from, $smsId = 0)
+    public function send($phone, $text, $from, $smsId = 0): array|bool
     {
         return true;
     }

@@ -6,7 +6,7 @@ use Simflex\Admin\Structure\Repository as StructureRepository;
 
 class FieldTypeSelect extends Field
 {
-    public function input($value)
+    public function input($value): string
     {
         $out = '<select name="' . $this->inputName() . '" onchange="' . $this->onchange . '" class="form-control__input">';
         $out .= '<option value=""></option>';
@@ -18,7 +18,7 @@ class FieldTypeSelect extends Field
         return $out .'</select>';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $simple && $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
     }

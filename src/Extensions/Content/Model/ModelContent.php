@@ -29,7 +29,7 @@ class ModelContent extends ModelBase
     protected static string $table = 'content';
     protected static string $primaryKeyName = 'content_id';
 
-    public static function aqModifyWithTemplate(AQ $AQ)
+    public static function aqModifyWithTemplate(AQ $AQ): void
     {
         $AQ->leftJoin(ModelContentTemplate::class, 'template_id');
     }
@@ -50,7 +50,7 @@ class ModelContent extends ModelBase
         });
     }
 
-    public function loadParent()
+    public function loadParent(): ?ModelContent
     {
         $pid = $this['pid'];
         return Buffer::getOrSet('content.parent.' . $pid, function () use ($pid) {

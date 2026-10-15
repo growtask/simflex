@@ -18,13 +18,13 @@ class Struct extends Base
         parent::__construct();
         Page::coreJs('/Base/js/struct.js');
 
-        $this->actionHandlers['field_param'] = array('method' => 'fieldParam');
+        $this->actionHandlers['field_param'] = ['method' => 'fieldParam'];
     }
 
     /**
      * Выводим доп. параметры по типу поля
      */
-    protected function fieldParam()
+    protected function fieldParam(): void
     {
         $fieldType = (string)@$_GET['field_type'];
         $fieldName = DB::escape(@$_GET['field_name']);
@@ -41,7 +41,7 @@ class Struct extends Base
         $stored = DB::result("SELECT params FROM $table WHERE $keyName = ?", '', [$keyValue]);
         $storedParams = $stored ? unserialize($stored['params']) : [];
 
-        $fields = array();
+        $fields = [];
         foreach ($rows as $row) {
             $row['table'] = $this->table;
             $field = new $row['class']($row);
@@ -50,13 +50,13 @@ class Struct extends Base
             $fields[] = $field;
         }
 
-        $group = array('label' => 'Доп. параметры');
+        $group = ['label' => 'Доп. параметры'];
         $group['fields'] = $fields;
         $portletClass = "field-params-$fieldName";
         include 'tpl/form.portlet.tpl';
     }
 
-    protected function getParams()
+    protected function getParams(): array
     {
         $params = parent::getParams();
         if (!empty($_POST['field_type'])) {
@@ -70,25 +70,24 @@ class Struct extends Base
                 $params['main'][$field->name] = $value;
             }
         }
-//        print_r($params);die;
         return $params;
     }
 
-    public function save()
+    public function save(): string|int|false
     {
 
         $id = (int)@$_POST[$this->pk->name];
         if ($id) {
             $field = StructureRepository::fieldTypeByClass((string)$_POST['field_type']);
 
-            $sizesRebuild = array();
+            $sizesRebuild = [];
             if (($field['class'] ?? '') == \Simflex\Admin\Fields\FieldImage::class) {
                 $q = "SELECT * FROM $this->table WHERE {$this->pk->name} = $id";
                 $row = DB::result($q);
                 $oldParams = unserialize($row['params']);
                 $oldParams = $oldParams['main'];
                 $newParams = $_POST['main'];
-                $sizes = array('small', 'medium', 'large');
+                $sizes = ['small', 'medium', 'large'];
 
                 foreach ($sizes as $size) {
                     if ($oldParams[$size] != $newParams[$size]) {
@@ -109,7 +108,7 @@ class Struct extends Base
         }
     }
 
-    private function imagesRebuild($table, $fieldName, $dir, $sizesRebuild)
+    private function imagesRebuild($table, $fieldName, $dir, $sizesRebuild): void
     {
         include_once "{$_SERVER['DOCUMENT_ROOT']}/core/sffile.class.php";
         $q = "SELECT $fieldName FROM $table";

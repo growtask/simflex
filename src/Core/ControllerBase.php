@@ -29,7 +29,6 @@ class ControllerBase extends ComponentBase
 
     /**
      * Fallback method
-     * @return void
      */
     protected function fallback(): void
     {
@@ -39,7 +38,6 @@ class ControllerBase extends ComponentBase
 
     /**
      * Collects actions
-     * @return void
      */
     protected function collectActions(): void
     {
@@ -58,7 +56,6 @@ class ControllerBase extends ComponentBase
 
     /**
      * Try to resolve controller's actions
-     * @return ActionMatcher|null
      */
     protected function resolve(): ?ActionMatcher
     {
@@ -71,7 +68,7 @@ class ControllerBase extends ComponentBase
         return null;
     }
 
-    protected function content()
+    protected function content(): void
     {
         $maybeAction = $this->resolve();
         if (!$maybeAction) {

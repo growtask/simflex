@@ -42,7 +42,6 @@ class ActionMatcher
 
     /**
      * Attempt matching against the current path
-     * @return bool
      */
     public function match(): bool
     {

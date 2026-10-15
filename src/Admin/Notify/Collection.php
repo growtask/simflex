@@ -8,11 +8,7 @@ class Collection
 
     private static self $instance;
 
-    /**
-     *
-     * @return static
-     */
-    public static function getInstance()
+    public static function getInstance(): static
     {
         if (empty(self::$instance)) {
             self::$instance = new static;
@@ -20,21 +16,21 @@ class Collection
         return self::$instance;
     }
 
-    private array $items = array();
+    private array $items = [];
 
     private function __construct()
     {
 
     }
 
-    public function content()
+    public function content(): void
     {
         $this->collect();
         $cnt = count($this->items);
         include 'tpl/index.tpl';
     }
 
-    private function collect()
+    private function collect(): void
     {
         $extRoot = $_SERVER['DOCUMENT_ROOT'] . '/ext';
         $exts = array_slice(scandir($extRoot), 2);

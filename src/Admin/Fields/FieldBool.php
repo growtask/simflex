@@ -11,7 +11,7 @@ class FieldBool extends FieldInt
     public string $style = 'text-align:center;';
     public mixed $defaultValue = 0;
 
-    public function input($value)
+    public function input($value): string
     {
         return '<div class="form-control">
                                     <label class="form-control__switch">
@@ -21,13 +21,13 @@ class FieldBool extends FieldInt
                                 </div>';
          }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $postValue = $group === null ? @ $_POST[$this->name] : @ $_POST[$group][$this->name];
         return $this->e2n && empty($postValue) ? 0 : (isset($postValue) ? 1 : 0);
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $row[$this->name];
         $checked = $value ? 'checked' : '';
@@ -41,13 +41,13 @@ class FieldBool extends FieldInt
 DATA;
     }
 
-    public function showDetail($row)
+    public function showDetail($row): string
     {
         $value = $row[$this->name . ($this->fk ? '_label' : '')];
         return $value ? 'Да' : 'Нет';
     }
 
-    public function filter($value)
+    public function filter($value): void
     {
         if ($this->filter) {
             echo '<div class="form-control form-control--sm">

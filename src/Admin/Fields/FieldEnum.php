@@ -11,7 +11,7 @@ class FieldEnum extends  FieldString
 
     protected string $changeURL = '';
 
-    public function input($value)
+    public function input($value): string
     {
 
         $select = '<div class="form-control form-control--sm">
@@ -57,19 +57,19 @@ class FieldEnum extends  FieldString
         return $this->select;
     }
 
-    protected function fetchValues()
+    protected function fetchValues(): array
     {
         $buffer = &$_ENV['enum_values'][$this->table][$this->name];
 
         if (!isset($buffer)) {
             $q = "SHOW FULL COLUMNS FROM `$this->table` LIKE '$this->name'";
             $row = DB::result($q);
-            $enumArray = array();
+            $enumArray = [];
             preg_match_all("/'(.*?)'/", $row['Type'], $enumArray);
             $enumFields = $enumArray[1];
             $names = explode(';;', $row['Comment']);
             if (count($names) == count($enumFields)) {
-                $ret = array();
+                $ret = [];
                 foreach ($names as $index => $name) {
                     $ret[$enumFields[$index]] = trim($name);
                 }
@@ -82,7 +82,7 @@ class FieldEnum extends  FieldString
                         $buffer[$kvv[0]] = $kvv[1];
                     }
                 } else {
-                    $buffer = array();
+                    $buffer = [];
                     foreach ($enumFields as $name) {
                         $buffer[$name] = $name;
                     }
@@ -93,7 +93,7 @@ class FieldEnum extends  FieldString
         return $buffer;
     }
 
-    public function filter($value)
+    public function filter($value): void
     {
         if ($this->filter) {
             $select =  '<div class="form-control form-control--sm">
@@ -120,28 +120,18 @@ class FieldEnum extends  FieldString
                                     </div>
                                 </div>';
 
-            /*
-            $disabled = 1 ? "" : " disabled";
-            $select = '<select' . $disabled . ' class="form-control" name="filter[' . $this->name . ']" onchange="submit()">';
-            $select .= '<option value="">---' . $this->label . '---</option>';
-            $values = $this->fetchValues();
-            foreach ($values as $key => $val) {
-                $selected = $value == $key ? ' selected' : '';
-                $select .= '<option value="' . $key . '"' . $selected . '>' . $val . '</option>';
-            }
-            $select .= '</select>';*/
             echo $select;
         }
     }
 
-    public function showDetail($row)
+    public function showDetail($row): ?string
     {
         $value = $row[$this->name];
         $values = $this->fetchValues();
         return @$values[$value];
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value0 = $row[$this->name];
         $pkValue = $row[$this->tablePk];

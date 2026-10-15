@@ -16,10 +16,9 @@ class Chain extends \Simflex\Core\Middleware\Chain
 
     /**
      * @param string $class subclass of Simflex\Core\Models\User
-     * @return $this
      */
     #[Deprecated('Use Factory override instead')]
-    public function setUserModelClass($class)
+    public function setUserModelClass(string $class): static
     {
         if ($class && !is_subclass_of($class, User::class)) {
             throw new \InvalidArgumentException("userModelClass must be sublass of Simflex\Core\Models\User");
@@ -28,7 +27,7 @@ class Chain extends \Simflex\Core\Middleware\Chain
         return $this;
     }
 
-    public function process($payload = null)
+    public function process(mixed $payload = null): mixed
     {
         foreach ($this->middlewares as $mw) {
             if ($mw instanceof BaseMiddleware) {
@@ -43,7 +42,7 @@ class Chain extends \Simflex\Core\Middleware\Chain
     /**
      * @return string|User string of user model class
      */
-    public function getUserModelClass()
+    public function getUserModelClass(): string
     {
         return $this->userModelClass;
     }

@@ -23,15 +23,10 @@ class User
     public static int $role_id = 0;
     public static string $role_name = '';
 
-    /**
-     *
-     * @var UserInstance
-     */
     protected static UserInstance $instance;
 
-    public static function login($type = 'site')
+    public static function login(string|UserInstance $type = 'site'): void
     {
-
         if ('site' == $type) {
             self::$instance = new UserInstance('user_id', 'user_hash', 'hash', 'ch', 'cs');
         }
@@ -48,7 +43,7 @@ class User
         self::$role_name = self::$instance->role_name;
     }
 
-    public static function logout()
+    public static function logout(): void
     {
         self::$instance->logout();
         self::$id = 0;
@@ -57,7 +52,7 @@ class User
         self::$role_name = '';
     }
 
-    public static function logout2()
+    public static function logout2(): void
     {
         self::$instance = new UserInstance('', '', '', '', '');
         self::$id = 0;
@@ -66,22 +61,20 @@ class User
         self::$role_name = '';
     }
 
-    public static function privIds()
+    public static function privIds(): array
     {
         return self::$instance->privIds();
     }
 
-    public static function privNames()
+    public static function privNames(): array
     {
         return self::$instance->privNames();
     }
 
     /**
-     *
      * @param string|int|bool $priv - можно указать название привилегии, можно ее ID. Если false, то вернет все привилегии
-     * @return bool|array
      */
-    public static function ican($priv = false)
+    public static function ican(string|int|bool $priv = false): array|bool
     {
         return self::$instance->ican($priv);
     }
@@ -91,15 +84,15 @@ class User
      * @param string (optional) $field - если указано, возвращает конкретное поле
      * @return false|array|string
      */
-    public static function info($field = false)
+    public static function info(string|false $field = false): mixed
     {
         return self::$instance->info($field);
     }
 
-    public static function create($data)
+    public static function create(array $data): array
     {
         if (self::$id) {
-            return array('success' => false, 'error_code' => 1, 'error' => 'Пользователь уже авторизован');
+            return ['success' => false, 'error_code' => 1, 'error' => 'Пользователь уже авторизован'];
         }
 
         $login = Phone::extract((string)@$data['login']);
@@ -107,35 +100,35 @@ class User
         $email = (string)@$data['email'];
         $name = (string)@$data['name'];
 
-        $errors = array();
+        $errors = [];
         $login ? null : $errors[] = 'логин';
         $email ? null : $errors[] = 'email';
         $name ? null : $errors[] = 'имя';
         if (count($errors)) {
-            return array('success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors));
+            return ['success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors)];
         }
 
         $q = "SELECT user_id FROM user WHERE login = '$login'";
         $user = DB::result($q, 0);
         if ($user) {
-            return array('success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован');
+            return ['success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован'];
         }
 
         $q = "SELECT user_id FROM user WHERE email = '$email'";
         $user = DB::result($q, 0);
         if ($user) {
-            return array('success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован');
+            return ['success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован'];
         }
 
         $passMD5 = md5($pass);
         $hash = md5(microtime());
-        $set = array("login = '$login', email = '$email', name = '$name', password = '$passMD5', hash = '$hash'");
+        $set = ["login = '$login', email = '$email', name = '$name', password = '$passMD5', hash = '$hash'"];
         $q = "INSERT INTO user SET " . implode(', ', $set);
         DB::query($q);
         $userId = DB::insertId();
 
         if (!$userId) {
-            return array('success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации');
+            return ['success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации'];
         }
 
         $HTTPHost = $_SERVER['HTTP_HOST'];
@@ -164,10 +157,10 @@ class User
             self::login();
         }
 
-        return array('success' => true, 'user_id' => $userId);
+        return ['success' => true, 'user_id' => $userId];
     }
 
-    public static function authorizeOnce($login, $password)
+    public static function authorizeOnce($login, $password): void
     {
         $GLOBALS[UserInstance::class]['login'] = $login;
         $GLOBALS[UserInstance::class]['password'] = $password;

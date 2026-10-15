@@ -21,7 +21,7 @@ abstract class ExtensionBase
         $this->rootDir = dirname($reflector->getFileName());
     }
 
-    protected function root()
+    protected function root(): string
     {
         if (!$this->root) {
             $this->root = '/';
@@ -46,7 +46,7 @@ abstract class ExtensionBase
         return $this->root;
     }
 
-    protected function link($link)
+    protected function link($link): string
     {
         return str_replace('//', '/', $this->root() . $link);
     }

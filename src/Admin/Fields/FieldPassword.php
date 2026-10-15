@@ -17,7 +17,7 @@ class FieldPassword extends Field
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $in = $this->inputName();
 
@@ -33,7 +33,7 @@ class FieldPassword extends Field
 HTML;
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $pw = $_REQUEST[$this->name];
         if (!$pw) {

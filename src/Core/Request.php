@@ -67,7 +67,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Returns full URL path
-     * @return string
      */
     public function getPath(): string
     {
@@ -76,7 +75,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Returns broken down URL parts
-     * @return array
      */
     public function getUrlParts(): array
     {
@@ -94,7 +92,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Checks if the request was POST
-     * @return bool
      */
     public function isPost(): bool
     {
@@ -103,7 +100,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Checks if the request body is JSON data
-     * @return bool
      */
     public function isJson(): bool
     {
@@ -112,7 +108,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Checks if the request was AJAX
-     * @return bool
      */
     public function isAjax(): bool
     {
@@ -126,9 +121,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Gets GET parameters
-     *
-     * @param mixed|null $k
-     * @return array|mixed|null
      */
     public function get(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -137,9 +129,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Gets POST parameters
-     *
-     * @param mixed|null $k
-     * @return array|mixed|null
      */
     public function post(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -148,9 +137,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Gets REQUEST parameters
-     *
-     * @param mixed|null $k
-     * @return array|mixed|null
      */
     public function request(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -159,9 +145,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Gets input cookies
-     *
-     * @param mixed|null $k
-     * @return array|mixed|null
      */
     public function cookie(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -170,9 +153,6 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Gets input files
-     *
-     * @param mixed|null $k
-     * @return array|mixed|null
      */
     public function file(int|string|null $k = null): mixed
     {
@@ -181,34 +161,22 @@ class Request implements \Simflex\Core\DI\Service
 
     /**
      * Returns input headers
-     *
-     * @param string|null $k
-     * @return mixed|null
      */
     public function header(?string $k = null): mixed
     {
         return $k ? ($this->headers[strtolower($k)] ?? null) : $this->headers;
     }
 
-    /**
-     * @return bool
-     */
     public function isHttps(): bool
     {
         return $this->isHttps;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * @return array
-     */
     public function getServerInfo(): array
     {
         return $this->serverInfo;

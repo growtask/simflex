@@ -31,7 +31,7 @@ class StdLogger extends AbstractLogger
         ]
     ];
 
-    protected function toString($object): string
+    protected function toString(mixed $object): string
     {
         if (is_array($object) || is_object($object)) {
             $object = var_export($object, true);
@@ -40,7 +40,7 @@ class StdLogger extends AbstractLogger
         return str_replace("\n", ' ', (string)$object);
     }
 
-    protected function interpolate($message, array $context = []): string
+    protected function interpolate(string|\Stringable $message, array $context = []): string
     {
         $replace = [];
         foreach ($context as $key => $val) {

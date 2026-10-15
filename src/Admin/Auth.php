@@ -21,7 +21,7 @@ class Auth
     const REMEMBER_ME_INTERVAL = '1 WEEK';
     const LOGIN_PRIV = 'simplex_admin';
 
-    public static function login($login, $password, $isRemember, $redirect)
+    public static function login($login, $password, bool $isRemember, string $redirect): void
     {
         if (empty($login) || empty($password)) {
             return;
@@ -63,7 +63,7 @@ class Auth
         exit;
     }
 
-    public static function logout()
+    public static function logout(): never
     {
         $redirect = $_REQUEST['r'] ?? '/admin/';
         if (strpos($redirect, '//') !== false) {

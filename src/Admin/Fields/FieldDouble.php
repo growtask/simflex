@@ -8,7 +8,7 @@ use Simflex\Admin\Fields\Field;
 class FieldDouble extends Field
 {
 
-    private function doubleFormat($value, $showMode = false)
+    private function doubleFormat($value, bool $showMode = false): string
     {
         if ($showMode && !$value || $value === null) {
             return '';
@@ -21,7 +21,7 @@ class FieldDouble extends Field
         return number_format((double)$value, $decimals, $this->params['dec_point'], $showMode ? $this->params['thousands_sep'] : '');
     }
 
-    public function input($value)
+    public function input($value): string
     {
         return '<div class="form-control form-control--sm">
                                     <input name="' . $this->inputName() . '" value="' . $this->doubleFormat($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
@@ -29,13 +29,13 @@ class FieldDouble extends Field
                                 </div>';
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $this->doubleFormat($row[$this->name], true);
         echo '<div class="table__row-'.$this->name.' '.($this->fk ? 'table__row-id' : '').' table__row-text">'.$value.'</div>';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $ret = $_POST[$this->name];
         if ($simple) {

@@ -1,12 +1,11 @@
 <?php
 
-spl_autoload_register(function ($className) {
+spl_autoload_register(function ($className): void {
     $classNameRaw = $className;
     $className = strtolower($className);
     $path = 'core/';
     $fname = substr($className, 8);
     if (strpos($className, 'admin') === 0) {
-//        echo $className . '<br>';
         switch (substr($className, 5, 3)) {
             case 'com' :
                 $path = 'com/' . substr($className, 3) . '/';
@@ -20,7 +19,7 @@ spl_autoload_register(function ($className) {
                 break;
             case 'wid' :
                 include_once 'core/sfadminwidgetbase.class.php';
-                $matches = array();
+                $matches = [];
                 preg_match_all("@[A-Z][a-z]+@", $classNameRaw, $matches);
                 $extname = $matches[0][2];
                 $path = "{$_SERVER['DOCUMENT_ROOT']}/ext/$extname/admin/widget/";

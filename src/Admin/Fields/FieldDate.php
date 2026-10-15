@@ -19,17 +19,17 @@ class FieldDate extends Field
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
         if ($onForm) {
             UI::datePicker();
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $value = \Simflex\Core\Time::normal($value ?: time()); //substr($value, 8, 2) . '.' . substr($value, 5, 2) . '.' . substr($value, 0, 4);
-        $classes = array("form-control");
+        $value = \Simflex\Core\Time::normal($value ?: time());
+        $classes = ["form-control"];
         if (!$this->readonly) {
             $classes[] = "form-datepicker";
         }
@@ -38,7 +38,7 @@ class FieldDate extends Field
                                 </div>';
      }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
         if ($simple) {
@@ -50,7 +50,7 @@ class FieldDate extends Field
         return $this->e2n && $value === '' ? NULL : "" . DB::escape($value) . "";
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '';
         $isNumericReal = false;

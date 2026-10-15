@@ -21,7 +21,6 @@ class Cron
 
     /**
      * CronBootstrap constructor.
-     * @param int|null $jobId
      * @throws Exception
      */
     public function __construct(protected ?int $jobId)
@@ -32,7 +31,6 @@ class Cron
 
     /**
      * Execute cron jobs
-     * @return void
      */
     public function execute(): void
     {
@@ -63,7 +61,6 @@ class Cron
     /**
      * Run a cron job
      * @param Cron $job Cron job
-     * @return void
      * @throws DIException
      * @throws ReflectionException
      */

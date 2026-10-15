@@ -17,14 +17,14 @@ abstract class WidgetBase extends ExtBase
         $this->id = (int)$this->data['widget_id'];
     }
 
-    protected abstract function content();
+    protected abstract function content(): void;
 
-    protected function actions()
+    protected function actions(): void
     {
 
     }
 
-    public final function execute()
+    public final function execute(): string|false
     {
         if (Core::ajax()) {
             ob_start();

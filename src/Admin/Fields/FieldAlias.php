@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\Field;
 class FieldAlias extends Field
 {
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $val = $_POST[$this->name];
         if (empty($val) && !empty($this->params['source'])) {
@@ -20,7 +20,7 @@ class FieldAlias extends Field
         return $ret;
     }
 
-    public function defval()
+    public function defval(): string
     {
         return '';
     }

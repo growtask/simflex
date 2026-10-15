@@ -7,7 +7,6 @@ use Simflex\Core\DB\Schema\Params\ConstraintParams;
 
 class Constraint extends ElementBase
 {
-    /** @var \Simflex\Core\DB\Schema\Params\ConstraintParams */
     protected ConstraintParams $params;
 
     public function __construct(string $name = '')
@@ -22,9 +21,8 @@ class Constraint extends ElementBase
      * Sets primary key constraint
      *
      * @param array|string $column Column(s) to index
-     * @return $this
      */
-    public function primaryKey($column): self
+    public function primaryKey(array|string $column): static
     {
         if (!is_array($column)) {
             $column = [$column];
@@ -46,9 +44,8 @@ class Constraint extends ElementBase
      *
      * @param array|string $column Column(s) to index
      * @param bool $isIndex Should mark this constraint as index
-     * @return $this
      */
-    public function unique($column, bool $isIndex = false): self
+    public function unique(array|string $column, bool $isIndex = false): static
     {
         if (!is_array($column)) {
             $column = [$column];
@@ -71,9 +68,8 @@ class Constraint extends ElementBase
      *
      * @param string $referenceTable Target reference table
      * @param string|array $colToReference Associative array or string of my_column => their_column
-     * @return $this
      */
-    public function foreignKey(string $referenceTable, $colToReference): self
+    public function foreignKey(string $referenceTable, string|array $colToReference): static
     {
         $columns = [];
         $referenceColumns = [];
@@ -104,9 +100,8 @@ class Constraint extends ElementBase
      * Sets MATCH option for foreign key
      *
      * @param string $match ConstraintParams::REFERENCE_MATCH_{X}
-     * @return $this
      */
-    public function match(string $match): self
+    public function match(string $match): static
     {
         $this->params->match = $match;
         return $this;
@@ -116,9 +111,8 @@ class Constraint extends ElementBase
      * Sets ON DELETE option for foreign key
      *
      * @param string $option ConstraintParams::REFERENCE_OPTION_{X}
-     * @return $this
      */
-    public function onDelete(string $option): self
+    public function onDelete(string $option): static
     {
         $this->params->onDelete = $option;
         return $this;
@@ -128,9 +122,8 @@ class Constraint extends ElementBase
      * Sets ON UPDATE option for foreign key
      *
      * @param string $option ConstraintParams::REFERENCE_OPTION_{X}
-     * @return $this
      */
-    public function onUpdate(string $option): self
+    public function onUpdate(string $option): static
     {
         $this->params->onUpdate = $option;
         return $this;
@@ -138,9 +131,6 @@ class Constraint extends ElementBase
 
     // ------------ UTIL ------------ //
 
-    /**
-     * @return \Simflex\Core\DB\Schema\Params\ConstraintParams
-     */
     public function getParams(): ConstraintParams
     {
         return $this->params;

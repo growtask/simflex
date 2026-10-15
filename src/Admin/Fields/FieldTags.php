@@ -7,7 +7,7 @@ class FieldTags extends Field
 {
     public  array $values = [];
 
-            public function input($value)
+            public function input($value): string
             {
                 if (!$this->values) {
                     // load shit
@@ -24,6 +24,7 @@ class FieldTags extends Field
                         $this->values = array_unique($this->values);
                     }
                 }
+                ob_start();
                 echo '<div class="form-control__tags" data-readonly="false">
 <input class="form-control__tags-value" value="'.$value.'" type="hidden" name="'.$this->name.'">
 <ul class="form-control__tags-list">
@@ -43,6 +44,7 @@ class FieldTags extends Field
         </div>
     </div>
 </div>';
+                return (string)ob_get_clean();
             }
     public static function typeLabel(): string
     {

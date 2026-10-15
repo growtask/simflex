@@ -16,7 +16,7 @@ class FieldPasswordVisible extends Field
         }
     }
 
-    public function show($row)
+    public function show($row): void
     {
         echo '<div style="text-align: center">***</div>';
     }

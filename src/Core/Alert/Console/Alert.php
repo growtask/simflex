@@ -7,27 +7,27 @@ use Simflex\Core\Log;
 #[Deprecated]
 class Alert
 {
-    public static function text($message)
+    public static function text($message): void
     {
         Log::notice($message);
     }
 
-    public static function error($message)
+    public static function error($message): void
     {
         Log::error($message);
     }
 
-    public static function warning($message)
+    public static function warning($message): void
     {
         Log::warning($message);
     }
 
-    public static function success($message)
+    public static function success($message): void
     {
         Log::info($message);
     }
 
-    public static function result($success, $successMessage, $errorMessage)
+    public static function result($success, $successMessage, $errorMessage): void
     {
         if ($success) {
             static::success($successMessage);

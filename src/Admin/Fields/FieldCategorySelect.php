@@ -6,7 +6,7 @@ use Simflex\Core\DB;
 
 class FieldCategorySelect extends Field
 {
-    public function input($value)
+    public function input($value): string
     {
         $this->syncCategories();
 
@@ -19,7 +19,7 @@ class FieldCategorySelect extends Field
         return $out .'</select>';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $data = $_POST[$this->inputName()] ?: [];
         foreach ($data as $val) {
@@ -31,7 +31,7 @@ class FieldCategorySelect extends Field
         return "'" . DB::escape(implode(',', $data)) . "'";
     }
 
-    protected function syncCategories()
+    protected function syncCategories(): void
     {
         $realCats = DB::assoc('SELECT title as name FROM content WHERE template_id = 6');
         $existing = DB::assoc('SELECT name FROM shared_category');

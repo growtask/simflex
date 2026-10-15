@@ -34,25 +34,21 @@ class Base
     public string $name = '';
     protected string $action = '';
     protected string $table = '';
-    protected array $tableData = array();  // table metadata
-    protected array $fields = array();     // fields by name
-    protected array $fks = array();        // forieng key fields
-    protected array $blocks = array();     // form field group labels, filled in by form.tpl
-    /**
-     *
-     * @var FieldInt
-     */
+    protected array $tableData = [];  // table metadata
+    protected array $fields = [];     // fields by name
+    protected array $fks = [];        // forieng key fields
+    protected array $blocks = [];     // form field group labels, filled in by form.tpl
     protected FieldInt|false $pk = false;
     protected FieldInt|false $pid = false;
     protected bool $isHierarchy = false;
-    protected array $params = array('left' => array(), 'right' => array());
-    protected array $where = array();
-    protected array $whereOr = array();
-    protected array $where_sys = array();
+    protected array $params = ['left' => [], 'right' => []];
+    protected array $where = [];
+    protected array $whereOr = [];
+    protected array $where_sys = [];
     protected string $order = '';
     protected string $order2 = '';
     protected int $desc = 0;
-    protected array $errors = array();
+    protected array $errors = [];
     protected int $p = 0;
     protected int $p_on = 20;
     protected int $p_count = 0;
@@ -122,7 +118,7 @@ class Base
         $this->canDelete = !empty($this->tableData['priv_delete']) ? User::ican((int)$this->tableData['priv_delete']) : true;
     }
 
-    protected function initTableName()
+    protected function initTableName(): void
     {
         if (empty($this->table)) {
             $row = Core::menuCurItem();
@@ -133,12 +129,12 @@ class Base
         $this->name = $this->table;
     }
 
-    protected function initTableData()
+    protected function initTableData(): void
     {
         $this->tableData = StructureRepository::table($this->table);
     }
 
-    protected function deleteField()
+    protected function deleteField(): void
     {
         $fieldName = DB::escape(@$_GET['field_name']);
         $keyName = $this->pk->name;
@@ -171,27 +167,27 @@ class Base
         echo json_encode(['success' => !!$success]);
     }
 
-    public function uploadImg()
+    public function uploadImg(): never
     {
         $img = new Image($_REQUEST['path']);
         $img->loadPost('img');
         $name = $img->getName();
         $img->save();
 
-        return die($name);
+        die($name);
     }
 
-    public function uploadFile()
+    public function uploadFile(): never
     {
         $f = new File();
         $f->loadPost('file');
         $name = $f->getName();
         $f->save();
 
-        return die($name);
+        die($name);
     }
 
-    public function searchTags()
+    public function searchTags(): never
     {
         /** @var Field $field */
         $field = $this->fields[$_REQUEST['name']];
@@ -211,7 +207,7 @@ class Base
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
-    public function content()
+    public function content(): void
     {
         $row = Core::menuCurItem();
 
@@ -252,7 +248,7 @@ class Base
         }
     }
 
-    protected function widgets()
+    protected function widgets(): void
     {
         $q = "SELECT * FROM admin_widget WHERE active = 1 ORDER BY npp, widget_id";
         $rows = DB::assoc($q);
@@ -267,7 +263,7 @@ class Base
         echo count($rows) ? '</div>' : '';
     }
 
-    protected function beforeChangeENUM($field, $row, $newValue)
+    protected function beforeChangeENUM(Field $field, $row, $newValue): mixed
     {
         if (!$this->canEdit) {
             Alert::error("В этом разделе запрещено редактировать записи", './');
@@ -278,11 +274,11 @@ class Base
         return $newValue;
     }
 
-    protected function afterChangeENUM($field, $row, $newValue, $success)
+    protected function afterChangeENUM(Field $field, $row, $newValue, $success): void
     {
     }
 
-    protected function changeENUM($withRedirect = true)
+    protected function changeENUM(bool $withRedirect = true): void
     {
         $fieldName = $_REQUEST['field'];
         $newValue = $_REQUEST['newstatus'];
@@ -308,7 +304,7 @@ class Base
         }
     }
 
-    protected function changeNPP()
+    protected function changeNPP(): never
     {
         $field = DB::escape($_REQUEST['field']);
 
@@ -334,7 +330,7 @@ class Base
         exit;
     }
 
-    private function index()
+    private function index(): void
     {
         $cur = Core::menuCurItem();
         $cur_id = isset($cur['menu_id']) ? $cur['menu_id'] : 0;
@@ -344,7 +340,7 @@ class Base
         }
     }
 
-    public final function execute($is_print = false)
+    public final function execute(bool $is_print = false): string|false|null
     {
         if ($is_print) {
             $this->content();
@@ -355,9 +351,9 @@ class Base
         }
     }
 
-    protected function getSelectSelect()
+    protected function getSelectSelect(): string
     {
-        $ar = array();
+        $ar = [];
         foreach ($this->fks as $field) {
             $fkAdd = '' . $field->fk->table . $field->name . '.' . $field->fk->label . ' ' . $field->name . '_label';
             if ($field->fk->table == $this->table) {
@@ -383,7 +379,7 @@ class Base
         return $ret;
     }
 
-    protected function getSelectFrom()
+    protected function getSelectFrom(): string
     {
         $q = "\r\nFROM `" . $this->table . '`';
         foreach ($this->fks as $field) {
@@ -394,7 +390,7 @@ class Base
         return $q;
     }
 
-    protected function getSelectWhere()
+    protected function getSelectWhere(): string
     {
         $where = array_merge($this->where_sys, $this->where);
         $ret = count($where) ? "\r\nWHERE " . join(' AND ', $where) : '';
@@ -402,9 +398,9 @@ class Base
         return $ret;
     }
 
-    protected function getSelectOrderBy()
+    protected function getSelectOrderBy(): string
     {
-        $order = array();
+        $order = [];
         if ($this->order) {
             $order[] = $this->order . ($this->desc ? ' DESC' : '');
         }
@@ -414,12 +410,12 @@ class Base
         return count($order) ? "\r\nORDER BY " . join(', ', $order) : "";
     }
 
-    protected function getSelectLimit()
+    protected function getSelectLimit(): string
     {
         return $this->isHierarchy ? "" : "\r\nLIMIT " . $this->p * $this->p_on . ", " . $this->p_on;
     }
 
-    protected function getQueryCount()
+    protected function getQueryCount(): string
     {
         $q = "SELECT COUNT(*) cnt";
         $q .= $this->getSelectFrom();
@@ -427,7 +423,7 @@ class Base
         return $q;
     }
 
-    protected function getQuerySelect()
+    protected function getQuerySelect(): string
     {
         $q = $this->getSelectSelect();
         $q .= $this->getSelectFrom();
@@ -437,14 +433,14 @@ class Base
         return $q;
     }
 
-    protected function filterReset()
+    protected function filterReset(): never
     {
         $_SESSION[$this->table] = [];
         header('Location: ./');
         exit;
     }
 
-    protected function prepareWhere()
+    protected function prepareWhere(): void
     {
         foreach ($this->fields as $field) {
             $_SESSION[$this->table]['filter'][$field->name] = isset($_SESSION[$this->table]['filter'][$field->name]) ? $_SESSION[$this->table]['filter'][$field->name] : '';
@@ -477,7 +473,7 @@ class Base
         }
     }
 
-    public function show()
+    public function show(): void
     {
         $this->prepareWhere();
 
@@ -500,7 +496,7 @@ class Base
 
         $q = $this->getQuerySelect();
         $r = DB::query($q);
-        $rows = array();
+        $rows = [];
         if ($this->isHierarchy) {
             $tree_name = $this->pid->name;
             foreach ($this->fields as $field) {
@@ -510,7 +506,7 @@ class Base
                 }
             }
 
-            $tree = array();
+            $tree = [];
             while ($row = DB::fetch($r)) {
                 $tree[(int)$row[$this->pid->name]][(int)$row[$this->pk->name]] = $row;
             }
@@ -534,17 +530,14 @@ class Base
     }
 
     /**
-     *
-     * @param Field $field
-     * @param array $row
-     * @return void Use echo
+     * Use echo
      */
-    protected function showCell($field, $row)
+    protected function showCell(Field $field, array $row): void
     {
         echo $field->show($row);
     }
 
-    protected function initTable()
+    protected function initTable(): void
     {
         if ($this->tableData) {
             // TABLE STRUCTURE
@@ -602,18 +595,16 @@ class Base
 
     /**
      * Загрузка параметров из БД
-     * @return array
      */
-    protected function tableParamsLoad()
+    protected function tableParamsLoad(): array
     {
         return StructureRepository::params($this->table);
     }
 
     /**
      * Инициализация параметров. Загружаются из $this->tableParamsLoad()
-     * @return void
      */
-    protected function tableParamsInit()
+    protected function tableParamsInit(): void
     {
         $params = $this->tableParamsLoad();
         if (count($params)) {
@@ -639,31 +630,26 @@ class Base
                 }
             }
         }
-//        print_r($this->params);
     }
 
-    protected function filter()
+    protected function filter(): void
     {
         if ($this->is_filter) {
             include dirname(__FILE__) . '/Base/tpl/filter.tpl';
         }
     }
 
-    protected function filterExtra($addClearfix = true)
+    protected function filterExtra(bool $addClearfix = true): void
     {
         include 'Base/tpl/filter.extra.tpl';
     }
 
-    /**
-     * @param Field $field
-     * @return mixed
-     */
-    protected function filterField($field)
+    protected function filterField(Field $field): void
     {
-        return $field->filter($_REQUEST['filter'][$field->name] ?? '');
+        $field->filter($_REQUEST['filter'][$field->name] ?? '');
     }
 
-    public function addField($field)
+    public function addField($field): void
     {
         if ($field instanceof Field) {
             $this->fields[$field->name] = &$field;
@@ -696,7 +682,7 @@ class Base
         }
     }
 
-    public function boolChange()
+    public function boolChange(): mixed
     {
         $pk = (int)$_REQUEST['pk'];
         $field = $_REQUEST['field'];
@@ -719,7 +705,7 @@ class Base
         return -1;
     }
 
-    public function form()
+    public function form(): void
     {
         if (isset($_GET['ids']) && count(explode(',', $_GET['ids'])) == 1) {
             header("location: ?action=form&{$this->pk->name}={$_GET['ids']}");
@@ -742,7 +728,7 @@ class Base
         }
 
         $row = &$this->row;
-        $row = array();
+        $row = [];
         foreach ($this->fields as $index => $field) {
             if ($field instanceof FieldVirtual) {
                 unset($this->fields[$index]);
@@ -800,7 +786,7 @@ class Base
             $q = "SELECT * FROM `$this->table` WHERE {$this->pk->name} in (" . $ids . ")";
             $rows = DB::assoc($q);
             foreach ($this->fields as $field) {
-                $vars = array();
+                $vars = [];
                 foreach ($rows as $row0) {
                     $vars[$row0[$field->name]] = true;
                 }
@@ -820,14 +806,14 @@ class Base
             }
 
             if ($hasSetParams) {
-                $params = array();
+                $params = [];
                 foreach ($this->params as $paramz) {
                     foreach ($paramz as $group) {
                         if (isset($group['fields'])) {
                             foreach ($group['fields'] as $field) {
                                 if (is_object($field)) {
                                     if ($group['name']) {
-                                        $vars = array();
+                                        $vars = [];
                                         foreach ($rows as $row0) {
                                             $rowParams = unserialize($row0['params']);
                                             @$vars[$rowParams[$group['name']][$field->name]] = true;
@@ -838,7 +824,7 @@ class Base
                                             }
                                         }
                                     } else {
-                                        $vars = array();
+                                        $vars = [];
                                         foreach ($rows as $row0) {
                                             $rowParams = unserialize($row0['params']);
                                             $vars[$rowParams[$field->name]] = true;
@@ -853,7 +839,7 @@ class Base
                             }
                         }
                         if (isset($group['field'])) {
-                            $vars = array();
+                            $vars = [];
                             foreach ($rows as $row0) {
                                 $rowParams = unserialize($row0['params']);
                                 $vars[$rowParams[$field->name]] = true;
@@ -884,7 +870,7 @@ class Base
             }
         }
 
-        $params = array();
+        $params = [];
         if (!empty($row['params'])) {
             $params = unserialize($row['params']);
         }
@@ -893,35 +879,29 @@ class Base
         include dirname(__FILE__) . '/Base/tpl/form.tpl';
     }
 
-    protected function formBeforeOutput(&$row)
+    protected function formBeforeOutput(array &$row): void
     {
     }
 
     /**
      * Вывод html-кода для ввода данных на форме
-     * @param Field $field
-     * @param array $row
-     * @return string
      */
-    protected function formFieldInput($field, $row)
+    protected function formFieldInput(Field $field, array $row): string
     {
         return $field->input($field->value ?: @$row[$field->name]);
     }
 
-    /**
-     * return @void
-     */
-    public function showActions()
+    public function showActions(): void
     {
         include 'Base/tpl/show.actions.tpl';
     }
 
-    public function rowActions($row, $i)
+    public function rowActions($row, $i): void
     {
         include 'Base/tpl/show.actions.row.tpl';
     }
 
-    public function searchInt()
+    public function searchInt(): array
     {
         $text = trim(DB::escape($_REQUEST['text']));
         $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
@@ -942,7 +922,7 @@ class Base
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
-    public function searchMultiKey()
+    public function searchMultiKey(): array
     {
         $text = DB::escape($_REQUEST['text']);
         $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
@@ -963,13 +943,13 @@ class Base
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
-    public function copy()
+    public function copy(): never
     {
         $q = "SELECT * FROM `$this->table` WHERE {$this->pk->name} in ($this->ids)";
         $rows = DB::assoc($q);
-        $fieldNames = array('name', 'title', 'label');
+        $fieldNames = ['name', 'title', 'label'];
         foreach ($rows as $row) {
-            $set = array();
+            $set = [];
             foreach ($row as $key => $value) {
                 if ($key == $this->pk->name) {
                     continue;
@@ -997,7 +977,7 @@ class Base
         exit;
     }
 
-    public function validate()
+    public function validate(): int|bool
     {
         foreach ($this->fields as $field) {
             if ($errors = $field->check()) {
@@ -1007,7 +987,7 @@ class Base
             }
         }
         if (Core::$isAjax) {
-            $json = array();
+            $json = [];
             $json['valid'] = count($this->errors) ? 0 : 1;
             if (count($this->errors)) {
                 foreach ($this->errors as $field => $errors) {
@@ -1021,11 +1001,11 @@ class Base
         }
     }
 
-    public function saveGroup()
+    public function saveGroup(): string
     {
         $success = true;
         $ids = @$_POST['group_ids'];
-        $set = array();
+        $set = [];
         foreach ($this->fields as $index => $field) {
             if (isset($_POST['set'][$field->name]) && !($field instanceof FieldVirtual)) {
                 $value = $field->getPOST();
@@ -1047,7 +1027,7 @@ class Base
             foreach ($rows as $row) {
                 $params = unserialize($row['params']);
                 if (!is_array($params)) {
-                    $params = array();
+                    $params = [];
                 }
 
                 $MY_POST = $_POST;
@@ -1099,15 +1079,12 @@ class Base
             Alert::error('Записи ' . $ids . ' не сохранены!');
         }
         return 'ids';
-//        header("location: ./");
-//        exit;
     }
 
     /**
-     *
-     * @return bool|int pkValue | false
+     * @return string|int|false pkValue | false
      */
-    public function save()
+    public function save(): string|int|false
     {
         if (!empty($_POST['group_ids'])) {
             return $this->saveGroup();
@@ -1123,7 +1100,6 @@ class Base
             $isInsert = empty($_POST[$this->pk->name]);
             $isUpdate = !$isInsert;
             $q = $isInsert ? $this->getQueryInsert() : $this->getQueryUpdate();
-//            echo $q;die;
 
             DB::query($q[0], $q[1]);
             if (DB::errno()) {
@@ -1220,9 +1196,9 @@ class Base
         return count($this->errors) ? false : $pkValue;
     }
 
-    protected function getQueryInsert()
+    protected function getQueryInsert(): array
     {
-        $keys = $values = array();
+        $keys = $values = [];
         $vals = [];
         foreach ($this->fields as $field) {
             if ($field->isVirtual) {
@@ -1253,7 +1229,7 @@ class Base
         return [$q, $vals];
     }
 
-    protected function getQueryUpdate()
+    protected function getQueryUpdate(): array
     {
         $q = "SELECT * FROM `" . $this->table . "` WHERE " . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
         $row = DB::result($q);
@@ -1276,7 +1252,6 @@ class Base
                     }
                 } elseif ($field instanceof FieldDateTime) {
                     $cinfo = DB::columnInfo($this->table, $field->name);
-                    // && 'on update CURRENT_TIMESTAMP' == $cinfo['Extra']
                     if (empty($cinfo['Extra'])) {
                         $value = $field->getPOST();
                         if ($value) {
@@ -1298,18 +1273,13 @@ class Base
         }
         $q = substr($q, 0, -1);
         $q .= " WHERE " . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
-        /*
-          echo $q;
-          die();
-         *
-         */
 
         return [$q, $vals];
     }
 
-    protected function getParams()
+    protected function getParams(): array
     {
-        $params = array();
+        $params = [];
         $MY_POST = $_POST;
         foreach ($this->params as $paramz) {
             foreach ($paramz as $group) {
@@ -1345,10 +1315,9 @@ class Base
 
     /**
      * Удаляет одну запись
-     * @param int $id
-     * @return int errno
+     * @return string "errno: error" или пустая строка при успехе
      */
-    protected function deleteItem($id)
+    protected function deleteItem(int $id): string
     {
         $where = $this->where_sys;
         $where[] = $this->pk->name . "=" . (int)$id;
@@ -1359,16 +1328,15 @@ class Base
 
     /**
      * Обработчик кнопки "удалить"
-     * @return void
      */
-    public function delete()
+    public function delete(): never
     {
         if (!$this->canDelete) {
             Alert::error('Ошибка! Недостаточно прав для удаления записей в данном разделе', './');
         }
 
-        $ids_temp = (isset($_REQUEST['rows']) && is_array($_REQUEST['rows'])) ? $_REQUEST['rows'] : array();
-        $ids = array();
+        $ids_temp = (isset($_REQUEST['rows']) && is_array($_REQUEST['rows'])) ? $_REQUEST['rows'] : [];
+        $ids = [];
         foreach ($ids_temp as $id) {
             if ((int)$id > 0) {
                 $ids[] = (int)$id;
@@ -1401,7 +1369,7 @@ class Base
             }
         }
 
-        $deleted = array();
+        $deleted = [];
         foreach ($ids as $id) {
             $n = $this->deleteItem($id);
             if ($n) {
@@ -1416,16 +1384,11 @@ class Base
         exit;
     }
 
-    protected function portlets($position = 'right')
+    protected function portlets(string $position = 'right'): void
     {
     }
 
-    /**
-     *
-     * @param int $id
-     * @return array
-     */
-    protected function getRow($id)
+    protected function getRow(int|string $id): array|false|null
     {
         $id = (int)$id;
         $q = "SELECT * FROM `$this->table` WHERE {$this->pk->name} = $id";
@@ -1434,12 +1397,9 @@ class Base
     }
 
     /**
-     *
-     * @param DBWhere $where
      * @param bool [optional = true] $withKeys - Если true, ключи массива будут ID записей
-     * @return array
      */
-    protected function getRows(DBWhere $where = null, $withKeys = true)
+    protected function getRows(?DBWhere $where = null, bool $withKeys = true): array|bool
     {
         $q = "SELECT * FROM `$this->table` $where";
         $rows = DB::assoc($q, $withKeys ? $this->pk->name : false);
@@ -1447,11 +1407,11 @@ class Base
     }
 
 
-    protected function showDetailExtra($row)
+    protected function showDetailExtra($row): void
     {
     }
 
-    public function showDetail()
+    public function showDetail(): never
     {
         $id = (int)@$_GET['id'];
         $row = $this->showDetailGetRow($id);
@@ -1459,19 +1419,12 @@ class Base
         exit;
     }
 
-    /**
-     * @return string
-     */
-    protected function showDetailGetTpl()
+    protected function showDetailGetTpl(): string
     {
         return 'Base/tpl/show.detail.tpl';
     }
 
-    /**
-     * @param int $id
-     * @return array
-     */
-    protected function showDetailGetRow($id)
+    protected function showDetailGetRow(int $id): array|false|null
     {
         $this->vfields = $this->fields;
         $q = $this->getSelectSelect() . $this->getSelectFrom() . "\nWHERE `{$this->pk->name}` = $id";
@@ -1480,12 +1433,9 @@ class Base
     }
 
     /**
-     * @param $row
-     * @param $key
-     * @return mixed|string|void
      * @throws \Exception code == 999 - skip row
      */
-    protected function showDetailPrepareValue($row, $key)
+    protected function showDetailPrepareValue($row, $key): ?string
     {
         $value = $row[$key];
         /** Field $field */

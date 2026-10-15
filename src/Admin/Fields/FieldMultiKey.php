@@ -18,9 +18,9 @@ class FieldMultiKey extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
-        $fields = array("*");
+        $fields = ["*"];
 
         $value = (int)@$_GET[$this->tablePk];
         if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
@@ -51,6 +51,7 @@ class FieldMultiKey extends Field
 
         $valReal = implode(',', $valReal);
 
+        ob_start();
         echo '<div class="form-control__tags" data-readonly="true">
                                                 <input class="form-control__tags-value" value="'.$valReal.'" type="hidden" name="'.$this->name.'">
                                                 <ul class="form-control__tags-list">
@@ -69,17 +70,10 @@ for ($i = 0; $i < count($rows); ++$i) {
                                                     </div>
                                                 </div>
                                             </div>';
-
-//
-//
-//        echo '<div class="checkbox-list">';
-//        foreach ($rows as $row) {
-//            echo '<label class="checkbox-inline"><input type="checkbox" name="' . $this->name . '[' . $row[(string)$this->params['key']] . ']" value="' . $row[(string)$this->params['key']] . '"' . (!empty($row['checked']) ? ' checked' : '') . ' /> ' . $row[(string)$this->params['key_alias']] . '</label>';
-//        }
-//        echo '</div>';
+        return (string)ob_get_clean();
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $pkValue = (int)@$_REQUEST[$this->tablePk];
         if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
@@ -90,7 +84,7 @@ for ($i = 0; $i < count($rows); ++$i) {
             return '';
         }
 
-        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : array();
+        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : [];
         $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
         DB::query($q);
 
@@ -107,7 +101,7 @@ for ($i = 0; $i < count($rows); ++$i) {
         return '';
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $pkValue = (int)$row[$this->tablePk];
         if (!isset(self::$buffer)) {
@@ -133,7 +127,7 @@ for ($i = 0; $i < count($rows); ++$i) {
         echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-text">' . (string)@self::$buffer[$pkValue] . '</div>';
     }
 
-    public function filter($value)
+    public function filter($value): void
     {
         $value = DB::escape($value);
 
@@ -185,7 +179,7 @@ HTML;
 
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         return '';
     }

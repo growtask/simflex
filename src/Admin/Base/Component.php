@@ -19,7 +19,7 @@ class Component extends Base
         parent::__construct();
     }
 
-    protected function tableParamsInit()
+    protected function tableParamsInit(): void
     {
         parent::tableParamsInit();
         $componentId = (int)@$_GET['component_id'];
@@ -48,7 +48,7 @@ class Component extends Base
         }
 
         if ($hasWithoutGroup) {
-            $fields = array();
+            $fields = [];
             foreach ($rows[''] as $row) {
                 if ($row['class']) {
                     $params = unserialize($row['table_params']);
@@ -57,14 +57,14 @@ class Component extends Base
                     $fields[] = $field;
                 }
             }
-            $group = array('name' => '', 'label' => 'Параметры');
+            $group = ['name' => '', 'label' => 'Параметры'];
             $group['fields'] = $fields;
             $this->params['right'][-1] = $group;
         }
 
         $counter = -2;
         foreach ($rows[''] as $pid => $row0) {
-            $fields = array();
+            $fields = [];
             if (!isset($rows[$pid])) {
                 continue;
             }
@@ -81,7 +81,7 @@ class Component extends Base
         }
     }
 
-    protected function getParams()
+    protected function getParams(): array
     {
         $params = parent::getParams();
         if (!empty($_POST['component_id'])) {

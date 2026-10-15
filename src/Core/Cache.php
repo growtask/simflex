@@ -8,7 +8,7 @@ class Cache
 
     protected static string $dir;
 
-    protected static function getFilePath($key)
+    protected static function getFilePath(string $key): string
     {
         if (empty(static::$dir)) {
             static::$dir = "{$_SERVER['DOCUMENT_ROOT']}/uf/files/cache";
@@ -21,20 +21,17 @@ class Cache
         return static::$dir . '/' . static::encodeKey($key);
     }
 
-    protected static function encodeKey($key)
+    protected static function encodeKey(string $key): string
     {
         return preg_match('@^[\w\d\.\-\_]{1,24}$@i', $key) ? $key : md5($key);
     }
 
     /**
-     * @param string $key
-     * @param callable $callback
      * @param int $expires Cache value validity in seconds
      * @param bool $fetchedFromCache additional return value, true if fetched from cache, false if pushed to cache
-     * @return mixed
      * @throws \Exception
      */
-    public static function getOrSet(string $key, callable $callback, int $expires = 0, &$fetchedFromCache = null)
+    public static function getOrSet(string $key, callable $callback, int $expires = 0, &$fetchedFromCache = null): mixed
     {
         $value = static::get($key);
         $fetchedFromCache = !is_null($value);
@@ -46,12 +43,9 @@ class Cache
     }
 
     /**
-     * @param string $key
-     * @param mixed $value
-     * @param int $expires
      * @throws \Exception
      */
-    public static function set(string $key, $value, int $expires = 0)
+    public static function set(string $key, mixed $value, int $expires = 0): void
     {
         $time = $expires > 0 ? time() + $expires : 0;
         $contents = array_merge([$time], static::serialize($value));
@@ -61,11 +55,9 @@ class Cache
     }
 
     /**
-     * @param string $key
-     * @return mixed
      * @throws \Exception
      */
-    public static function get(string $key)
+    public static function get(string $key): mixed
     {
         $fp = static::getFilePath($key);
         if (!is_file($fp)) {
@@ -79,7 +71,6 @@ class Cache
         ) {
             unlink($fp);
             return null;
-//            throw new \Exception("Broken cache file $fp");
         }
         if ($til && $til < time()) {
             unlink($fp);
@@ -107,7 +98,7 @@ class Cache
         }
     }
 
-    protected static function serialize($value)
+    protected static function serialize(mixed $value): array
     {
         if (is_numeric($value)) {
             return ['numeric', $value];

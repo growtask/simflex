@@ -21,20 +21,16 @@ class Page
 
     protected static string $menu = '';
     protected static string $content = '';
-    protected static array $positions = array();
-    protected static array $modules = array();
-    protected static array $css = array();
-    protected static array $css_check = array();
-    protected static array $js = array();
-    protected static array $js_check = array();
+    protected static array $positions = [];
+    protected static array $modules = [];
+    protected static array $css = [];
+    protected static array $css_check = [];
+    protected static array $js = [];
+    protected static array $js_check = [];
 
-    /**
-     *
-     * @var Base
-     */
     protected static Base|\Simflex\Core\ModuleBase|false $driver = false;
 
-    public static function init()
+    public static function init(): void
     {
 
         if (!User::ican('simplex_admin')) {
@@ -77,11 +73,11 @@ class Page
             // todo: lol fix this
             if (Container::getRequest()->getPath() == '/admin/account/') {
                 self::$driver = new Account([]);
-            } elseif (in_array($menuCurModel, array('module_param', 'content_template_param'))) {
+            } elseif (in_array($menuCurModel, ['module_param', 'content_template_param'])) {
                 self::$driver = new Struct();
-            } elseif (in_array($menuCurModel, array('module_item'))) {
+            } elseif (in_array($menuCurModel, ['module_item'])) {
                 self::$driver = new ModuleItem();
-            } elseif (in_array($menuCurModel, array('component'))) {
+            } elseif (in_array($menuCurModel, ['component'])) {
                 self::$driver = new Component();
             } else {
                 self::$driver = new Base();
@@ -113,12 +109,12 @@ class Page
         }
     }
 
-    public static function content()
+    public static function content(): void
     {
         echo self::$content;
     }
 
-    public static function position($posname)
+    public static function position(string $posname): void
     {
         if ($posname && !empty(self::$positions[$posname])) {
             $i = 0;
@@ -134,14 +130,14 @@ class Page
         }
     }
 
-    public static function module($modname)
+    public static function module(string $modname): void
     {
         if ($modname && !empty(self::$modules[$modname])) {
             echo self::$modules[$modname];
         }
     }
 
-    public static function css($file, $idx = 100)
+    public static function css(string $file, int $idx = 100): void
     {
         $idx = (int)$idx;
         if (empty(self::$css[$idx][md5($file)])) {
@@ -154,7 +150,7 @@ class Page
         }
     }
 
-    public static function js($file, $idx = 100)
+    public static function js(string $file, int $idx = 100): void
     {
         $idx = (int)$idx;
         if (empty(self::$js[$idx][md5($file)])) {
@@ -167,23 +163,20 @@ class Page
         }
     }
 
-    public static function coreCss($file, $idx = 100)
+    public static function coreCss(string $file, int $idx = 100): void
     {
         $file = Core::webVendorPath() . $file;
         static::css($file, $idx);
     }
 
-    public static function coreJs($file, $idx = 100)
+    public static function coreJs(string $file, int $idx = 100): void
     {
         $file = Core::webVendorPath() . $file;
         static::js($file, $idx);
     }
 
-    public static function meta()
+    public static function meta(): void
     {
-        //echo $this->description ? '<meta name="description" content="'.$this->description.'" />'."\r\n" : '';
-        //echo $this->keywords ? '<meta name="keywords" content="'.$this->keywords.'" />'."\r\n" : '';
-
         echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />', "\r\n";
 
         ksort(self::$css);
@@ -204,7 +197,7 @@ class Page
         }
     }
 
-    public static function notifications()
+    public static function notifications(): void
     {
         Collection::getInstance()->content();
     }

@@ -11,7 +11,7 @@ class CookieMiddleware implements Handler
     /**
      * @inheritDoc
      */
-    public function handle($payload, \Closure $next)
+    public function handle(mixed $payload, \Closure $next): mixed
     {
         $cookies = new CookieTokenBag(CookieTokenBag::defaultPrefix());
         $cookies->delete();

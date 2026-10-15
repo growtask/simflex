@@ -30,43 +30,37 @@ class ErrorCollection implements \ArrayAccess
         }
     }
 
-    /**
-     * @param Error $e
-     */
-    public function add(Error $e)
+    public function add(Error $e): void
     {
         $this->errors[$e->getCode()] = $e;
     }
 
-    /**
-     * @return Error|null
-     */
-    public function getFirst()
+    public function getFirst(): ?Error
     {
         return $this->errors ? reset($this->errors) : null;
     }
 
-    public function __get($key)
+    public function __get($key): mixed
     {
         return $this->errors[$key];
     }
 
-    public function __set($key, $value)
+    public function __set($key, $value): void
     {
         $this->errors[$key] = $value;
     }
 
-    public function __isset($key)
+    public function __isset($key): bool
     {
         return isset($this->errors[$key]);
     }
 
-    public function __unset($key)
+    public function __unset($key): void
     {
         unset($this->errors[$key]);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->errors[] = $value;
@@ -75,19 +69,19 @@ class ErrorCollection implements \ArrayAccess
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->errors[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         if ($this->offsetExists($offset)) {
             unset($this->errors[$offset]);
         }
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->offsetExists($offset) ? $this->errors[$offset] : null;
     }

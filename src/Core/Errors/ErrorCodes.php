@@ -39,12 +39,9 @@ class ErrorCodes
     const ERROR_HTTP_CODES = [];
 
     /**
-     * @param int $code
-     * @param bool $withCode [optional = false]
      * @param array $params Дополнительные необязательные параметры, например, для кастомизации текста ошибки.
      * Например текст ошибки "Required parameter {param}", тогда можно подставить через параметры значение:
      * ['param' => 'My awesome param']
-     * @return string
      */
     public static function getText(int $code, bool $withCode = false, array $params = []): string
     {

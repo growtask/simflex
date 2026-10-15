@@ -20,21 +20,19 @@ class Image extends File
      * @param type $path
      * @param type $sizes
      */
-    public function __construct($path, $sizes = array())
+    public function __construct($path, $sizes = [])
     {
         parent::__construct($path);
-        $this->sizes = is_array($sizes) ? $sizes : array();
+        $this->sizes = is_array($sizes) ? $sizes : [];
         $this->sizes['source'] = '2000x10000';
-        if (!in_array('90x90', array($this->sizes))) {
+        if (!in_array('90x90', [$this->sizes])) {
             $this->sizes['preview'] = '90x90';
         }
     }
 
-    public function loadPost($fileName)
+    public function loadPost(string $fileName): void
     {
         if (is_uploaded_file($this->uploadedFilePath = $_FILES[$fileName]['tmp_name'])) {
-            //print_r($_FILES);
-            //echo $_FILES[$fileName]['type'];
             switch ($_FILES[$fileName]['type']) {
                 case 'image/gif' :
                     $this->type = 'gif';
@@ -66,7 +64,7 @@ class Image extends File
         }
     }
 
-    public function convertTypeToStr()
+    public function convertTypeToStr(): void
     {
         if ($this->type == IMAGETYPE_JPEG) {
             $this->type = 'jpg';
@@ -81,7 +79,7 @@ class Image extends File
         }
     }
 
-    public function getTypeStr()
+    public function getTypeStr(): string|false
     {
         if ((string)$this->type === (string)(int)$this->type) {
             $type = '';
@@ -97,7 +95,7 @@ class Image extends File
         return $this->type;
     }
 
-    public function save()
+    public function save(): void
     {
         if ($this->img) {
             copy($this->uploadedFilePath, $this->outputMkDirReturnFilePath('raw'));
@@ -147,7 +145,7 @@ class Image extends File
         }
     }
 
-    protected function outputMkDirReturnFilePath($subdir)
+    protected function outputMkDirReturnFilePath($subdir): string
     {
         $typeStr = $this->getTypeStr($this->type);
         $name = $this->name . '.' . $typeStr;
@@ -163,7 +161,7 @@ class Image extends File
         return $this->path . $folder . $name;
     }
 
-    private function output($img, $subdir)
+    private function output($img, $subdir): ?bool
     {
         $typeStr = $this->getTypeStr($this->type);
         $file = $this->outputMkDirReturnFilePath($subdir);
@@ -177,9 +175,10 @@ class Image extends File
             case 'webp' :
                 return imagewebp($img, $file);
         }
+        return null;
     }
 
-    public function delete($name)
+    public function delete($name): bool|int
     {
         parent::delete($name);
         $success = true;
@@ -197,9 +196,8 @@ class Image extends File
 
     /**
      * Загружает изображение в свой буфер
-     * @param string $filename
      */
-    public function load($filename, $leaveName = false)
+    public function load(string $filename, $leaveName = false): void
     {
 
         $image_info = getimagesize($filename);
@@ -220,12 +218,12 @@ class Image extends File
         }
     }
 
-    protected function getWidth()
+    protected function getWidth(): int
     {
         return imagesx($this->img);
     }
 
-    protected function getHeight()
+    protected function getHeight(): int
     {
         return imagesy($this->img);
     }
@@ -234,7 +232,7 @@ class Image extends File
      * Изменяет размер изображения, подгоняет по высоте, сохраняя пропорции
      * @param int $height
      */
-    public function resizeToHeight($height)
+    public function resizeToHeight($height): void
     {
 
         $ratio = $height / $this->getHeight();
@@ -246,7 +244,7 @@ class Image extends File
      * Изменяет размер изображения, подгоняет по ширине, сохраняя пропорции
      * @param int $width
      */
-    public function resizeToWidth($width)
+    public function resizeToWidth($width): void
     {
         $ratio = $width / $this->getWidth();
         $height = $this->getheight() * $ratio;
@@ -257,7 +255,7 @@ class Image extends File
      * Изменяет размер изображения, сохраняя пропорции
      * @param int $scale Пропорция в процентах. Пример: $scale = 50, изображение уменьшится в 2 раза
      */
-    public function scale($scale)
+    public function scale($scale): void
     {
         $width = $this->getWidth() * $scale / 100;
         $height = $this->getheight() * $scale / 100;
@@ -269,7 +267,7 @@ class Image extends File
      * @param int $width
      * @param int $height
      */
-    public function resize($width, $height)
+    public function resize($width, $height): void
     {
         $new_image = imagecreatetruecolor($width, $height);
         imagecopyresampled($new_image, $this->img, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
@@ -283,7 +281,7 @@ class Image extends File
      * @param int (optional) $compression Процент сжатия качества
      * @param int (optional) $permissions Только для *nix систем
      */
-    public function saveAs($filename, $image_type = false, $compression = 100, $permissions = null)
+    public function saveAs($filename, $image_type = false, $compression = 100, $permissions = null): void
     {
 
         if ($image_type) {

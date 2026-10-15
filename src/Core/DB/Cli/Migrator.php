@@ -58,7 +58,6 @@ class Migrator extends ConsoleBase
     /**
      * Attempts to get migration object
      * @param string $name Migration name
-     * @return MigrationInterface|null
      */
     protected function getMigrationObject(string $name): ?MigrationInterface
     {
@@ -84,7 +83,6 @@ class Migrator extends ConsoleBase
     /**
      * Ups the migrations
      * @param string $steps Amount of steps to go
-     * @return void
      * @throws Exception
      */
     #[Command('Up migrations')]
@@ -151,8 +149,6 @@ class Migrator extends ConsoleBase
 
     /**
      * Downs the migrations
-     * @param string $steps
-     * @return void
      * @throws Exception
      */
     #[Command('Down migrations')]
@@ -203,8 +199,6 @@ class Migrator extends ConsoleBase
 
     /**
      * Refreshes the migrations
-     * @param string $steps
-     * @return void
      * @throws Exception
      */
     #[Command('Refresh migrations')]
@@ -217,8 +211,6 @@ class Migrator extends ConsoleBase
 
     /**
      * Creates a new migration
-     * @param string $name
-     * @return void
      */
     #[Command('Create new migration')]
     public function create(#[Help('Migration name')] string $name): void

@@ -15,7 +15,6 @@ interface Adapter
      * Bounds array items to the query
      *
      * @param array $params Items to bind
-     * @return void
      * @deprecated Use $params in query() instead
      */
     public function bind(array $params): void;
@@ -27,7 +26,7 @@ interface Adapter
      * @param array $params Vars for prepared statement
      * @return mixed False if fails, adapter-specific object containing result
      */
-    public function query(string $q, array $params = []);
+    public function query(string $q, array $params = []): mixed;
 
     /**
      * Fetches current row
@@ -35,7 +34,7 @@ interface Adapter
      * @param mixed $result Adapter-specific result object
      * @return mixed False if fails, assoc-array row if success
      */
-    public function fetch($result);
+    public function fetch(mixed $result): mixed;
 
     /**
      * Seeks result to a specific index
@@ -53,7 +52,7 @@ interface Adapter
      * @param int|string $field Column name/index
      * @return mixed False if fails, value on success
      */
-    public function result($result, $field);
+    public function result(mixed $result, int|string $field): mixed;
 
     /**
      * Makes custom assoc-array
@@ -88,8 +87,6 @@ interface Adapter
 
     /**
      * Returns SQLSTATE error code
-     *
-     * @return string|null
      */
     public function errorCode(): ?string;
 
@@ -117,22 +114,16 @@ interface Adapter
 
     /**
      * Begins transaction
-     *
-     * @return void
      */
     public function beginTransaction(): void;
 
     /**
      * Commits transaction
-     *
-     * @return void
      */
     public function commitTransaction(): void;
 
     /**
      * Rollbacks transaction
-     *
-     * @return void
      */
     public function rollbackTransaction(): void;
 }

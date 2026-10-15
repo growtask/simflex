@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\FieldFile;
 class FieldImage extends FieldFile
 {
 
-    public array $sizes = array();
+    public array $sizes = [];
 
     public function __construct($row)
     {
@@ -26,7 +26,7 @@ class FieldImage extends FieldFile
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
         parent::loadUI($onForm);
         if (!$onForm && class_exists('PlugJQuery')) {
@@ -34,7 +34,7 @@ class FieldImage extends FieldFile
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $imgPath = '/uf/images/' . $this->path . 'preview/' . $value;
         $defaultImg = asset('img/default-img.png');
@@ -154,18 +154,18 @@ DATA;
         return $s;
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $path = explode('/', $_POST[$this->name]);
         return end($path);
     }
 
-    public function show($row)
+    public function show($row): void
     {
         echo $this->showDetail($row);
     }
 
-    public function showDetail($row)
+    public function showDetail($row): string
     {
         $value = $row[$this->name];
 
@@ -174,7 +174,7 @@ DATA;
                         </div>';
     }
 
-    public function delete($value)
+    public function delete($value): bool
     {
         if ($this->required || $this->readonly) {
             return false;

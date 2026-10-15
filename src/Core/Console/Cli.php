@@ -102,7 +102,6 @@ class Cli
     /**
      * Executes the command
      * @param array $args Argument list
-     * @return void
      */
     public function execute(array $args): void
     {
@@ -159,7 +158,6 @@ class Cli
 
     /**
      * Prints all available providers to log
-     * @return void
      */
     public function printProviders(): void
     {
@@ -170,7 +168,6 @@ class Cli
 
     /**
      * Prints all available methods to log
-     * @return void
      */
     public function printMethods(): void
     {
@@ -185,7 +182,6 @@ class Cli
 
     /**
      * Prints current method's help to log
-     * @return void
      */
     public function printHelp(): void
     {

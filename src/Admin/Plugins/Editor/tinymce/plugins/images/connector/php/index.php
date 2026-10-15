@@ -28,13 +28,13 @@ class TinyImageManager {
 		
 		if(!isset($_SESSION['tiny_image_manager_path'])) $_SESSION['tiny_image_manager_path'] = '';
 		
-		$this->ALLOWED_IMAGES = array('jpeg','jpg','gif','png');
-		$this->ALLOWED_FILES = array('doc','docx','ppt','pptx','xls','xlsx','mdb','accdb', 'swf', 'zip', 'rar', 'rtf', 'pdf', 'psd', 'mp3', 'wma');
+		$this->ALLOWED_IMAGES = ['jpeg','jpg','gif','png'];
+		$this->ALLOWED_FILES = ['doc','docx','ppt','pptx','xls','xlsx','mdb','accdb', 'swf', 'zip', 'rar', 'rtf', 'pdf', 'psd', 'mp3', 'wma'];
 		
-		$this->dir = array(
+		$this->dir = [
 			'images'	=> realpath(DIR_ROOT.DIR_IMAGES),
 			'files'		=> realpath(DIR_ROOT.DIR_FILES)
-		);
+		];
 		
 		require 'Image_Toolbox.class.php';
 		require 'exifReader.php';
@@ -44,7 +44,7 @@ class TinyImageManager {
 			//Создать папку
 			case 'newfolder':
 				
-				$result = array();
+				$result = [];
 				$dir = $this->AccessDir($_POST['path'], $_POST['type']);
 				if($dir) {
 					if (preg_match('/[a-z0-9-_]+/sim', $_POST['name'])) {
@@ -179,10 +179,10 @@ class TinyImageManager {
 	 * @return array
 	 */
 	function Tree($beginFolder) {
-		$struct = array();
+		$struct = [];
 		$handle = opendir($beginFolder);
 		if ($handle) {
-			$struct[$beginFolder]['path'] = str_replace(array($this->dir['files'], $this->dir['images']),'',$beginFolder);
+			$struct[$beginFolder]['path'] = str_replace([$this->dir['files'], $this->dir['images']],'',$beginFolder);
 			$tmp = preg_split('[\\/]',$beginFolder);
 			$tmp = array_filter($tmp);
 			end($tmp);
@@ -218,14 +218,14 @@ class TinyImageManager {
 		//Пока отключим файлы
 		//if($type=='files') return ;
 		
-		$currentDirArr = array();
+		$currentDirArr = [];
 		if(!empty($currentDir)) {
 			$currentDirArr = preg_split('[\\/]',str_replace($this->dir[$type],'',realpath($currentDir)));
 			$currentDirArr = array_filter($currentDirArr);
 		}
 		
 		if($innerDirs == 'first') {
-			$innerDirs = array();
+			$innerDirs = [];
 			$innerDirs = $this->Tree($this->dir[$type]);
 			if(realpath($currentDir) == $this->dir[$type] && !$this->firstAct) {
 				$firstAct = 'folderAct';
@@ -350,7 +350,7 @@ class TinyImageManager {
 		
 		if(!empty($dbdata)) {
 			$files = unserialize($dbdata);
-		} else $files = array();
+		} else $files = [];
 		
 		$handle = opendir($dir);
 		if ($handle) {
@@ -363,7 +363,7 @@ class TinyImageManager {
 						if(!in_array(strtolower($file_info['extension']),$this->ALLOWED_IMAGES)) {
 							continue;
 						}
-						$link = str_replace(array('/\\','//','\\\\','\\'),'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
+						$link = str_replace(['/\\','//','\\\\','\\'],'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
 						$path = pathinfo($link);
 						$path = $path['dirname'];
 						if($file_info['extension']=='jpg' || $file_info['extension']=='jpeg') {
@@ -371,7 +371,7 @@ class TinyImageManager {
 							$files[$file]['exifinfo'] = $er->getImageInfo();
 							$files[$file]['imageinfo'] = getimagesize($dir.'/'.$file);
 							
-							$files[$file]['general'] = array(
+							$files[$file]['general'] = [
 								'filename' => $file,
 								'name'	=> basename(strtolower($file_info['basename']), '.'.$file_info['extension']),
 								'ext'	=> $file_info['extension'],
@@ -382,11 +382,11 @@ class TinyImageManager {
 								'width'	=> $files[$file]['imageinfo'][0],
 								'height'=> $files[$file]['imageinfo'][1],
 								'md5'	=> md5_file($dir.'/'.$file)
-							);
+							];
 							
 						} else {
 							$files[$file]['imageinfo'] = getimagesize($dir.'/'.$file);
-							$files[$file]['general'] = array(
+							$files[$file]['general'] = [
 								'filename' => $file,
 								'name'	=> basename(strtolower($file_info['basename']), '.'.$file_info['extension']),
 								'ext'	=> $file_info['extension'],
@@ -397,7 +397,7 @@ class TinyImageManager {
 								'width'	=> $files[$file]['imageinfo'][0],
 								'height'=> $files[$file]['imageinfo'][1],
 								'md5'	=> md5_file($dir.'/'.$file)
-							);
+							];
 						}
 					}
 				}
@@ -434,7 +434,7 @@ class TinyImageManager {
 		
 		if(!empty($dbdata)) {
 			$files = unserialize($dbdata);
-		} else $files = array();
+		} else $files = [];
 		
 		//Файл из flash-мультизагрузки
 		if(isset($_POST['Filename'])) {
@@ -473,14 +473,14 @@ class TinyImageManager {
 				exit();
 			}
 			
-			$link = str_replace(array('/\\','//','\\\\','\\'),'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
+			$link = str_replace(['/\\','//','\\\\','\\'],'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
 			$path = pathinfo($link);
 			$path = $path['dirname'];
 			if($extension=='jpg' || $extension=='jpeg') {
 				$er = new phpExifReader($dir.'/'.$file);
 				$files[$file]['exifinfo'] = $er->getImageInfo();
 				
-				$files[$file]['general'] = array(
+				$files[$file]['general'] = [
 					'filename' => $file,
 					'name'	=> $filename,
 					'ext'	=> $extension,
@@ -491,9 +491,9 @@ class TinyImageManager {
 					'width'	=> $files[$file]['imageinfo'][0],
 					'height'=> $files[$file]['imageinfo'][1],
 					'md5'	=> $md5
-				);
+				];
 			} else {
-				$files[$file]['general'] = array(
+				$files[$file]['general'] = [
 					'filename' => $file,
 					'name'	=> $filename,
 					'ext'	=> $extension,
@@ -504,7 +504,7 @@ class TinyImageManager {
 					'width'	=> $files[$file]['imageinfo'][0],
 					'height'=> $files[$file]['imageinfo'][1],
 					'md5'	=> $md5
-				);
+				];
 			}
 		}
 		//Файлы из обычной загрузки 
@@ -547,14 +547,14 @@ class TinyImageManager {
 				if(!copy($ufiles['tmp_name'][$k],$dir.'/'.$file)) {
 					continue;
 				}
-				$link = str_replace(array('/\\','//','\\\\','\\'),'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
+				$link = str_replace(['/\\','//','\\\\','\\'],'/', '/'.str_replace(realpath(DIR_ROOT),'',realpath($dir.'/'.$file)));
 				$path = pathinfo($link);
 				$path = $path['dirname'];
 				if($extension=='jpg' || $extension=='jpeg') {
 					$er = new phpExifReader($dir.'/'.$file);
 					$files[$file]['exifinfo'] = $er->getImageInfo();
 					
-					$files[$file]['general'] = array(
+					$files[$file]['general'] = [
 						'filename' => $file,
 						'name'	=> $filename,
 						'ext'	=> $extension,
@@ -565,9 +565,9 @@ class TinyImageManager {
 						'width'	=> $files[$file]['imageinfo'][0],
 						'height'=> $files[$file]['imageinfo'][1],
 						'md5'	=> $md5
-					);
+					];
 				} else {
-					$files[$file]['general'] = array(
+					$files[$file]['general'] = [
 						'filename' => $file,
 						'name'	=> $filename,
 						'ext'	=> $extension,
@@ -578,7 +578,7 @@ class TinyImageManager {
 						'width'	=> $files[$file]['imageinfo'][0],
 						'height'=> $files[$file]['imageinfo'][1],
 						'md5'	=> $md5
-					);
+					];
 				}
 			}
 		}
@@ -761,7 +761,7 @@ class TinyImageManager {
 			
 			if(isset($dbdata)) {
 				$files = unserialize($dbdata);
-			} else $files = array();
+			} else $files = [];
 			
 			unset($files[$filename]);
 			
@@ -790,7 +790,7 @@ class TinyImageManager {
 			return '{error:"Нельзя удалять корневую папку!"}';
 		}
 		
-		$files = array();
+		$files = [];
 		
 		$handle = opendir($path);
 		if ($handle) {

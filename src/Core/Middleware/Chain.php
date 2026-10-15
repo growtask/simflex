@@ -16,12 +16,12 @@ class Chain implements Handler
      * Chain constructor.
      * @param Handler[] $middlewares
      */
-    public function __construct($middlewares)
+    public function __construct(array $middlewares)
     {
         $this->middlewares = $middlewares;
     }
 
-    public function handle($payload, \Closure $next)
+    public function handle(mixed $payload, \Closure $next): mixed
     {
         $handler = array_shift($this->middlewares);
         return $handler ? $handler->handle($payload, function ($payload) use ($next) {
@@ -29,7 +29,7 @@ class Chain implements Handler
         }) : $payload;
     }
 
-    public function process($payload = null)
+    public function process(mixed $payload = null): mixed
     {
         return $this->handle($payload, function () use ($payload) {
             return $payload;

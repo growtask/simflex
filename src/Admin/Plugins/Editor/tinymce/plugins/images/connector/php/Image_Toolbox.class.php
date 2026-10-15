@@ -88,23 +88,23 @@ class Image_Toolbox {
      * @access private
      * @var array
      */
-	public array $_types = array (
-		1 => array (
+	public array $_types = [
+		1 => [
 			'ext' => 'gif',
 			'mime' => 'image/gif',
 			'supported' => 0
-		),
-		2 => array (
+		],
+		2 => [
 			'ext' => 'jpg',
 			'mime' => 'image/jpeg',
 			'supported' => 0
-		),
-		3 => array (
+		],
+		3 => [
 			'ext' => 'png',
 			'mime' => 'image/png',
 			'supported' => 0
-		)
-	);
+		]
+	];
 	
 	/**
      * Which PHP image resize function to be used
@@ -121,8 +121,8 @@ class Image_Toolbox {
      * @access private
      * @var array
      */
-	public array $_img = array (
-		'main' => array (
+	public array $_img = [
+		'main' => [
 			'resource' => 0,
 			'width' => 0,
 			'height' => 0,
@@ -132,8 +132,8 @@ class Image_Toolbox {
 			'output_type' => 0,
 			'indexedcolors' => 0,
 			'color' => -1
-		)
-	);
+		]
+	];
 	
 	/**
      * Which PHP image create function to be used
@@ -224,7 +224,7 @@ class Image_Toolbox {
      * @return array
      */ 
 	function getServerFeatures() {
-		$features = array();
+		$features = [];
 		$features['gd_version'] = $this->_gd_version_number;
 		$features['gif'] = $this->_types[1]['supported'];
 		$features['jpg'] = $this->_types[2]['supported'];
@@ -267,7 +267,7 @@ class Image_Toolbox {
      * @return array associative array with info about the GD library of the server
      */ 
 	function _gd_info() {
-		$array = array(
+		$array = [
         	"GD Version" => "",
 			"FreeType Support" => false,
 			"FreeType Linkage" => "",
@@ -278,7 +278,7 @@ class Image_Toolbox {
 			"PNG Support" => false,
 			"WBMP Support" => false,
 			"XBM Support" => false
-		);
+		];
         
 		$gif_support = 0;
 		ob_start();
@@ -1161,7 +1161,7 @@ class Image_Toolbox {
      * @access private
      */	
 	function _iso2uni($isoline) {
-		$iso2uni = array(
+		$iso2uni = [
 			173 => "&#161;",
 			155 => "&#162;",
 			156 => "&#163;",
@@ -1256,7 +1256,7 @@ class Image_Toolbox {
 			236 => "&#253;",
 			231 => "&#254;",
 			152 => "&#255;"
-		);
+		];
 		for ($i=0; $i < strlen($isoline); $i++){
 			$thischar = substr($isoline, $i, 1);
 			$new = $iso2uni[ord($thischar)];

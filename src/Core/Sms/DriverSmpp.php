@@ -27,13 +27,11 @@ class DriverSmpp extends DriverBase
     ];
 
     /**
-     *
      * @param string $phone
      * @param string $text
      * @param string $from
-     * @return boolean
      */
-    public function send($phone, $text, $from, $smsId = 0)
+    public function send($phone, $text, $from, $smsId = 0): array|bool
     {
         try {
             $error = '';
@@ -65,11 +63,10 @@ class DriverSmpp extends DriverBase
         ];
     }
 
-    public function readDeliveries()
+    public function readDeliveries(): void
     {
         $service = new \PhpSmpp\Service\Listener([$this->config['url']], $this->config['login'], $this->config['pass'], true);
         $service->listenOnce(function (Sm $sm) {
-//            file_put_contents('/tmp/' . microtime(true) . '.hex', $sm->getHex());
             if (!($sm instanceof \PhpSmpp\SMPP\Unit\DeliverReceiptSm)) {
                 echo "not receipt\n";
                 return;

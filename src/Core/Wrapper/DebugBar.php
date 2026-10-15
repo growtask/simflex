@@ -36,17 +36,17 @@ class DebugBar implements Service
         $this->debugBar->addCollector(new MemoryCollector());
     }
 
-    public function addCollector(DataCollectorInterface $collector)
+    public function addCollector(DataCollectorInterface $collector): void
     {
         $this->debugBar->addCollector($collector);
     }
 
-    public function renderHead()
+    public function renderHead(): void
     {
         echo $this->debugBar->getJavascriptRenderer()->renderHead();
     }
 
-    public function render()
+    public function render(): void
     {
         echo $this->debugBar->getJavascriptRenderer()->render();
     }

@@ -17,12 +17,8 @@ class Field
     public string $tablePk = '';
     public string $help = '';
     public string $placeholder = '';
-    public array $params = array();
+    public array $params = [];
 
-    /**
-     *
-     * @var  ForeignKey
-     */
     public ForeignKey|false $fk = false;
     public float $width = 0;
     public float $widthMob = 0;
@@ -42,17 +38,13 @@ class Field
     public bool $hidden = false;
     public bool $readonly = false;
     public string $onchange = '';
-    protected array $tree = array();
+    protected array $tree = [];
     public string|int|float|bool|array|null $value = '';
     public string|int $pkValue = '';
     protected int $pid;
 
     protected bool $isNumeric = false;
 
-    /**
-     *
-     * @var bool
-     */
     public bool $isVirtual = false; //  FVirtual,  FMultiKey
 
     public static function typeLabel(): string
@@ -78,7 +70,7 @@ class Field
             $row['params'] = unserialize($row['params']);
         }
 
-        $params = isset($row['params']['main']) ? $row['params']['main'] : array();
+        $params = isset($row['params']['main']) ? $row['params']['main'] : [];
         $this->params = $params;
 
         $this->setWidth(@$params['width']);
@@ -141,7 +133,7 @@ class Field
      *
      * @param float $width
      */
-    public function setWidth($width)
+    public function setWidth($width): void
     {
         $this->width = (empty($width) || (int)$width == 0) ? 0 : (double)$width;
         $this->isVisible = $this->width > 0;
@@ -150,21 +142,10 @@ class Field
             : (($this->width < 1 && $this->width > 0) ? 'width: ' . round($this->width * 100) . '%' : '');
     }
 
-    /**
-     * @param Field $field
-     * @param $group
-     * @param $params
-     * @param $row
-     * @return void
-     */
-    public static function setFieldValue(&$field, $group, $params, $row)
+    public static function setFieldValue(Field &$field, $group, $params, $row): void
     {
         $p = false;
         $params = $params ?: [];
-//        if (is_string($field)) {
-//            $field = $this->fields[$field];
-//            $p = true;
-//        }
         $value = '';
         if (is_array($group) && $group['name']) {
             $value = isset($params[$group['name']]) && array_key_exists($field->name, $params[$group['name']])
@@ -179,7 +160,7 @@ class Field
         $field->value = $value;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $value = $this->value ?: $value;
         return '<div class="form-control form-control--sm">
@@ -190,18 +171,18 @@ class Field
                                 </div>';
     }
 
-    public function inputName()
+    public function inputName(): string
     {
         return $this->form ? $this->form . '[' . $this->name . ']' : $this->name;
     }
 
-    public function inputHidden($value)
+    public function inputHidden($value): string
     {
         $value = $this->value ?: $value;
         return '<input type="hidden" name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '" />';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         if ($simple) {
             return $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
@@ -209,16 +190,16 @@ class Field
         return $this->e2n && $_POST[$this->name] === '' ? null : $_POST[$this->name];
     }
 
-    public function check()
+    public function check(): array
     {
-        $errors = array();
+        $errors = [];
         if ($this->required && (!isset($_POST[$this->name]) || $_POST[$this->name] === '')) {
             $errors[] = 'Обязательно для заполнения';
         }
         return $errors;
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
         $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
@@ -233,26 +214,24 @@ class Field
 
     /**
      * Show in detail card in show mode
-     * @param $row
-     * @return mixed
      */
-    public function showDetail($row)
+    public function showDetail($row): ?string
     {
         $value = strip_tags((string)$row[$this->name . ($this->fk ? '_label' : '')], ['br', 'strong', 'b', 'em', 'i']);
         return $value;
     }
 
-    public function delete($value)
+    public function delete($value): bool
     {
         return true;
     }
 
-    public function defval()
+    public function defval(): mixed
     {
         return $this->defaultValue;
     }
 
-    public function filter($value)
+    public function filter($value): void
     {
         if ($this->filter) {
             $inExtra = $this->width == 0;
@@ -263,11 +242,11 @@ class Field
         }
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         return '' . $this->table . '.' . $this->name;
     }

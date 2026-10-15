@@ -25,7 +25,7 @@ class Content extends ComponentBase
     {
     }
 
-    public function get($path = ''): ?ModelContent
+    public function get(string $path = ''): ?ModelContent
     {
         if ($content = $this->factory->getStatic(ModelContent::class)::findOne(['path' => $path ?: Container::getRequest()->getPath(), 'active' => 1])) {
             $content['params'] = unserialize($content['params']);
@@ -38,7 +38,7 @@ class Content extends ComponentBase
         return $content;
     }
 
-    public static function getStatic($path = '')
+    public static function getStatic(string $path = ''): ?ModelContent
     {
         $path = $path ?: Container::getRequest()->getPath();
         if ($content = Container::getFactory()->getStatic(ModelContent::class)::findOne(['active' => 1, 'path' => $path])) {
@@ -172,7 +172,7 @@ class Content extends ComponentBase
         return $children;
     }
 
-    protected function content()
+    protected function content(): void
     {
         Profiler::traceStart($this, __FUNCTION__);
 
@@ -186,7 +186,7 @@ class Content extends ComponentBase
 
             Page::seo($content['title']);
 
-            $children = array();
+            $children = [];
             $page = 0;
             $pages = 0;
             $hasPrev = false;
@@ -255,7 +255,7 @@ class Content extends ComponentBase
         Profiler::traceEnd($this, __FUNCTION__);
     }
 
-    protected function breadcrumbs($content)
+    protected function breadcrumbs($content): void
     {
         Breadcrumbs::add($content['title'], $content['path']);
         $id = (int)$content['pid'];

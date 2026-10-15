@@ -10,10 +10,8 @@ use Simflex\Core\DB\Schema\Column;
 
 class Table extends ElementBase
 {
-    /** @var \Simflex\Core\DB\Schema\Params\TableParams */
     protected TableParams $params;
 
-    /** @var \Simflex\Core\DB\Schema\Params\TableParams */
     protected TableParams $oldParams;
 
     /** @var \Simflex\Core\DB\Schema\Element[] */
@@ -32,7 +30,7 @@ class Table extends ElementBase
         $this->isExisting = $isExisting;
     }
 
-    public function keepParams()
+    public function keepParams(): void
     {
         if (!$this->isExisting) {
             return;
@@ -47,7 +45,7 @@ class Table extends ElementBase
     /**
      * Create table only if one doesn't exist yet
      */
-    public function ifNotExists(): self
+    public function ifNotExists(): static
     {
         $this->params->ifNotExists = true;
         return $this;
@@ -56,7 +54,7 @@ class Table extends ElementBase
     /**
      * Create temporary table
      */
-    public function temporary(): self
+    public function temporary(): static
     {
         $this->params->temporary = true;
         return $this;
@@ -64,11 +62,8 @@ class Table extends ElementBase
 
     /**
      * Set auto increment counter
-     *
-     * @param int $n
-     * @return $this
      */
-    public function autoIncrement(int $n): self
+    public function autoIncrement(int $n): static
     {
         $this->params->autoIncrement = $n;
         return $this;
@@ -76,11 +71,8 @@ class Table extends ElementBase
 
     /**
      * Set table comment
-     *
-     * @param string $comment
-     * @return $this
      */
-    public function comment(string $comment): self
+    public function comment(string $comment): static
     {
         $this->params->comment = $comment;
         return $this;
@@ -91,9 +83,8 @@ class Table extends ElementBase
      *
      * @param string $charset Character set
      * @param bool $isDefault DEFAULT modifier
-     * @return $this
      */
-    public function characterSet(string $charset, bool $isDefault = false): self
+    public function characterSet(string $charset, bool $isDefault = false): static
     {
         $this->params->characterSet = $charset;
         $this->params->defaultCharacterSet = $isDefault;
@@ -107,7 +98,6 @@ class Table extends ElementBase
      * @param string $name Column name
      * @param string $type Column type
      * @param int|null $length Column type length
-     * @return \Simflex\Core\DB\Schema\Column
      */
     public function addColumn(string $name, string $type, ?int $length = null): Column
     {
@@ -122,7 +112,6 @@ class Table extends ElementBase
      * Adds a constraint
      *
      * @param string $name Constraint symbol name
-     * @return \Simflex\Core\DB\Schema\Constraint
      */
     public function addConstraint(string $name = ''): Constraint
     {
@@ -136,7 +125,6 @@ class Table extends ElementBase
      * Adds an index
      * 
      * @param string $name Index name
-     * @return Index
      */
     public function addIndex(string $name = ''): Index
     {
@@ -150,9 +138,8 @@ class Table extends ElementBase
      * Drops a column
      *
      * @param string|array $name Column name(s)
-     * @return $this
      */
-    public function dropColumns($name): Table
+    public function dropColumns(string|array $name): static
     {
         if (is_array($name)) {
             $this->dropQueue = array_unique(array_merge($this->dropQueue, $name));
@@ -230,8 +217,6 @@ class Table extends ElementBase
 
     /**
      * Returns params
-     *
-     * @return \Simflex\Core\DB\Schema\Params\TableParams
      */
     public function getParams(): TableParams
     {

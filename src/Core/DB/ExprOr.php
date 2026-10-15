@@ -15,7 +15,7 @@ use Simflex\Core\DB\Where;
  */
 class ExprOr extends Expr
 {
-    public function __toString()
+    public function __toString(): string
     {
         $values = [];
         foreach ($this->value as $key => $value) {

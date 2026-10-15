@@ -12,7 +12,7 @@ abstract class ModuleBase extends ExtensionBase
     protected int $id = 0;
     protected string $name = '';
     protected string $title = '';
-    protected array $params = array();
+    protected array $params = [];
     protected string $position = '';
 
     public function __construct($module)
@@ -27,9 +27,9 @@ abstract class ModuleBase extends ExtensionBase
         $this->params['is_wrap'] = isset($this->params['is_wrap']) ? $this->params['is_wrap'] : 0;
     }
 
-    protected abstract function content();
+    protected abstract function content(): void;
 
-    public final function execute()
+    public final function execute(): string
     {
         if (Core::ajax()) {
             ob_start();

@@ -9,7 +9,6 @@ use Simflex\Core\DB\Schema\TableElementBase;
 
 class Column extends TableElementBase
 {
-    /** @var \Simflex\Core\DB\Schema\Params\ColumnParams */
     protected ColumnParams $params;
     protected string $type = '';
 
@@ -43,9 +42,8 @@ class Column extends TableElementBase
      *
      * @param string $type Type name
      * @param int|null $length Type length
-     * @return $this
      */
-    public function dataType(string $type, ?int $length = null): self
+    public function dataType(string $type, ?int $length = null): static
     {
         $this->type = $type;
         if ($length !== null) {
@@ -55,45 +53,45 @@ class Column extends TableElementBase
         return $this;
     }
 
-    public function setNull(bool $isNull = true): self
+    public function setNull(bool $isNull = true): static
     {
         $this->params->isNull = $isNull;
         return $this;
     }
 
-    public function setDefault($default): self
+    public function setDefault(string|int|float|bool|null $default): static
     {
         $this->params->default = $default;
         $this->params->defaultSet = true;
         return $this;
     }
 
-    public function autoIncrement(bool $v = true): self
+    public function autoIncrement(bool $v = true): static
     {
         $this->params->autoIncrement = $v;
         $this->params->isNull = false;
         return $this;
     }
 
-    public function comment(string $comment): self
+    public function comment(string $comment): static
     {
         $this->params->comment = $comment;
         return $this;
     }
 
-    public function collate(string $collation): self
+    public function collate(string $collation): static
     {
         $this->params->collate = $collation;
         return $this;
     }
 
-    public function primaryKey(): self
+    public function primaryKey(): static
     {
         $this->params->isPrimaryKey = true;
         return $this;
     }
 
-    public function foreignKey(string $table, $other = ''): self
+    public function foreignKey(string $table, string|array $other = ''): static
     {
         $this->table->addConstraint()->foreignKey(
             $table,
@@ -102,19 +100,19 @@ class Column extends TableElementBase
         return $this;
     }
 
-    public function unique(bool $isIndex = false): self
+    public function unique(bool $isIndex = false): static
     {
         $this->table->addConstraint()->unique($this->name, $isIndex);
         return $this;
     }
 
-    public function index(): self
+    public function index(): static
     {
         $this->table->addIndex()->index($this->name);
         return $this;
     }
 
-    public function key(): self
+    public function key(): static
     {
         $this->table->addIndex()->key($this->name);
         return $this;
@@ -124,8 +122,6 @@ class Column extends TableElementBase
 
     /**
      * Returns params
-     *
-     * @return \Simflex\Core\DB\Schema\Params\ColumnParams
      */
     public function getParams(): ColumnParams
     {

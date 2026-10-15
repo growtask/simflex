@@ -315,32 +315,6 @@ $artLeftArr = [];
                     </svg>
                     Отмена
                 </a>
-                <?php
-                if ($this->blocks): ?>
-                    <!--                    <div class="form-control form-control--sm">-->
-                    <!--                        <div class="form-control__dropdown">-->
-                    <!--                            <div class="form-control__dropdown-top">-->
-                    <!--                                <div class="form-control__dropdown-current">Переход к блоку</div>-->
-                    <!--                                <button class="form-control__dropdown-toggle">-->
-                    <!--                                    <svg stroke="none" fill="#0D0D0D" viewBox="0 0 24 24">-->
-                    <!--                                        <use xlink:href="-->
-                    <!--                --><?php
-                    //= asset('img/icons/svg-defs.svg') ?><!--#chevron-mini"></use>-->
-                    <!--                                    </svg>-->
-                    <!--                                </button>-->
-                    <!--                            </div>-->
-                    <!--                            <div class="form-control__dropdown-list">-->
-                    <!--                                --><?php
-//                                foreach ($this->blocks as $b): ?>
-                    <!--                                    <div class="form-control__dropdown-item">--><?php
-                    //= $b ?><!--</div>-->
-                    <!--                                --><?php
-//                                endforeach; ?>
-                    <!--                            </div>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
-                <?php
-                endif; ?>
             </div>
         </div>
 

@@ -52,7 +52,6 @@ class Mail
      * @param string $templatePath Path to the template file
      * @param array $data Additional arbitrary data
      * @param bool $strip Whether should strip tags from body
-     * @return void
      */
     public function setBodyFromTemplate(string $templatePath, array $data = [], bool $strip = true): void
     {

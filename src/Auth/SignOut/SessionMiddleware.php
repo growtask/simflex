@@ -11,7 +11,7 @@ class SessionMiddleware implements Handler
     /**
      * @inheritDoc
      */
-    public function handle($payload, \Closure $next)
+    public function handle(mixed $payload, \Closure $next): mixed
     {
         SessionStorage::set(null);
         return $next($payload);

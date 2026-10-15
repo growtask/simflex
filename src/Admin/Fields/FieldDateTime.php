@@ -16,17 +16,17 @@ class FieldDateTime extends Field
         $this->defaultValue = !empty($this->params['defaultValue']) ? $this->params['defaultValue'] : date('Y-m-d H:i');
     }
 
-    public function loadUI($onForm = false)
+    public function loadUI(bool $onForm = false): void
     {
         if ($onForm) {
             UI::dateTimePicker();
         }
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $value = \Simflex\Core\Time::normal($value, true, false);
-        $classes = array("form-control input-medium");
+        $classes = ["form-control input-medium"];
         if (!$this->readonly) {
             $classes[] = "form-datetimepicker";
         }
@@ -36,7 +36,7 @@ class FieldDateTime extends Field
                                 </div>';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
         if ($simple) {
@@ -48,7 +48,7 @@ class FieldDateTime extends Field
         return $this->e2n && $value === '' ? 'NULL' : "" . DB::escape($value) . "";
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
         $isNumericReal = false;

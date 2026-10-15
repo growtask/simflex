@@ -16,7 +16,7 @@ class Factory implements \Simflex\Core\DI\Service
         $this->overrides[$class] = $override;
     }
 
-    public function getStatic(string $class)
+    public function getStatic(string $class): string
     {
         if (isset($this->overrides[$class])) {
             $class = $this->overrides[$class];
@@ -25,7 +25,7 @@ class Factory implements \Simflex\Core\DI\Service
         return $class;
     }
 
-    public function create(string $class, ...$params)
+    public function create(string $class, ...$params): object
     {
         if (isset($this->overrides[$class])) {
             $class = $this->overrides[$class];

@@ -14,12 +14,12 @@ class FieldVirtual extends Field
         $this->isVirtual = true;
     }
 
-    public function show($row)
+    public function show($row): void
     {
         $value = $row[$this->name];
         if ($this->params['text']) {
             $value = $this->params['text'];
-            $matches = array();
+            $matches = [];
             preg_match_all("@\{([\w]+)\}@Ui", $value, $matches);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
@@ -31,7 +31,7 @@ class FieldVirtual extends Field
         }
         if ($this->params['href']) {
             $href = $this->params['href'];
-            $matches = array();
+            $matches = [];
             preg_match_all("@\{([\w]+)\}@Ui", $href, $matches);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
@@ -48,12 +48,12 @@ class FieldVirtual extends Field
         echo $value;
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return '';
     }
 
-    public function selectQueryField()
+    public function selectQueryField(): string
     {
         $subquery = $this->params['subquery'];
         $subquery = $subquery ? "($subquery)" : "''";

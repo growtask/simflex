@@ -63,7 +63,7 @@ class Where implements ArrayAccess
     /**
      * @throws Exception
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -91,7 +91,6 @@ class Where implements ArrayAccess
     }
 
     /**
-     * @return array
      * @throws Exception
      */
     public function toArray(): array
@@ -104,7 +103,6 @@ class Where implements ArrayAccess
      *
      * @param array $data input data
      * @param array $oldBinds previous bindings (if any)
-     * @return array
      * @throws Exception
      */
     #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
@@ -150,7 +148,6 @@ class Where implements ArrayAccess
      * Add WHERE conditions
      *
      * @param string|array|Where|\Simflex\Core\DB\Expr $where Filter conditions
-     * @return void
      * @throws Exception
      */
     public function add(string|array|Where|Expr $where): void

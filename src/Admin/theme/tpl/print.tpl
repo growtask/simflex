@@ -2,9 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <?php
-//PlugJQuery::jquery();
 SFAdminPage::css('/admin/theme/css/print.css');
-//SFPage::js('/theme/default/js/default.js');
 SFAdminPage::meta();
 ?>
 </head>

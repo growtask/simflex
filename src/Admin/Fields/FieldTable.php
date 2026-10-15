@@ -91,7 +91,7 @@ class FieldTable extends Field
         return json_encode(['s' => $struct, 'v' => $values], JSON_UNESCAPED_UNICODE);
     }
 
-    public function input($value)
+    public function input($value): string
     {
         // fallback value = []
         $value = !json_decode($value, true) ? '[]' : $value;

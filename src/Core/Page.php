@@ -11,12 +11,12 @@ class Page
 
     protected static string $menu = '';
     protected static string $content = '';
-    protected static array $positions = array();
-    protected static array $modules = array();
-    protected static array $css = array();
-    protected static array $css_check = array();
-    protected static array $js = array();
-    protected static array $js_check = array();
+    protected static array $positions = [];
+    protected static array $modules = [];
+    protected static array $css = [];
+    protected static array $css_check = [];
+    protected static array $js = [];
+    protected static array $js_check = [];
     public static string $seo_title = '';
     protected static string $seo_description = '';
     protected static string $seo_keywords = '';
@@ -32,7 +32,7 @@ class Page
         'uses_meta' => false,
     ];
 
-    public static function init()
+    public static function init(): void
     {
         $com = Core::getComponent();
 
@@ -67,17 +67,15 @@ class Page
         }
     }
 
-    public static function content()
+    public static function content(): void
     {
         echo self::$content;
     }
 
     /**
-     *
-     * @param string $posname
      * @param string $delimiter (optional = '') разделитель, например: '<hr/>'
      */
-    public static function position($posname, $delimiter = '')
+    public static function position(string $posname, string $delimiter = ''): void
     {
         if ($posname && !empty(self::$positions[$posname])) {
             $i = 0;
@@ -92,12 +90,12 @@ class Page
         }
     }
 
-    public static function module($modname)
+    public static function module($modname): false
     {
         return false;
     }
 
-    public static function moduleById($module_id)
+    public static function moduleById(int $module_id): void
     {
         $q = "SELECT t1.item_id, t1.module_id, t1.menu_id, t1.posname, t1.name, t2.class, t1.params
         FROM module_item t1
@@ -113,10 +111,9 @@ class Page
      * @param string $file Web path to asset file
      * @param int $idx Priority from highest 0 to lowest 100
      * @param string|null $type css/js - optional, to specify directly what is this asset
-     * @return void
      * @throws \Exception
      */
-    public static function addAsset(string $file, int $idx = 100, string $type = null)
+    public static function addAsset(string $file, int $idx = 100, ?string $type = null): void
     {
         if ('css' === $type || strpos($file, '.css')) {
             static::css($file, $idx);
@@ -129,12 +126,12 @@ class Page
         throw new \Exception("Unknown asset type (css or js?) for $file");
     }
 
-    public static function css($file, $idx = 100)
+    public static function css(string $file, int $idx = 100): void
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return \Simflex\Admin\Page::css($file, $idx);
+            \Simflex\Admin\Page::css($file, $idx);
+            return;
         }
-        $idx = (int)$idx;
         if (empty(self::$css[$idx][md5($file)])) {
             if (isset(self::$css_check[md5($file)])) {
                 unset(self::$css[self::$css_check[md5($file)]][md5($file)]);
@@ -146,17 +143,15 @@ class Page
     }
 
     /**
-     *
      * @param string $file Путь к подключаемому скрипту
      * @param int $idx [optional = 100] Приоритет, 0 - самый высокий, 100 - самый низкий
-     * @return void
      */
-    public static function js($file, $idx = 100)
+    public static function js(string $file, int $idx = 100): void
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return \Simflex\Admin\Page::js($file, $idx);
+            \Simflex\Admin\Page::js($file, $idx);
+            return;
         }
-        $idx = (int)$idx;
         if (empty(self::$js[$idx][md5($file)])) {
             if (isset(self::$js_check[md5($file)])) {
                 unset(self::$js[self::$js_check[md5($file)]][md5($file)]);
@@ -170,25 +165,22 @@ class Page
     /**
      * Добавляет JS код в блок подключения скриптов
      * @param string $js inline js code
-     * @param int $idx [optional = 100]
-     * @return void
      */
-    public static function jsInline($js, $idx = 100)
+    public static function jsInline(string $js, int $idx = 100): bool
     {
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
             return false;
         }
-        $idx = (int)$idx;
         self::$js[$idx][md5($js)] = ['type' => 'inline', 'value' => $js];
         return true;
     }
 
-    public static function addMetaRaw($str)
+    public static function addMetaRaw(string $str): void
     {
         self::$meta_raw .= "$str\n";
     }
 
-    public static function title()
+    public static function title(): string
     {
         return str_replace(
                 '<br/>',
@@ -197,7 +189,7 @@ class Page
             ) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
     }
 
-    public static function meta()
+    public static function meta(): void
     {
         $title = self::$override['title'] ?: self::$seo_title;
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
@@ -208,8 +200,6 @@ class Page
 
         self::metaCSS();
 
-        // self::metaJS();
-
         echo self::$meta_raw;
 
         echo '<meta charset="utf-8">', "\r\n";
@@ -219,7 +209,7 @@ class Page
         }
     }
 
-    public static function metaCSS()
+    public static function metaCSS(): void
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'css.' : '';
@@ -247,7 +237,7 @@ class Page
         }
     }
 
-    public static function metaJS()
+    public static function metaJS(): void
     {
         $std = Core::siteParam('static_domain');
         $sub = Core::siteParam('static_domain_sub') ? 'js.' : '';
@@ -285,7 +275,13 @@ class Page
         }
     }
 
-    public static function seo($title, $description = '', $keywords = '', $final = false, $metatags = '')
+    public static function seo(
+        string $title,
+        ?string $description = '',
+        ?string $keywords = '',
+        bool $final = false,
+        ?string $metatags = ''
+    ): void
     {
         if (!self::$seo_is) {
             self::$seo_title = $title;

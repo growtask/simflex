@@ -17,10 +17,10 @@ class ModuleItem extends Base
     {
         parent::__construct();
         Page::coreJs('/Base/js/moduleitem.js');
-        $this->actionHandlers['module_param'] = array('method' => 'moduleParam');
+        $this->actionHandlers['module_param'] = ['method' => 'moduleParam'];
     }
 
-    protected function moduleParam()
+    protected function moduleParam(): void
     {
         $moduleId = (int)@$_GET['module_id'];
         $itemId = (int)@$_GET['item_id'];
@@ -43,7 +43,7 @@ class ModuleItem extends Base
         $rows = StructureRepository::hydrateFieldClasses($rows);
         if (count($rows)) {
 
-            $positions = array('left' => '', 'right' => '');
+            $positions = ['left' => '', 'right' => ''];
             $editorInited = false;
 
             $hasWithoutGroup = false;
@@ -63,7 +63,7 @@ class ModuleItem extends Base
                         $fields[] = $field;
                     }
                 }
-                $group = array('label' => 'Параметры');
+                $group = ['label' => 'Параметры'];
                 $group['fields'] = $fields;
                 $portletClass = "field-params-nogroup";
                 ob_start();
@@ -76,7 +76,7 @@ class ModuleItem extends Base
             }
 
             foreach ($rows[''] as $pid => $row0) {
-                $fields = array();
+                $fields = [];
                 if (!isset($rows[$pid])) {
                     continue;
                 }
@@ -87,7 +87,7 @@ class ModuleItem extends Base
                     $fields[] = $field;
                 }
 
-                $group = array('label' => $row0['label']);
+                $group = ['label' => $row0['label']];
                 $group['fields'] = $fields;
                 $portletClass = "field-params-{$row0['name']}";
                 ob_start();
@@ -100,7 +100,7 @@ class ModuleItem extends Base
             }
         }
 
-        $menuOptions = array('<option value=""></option>');
+        $menuOptions = ['<option value=""></option>'];
         foreach ($menuItems as $mitem) {
             $span = $mitem['pid'] ? str_repeat('&nbsp;', 4) : '';
             $menuOptions[] = '<option value="' . $mitem['menu_id'] . '">' . $span . htmlspecialchars($mitem['name']) . '</option>';
@@ -110,7 +110,7 @@ class ModuleItem extends Base
         echo json_encode($positions);
     }
 
-    protected function getParams()
+    protected function getParams(): array
     {
         $params = parent::getParams();
         if (!empty($_POST['module_id'])) {

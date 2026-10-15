@@ -26,15 +26,15 @@ class Pagecontrol
         $this->p_on_show = (bool)$p_on_show;
     }
 
-    public function content()
+    public function content(): void
     {
         if ($this->p_count > 1) {
             if ($this->p_count > $this->p_count_max) {
                 $p_max_count = $this->p_count_max - 5;
                 $min = $this->p - floor($p_max_count / 2);
                 $max = $this->p + ceil($p_max_count / 2);
-                $since = max(array(1, $min));
-                $till = min(array($this->p_count - 2, $max));
+                $since = max([1, $min]);
+                $till = min([$this->p_count - 2, $max]);
                 $since = $since == 2 ? $since - 1 : $since;
                 $till = $till == $this->p_count - 3 ? $till + 1 : $till;
                 if ($min < 2) {

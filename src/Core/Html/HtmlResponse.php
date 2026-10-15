@@ -13,17 +13,17 @@ class HtmlResponse extends Response
         $this->setContentType('text/html');
     }
 
-    public function setContent(string $content)
+    public function setContent(string $content): void
     {
         $this->content = $content;
     }
 
-    public function addContent(string $content)
+    public function addContent(string $content): void
     {
         $this->content .= $content;
     }
 
-    public function addContentFromTemplate(string $templatePath, array $params)
+    public function addContentFromTemplate(string $templatePath, array $params): void
     {
         if (file_exists($templatePath)) {
             extract($params, EXTR_SKIP);

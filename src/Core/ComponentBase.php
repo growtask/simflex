@@ -23,7 +23,7 @@ abstract class ComponentBase extends ExtensionBase
 
     protected abstract function content();
 
-    public final function execute($is_print = false)
+    public final function execute(bool $is_print = false): string|false|null
     {
         if ($is_print) {
             $this->content();

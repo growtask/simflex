@@ -24,7 +24,6 @@ class UserRole extends ModelBase
      * Get role by alias
      *
      * @param string $alias Role alias
-     * @return static|null
      * @throws Exception
      */
     public static function byAlias(string $alias): ?static

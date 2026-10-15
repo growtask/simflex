@@ -13,7 +13,7 @@ class FieldRelation extends Field
         $this->isVirtual = true;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         $rows = [];
 
@@ -37,6 +37,7 @@ class FieldRelation extends Field
 
         $value = implode(',', $value);
 
+        ob_start();
         echo '<div class="form-control__tags" data-readonly="true" data-ajax="true">
 <input class="form-control__tags-value" value="' . $value . '" type="hidden" name="' . $this->name . '">
 <ul class="form-control__tags-list">
@@ -55,9 +56,10 @@ class FieldRelation extends Field
         </div>
     </div>
 </div>';
+        return (string)ob_get_clean();
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         $in = explode(',', $_POST[$this->name]);
         $id = (int)$_REQUEST[$this->tablePk];

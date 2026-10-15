@@ -15,14 +15,14 @@ class Core
 
     public static bool $ajax = false;
     public static bool $isAjax = false;
-    private static array $uri = array();
+    private static array $uri = [];
     private static string $path = '';
-    private static array $menu_tree = array();
-    private static array $menu_by_id = array();
-    private static array $menu_by_link = array();
+    private static array $menu_tree = [];
+    private static array $menu_by_id = [];
+    private static array $menu_by_link = [];
     private static array|false $menu_cur = false;
-    private static array $crumbs = array();
-    private static array $site_params = array();
+    private static array $crumbs = [];
+    private static array $site_params = [];
 
     private function __construct()
     {
@@ -32,17 +32,17 @@ class Core
     /**
      * @return string like /vendor/growtask/simflex/src/Admin
      */
-    public static function webVendorPath()
+    public static function webVendorPath(): string
     {
         return '/vendor/growtask/simflex/src/Admin';
     }
 
-    public static function vendorPath()
+    public static function vendorPath(): string
     {
         return __DIR__;
     }
 
-    public static function init()
+    public static function init(): void
     {
 
         if (!Container::isSet('request')) {
@@ -107,48 +107,48 @@ class Core
         }
 
 
-        DB::bind(array('SITE_PATH' => self::$path));
+        DB::bind(['SITE_PATH' => self::$path]);
     }
 
-    public static function ajax()
+    public static function ajax(): bool
     {
         return self::$ajax;
     }
 
-    public static function uri($i = 0)
+    public static function uri(int $i = 0): string
     {
         return isset(self::$uri[$i]) ? self::$uri[$i] : '';
     }
 
-    public static function menu()
+    public static function menu(): array
     {
         return self::$menu_tree;
     }
 
-    public static function menuCurItem($field = false)
+    public static function menuCurItem(string|false $field = false): mixed
     {
         return $field ? @self::$menu_cur[$field] : self::$menu_cur;
     }
 
-    private static function crumbsSet($item = array())
+    private static function crumbsSet(array $item = []): void
     {
         if (isset(self::$menu_by_id[(int)$item['menu_pid']])) {
             self::crumbsSet(self::$menu_by_id[(int)$item['menu_pid']]);
         }
-        self::$crumbs[] = array('link' => $item['link'], 'name' => $item['name']);
+        self::$crumbs[] = ['link' => $item['link'], 'name' => $item['name']];
     }
 
-    public static function crumbs()
+    public static function crumbs(): array
     {
         return self::$crumbs;
     }
 
-    public static function path()
+    public static function path(): string
     {
         return self::$path;
     }
 
-    public static function execute()
+    public static function execute(): void
     {
         if (Container::getUser()) {
             if (self::ajax()) {
@@ -165,7 +165,7 @@ class Core
         }
     }
 
-    public static function siteParam($key)
+    public static function siteParam($key): mixed
     {
         if (!isset(self::$site_params[$key])) {
             self::$site_params[$key] = '';

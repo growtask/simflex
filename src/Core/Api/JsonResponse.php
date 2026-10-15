@@ -11,9 +11,6 @@ class JsonResponse extends Response
     protected string $errorMessage = '';
     protected array $data = [];
 
-    /**
-     * JsonResponse constructor.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -24,7 +21,7 @@ class JsonResponse extends Response
      * @param mixed $mixed Input scalar type, associative array or Throwable
      * @throws \Simflex\Core\Errors\Error
      */
-    public function setData($mixed): self
+    public function setData(mixed $mixed): static
     {
         if (is_scalar($mixed)) {
             $this->set('result', $mixed);
@@ -65,11 +62,10 @@ class JsonResponse extends Response
     /**
      * Sets value in data by key
      *
-     * @param mixed $key Key
+     * @param int|string $key Key
      * @param mixed $value Value
-     * @return $this
      */
-    public function set($key, $value): self
+    public function set(int|string $key, mixed $value): static
     {
         $this->data[$key] = $value;
         return $this;
@@ -79,10 +75,8 @@ class JsonResponse extends Response
      * Sets error from throwable
      *
      * @param \Throwable $err Throwable to set from
-     * @param bool $overwriteStatusCode
-     * @return $this
      */
-    public function setError(\Throwable $err, $overwriteStatusCode = true): self
+    public function setError(\Throwable $err, bool $overwriteStatusCode = true): static
     {
         // override status code if it wasn't set to other one yet
         if ($this->statusCode == 200 && $overwriteStatusCode) {
@@ -96,8 +90,6 @@ class JsonResponse extends Response
 
     /**
      * Returns array with current error and data
-     *
-     * @return array|array[]
      */
     public function toArray(): array
     {

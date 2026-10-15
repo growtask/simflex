@@ -27,7 +27,7 @@ class FieldInt extends Field
         };
     }
 
-    protected function bigint($value)
+    protected function bigint($value): string
     {
         return sprintf("%.0f", $value);
     }
@@ -35,7 +35,6 @@ class FieldInt extends Field
     /**
      * Finds the column of $table that is marked as the self-referencing "parent" (fk_is_pid) column.
      *
-     * @param string $table
      * @return string Wrapped column name, or '0' if the table has no such column
      */
     protected function fkPidColumn(string $table): string
@@ -53,9 +52,9 @@ class FieldInt extends Field
         return '0';
     }
 
-    public function &tree()
+    public function &tree(): array
     {
-        $tree = array();
+        $tree = [];
         $fkPID = $this->fkPidColumn($this->fk->table);
 
         $query = (new AQ)
@@ -75,13 +74,9 @@ class FieldInt extends Field
         return $tree;
     }
 
-    public function input($value)
+    public function input($value): string
     {
         if ($this->fk) {
-//            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
-//            $list = Service::tree2list($tree);
-
-
             if ($this->params['fk_is_pid']) {
                 $pidColumn = $this->fkPidColumn($this->params['fk_table']);
                 $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
@@ -140,10 +135,6 @@ class FieldInt extends Field
 
             $select .= $tempSel;
 
-//            foreach ($list as $id=>$row) {
-//                $select .= '<div data-value="'.$id.'" class="form-control__dropdown-item">'. str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $row['tree_level']) . $row['label'] .'</div>';
-//            }
-
             $select .= '</div>
                                     </div>
                                 </div>';
@@ -156,20 +147,17 @@ class FieldInt extends Field
                                 </div>';
     }
 
-    public function getPOST($simple = false, $group = null)
+    public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $this->e2n && $_POST[$this->name] === '' ? NULL : (int)$_POST[$this->name];
     }
 
-    public function filter($value)
+    public function filter($value): void
     {
         if (!$this->filter) {
-            return '';
+            return;
         }
         if ($this->fk) {
-//            $tree = is_callable($this->filterDataProvider) ? call_user_func($this->filterDataProvider) : [];
-//            $list = Service::tree2list($tree);
-
             $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             $sel = DB::fetch($sel) ?: [];
@@ -190,10 +178,6 @@ class FieldInt extends Field
                                 
                             ';
 
-//            $select .= '<div data-value="" class="form-control__dropdown-item">—</div>';
-//            if ($this->isnull) {
-//                $select .= '<div data-value="null" class="form-control__dropdown-item">NULL</div>';
-//            }
             if ($sel) {
                 $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
             }
@@ -205,7 +189,7 @@ class FieldInt extends Field
 
             echo $select;
         } else {
-            return parent::filter($value);
+            parent::filter($value);
         }
 
     }

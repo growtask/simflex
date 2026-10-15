@@ -15,14 +15,14 @@ class Alert
     {
     }
 
-    public static function init()
+    public static function init(): void
     {
         if (!self::$isInited) {
             self::$s = Session::get('admin.alerts') ?? [];
             self::$isInited = true;
         }
         if (!isset(self::$s)) {
-            self::$s = array();
+            self::$s = [];
         }
     }
 
@@ -32,7 +32,7 @@ class Alert
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function error($mixed, $goto = false, $page = '')
+    public static function error(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
         self::pushMsg($page, "danger", $mixed);
@@ -47,7 +47,7 @@ class Alert
      * @param array|string $mixed сообщение
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function warning($mixed, $goto = false, $page = '')
+    public static function warning(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
         self::pushMsg($page, "warning", $mixed);
@@ -63,7 +63,7 @@ class Alert
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function success($mixed, $goto = false, $page = '')
+    public static function success(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
         self::pushMsg($page, "success", $mixed);
@@ -79,7 +79,7 @@ class Alert
      * @param string $goto (optional = false) header("location: ".$goto) and exit;
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function info($mixed, $goto = false, $page = '')
+    public static function info(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
         self::init();
         self::pushMsg($page, "info", $mixed);
@@ -93,7 +93,7 @@ class Alert
      * Вывести все накопившиеся сообщения по идентификатору
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
      */
-    public static function output($page = '')
+    public static function output(string $page = ''): void
     {
         self::init();
         self::echoSpecified($page, "danger");
@@ -107,9 +107,9 @@ class Alert
     /**
      * Получить все накопившиеся сообщения по идентификатору. Формат HTML
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
-     * @return string HTML
+     * @return string|false HTML
      */
-    public static function getHTML($page = '')
+    public static function getHTML(string $page = ''): string|false
     {
         ob_start();
         self::echoAll($page);
@@ -119,9 +119,8 @@ class Alert
     /**
      * Проверка, есть или нет сообщения в буфере
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
-     * @return bool
      */
-    public static function has($page = '')
+    public static function has(string $page = ''): int|bool
     {
         self::init();
         $has = false;
@@ -135,15 +134,14 @@ class Alert
     /**
      * Проверка, есть или нет ошибки в буфере
      * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
-     * @return bool
      */
-    public static function hasErrors($page = '')
+    public static function hasErrors(string $page = ''): bool
     {
         self::init();
         return isset(self::$s[$page]["error"]) && count(self::$s[$page]["error"]);
     }
 
-    protected static function echoSpecified($page, $section)
+    protected static function echoSpecified(string $page, string $section): void
     {
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = "";
@@ -176,16 +174,16 @@ class Alert
                 }
 
                 include dirname(__FILE__) . '/alert.tpl';
-                self::$s[$page][$section] = array();
+                self::$s[$page][$section] = [];
             }
         }
     }
 
-    protected static function pushMsg($page, $section, $mixed)
+    protected static function pushMsg(string $page, string $section, array|string $mixed): void
     {
         if (is_array($mixed)) {
             if (!isset(self::$s[$page][$section])) {
-                self::$s[$page][$section] = array();
+                self::$s[$page][$section] = [];
             }
             self::$s[$page][$section] = array_merge(self::$s[$page][$section], $mixed);
         } else {

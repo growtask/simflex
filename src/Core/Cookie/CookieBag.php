@@ -13,19 +13,19 @@ class CookieBag
     protected array $cookies = [];
     protected string $prolongPeriod = '1 WEEK';
 
-    public function __construct($prefix)
+    public function __construct(string $prefix)
     {
         $this->prefix = $prefix;
     }
 
-    protected function save()
+    protected function save(): void
     {
         foreach ($this->cookies as $cookie) {
             $cookie->save();
         }
     }
 
-    public function prolong()
+    public function prolong(): void
     {
         $expires = new \DateTime('+' . $this->prolongPeriod);
         foreach ($this->cookies as $cookie) {
