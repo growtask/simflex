@@ -299,9 +299,9 @@ class Page
     ): void {
         if (!self::$seoIs) {
             self::$seoTitle = $title;
-            self::$seoDescription = $description ? $description : self::$seoDescription;
-            self::$seoKeywords = $keywords ? $keywords : self::$seoKeywords;
-            self::$seoMetatags = $metatags ? $metatags : self::$seoMetatags;
+            self::$seoDescription = $description ?: self::$seoDescription;
+            self::$seoKeywords = $keywords ?: self::$seoKeywords;
+            self::$seoMetatags = $metatags ?: self::$seoMetatags;
             self::$seoIs = $final;
         }
     }
