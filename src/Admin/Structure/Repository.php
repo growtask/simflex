@@ -202,7 +202,7 @@ class Repository
     /**
      * @return array<string, class-string<Table>> table name => Table class
      */
-    protected static function tableClasses(): array
+    public static function tableClasses(): array
     {
         $classes = require SF_CORE_ROOT_PATH . '/Admin/Structure/tables.php';
 

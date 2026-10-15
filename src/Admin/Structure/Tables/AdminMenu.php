@@ -5,6 +5,7 @@ namespace Simflex\Admin\Structure\Tables;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
+use Simflex\Admin\Fields\FieldTableSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
@@ -102,8 +103,9 @@ class AdminMenu extends Table
                 ),
                 new FieldDefinition(
                     name: 'model',
-                    class: FieldString::class,
+                    class: FieldTableSelect::class,
                     label: 'Модель',
+                    help: 'Таблица из реестра Admin/Structure/tables.php. Пусто — раздел с собственным классом',
                     params: [
                         'main' => new FieldParams(
                             width: '200',
