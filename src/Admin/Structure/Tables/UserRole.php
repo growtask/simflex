@@ -18,7 +18,7 @@ class UserRole extends Table
             fields: [
                 new FieldDefinition(
                     name: 'role_id',
-                    class: FieldString::class,
+                    class: FieldInt::class,
                     label: 'ID',
                     params: [
                         'main' => new FieldParams(

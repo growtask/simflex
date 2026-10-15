@@ -578,9 +578,9 @@ class Base
             $this->order = isset($_SESSION[$this->table]['order_by']) ? $_SESSION[$this->table]['order_by'] : $this->order;
             $this->desc = isset($_SESSION[$this->table]['order_desc']) ? $_SESSION[$this->table]['order_desc'] : $this->desc;
             if (empty($this->order)) {
-                if ($this->tableData['order_by']) {
+                if (!empty($this->tableData['order_by'])) {
                     $this->order = $this->tableData['order_by'];
-                    $this->desc = (int)$this->tableData['order_desc'];
+                    $this->desc = (int)($this->tableData['order_desc'] ?? 0);
                 } else {
                     $this->order = $this->order2;
                     $this->order2 = '';

@@ -33,7 +33,7 @@ class ContentTemplateParam extends Table
                 ),
                 new FieldDefinition(
                     name: 'ctp_id',
-                    class: FieldString::class,
+                    class: FieldInt::class,
                     label: 'ID',
                     params: [
                         'main' => new FieldParams(

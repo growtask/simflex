@@ -2,6 +2,7 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
@@ -18,7 +19,7 @@ class ContentTemplate extends Table
             fields: [
                 new FieldDefinition(
                     name: 'template_id',
-                    class: FieldString::class,
+                    class: FieldInt::class,
                     label: 'ID',
                     params: [
                         'main' => new FieldParams(
