@@ -22,9 +22,9 @@ abstract class ConfigBase
      */
     public array $db = [
         'adapter' => MySQL::class,
-        'host' => 'localhost',
-        'user' => 'root',
-        'password' => 'root',
+        'host' => '127.0.0.1',
+        'user' => 'simflex',
+        'password' => 'simflex',
         'name' => 'simflex',
     ];
 
