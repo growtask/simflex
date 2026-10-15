@@ -2,22 +2,26 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Base\Cron as CronDriver;
 use Simflex\Admin\Fields\FieldBool;
+use Simflex\Admin\Fields\FieldCronJobSelect;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
 
+/**
+ * Jobs are declared in provider/cron.php, the table keeps only their activity and schedule
+ */
 class Cron extends Table
 {
     public function __construct()
     {
         parent::__construct(
-            privAdd: 1,
+            orderBy: 'job',
             privEdit: 1,
-            privDelete: 1,
+            class: CronDriver::class,
             fields: [
                 new FieldDefinition(
                     name: 'active',
@@ -44,6 +48,18 @@ class Cron extends Table
                     ],
                 ),
                 new FieldDefinition(
+                    name: 'job',
+                    class: FieldCronJobSelect::class,
+                    label: 'Задача',
+                    help: 'Задачи объявляются в provider/cron.php',
+                    params: [
+                        'main' => new FieldParams(
+                            width: '1',
+                            readonly: true,
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
                     name: 'timing',
                     class: FieldString::class,
                     label: 'Время',
@@ -52,51 +68,6 @@ class Cron extends Table
                         'main' => new FieldParams(
                             width: '160',
                             required: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'name',
-                    class: FieldString::class,
-                    label: 'Название',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '1',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'plugin_name',
-                    class: FieldString::class,
-                    label: 'Плагин',
-                    help: 'Название класса плагина',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            width: '180',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'action',
-                    class: FieldString::class,
-                    label: 'Действие',
-                    help: 'Метод компонента или плагина',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '180',
-                            required: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'cparams',
-                    class: FieldText::class,
-                    label: 'Параметры',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            width: '1',
                         ),
                     ],
                 ),
