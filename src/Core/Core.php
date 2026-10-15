@@ -5,6 +5,7 @@ namespace Simflex\Core;
 use Simflex\Core\DI\Injector;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
+use Simflex\Core\Models\ModelSettings;
 use Simflex\Core\Routing\Resolver;
 
 class Core
@@ -174,10 +175,13 @@ class Core
                     default => 'string',
                 };
                 $value = is_bool($defaultValue) ? (int)$defaultValue : (string)$defaultValue;
-                DB::query(
-                    "INSERT INTO settings (name, alias, value, type, enum_values) VALUES (?, ?, ?, ?, '')",
-                    [$key, $key, $value, $type]
-                );
+                ModelSettings::insertStatic([
+                    'name' => $key,
+                    'alias' => $key,
+                    'value' => $value,
+                    'type' => $type,
+                    'enum_values' => '',
+                ]);
             }
         }
         $value = self::$siteParams[$key] ?? $defaultValue;

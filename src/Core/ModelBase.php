@@ -464,7 +464,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             return $success;
         }
 
-        return !!DB::query('delete from ' . static::getTableName(true) . ' ' . (new Where($where)));
+        $where = new Where($where);
+        $query = 'delete from ' . static::getTableName(true) . ' ' . $where; // binds are filled on string conversion
+
+        return !!DB::query($query, $where->getBinds());
     }
 
     /**
@@ -486,11 +489,19 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
             return $success;
         } else {
-            $query = 'update ' . static::getTableName(true) . ' set ';
-            $query .= implode(', ', array_map(fn($key) => DB::wrapName($key) . ' = ?', array_keys($set)));
-            $query .= ' where ' . (new Where($where));
+            // named binds only: Where produces named ones and PDO can't mix them with positional
+            $bind = [];
+            $assign = [];
+            foreach (array_values($set) as $i => $value) {
+                $assign[] = DB::wrapName(array_keys($set)[$i]) . " = :set_$i";
+                $bind["set_$i"] = $value;
+            }
 
-            return !!DB::query($query, array_values($set));
+            $where = new Where($where);
+            $query = 'update ' . static::getTableName(true) . ' set ' . implode(', ', $assign);
+            $query .= ' ' . $where; // binds are filled on string conversion
+
+            return !!DB::query($query, array_merge($bind, $where->getBinds()));
         }
     }
 

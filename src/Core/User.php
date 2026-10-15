@@ -3,6 +3,7 @@
 namespace Simflex\Core;
 
 use Simflex\Core\Helpers\Phone;
+use Simflex\Core\Models\User as UserModel;
 
 /**
  * Class User
@@ -102,23 +103,25 @@ class User
             return ['success' => false, 'error_code' => 2, 'error' => 'Не указано: ' . implode(', ', $errors)];
         }
 
-        $user = DB::result('SELECT user_id FROM user WHERE login = ?', 0, [$login]);
+        $user = UserModel::findOne(['login' => $login]);
         if ($user) {
             return ['success' => false, 'error_code' => 3, 'error' => 'Пользователь с таким логином уже зарегистрирован'];
         }
 
-        $user = DB::result('SELECT user_id FROM user WHERE email = ?', 0, [$email]);
+        $user = UserModel::findOne(['email' => $email]);
         if ($user) {
             return ['success' => false, 'error_code' => 4, 'error' => 'Пользователь с таким почтовым адресом уже зарегистрирован'];
         }
 
         $passMD5 = md5($pass);
         $hash = md5(microtime());
-        DB::query(
-            'INSERT INTO user SET login = ?, email = ?, name = ?, password = ?, hash = ?',
-            [$login, $email, $name, $passMD5, $hash]
-        );
-        $userId = DB::insertId();
+        $userId = UserModel::insertStatic([
+            'login' => $login,
+            'email' => $email,
+            'name' => $name,
+            'password' => $passMD5,
+            'hash' => $hash,
+        ])?->getId();
 
         if (!$userId) {
             return ['success' => false, 'error_code' => 5, 'error' => 'Ошибка регистрации'];

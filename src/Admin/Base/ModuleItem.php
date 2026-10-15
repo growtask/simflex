@@ -9,6 +9,7 @@ use Simflex\Admin\Plugins\Editor\Editor;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
 use Simflex\Core\ExtensionRegistry;
+use Simflex\Core\Models\ModuleItem as ModuleItemModel;
 use Simflex\Core\ModuleType;
 
 class ModuleItem extends Base
@@ -34,7 +35,7 @@ class ModuleItem extends Base
 
         $rows = StructureRepository::extensionParams($moduleClass, $this->table);
         $tableParams = $itemId
-            ? (unserialize((string)DB::result('SELECT params FROM module_item WHERE item_id = ?', 'params', [$itemId])) ?: [])
+            ? (ModuleItemModel::findOne(['item_id' => $itemId])?->getParams() ?: [])
             : [];
         if (count($rows)) {
 

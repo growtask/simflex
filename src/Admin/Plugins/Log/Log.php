@@ -2,15 +2,17 @@
 
 namespace Simflex\Admin\Plugins\Log;
 
-use Simflex\Core\DB;
+use Simflex\Core\Models\Log as LogModel;
 
 class Log
 {
     public static function a(string $action, string $data): void
     {
-        DB::query(
-            'INSERT INTO log (action, ip, browser, data) VALUES (?, ?, ?, ?)',
-            [$action, (string)($_SERVER['REMOTE_ADDR'] ?? ''), (string)($_SERVER['HTTP_USER_AGENT'] ?? ''), $data]
-        );
+        LogModel::insertStatic([
+            'action' => $action,
+            'ip' => (string)($_SERVER['REMOTE_ADDR'] ?? ''),
+            'browser' => (string)($_SERVER['HTTP_USER_AGENT'] ?? ''),
+            'data' => $data,
+        ]);
     }
 }
