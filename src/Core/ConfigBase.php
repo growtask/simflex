@@ -81,6 +81,11 @@ abstract class ConfigBase
     public bool $enableLogging = false;
 
     /**
+     * @var string Admin panel URL prefix, e.g. /admin. Links in admin_menu are stored relative to it
+     */
+    public string $adminPath = '/admin';
+
+    /**
      * @var string Log path
      */
     public string $logPath = SF_ROOT_PATH . '/log';

@@ -16,7 +16,7 @@
                 <div class="login__logo">
                     <img class="login__logo-img" src="<?=asset('img/logo.svg')?>" alt="" />
                 </div>
-                <form class="form login-form" action="/admin/login/?r=<?php echo urlencode($back) ?>">
+                <form class="form login-form" action="<?= \Simflex\Admin\Core::url('login/') ?>?r=<?php echo urlencode($back) ?>">
                     <div class="login-form__text">
                         <h4 class="login-form__title">Вход в панель управления</h4>
                     </div>

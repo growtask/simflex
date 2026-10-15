@@ -30,6 +30,38 @@ class Core
     }
 
     /**
+     * Корень админки без завершающего слеша, задаётся в конфиге (adminPath)
+     * @return string like /admin
+     */
+    public static function root(): string
+    {
+        $path = trim(Container::getConfig()->adminPath, '/');
+        if ($path === '') {
+            throw new \LogicException('Config adminPath must not be empty');
+        }
+
+        return '/' . $path;
+    }
+
+    /**
+     * Адрес внутри админки
+     * @param string $path Путь относительно корня админки, например 'content/'
+     * @return string like /admin/content/
+     */
+    public static function url(string $path = ''): string
+    {
+        return static::root() . '/' . ltrim($path, '/');
+    }
+
+    /**
+     * Относится ли путь запроса к админке
+     */
+    public static function isAdminPath(string $path): bool
+    {
+        return $path === static::root() || str_starts_with($path, static::root() . '/');
+    }
+
+    /**
      * Url опубликованной статики админки ядра (см. Assets::publish)
      * @return string like /cache/assets/1a2b3c4d5e6f7a8b/Admin
      */
@@ -56,21 +88,22 @@ class Core
 
         $url_info = parse_url($_SERVER['REQUEST_URI']);
         self::$path = $url_info['path'];
-        self::$uri = array_slice(explode('/', self::$path), 1);
+        // сегменты пути относительно корня админки: /admin/content/ => ['content', '']
+        self::$uri = explode('/', ltrim(substr(self::$path, strlen(static::root())), '/'));
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
             self::$ajax = true;
             self::$isAjax = true;
         }
 
-        if (static::uri(1) == 'login') {
+        if (static::uri(0) == 'login') {
             Auth::login(
                 $_REQUEST['login']['login'] ?? null,
                 $_REQUEST['login']['password'] ?? null,
                 isset($_REQUEST['login']['remember']),
-                $_REQUEST['r'] ?? '/admin/'
+                $_REQUEST['r'] ?? static::url()
             );
-        } elseif (static::uri(1) == 'logout') {
+        } elseif (static::uri(0) == 'logout') {
             Auth::logout();
         }
 
@@ -88,6 +121,10 @@ class Core
         ";
         $rows = DB::assoc($q) ?: [];
         foreach ($rows as $row) {
+            // ссылки хранятся относительно корня админки
+            if (str_starts_with($row['link'], '/')) {
+                $row['link'] = static::url($row['link']);
+            }
             self::$menu_tree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
             self::$menu_by_id[(int)$row['menu_id']] = $row;
             self::$menu_by_link[md5($row['link'])] = $row;
@@ -117,9 +154,12 @@ class Core
         return self::$ajax;
     }
 
+    /**
+     * Сегмент пути относительно корня админки: для /admin/content/ uri(0) = 'content'
+     */
     public static function uri(int $i = 0): string
     {
-        return isset(self::$uri[$i]) ? self::$uri[$i] : '';
+        return self::$uri[$i] ?? '';
     }
 
     public static function menu(): array
@@ -164,8 +204,8 @@ class Core
             }
         } else {
             $back = $_SERVER['REQUEST_URI'];
-            if (strpos($back, 'logout') !== false) {
-                $back = '/admin/';
+            if (str_contains($back, 'logout')) {
+                $back = static::url();
             }
             include 'theme/tpl/login.tpl';
         }

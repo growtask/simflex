@@ -128,7 +128,7 @@ include 'modals/point.tpl'; ?>
 <script>
     fileManager.assetsDir = '<?= $fmAssets ?>';
     fileManager.rootDir = '/uf';
-    fileManager.apiBase = '/admin/fm';
+    fileManager.apiBase = '<?= \Simflex\Admin\Core::url('fm') ?>';
 </script>
 
 <?php

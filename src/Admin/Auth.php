@@ -65,7 +65,7 @@ class Auth
 
     public static function logout(): never
     {
-        $redirect = $_REQUEST['r'] ?? '/admin/';
+        $redirect = $_REQUEST['r'] ?? Core::url();
         if (strpos($redirect, '//') !== false) {
             $redirect = '/';
         }
