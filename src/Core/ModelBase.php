@@ -60,12 +60,12 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * @var string Table name
      */
-    protected static $table;
+    protected static string $table;
 
     /**
      * @var string Primary key name
      */
-    protected static $primaryKeyName;
+    protected static string $primaryKeyName;
 
     /**
      * @var array Last error

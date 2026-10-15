@@ -11,10 +11,10 @@ abstract class InstallBase {
     const TYPE_EXT = 0;
     const TYPE_PLUG = 1;
 
-    public $type = self::TYPE_EXT;
-    public $hasSetup = false;
-    public $destDir;
-    protected $installDir;
+    public int $type = self::TYPE_EXT;
+    public bool $hasSetup = false;
+    public string $destDir;
+    protected string $installDir;
 
     public function __construct($istallDir) {
         $this->installDir = $istallDir;

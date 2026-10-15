@@ -3,58 +3,57 @@
 namespace Simflex\Admin\Fields;
 
 
-use Simflex\Admin\Structure\FieldType;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\ForeignKey;
 
-class Field implements FieldType
+class Field
 {
 
-    public $form = '';
-    public $name = '';
-    public $label = '';
-    public $pk = false;
-    public $table = '';
-    public $tablePk = '';
-    public $help = '';
-    public $placeholder = '';
-    public $params = array();
+    public string $form = '';
+    public string $name = '';
+    public string $label = '';
+    public bool $pk = false;
+    public string $table = '';
+    public string $tablePk = '';
+    public string $help = '';
+    public string $placeholder = '';
+    public array $params = array();
 
     /**
      *
      * @var  ForeignKey
      */
-    public $fk = false;
-    public $width = 0;
-    public $widthMob = 0;
-    public $isVisible = true;
-    public $link = '';
-    public $isnull = false;
-    public $e2n = false;
-    public $defaultValue = '';
-    public $autoIncrement = false;
-    public $required = 0;
-    public $editor = '';
-    public $filter = 0;
+    public ForeignKey|false $fk = false;
+    public float $width = 0;
+    public float $widthMob = 0;
+    public bool $isVisible = true;
+    public string $link = '';
+    public bool $isnull = false;
+    public bool $e2n = false;
+    public mixed $defaultValue = '';
+    public bool $autoIncrement = false;
+    public bool $required = false;
+    public string $editor = '';
+    public bool $filter = false;
 
     /* INPUT */
-    public $styleCol = [];
-    public $styleCell = '';
-    public $hidden = false;
-    public $readonly = false;
-    public $onchange = '';
-    protected $tree = array();
-    public $value = '';
-    public $pkValue = '';
-    protected $pid;
+    public array $styleCol = [];
+    public string $styleCell = '';
+    public bool $hidden = false;
+    public bool $readonly = false;
+    public string $onchange = '';
+    protected array $tree = array();
+    public string|int|float|bool|array|null $value = '';
+    public string|int $pkValue = '';
+    protected int $pid;
 
-    protected $isNumeric = false;
+    protected bool $isNumeric = false;
 
     /**
      *
      * @var bool
      */
-    public $isVirtual = false; //  FVirtual,  FMultiKey
+    public bool $isVirtual = false; //  FVirtual,  FMultiKey
 
     public static function typeLabel(): string
     {

@@ -10,9 +10,9 @@ use Simflex\Core\Models\User;
 class Chain extends \Simflex\Core\Middleware\Chain
 {
     /**
-     * @var User
+     * @var class-string<User>
      */
-    protected $userModelClass = User::class;
+    protected string $userModelClass = User::class;
 
     /**
      * @param string $class subclass of Simflex\Core\Models\User

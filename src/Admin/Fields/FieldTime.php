@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\Field;
 class FieldTime extends Field
 {
 
-    private $pattern;
+    private string $pattern;
 
     public function __construct($row)
     {
@@ -74,4 +74,3 @@ class FieldTime extends Field
     }
 
 }
-

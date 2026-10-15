@@ -12,7 +12,7 @@ class Sms
 {
 
     /** @var DriverBase */
-    protected static $driver;
+    protected static ?DriverBase $driver = null;
 
     /**
      *

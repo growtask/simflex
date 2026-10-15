@@ -7,7 +7,7 @@ use Simflex\Extensions\Form\Fields\Field;
 class FieldSpamCode extends Field
 {
 
-    public $v_requied = 1;
+    public array|int $v_requied = 1;
 
     public function html()
     {

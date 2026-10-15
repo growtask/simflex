@@ -19,8 +19,8 @@ use Simflex\Core\Models\Attrib\FieldOne;
 #[FieldOne('module', Module::class)]
 class ModuleItem extends ModelBase
 {
-    protected static $table = 'module_item';
-    protected static $primaryKeyName = 'item_id';
+    protected static string $table = 'module_item';
+    protected static string $primaryKeyName = 'item_id';
 
     public function getParams(): array
     {

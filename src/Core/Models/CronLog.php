@@ -11,6 +11,6 @@ use Simflex\Core\ModelBase;
  */
 class CronLog extends ModelBase
 {
-    protected static $table = 'cron_log';
-    protected static $primaryKeyName = 'id';
+    protected static string $table = 'cron_log';
+    protected static string $primaryKeyName = 'id';
 }

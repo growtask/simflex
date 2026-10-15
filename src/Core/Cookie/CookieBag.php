@@ -8,10 +8,10 @@ use Simflex\Core\Cookie\CookieItem;
 
 class CookieBag
 {
-    protected $prefix = '';
+    protected string $prefix = '';
     /** @var CookieItem[] */
-    protected $cookies = [];
-    protected $prolongPeriod = '1 WEEK';
+    protected array $cookies = [];
+    protected string $prolongPeriod = '1 WEEK';
 
     public function __construct($prefix)
     {

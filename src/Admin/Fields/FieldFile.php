@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\Field;
 class FieldFile extends Field
 {
 
-    public $path = '';
+    public string $path = '';
 
     public function __construct($row)
     {

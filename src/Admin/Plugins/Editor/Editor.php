@@ -15,7 +15,7 @@ use Simflex\Core\Container;
 class Editor
 {
 
-    public static $inited = array();
+    public static array $inited = array();
 
     public static function tinymce($type, $css_class = '')
     {

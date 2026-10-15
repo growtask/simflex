@@ -17,7 +17,7 @@ class ErrorCollection implements \ArrayAccess
     /**
      * @var Error[]
      */
-    protected $errors = [];
+    protected array $errors = [];
 
     /**
      *

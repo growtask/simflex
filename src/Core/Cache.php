@@ -6,7 +6,7 @@ namespace Simflex\Core;
 class Cache
 {
 
-    protected static $dir;
+    protected static string $dir;
 
     protected static function getFilePath($key)
     {

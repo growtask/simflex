@@ -9,6 +9,6 @@ use Simflex\Core\ModelBase;
  */
 class Seeder extends ModelBase
 {
-    protected static $table = 'seeder';
-    protected static $primaryKeyName = 'id';
+    protected static string $table = 'seeder';
+    protected static string $primaryKeyName = 'id';
 }

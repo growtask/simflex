@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\Field;
 class FieldMultiKey extends Field
 {
 
-    private static $buffer;
+    private static array $buffer;
 
     public function __construct($row)
     {

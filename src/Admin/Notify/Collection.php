@@ -6,7 +6,7 @@ namespace Simflex\Admin\Notify;
 class Collection
 {
 
-    private static $instance;
+    private static self $instance;
 
     /**
      *
@@ -20,7 +20,7 @@ class Collection
         return self::$instance;
     }
 
-    private $items = array();
+    private array $items = array();
 
     private function __construct()
     {

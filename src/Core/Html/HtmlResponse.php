@@ -5,7 +5,7 @@ use Simflex\Core\Response;
 
 class HtmlResponse extends Response
 {
-    protected $content = '';
+    protected string $content = '';
 
     public function __construct()
     {

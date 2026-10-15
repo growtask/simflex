@@ -4,13 +4,13 @@ namespace Simflex\Core\DB\Schema\Params;
 
 class ColumnParams
 {
-    public $isNull = true;
-    public $default = null;
-    public $defaultSet = false;
-    public $autoIncrement = false;
-    public $comment = '';
-    public $collate = '';
-    public $isPrimaryKey = false;
+    public bool $isNull = true;
+    public string|int|float|bool|null $default = null;
+    public bool $defaultSet = false;
+    public bool $autoIncrement = false;
+    public string $comment = '';
+    public string $collate = '';
+    public bool $isPrimaryKey = false;
 
     public function compare(ColumnParams $other): bool
     {

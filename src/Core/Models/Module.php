@@ -12,6 +12,6 @@ use Simflex\Core\ModelBase;
  */
 class Module extends ModelBase
 {
-    protected static $table = 'module';
-    protected static $primaryKeyName = 'module_id';
+    protected static string $table = 'module';
+    protected static string $primaryKeyName = 'module_id';
 }

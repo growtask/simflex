@@ -9,7 +9,7 @@ namespace Simflex\Core\DB;
  */
 class Expr
 {
-    protected $value;
+    protected string $value;
 
     public function __construct($value)
     {

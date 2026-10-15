@@ -7,9 +7,9 @@ use Simflex\Core\Response;
 
 class JsonResponse extends Response
 {
-    protected $errorCode = 0;
-    protected $errorMessage = '';
-    protected $data = [];
+    protected int $errorCode = 0;
+    protected string $errorMessage = '';
+    protected array $data = [];
 
     /**
      * JsonResponse constructor.

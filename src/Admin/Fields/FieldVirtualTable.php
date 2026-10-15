@@ -5,11 +5,11 @@ use Simflex\Core\DB;
 
 class FieldVirtualTable extends Field
 {
-    public $query = '';
-    public $queryCount = '';
-    public $cols = [];
-    public $button = '';
-    public $customjs = '';
+    public string $query = '';
+    public string $queryCount = '';
+    public array $cols = [];
+    public string $button = '';
+    public string $customjs = '';
 
     public function __construct($row)
     {

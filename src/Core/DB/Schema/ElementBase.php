@@ -5,7 +5,7 @@ use Simflex\Core\DB\Schema\Element;
 
 abstract class ElementBase implements Element
 {
-    protected $name = '';
+    protected string $name = '';
 
     public function getName(): string
     {

@@ -18,16 +18,16 @@ use Simflex\Core\UserInstance;
  */
 class User
 {
-    public static $id = 0;
-    public static $login = '';
-    public static $role_id = 0;
-    public static $role_name = '';
+    public static int $id = 0;
+    public static string $login = '';
+    public static int $role_id = 0;
+    public static string $role_name = '';
 
     /**
      *
      * @var UserInstance
      */
-    protected static $instance;
+    protected static UserInstance $instance;
 
     public static function login($type = 'site')
     {
@@ -52,18 +52,18 @@ class User
     {
         self::$instance->logout();
         self::$id = 0;
-        self::$login = null;
-        self::$role_id = null;
-        self::$role_name = null;
+        self::$login = '';
+        self::$role_id = 0;
+        self::$role_name = '';
     }
 
     public static function logout2()
     {
         self::$instance = new UserInstance('', '', '', '', '');
         self::$id = 0;
-        self::$login = null;
-        self::$role_id = null;
-        self::$role_name = null;
+        self::$login = '';
+        self::$role_id = 0;
+        self::$role_name = '';
     }
 
     public static function privIds()
@@ -175,4 +175,3 @@ class User
     }
 
 }
-

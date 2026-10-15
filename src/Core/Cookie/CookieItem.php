@@ -7,17 +7,17 @@ namespace Simflex\Core\Cookie;
 class CookieItem
 {
     /** @var string */
-    protected $key;
+    protected string $key;
     /** @var string|null */
-    protected $value;
-    /** @var \DateTime */
-    protected $expires;
+    protected ?string $value;
+    /** @var \DateTime|null */
+    protected ?\DateTime $expires;
 
     /**
      * CookieItem constructor.
      * @param string $key
-     * @param string $value
-     * @param null $expires
+     * @param string|null $value
+     * @param \DateTime|null $expires
      */
     public function __construct($key, $value = null, $expires = null)
     {

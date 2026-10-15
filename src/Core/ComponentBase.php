@@ -13,7 +13,7 @@ abstract class ComponentBase extends ExtensionBase
      * Путь до компонента в строке браузера
      * @var string
      */
-    protected $rootHref;
+    protected string $rootHref;
 
     public function __construct()
     {

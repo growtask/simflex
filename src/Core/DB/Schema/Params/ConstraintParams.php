@@ -13,14 +13,14 @@ class ConstraintParams
     const REFERENCE_MATCH_PARTIAL = 'PARTIAL';
     const REFERENCE_MATCH_SIMPLE = 'SIMPLE';
 
-    public $isPrimary = false;
-    public $isUnique = false;
-    public $isUniqueIndex = false;
-    public $isForeign = false;
-    public $keyParts = [];
-    public $referenceColumns = [];
-    public $reference = '';
-    public $onDelete = '';
-    public $onUpdate = '';
-    public $match = '';
+    public bool $isPrimary = false;
+    public bool $isUnique = false;
+    public bool $isUniqueIndex = false;
+    public bool $isForeign = false;
+    public array $keyParts = [];
+    public array $referenceColumns = [];
+    public string $reference = '';
+    public string $onDelete = '';
+    public string $onUpdate = '';
+    public string $match = '';
 }

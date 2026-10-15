@@ -3,8 +3,8 @@ namespace Simflex\Core;
 
 class Session
 {
-    private static $data = [];
-    private static $init = false;
+    private static array $data = [];
+    private static bool $init = false;
 
     private static function ensureStarted(): void
     {

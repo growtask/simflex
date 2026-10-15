@@ -6,10 +6,10 @@ namespace Simflex\Admin\Fields;
 class ForeignKey
 {
 
-    public $table = '';
-    public $key = '';
-    public $label = '';
-    public $is_pid = false;
+    public string $table = '';
+    public string $key = '';
+    public string $label = '';
+    public bool $is_pid = false;
 
     public function __construct($params)
     {

@@ -19,15 +19,15 @@ use Simflex\Core\ModuleBase;
 class ModuleForm extends ModuleBase
 {
 
-    protected $name;
-    protected $submitButtonText;
+    protected string $name;
+    protected string $submitButtonText;
     /** @var Field[] */
-    protected $fields = [];
-    protected static $formTplDefault = 'form.tpl';
-    protected $formTpl;
-    protected $errors;
-    protected $action = '';
-    protected $method = 'post';
+    protected array $fields = [];
+    protected static string $formTplDefault = 'form.tpl';
+    protected string $formTpl;
+    protected array $errors = [];
+    protected string $action = '';
+    protected string $method = 'post';
 
     protected const TYPE_MAP = [
         'string' => FieldString::class,

@@ -8,7 +8,7 @@ use Simflex\Core\DB\Schema\Params\ConstraintParams;
 class Constraint extends ElementBase
 {
     /** @var \Simflex\Core\DB\Schema\Params\ConstraintParams */
-    protected $params;
+    protected ConstraintParams $params;
 
     public function __construct(string $name = '')
     {

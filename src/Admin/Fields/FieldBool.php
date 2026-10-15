@@ -8,8 +8,8 @@ use Simflex\Admin\Fields\FieldInt;
 class FieldBool extends FieldInt
 {
 
-    public $style = 'text-align:center;';
-    public $defaultValue = 0;
+    public string $style = 'text-align:center;';
+    public mixed $defaultValue = 0;
 
     public function input($value)
     {

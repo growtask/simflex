@@ -5,9 +5,9 @@ use JetBrains\PhpStorm\NoReturn;
 
 abstract class Response implements \Simflex\Core\DI\Service
 {
-    protected $statusCode = 200;
-    protected $cookies = [];
-    protected $headers = [];
+    protected int $statusCode = 200;
+    protected array $cookies = [];
+    protected array $headers = [];
 
     public function __construct()
     {

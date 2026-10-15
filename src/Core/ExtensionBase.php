@@ -12,8 +12,8 @@ abstract class ExtensionBase
      * Путь до расширения в файловой системе
      * @var string
      */
-    protected $rootDir;
-    protected $root = '';
+    protected string $rootDir;
+    protected string $root = '';
 
     public function __construct()
     {

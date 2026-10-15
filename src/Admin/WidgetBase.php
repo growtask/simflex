@@ -8,8 +8,8 @@ use Simflex\Admin\Core;
 abstract class WidgetBase extends ExtBase
 {
 
-    protected $data;
-    protected $id;
+    protected array $data;
+    protected int $id;
 
     public function __construct($data)
     {

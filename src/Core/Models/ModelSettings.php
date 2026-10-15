@@ -15,8 +15,8 @@ use Simflex\Core\ModelBase;
  */
 class ModelSettings extends ModelBase
 {
-    protected static $table = 'settings';
-    protected static $primaryKeyName = 'setting_id';
+    protected static string $table = 'settings';
+    protected static string $primaryKeyName = 'setting_id';
 
     public static function get(string $key)
     {

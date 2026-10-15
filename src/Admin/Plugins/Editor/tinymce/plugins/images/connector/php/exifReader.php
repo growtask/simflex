@@ -320,40 +320,40 @@ class phpExifReader {
     * @access    private
     *
     */
-    var $ImageInfo = array();
+    public array $ImageInfo = array();
 
-    var $MotorolaOrder = 0;
-    var $ExifImageWidth = 0; //
-    var $FocalplaneXRes = 0; //
-    var $FocalplaneUnits = 0; //
-    var $sections = array();
-    var $currSection = 0;  /** Stores total number fo Sections */
+    public int $MotorolaOrder = 0;
+    public int $ExifImageWidth = 0; //
+    public float $FocalplaneXRes = 0; //
+    public float $FocalplaneUnits = 0; //
+    public array $sections = array();
+    public int $currSection = 0;  /** Stores total number fo Sections */
 
-    var $BytesPerFormat = array(0,1,1,2,4,8,1,1,2,4,8,4,8);
+    public array $BytesPerFormat = array(0,1,1,2,4,8,1,1,2,4,8,4,8);
 
-    var $ReadMode = array(
+    public array $ReadMode = array(
                             "READ_EXIF" => 1,
                             "READ_IMAGE" => 2,
                             "READ_ALL" => 3
                         );
 
-    var $ImageReadMode = 3; /** related to $RealMode arrays values */
-    var $file =  "";     /** JPEG file to parse for EXIF data */
-    var $newFile = 1;   /** flag to check if the current file has been parsed or not. */
+    public int $ImageReadMode = 3; /** related to $RealMode arrays values */
+    public string $file =  "";     /** JPEG file to parse for EXIF data */
+    public int $newFile = 1;   /** flag to check if the current file has been parsed or not. */
 
-    var $thumbnail = ""; /* Name of thumbnail */
-    var $thumbnailURL = ""; /* */
+    public string $thumbnail = ""; /* Name of thumbnail */
+    public string $thumbnailURL = ""; /* */
 
-    var $exifSection = -1;   // market the exif section index oout of all sections
+    public int $exifSection = -1;   // market the exif section index oout of all sections
 
-    var $errno = 0;
-    var $errstr = "";
+    public int $errno = 0;
+    public string $errstr = "";
 
-    var $debug = false;
+    public bool $debug = false;
 
     // Caching ralated variables
-    var $caching = false; /* Should cacheing of image thumnails be allowed? */
-    var $cacheDir = ""; /* Checkout constructor for default path. */
+    public bool $caching = false; /* Should cacheing of image thumnails be allowed? */
+    public string $cacheDir = ""; /* Checkout constructor for default path. */
 
     /**
      * Constructor
@@ -889,8 +889,7 @@ class phpExifReader {
                     break;
 
                 case TAG_FOCALPLANEXRES:
-                    $this->FocalplaneXRes = $this->ConvertAnyFormat($ValuePtr, $Format);
-                    $this->FocalplaneXRes = $this->FocalplaneXRes[0];
+                    $this->FocalplaneXRes = $this->ConvertAnyFormat($ValuePtr, $Format)[0];
                     $this->ImageInfo[TAG_FOCALPLANEXRES] = $this->FocalplaneXRes[0];
                     break;
 

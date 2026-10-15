@@ -9,7 +9,7 @@ use Simflex\Admin\Fields\FieldString;
 class FieldEnum extends  FieldString
 {
 
-    protected $changeURL;
+    protected string $changeURL = '';
 
     public function input($value)
     {

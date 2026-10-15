@@ -17,23 +17,23 @@ use Simflex\Core\ModelBase;
 class AQ
 {
 
-    protected $select = '*';
-    protected $from;
-    protected $fromAlias;
+    protected string|array $select = '*';
+    protected string $from;
+    protected string $fromAlias = '';
     /** @var JoinClause[] */
-    protected $join = [];
-    protected $where = '';
-    protected $orderBy = null;
-    protected $limit = '';
-    protected $asArray = false;
-    /** @var ModelBase|null */
-    protected $modelClass;
-    protected $custom;
-    protected $prefix;
-    protected $binds = [];
+    protected array $join = [];
+    protected string|array|Where $where = '';
+    protected ?string $orderBy = null;
+    protected string $limit = '';
+    protected bool $asArray = false;
+    /** @var class-string<ModelBase>|null */
+    protected ?string $modelClass = null;
+    protected string $custom = '';
+    protected string $prefix = '';
+    protected array $binds = [];
 
     /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
-    protected $scalarColumn = null;
+    protected string|int|null $scalarColumn = null;
 
     /**
      * @param bool $asArray
@@ -379,4 +379,3 @@ class AQ
     }
 
 }
-

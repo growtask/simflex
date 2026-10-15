@@ -12,11 +12,11 @@ use Simflex\Admin\Structure\Repository as StructureRepository;
 class FieldInt extends Field
 {
 
-    public $defaultValue = 0;
+    public mixed $defaultValue = 0;
 
-    public $filterAndWhere = '';
+    public string $filterAndWhere = '';
     /** @var callable return [x => [y => [label => z], q => [label => k]]] */
-    public $filterDataProvider;
+    public \Closure|array|string $filterDataProvider;
 
     public function __construct($row)
     {

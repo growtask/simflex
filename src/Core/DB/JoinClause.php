@@ -8,15 +8,15 @@ use Simflex\Core\ModelBase;
 class JoinClause
 {
     /** @var string */
-    protected $table;
+    protected string $table;
     /** @var string */
-    protected $joinColumn1;
+    protected string $joinColumn1;
     /** @var string|null */
-    protected $joinColumn2;
+    protected ?string $joinColumn2;
     /** @var string */
-    protected $type;
+    protected string $type;
     /** @var Where|null */
-    protected $extraOnConditions;
+    protected ?Where $extraOnConditions;
 
     /**
      * @param string|ModelBase $table

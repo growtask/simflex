@@ -7,9 +7,9 @@ use Simflex\Core\ModuleBase;
 
 class Breadcrumbs extends ModuleBase
 {
-    protected static $arr = array();
-    protected $crumbs = array();
-    protected static $skip = [];
+    protected static array $arr = array();
+    protected array $crumbs = array();
+    protected static array $skip = [];
 
     protected function content()
     {

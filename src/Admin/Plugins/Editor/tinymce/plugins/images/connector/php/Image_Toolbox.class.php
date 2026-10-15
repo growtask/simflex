@@ -80,7 +80,7 @@ class Image_Toolbox {
      * @access private
      * @var string
      */
-	var $_error_prefix = 'Image: ';
+	public string $_error_prefix = 'Image: ';
 	
 	/**
      * Defines imagetypes and how they are supported by the server
@@ -88,7 +88,7 @@ class Image_Toolbox {
      * @access private
      * @var array
      */
-	var $_types = array (
+	public array $_types = array (
 		1 => array (
 			'ext' => 'gif',
 			'mime' => 'image/gif',
@@ -113,7 +113,7 @@ class Image_Toolbox {
      * @access private
      * @var string
      */
-	var $_resize_function = 'imagecopyresampled';
+	public string $_resize_function = 'imagecopyresampled';
 
 	/**
      * Stores all image resource data
@@ -121,7 +121,7 @@ class Image_Toolbox {
      * @access private
      * @var array
      */
-	var $_img = array (
+	public array $_img = array (
 		'main' => array (
 			'resource' => 0,
 			'width' => 0,
@@ -142,7 +142,7 @@ class Image_Toolbox {
      * @access private
      * @var string
      */
-	var $_imagecreatefunction = '';
+	public string $_imagecreatefunction = '';
 	
     /**
      * The class constructor.

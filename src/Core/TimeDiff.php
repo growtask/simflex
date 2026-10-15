@@ -9,7 +9,7 @@ use Simflex\Core\Helpers\Declension;
 class TimeDiff
 {
 
-    private $value;
+    private \DateInterval $value;
 
     /**
      *

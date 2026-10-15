@@ -13,16 +13,16 @@ use Simflex\Admin\Page;
 class Core
 {
 
-    public static $ajax = '';
-    public static $isAjax = false;
-    private static $uri = array();
-    private static $path = '';
-    private static $menu_tree = array();
-    private static $menu_by_id = array();
-    private static $menu_by_link = array();
-    private static $menu_cur = false;
-    private static $crumbs = array();
-    private static $site_params = array();
+    public static bool $ajax = false;
+    public static bool $isAjax = false;
+    private static array $uri = array();
+    private static string $path = '';
+    private static array $menu_tree = array();
+    private static array $menu_by_id = array();
+    private static array $menu_by_link = array();
+    private static array|false $menu_cur = false;
+    private static array $crumbs = array();
+    private static array $site_params = array();
 
     private function __construct()
     {

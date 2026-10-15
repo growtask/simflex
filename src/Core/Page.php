@@ -9,23 +9,23 @@ use Simflex\Core\DB;
 class Page
 {
 
-    protected static $menu = '';
-    protected static $content = '';
-    protected static $positions = array();
-    protected static $modules = array();
-    protected static $css = array();
-    protected static $css_check = array();
-    protected static $js = array();
-    protected static $js_check = array();
-    public static $seo_title = '';
-    protected static $seo_description = '';
-    protected static $seo_keywords = '';
-    protected static $seo_metatags = '';
-    protected static $seo_is = false;
-    protected static $meta_raw = '';
-    public static $showAside = false;
+    protected static string $menu = '';
+    protected static string $content = '';
+    protected static array $positions = array();
+    protected static array $modules = array();
+    protected static array $css = array();
+    protected static array $css_check = array();
+    protected static array $js = array();
+    protected static array $js_check = array();
+    public static string $seo_title = '';
+    protected static string $seo_description = '';
+    protected static string $seo_keywords = '';
+    protected static string $seo_metatags = '';
+    protected static bool $seo_is = false;
+    protected static string $meta_raw = '';
+    public static bool $showAside = false;
 
-    public static $override = [
+    public static array $override = [
         'description' => '',
         'keywords' => '',
         'title' => '',

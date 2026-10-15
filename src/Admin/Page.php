@@ -19,20 +19,20 @@ use Simflex\Core\User;
 class Page
 {
 
-    protected static $menu = '';
-    protected static $content = '';
-    protected static $positions = array();
-    protected static $modules = array();
-    protected static $css = array();
-    protected static $css_check = array();
-    protected static $js = array();
-    protected static $js_check = array();
+    protected static string $menu = '';
+    protected static string $content = '';
+    protected static array $positions = array();
+    protected static array $modules = array();
+    protected static array $css = array();
+    protected static array $css_check = array();
+    protected static array $js = array();
+    protected static array $js_check = array();
 
     /**
      *
      * @var Base
      */
-    protected static $driver = false;
+    protected static Base|\Simflex\Core\ModuleBase|false $driver = false;
 
     public static function init()
     {

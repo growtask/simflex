@@ -9,19 +9,19 @@ use Simflex\Core\DB;
 abstract class Field
 {
     /** @var ModuleForm */
-    protected $form;
-    protected $name;
-    protected $label;
-    public $placeholder;
-    public $comment;
-    public $is_text = 0;
-    public $required = false;
-    public $v_requied = array();
-    public $v_length = array();
-    public $v_equal = array();
-    public $v_mask = array();
-    public $v_unique = array();
-    protected $defval = '';
+    protected ModuleForm $form;
+    protected string $name;
+    protected string $label;
+    public string $placeholder;
+    public string $comment;
+    public int $is_text = 0;
+    public bool $required = false;
+    public array|int $v_requied = array();
+    public array $v_length = array();
+    public array $v_equal = array();
+    public array $v_mask = array();
+    public array $v_unique = array();
+    protected string $defval = '';
 
     public function __construct($form, $name, $label, $comment, $is_text = 0, $placeholder = '', $required = false)
     {

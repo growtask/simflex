@@ -15,18 +15,18 @@ use Simflex\Core\DB;
 class UserInstance
 {
 
-    public $id = 0;
-    public $login = '';
-    public $role_id = 0;
-    public $role_name = '';
-    private $priv_ids = array();
-    private $priv_names = array();
-    private $info;
-    private $idName;
-    private $hashName;
-    private $dbHashName;
-    private $remIdName;
-    private $remHashName;
+    public int $id = 0;
+    public string $login = '';
+    public int $role_id = 0;
+    public string $role_name = '';
+    private array $priv_ids = array();
+    private array $priv_names = array();
+    private array|false $info;
+    private string $idName;
+    private string $hashName;
+    private string $dbHashName;
+    private string $remIdName;
+    private string $remHashName;
 
     /**
      *

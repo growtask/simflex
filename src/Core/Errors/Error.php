@@ -17,7 +17,7 @@ class Error extends \Error
     /**
      * @var array Дополнительные необязательные параметры, например, для кастомизации текста ошибки.
      */
-    public $params = [];
+    public array $params = [];
 
     /** @inheritDoc */
     public function __construct($message = "", $code = 0, Throwable $previous = null, $params = [])

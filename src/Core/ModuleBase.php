@@ -9,11 +9,11 @@ use Simflex\Core\ExtensionBase;
 abstract class ModuleBase extends ExtensionBase
 {
 
-    protected $id = 0;
-    protected $name = '';
-    protected $title = '';
-    protected $params = array();
-    protected $position = '';
+    protected int $id = 0;
+    protected string $name = '';
+    protected string $title = '';
+    protected array $params = array();
+    protected string $position = '';
 
     public function __construct($module)
     {

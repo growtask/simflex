@@ -16,7 +16,7 @@ abstract class DriverBase
     const STATE_ERROR = 'error';
 
     /** @var array */
-    protected $config;
+    protected array $config;
 
     public function __construct($config)
     {

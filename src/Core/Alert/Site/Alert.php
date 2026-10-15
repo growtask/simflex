@@ -9,8 +9,8 @@ use Simflex\Core\Page;
 class Alert
 {
 
-    protected static $s;
-    protected static $isInited = false;
+    protected static array $s;
+    protected static bool $isInited = false;
 
     private function __construct()
     {
@@ -21,6 +21,7 @@ class Alert
     {
         if (!self::$isInited) {
             Page::css(Core::webVendorPath() . '/Core/Alert/Site/alert.css');
+            $_SESSION['plug_alert'] ??= [];
             self::$s = &$_SESSION['plug_alert'];
             self::$isInited = true;
         }

@@ -6,10 +6,10 @@ namespace Simflex\Admin\Notify;
 class NotifyItem
 {
 
-    private $text = '';
-    private $icon = 'bolt';
-    private $href = 'javascript:;';
-    private $data = array();
+    private string $text = '';
+    private string $icon = 'bolt';
+    private string $href = 'javascript:;';
+    private array $data = array();
 
     public function __construct($text, $href = '', $icon = '')
     {

@@ -31,34 +31,34 @@ use Simflex\Core\User;
 class Base
 {
 
-    public $name = '';
-    protected $action = '';
-    protected $table = '';
-    protected $tableData = array();  // table metadata
-    protected $fields = array();     // fields by name
-    protected $fks = array();        // forieng key fields
-    protected $blocks = array();     // form field group labels, filled in by form.tpl
+    public string $name = '';
+    protected string $action = '';
+    protected string $table = '';
+    protected array $tableData = array();  // table metadata
+    protected array $fields = array();     // fields by name
+    protected array $fks = array();        // forieng key fields
+    protected array $blocks = array();     // form field group labels, filled in by form.tpl
     /**
      *
      * @var FieldInt
      */
-    protected $pk = false;
-    protected $pid = false;
-    protected $isHierarchy = false;
-    protected $params = array('left' => array(), 'right' => array());
-    protected $where = array();
-    protected $whereOr = array();
-    protected $where_sys = array();
-    protected $order = '';
-    protected $order2 = '';
-    protected $desc = 0;
-    protected $errors = array();
-    protected $p = 0;
-    protected $p_on = 20;
-    protected $p_count = 0;
-    protected $is_filter = false;
-    static protected $is_init = false;
-    protected $actionHandlers = [
+    protected FieldInt|false $pk = false;
+    protected FieldInt|false $pid = false;
+    protected bool $isHierarchy = false;
+    protected array $params = array('left' => array(), 'right' => array());
+    protected array $where = array();
+    protected array $whereOr = array();
+    protected array $where_sys = array();
+    protected string $order = '';
+    protected string $order2 = '';
+    protected int $desc = 0;
+    protected array $errors = array();
+    protected int $p = 0;
+    protected int $p_on = 20;
+    protected int $p_count = 0;
+    protected bool $is_filter = false;
+    static protected bool $is_init = false;
+    protected array $actionHandlers = [
         '' => ['method' => 'show'],
         'form' => ['method' => 'form'],
         'save' => ['method' => 'save'],
@@ -73,37 +73,37 @@ class Base
         'showDetail' => ['method' => 'showDetail'],
         'searchTags' => ['method' => 'searchTags'],
     ];
-    protected $row = false;
-    public static $currentWhere = '';
-    public static $isGroup = false;
-    public static $isAdd = false;
-    public static $isEdit = false;
-    protected $canAdd = false;
-    protected $canCopy = false;
-    protected $canEdit = false;
-    protected $canEditGroup = false;
-    protected $canDelete = false;
-    public $title = '';
-    public $selectAll = false;
-    public $selectAdditional = [];
-    public $extraRight = '';
-    public $extraLeft = '';
+    protected array|false $row = false;
+    public static string $currentWhere = '';
+    public static bool $isGroup = false;
+    public static bool $isAdd = false;
+    public static bool $isEdit = false;
+    protected bool $canAdd = false;
+    protected bool $canCopy = false;
+    protected bool $canEdit = false;
+    protected bool $canEditGroup = false;
+    protected bool $canDelete = false;
+    public string $title = '';
+    public bool $selectAll = false;
+    public array $selectAdditional = [];
+    public string $extraRight = '';
+    public string $extraLeft = '';
 
     /**
      * Количество кнопок у каждой строки в списке записей (метод show). Влияет на ширину колонки
      * Необязательно задавать, пересчитывается на JS
      */
-    protected $rowActionsCnt = 1;
+    protected int $rowActionsCnt = 1;
 
     /**
      *
      * @var string ID записей при групповом редактировании (через запятую)
      */
-    public $ids;
+    public string $ids;
 
     public function __construct()
     {
-        $this->title = Core::menuCurItem('name');
+        $this->title = Core::menuCurItem('name') ?? '';
         $this->ids = isset($_GET['ids']) ? $_GET['ids'] : '';
         if (isset($_POST['group_ids'])) {
             $this->ids = $_POST['group_ids'];

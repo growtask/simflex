@@ -10,7 +10,7 @@ use Simflex\Admin\Fields\FieldFile;
 class FieldImage extends FieldFile
 {
 
-    public $sizes = array();
+    public array $sizes = array();
 
     public function __construct($row)
     {

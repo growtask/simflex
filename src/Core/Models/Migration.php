@@ -12,6 +12,6 @@ use Simflex\Core\ModelBase;
  */
 class Migration extends ModelBase
 {
-    protected static $table = 'migration';
-    protected static $primaryKeyName = 'id';
+    protected static string $table = 'migration';
+    protected static string $primaryKeyName = 'id';
 }

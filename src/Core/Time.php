@@ -13,20 +13,20 @@ class Time
      * Время объекта в секундах
      * @var int
      */
-    private $time = 0;
-    public static $wdays = array('ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ');
-    public static $wdaysFull = array('Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота');
-    public static $wdaysFullLC = array('воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота');
-    public static $months = array('', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек');
-    public static $monthsDat = array('', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
-    public static $monthsFull = array('', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь');
-    public static $monthsFullUCF = array('', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
+    private int $time = 0;
+    public static array $wdays = array('ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ');
+    public static array $wdaysFull = array('Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота');
+    public static array $wdaysFullLC = array('воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота');
+    public static array $months = array('', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек');
+    public static array $monthsDat = array('', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
+    public static array $monthsFull = array('', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь');
+    public static array $monthsFullUCF = array('', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
 
     /**
      * Индекс января = 1
      * @var type
      */
-    public static $daysInMonth = array(1 => 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    public static array $daysInMonth = array(1 => 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
     public static function getMonths()
     {
@@ -618,7 +618,7 @@ class Time
         return $ret;
     }
 
-    protected static $timestamp;
+    protected static float $timestamp;
 
     public static function startTimer()
     {
@@ -749,4 +749,3 @@ class Time
         return $dateTime->sub(new \DateInterval('P1D'))->format('Y-m-d');
     }
 }
-

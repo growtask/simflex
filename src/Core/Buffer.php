@@ -6,7 +6,7 @@ namespace Simflex\Core;
 class Buffer
 {
 
-    protected static $data = [];
+    protected static array $data = [];
 
     /**
      * @param string $key

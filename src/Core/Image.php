@@ -12,8 +12,8 @@ use Simflex\Core\File;
 class Image extends File
 {
 
-    public $path_base = 'images';
-    protected $uploadedFilePath;
+    public string $path_base = 'images';
+    protected string $uploadedFilePath;
 
     /**
      *

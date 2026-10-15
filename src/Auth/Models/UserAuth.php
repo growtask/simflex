@@ -13,8 +13,8 @@ use Simflex\Core\ModelBase;
 class UserAuth extends ModelBase
 {
 
-    protected static $table = 'user_auth';
-    protected static $primaryKeyName = 'auth_id';
+    protected static string $table = 'user_auth';
+    protected static string $primaryKeyName = 'auth_id';
 
     /**
      * @param int|null $userId

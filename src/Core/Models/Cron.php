@@ -17,6 +17,6 @@ use Simflex\Core\ModelBase;
  */
 class Cron extends ModelBase
 {
-    protected static $primaryKeyName = 'id';
-    protected static $table = 'cron';
+    protected static string $primaryKeyName = 'id';
+    protected static string $table = 'cron';
 }

@@ -8,8 +8,8 @@ use Simflex\Core\Session;
 class Alert
 {
 
-    protected static $s;
-    protected static $isInited = false;
+    protected static array $s;
+    protected static bool $isInited = false;
 
     private function __construct()
     {
@@ -18,7 +18,7 @@ class Alert
     public static function init()
     {
         if (!self::$isInited) {
-            self::$s = Session::get('admin.alerts');
+            self::$s = Session::get('admin.alerts') ?? [];
             self::$isInited = true;
         }
         if (!isset(self::$s)) {

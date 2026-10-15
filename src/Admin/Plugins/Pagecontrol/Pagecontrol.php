@@ -5,20 +5,20 @@ namespace Simflex\Admin\Plugins\Pagecontrol;
 class Pagecontrol
 {
 
-    private $p = 0;
-    private $p_on = 0;
-    private $p_count = 0;
-    private $count = 0;
-    private $link = '?p={p}';
-    private $p_on_show = false;
-    public $p_count_max = 7;
+    private int $p = 0;
+    private int $p_on = 0;
+    private int $p_count = 0;
+    private int $count = 0;
+    private string $link = '?p={p}';
+    private bool $p_on_show = false;
+    public int $p_count_max = 7;
 
     public function __construct($p, $p_on, $count, $link = '?p={p}', $p_on_show = false)
     {
         $this->p = abs($p);
         $this->p_on = abs($p_on);
         $this->count = abs($count);
-        $this->p_count = ceil($count / $this->p_on);
+        $this->p_count = (int) ceil($count / $this->p_on);
         if ($this->p + 1 > $this->p_count) {
             $this->p_count++;
         }

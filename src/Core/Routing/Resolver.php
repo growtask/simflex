@@ -8,7 +8,7 @@ use Simflex\Core\Routing\Route;
 
 class Resolver
 {
-    protected $menuByLink = [];
+    protected array $menuByLink = [];
 
     public function resolve(string|array $routesFile): Route
     {

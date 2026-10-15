@@ -8,10 +8,10 @@ namespace Simflex\Core;
 class File
 {
 
-    public $name = false;
-    public $type = false;
-    public $path = '';
-    public $path_base = 'files';
+    public string|false $name = false;
+    public string|int|false $type = false;
+    public string $path = '';
+    public string $path_base = 'files';
 
     public function __construct($path = '')
     {

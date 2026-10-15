@@ -26,8 +26,8 @@ use Simflex\Extensions\Content\Model\ModelContentTemplate;
  */
 class ModelContent extends ModelBase
 {
-    protected static $table = 'content';
-    protected static $primaryKeyName = 'content_id';
+    protected static string $table = 'content';
+    protected static string $primaryKeyName = 'content_id';
 
     public static function aqModifyWithTemplate(AQ $AQ)
     {

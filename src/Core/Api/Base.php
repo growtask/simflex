@@ -12,12 +12,12 @@ abstract class Base
     /**
      * @var bool Should require authentication on all methods?
      */
-    protected $requireAuth = false;
+    protected bool $requireAuth = false;
 
     /**
      * @var User|null Authenticated user (set ONLY if requireAuth = true)
      */
-    protected $user = null;
+    protected ?User $user = null;
 
     /**
      * @return string

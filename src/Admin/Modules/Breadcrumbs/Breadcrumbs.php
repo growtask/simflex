@@ -8,7 +8,7 @@ use Simflex\Core\ModuleBase;
 class Breadcrumbs extends ModuleBase
 {
 
-    protected $name = 'breadcrumbs';
+    protected string $name = 'breadcrumbs';
 
     public function content()
     {

@@ -11,8 +11,8 @@ use Simflex\Core\ModelBase;
  */
 class Component extends ModelBase
 {
-    protected static $primaryKeyName = 'component_id';
-    protected static $table = 'component';
+    protected static string $primaryKeyName = 'component_id';
+    protected static string $table = 'component';
 
     public static function byClass(string $class): ?static
     {

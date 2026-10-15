@@ -5,6 +5,6 @@ use Simflex\Core\ModelBase;
 
 class ModuleParam extends ModelBase
 {
-    protected static $table = 'module_param';
-    protected static $primaryKeyName = 'mp_id';
+    protected static string $table = 'module_param';
+    protected static string $primaryKeyName = 'mp_id';
 }

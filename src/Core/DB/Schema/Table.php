@@ -11,19 +11,19 @@ use Simflex\Core\DB\Schema\Column;
 class Table extends ElementBase
 {
     /** @var \Simflex\Core\DB\Schema\Params\TableParams */
-    protected $params;
+    protected TableParams $params;
 
     /** @var \Simflex\Core\DB\Schema\Params\TableParams */
-    protected $oldParams;
+    protected TableParams $oldParams;
 
     /** @var \Simflex\Core\DB\Schema\Element[] */
-    protected $elements = [];
+    protected array $elements = [];
 
     /** @var \Simflex\Core\DB\Schema\Element[] */
-    protected $oldElements = [];
+    protected array $oldElements = [];
 
-    protected $isExisting;
-    protected $dropQueue = [];
+    protected bool $isExisting;
+    protected array $dropQueue = [];
 
     public function __construct(string $name, bool $isExisting = false)
     {

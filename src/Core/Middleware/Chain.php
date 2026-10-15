@@ -10,7 +10,7 @@ class Chain implements Handler
 {
 
     /** @var Handler[] */
-    protected $middlewares = [];
+    protected array $middlewares = [];
 
     /**
      * Chain constructor.

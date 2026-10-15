@@ -5,7 +5,7 @@ use Simflex\Core\DB;
 
 class FieldTags extends Field
 {
-    public  $values = [];
+    public  array $values = [];
 
             public function input($value)
             {

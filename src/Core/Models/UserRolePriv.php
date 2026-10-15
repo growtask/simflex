@@ -14,8 +14,8 @@ use Simflex\Core\ModelBase;
  */
 class UserRolePriv extends ModelBase
 {
-    protected static $primaryKeyName = 'id';
-    protected static $table = 'user_role_priv';
+    protected static string $primaryKeyName = 'id';
+    protected static string $table = 'user_role_priv';
 
     /**
      * @throws Exception

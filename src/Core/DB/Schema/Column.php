@@ -10,8 +10,8 @@ use Simflex\Core\DB\Schema\TableElementBase;
 class Column extends TableElementBase
 {
     /** @var \Simflex\Core\DB\Schema\Params\ColumnParams */
-    protected $params;
-    protected $type = '';
+    protected ColumnParams $params;
+    protected string $type = '';
 
     public const TYPE_INT = 'int';
     public const TYPE_TINYINT = 'tinyint';

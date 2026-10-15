@@ -7,7 +7,7 @@ use Simflex\Core\DB\Schema\Table;
 abstract class TableElementBase extends ElementBase
 {
     /** @var ?\Simflex\Core\DB\Schema\Table */
-    protected $table = null;
+    protected ?Table $table = null;
 
     public function getTable(): ?Table
     {

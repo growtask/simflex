@@ -8,7 +8,7 @@ use Simflex\Core\ModuleBase;
 class Menu extends ModuleBase
 {
 
-    protected $name = 'menu';
+    protected string $name = 'menu';
 
     public function content()
     {

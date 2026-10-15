@@ -23,7 +23,7 @@ use Simflex\Core\User;
 class Container
 {
     /** @var array */
-    protected static $registry = [];
+    protected static array $registry = [];
 
     public static function set(string $name, $payload)
     {

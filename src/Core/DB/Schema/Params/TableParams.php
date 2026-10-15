@@ -3,11 +3,11 @@ namespace Simflex\Core\DB\Schema\Params;
 
 class TableParams
 {
-    public $ifNotExists = false;
-    public $temporary = false;
-    public $autoIncrement = 0;
-    public $comment = '';
-    public $collate = '';
-    public $characterSet = '';
-    public $defaultCharacterSet = false;
+    public bool $ifNotExists = false;
+    public bool $temporary = false;
+    public int $autoIncrement = 0;
+    public string $comment = '';
+    public string $collate = '';
+    public string $characterSet = '';
+    public bool $defaultCharacterSet = false;
 }

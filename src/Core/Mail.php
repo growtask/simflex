@@ -15,8 +15,8 @@ class Mail {
     const MAIL_TRANSPORT_FAKE_SUCCESS = 3;
     const MAIL_TRANSPORT_FAKE_ERROR = 4;
 
-    private static $connect = array('host' => 'smtp.yandex.ru', 'port' => 465, 'fromru' => 'Mail');
-    private $data = array(
+    private static array $connect = array('host' => 'smtp.yandex.ru', 'port' => 465, 'fromru' => 'Mail');
+    private array $data = array(
         'to_email' => '', 'to_name' => '', 'from_name' => '', 'from_email' => '', 'as_plain' => false,
         'reply_email' => '', 'reply_name' => '', 'text' => '', 'subject' => '', 'can_answer' => false,
         'transport' => self::MAIL_TRANSPORT_DAEMON

@@ -24,8 +24,8 @@ use Simflex\Core\Models\UserRole;
  */
 class User extends ModelBase
 {
-    protected static $table = 'user';
-    protected static $primaryKeyName = 'user_id';
+    protected static string $table = 'user';
+    protected static string $primaryKeyName = 'user_id';
 
     /**
      * @throws Exception

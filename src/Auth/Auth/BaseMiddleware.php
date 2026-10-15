@@ -12,9 +12,9 @@ abstract class BaseMiddleware implements Handler
 {
 
     /**
-     * @var User
+     * @var class-string<User>
      */
-    protected $userModelClass = User::class;
+    protected string $userModelClass = User::class;
 
     /**
      * @param string $userModelClass

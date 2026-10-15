@@ -15,12 +15,12 @@ include 'config.php';
 class TinyImageManager
 {
 
-    var $dir;
-    var $firstAct = false;
-    var $folderAct = false;
-    var $ALLOWED_IMAGES;
-    var $ALLOWED_FILES;
-    var $SID;
+    public array $dir;
+    public bool $firstAct = false;
+    public bool $folderAct = false;
+    public array $ALLOWED_IMAGES;
+    public array $ALLOWED_FILES;
+    public string $SID;
 
     /**
      * Конструктор

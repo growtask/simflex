@@ -12,7 +12,7 @@ use Simflex\Core\Helpers\Str;
 class Service
 {
 
-    private static $list = array();
+    private static array $list = array();
 
     private function __construct()
     {

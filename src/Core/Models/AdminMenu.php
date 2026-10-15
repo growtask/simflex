@@ -17,8 +17,8 @@ use Simflex\Core\ModelBase;
  */
 class AdminMenu extends ModelBase
 {
-    protected static $primaryKeyName = 'menu_id';
-    protected static $table = 'admin_menu';
+    protected static string $primaryKeyName = 'menu_id';
+    protected static string $table = 'admin_menu';
 
     public static function byLink(string $link): ?static
     {
