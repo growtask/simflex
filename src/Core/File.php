@@ -11,7 +11,7 @@ class File
     public string|false $name = false;
     public string|int|false $type = false;
     public string $path = '';
-    public string $path_base = 'files';
+    public string $pathBase = 'files';
 
     public function __construct($path = '')
     {
@@ -19,7 +19,7 @@ class File
         if (!is_dir($this->path)) {
             mkdir($this->path);
         }
-        $this->path .= '/' . $this->path_base;
+        $this->path .= '/' . $this->pathBase;
         if (!is_dir($this->path)) {
             mkdir($this->path, 0777, true);
         }

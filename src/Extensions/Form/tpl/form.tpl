@@ -13,7 +13,7 @@ if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
             foreach ($this->fields as $field) : ?>
                 <tr>
                     <td><label class="plug-form-label"><?php
-                            echo $field->getLabel(), $field->v_requied ? ' <span>*</span>' : ''; ?></label></td>
+                            echo $field->getLabel(), $field->vRequired ? ' <span>*</span>' : ''; ?></label></td>
                     <td>
                         <?php
                         $field->html();

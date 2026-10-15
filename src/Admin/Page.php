@@ -24,9 +24,9 @@ class Page
     protected static array $positions = [];
     protected static array $modules = [];
     protected static array $css = [];
-    protected static array $css_check = [];
+    protected static array $cssCheck = [];
     protected static array $js = [];
-    protected static array $js_check = [];
+    protected static array $jsCheck = [];
 
     protected static Base|\Simflex\Core\ModuleBase|false $driver = false;
 
@@ -135,11 +135,11 @@ class Page
     {
         $idx = (int)$idx;
         if (empty(self::$css[$idx][md5($file)])) {
-            if (isset(self::$css_check[md5($file)])) {
-                unset(self::$css[self::$css_check[md5($file)]][md5($file)]);
-                unset(self::$css_check[md5($file)]);
+            if (isset(self::$cssCheck[md5($file)])) {
+                unset(self::$css[self::$cssCheck[md5($file)]][md5($file)]);
+                unset(self::$cssCheck[md5($file)]);
             }
-            self::$css_check[md5($file)] = $idx;
+            self::$cssCheck[md5($file)] = $idx;
             self::$css[$idx][md5($file)] = $file;
         }
     }
@@ -148,11 +148,11 @@ class Page
     {
         $idx = (int)$idx;
         if (empty(self::$js[$idx][md5($file)])) {
-            if (isset(self::$js_check[md5($file)])) {
-                unset(self::$js[self::$js_check[md5($file)]][md5($file)]);
-                unset(self::$js_check[md5($file)]);
+            if (isset(self::$jsCheck[md5($file)])) {
+                unset(self::$js[self::$jsCheck[md5($file)]][md5($file)]);
+                unset(self::$jsCheck[md5($file)]);
             }
-            self::$js_check[md5($file)] = $idx;
+            self::$jsCheck[md5($file)] = $idx;
             self::$js[$idx][md5($file)] = $file;
         }
     }

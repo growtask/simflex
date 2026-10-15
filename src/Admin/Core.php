@@ -17,12 +17,12 @@ class Core
     public static bool $isAjax = false;
     private static array $uri = [];
     private static string $path = '';
-    private static array $menu_tree = [];
-    private static array $menu_by_id = [];
-    private static array $menu_by_link = [];
-    private static array|false $menu_cur = false;
+    private static array $menuTree = [];
+    private static array $menuById = [];
+    private static array $menuByLink = [];
+    private static array|false $menuCur = false;
     private static array $crumbs = [];
-    private static array $site_params = [];
+    private static array $siteParams = [];
 
     private function __construct()
     {
@@ -125,24 +125,24 @@ class Core
             if (str_starts_with($row['link'], '/')) {
                 $row['link'] = static::url($row['link']);
             }
-            self::$menu_tree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
-            self::$menu_by_id[(int)$row['menu_id']] = $row;
-            self::$menu_by_link[md5($row['link'])] = $row;
+            self::$menuTree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
+            self::$menuById[(int)$row['menu_id']] = $row;
+            self::$menuByLink[md5($row['link'])] = $row;
             if ($row['link'] == self::$path) {
-                self::$menu_cur = $row;
+                self::$menuCur = $row;
             }
         }
 
         if (!self::$isAjax) {
-            if (self::$menu_cur) {
-                self::crumbsSet(self::$menu_cur);
+            if (self::$menuCur) {
+                self::crumbsSet(self::$menuCur);
             }
         }
 
         $q = "SELECT alias, value FROM settings";
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
-            self::$site_params[$row['alias']] = $row['value'];
+            self::$siteParams[$row['alias']] = $row['value'];
         }
 
 
@@ -164,18 +164,18 @@ class Core
 
     public static function menu(): array
     {
-        return self::$menu_tree;
+        return self::$menuTree;
     }
 
     public static function menuCurItem(string|false $field = false): mixed
     {
-        return $field ? @self::$menu_cur[$field] : self::$menu_cur;
+        return $field ? @self::$menuCur[$field] : self::$menuCur;
     }
 
     private static function crumbsSet(array $item = []): void
     {
-        if (isset(self::$menu_by_id[(int)$item['menu_pid']])) {
-            self::crumbsSet(self::$menu_by_id[(int)$item['menu_pid']]);
+        if (isset(self::$menuById[(int)$item['menu_pid']])) {
+            self::crumbsSet(self::$menuById[(int)$item['menu_pid']]);
         }
         self::$crumbs[] = ['link' => $item['link'], 'name' => $item['name']];
     }
@@ -213,7 +213,7 @@ class Core
 
     public static function siteParam($key): mixed
     {
-        return self::$site_params[$key] ?? '';
+        return self::$siteParams[$key] ?? '';
     }
 
 }

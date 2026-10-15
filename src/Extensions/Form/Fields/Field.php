@@ -12,23 +12,23 @@ abstract class Field
     protected string $label;
     public string $placeholder;
     public string $comment;
-    public int $is_text = 0;
+    public int $isText = 0;
     public bool $required = false;
-    public array|int $v_requied = [];
-    public array $v_length = [];
-    public array $v_equal = [];
-    public array $v_mask = [];
-    public array $v_unique = [];
+    public array|int $vRequired = [];
+    public array $vLength = [];
+    public array $vEqual = [];
+    public array $vMask = [];
+    public array $vUnique = [];
     protected string $defval = '';
 
-    public function __construct(ModuleForm $form, string $name, string $label, string $comment, int $is_text = 0, string $placeholder = '', bool $required = false)
+    public function __construct(ModuleForm $form, string $name, string $label, string $comment, int $isText = 0, string $placeholder = '', bool $required = false)
     {
         $this->form = $form;
         $this->name = $name;
         $this->label = $label;
         $this->placeholder = $placeholder;
         $this->comment = $comment;
-        $this->is_text = $is_text;
+        $this->isText = $isText;
         $this->required = $required;
     }
 
@@ -44,7 +44,7 @@ abstract class Field
         foreach ($inputParams as $key => $value) {
             $tmp[] = $key . '="' . htmlspecialchars($value) . '"';
         }
-        if ($this->is_text) {
+        if ($this->isText) {
             echo '<span class="plug-form-field"><textarea ' . implode(' ', $tmp) . ' cols="20" rows="4">', htmlspecialchars(
                 $val
             ), '</textarea></span>';
@@ -60,47 +60,47 @@ abstract class Field
         $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
 
         /* REQUIED */
-        $this->v_requied = is_array($this->v_requied) ? $this->v_requied : [];
-        if (!empty($this->v_requied['is']) && $_POST[$formName][$this->name] === '') {
-            $err[$this->name][] = empty($this->v_requied['comment']) ? "обязательно для заполнения" : $this->v_requied['comment'];
+        $this->vRequired = is_array($this->vRequired) ? $this->vRequired : [];
+        if (!empty($this->vRequired['is']) && $_POST[$formName][$this->name] === '') {
+            $err[$this->name][] = empty($this->vRequired['comment']) ? "обязательно для заполнения" : $this->vRequired['comment'];
         }
 
         if (empty($err[$this->name])) {
             /* LENGTH */
             $len = mb_strlen($_POST[$formName][$this->name]);
-            $this->v_length = is_array($this->v_length) ? $this->v_length : [];
-            $this->v_length['min'] = isset($this->v_length['min']) ? (int)$this->v_length['min'] : 0;
-            $this->v_length['max'] = isset($this->v_length['max']) ? (int)$this->v_length['max'] : 0;
-            if (($this->v_length['min'] > 0 && $this->v_length['min'] > $len) || ($this->v_length['max'] > 0 && $this->v_length['max'] < $len)) {
-                $err[$this->name][] = empty($this->v_length['comment']) ? "недопустимая длина" : $this->v_length['comment'];
+            $this->vLength = is_array($this->vLength) ? $this->vLength : [];
+            $this->vLength['min'] = isset($this->vLength['min']) ? (int)$this->vLength['min'] : 0;
+            $this->vLength['max'] = isset($this->vLength['max']) ? (int)$this->vLength['max'] : 0;
+            if (($this->vLength['min'] > 0 && $this->vLength['min'] > $len) || ($this->vLength['max'] > 0 && $this->vLength['max'] < $len)) {
+                $err[$this->name][] = empty($this->vLength['comment']) ? "недопустимая длина" : $this->vLength['comment'];
             }
 
             /* EQUAL */
-            $this->v_equal = is_array($this->v_equal) ? $this->v_equal : [];
-            $this->v_equal['field'] = isset($this->v_equal['field']) ? (string)$this->v_equal['field'] : '';
-            if ($this->v_equal['field']) {
-                $_POST[$formName][$this->v_equal['field']] = $_POST[$formName][$this->v_equal['field']] ?? '';
-                if ($_POST[$formName][$this->name] !== $_POST[$formName][$this->v_equal['field']]) {
-                    $err[$this->name][] = empty($this->v_equal['comment']) ? "неверное значение" : $this->v_equal['comment'];
+            $this->vEqual = is_array($this->vEqual) ? $this->vEqual : [];
+            $this->vEqual['field'] = isset($this->vEqual['field']) ? (string)$this->vEqual['field'] : '';
+            if ($this->vEqual['field']) {
+                $_POST[$formName][$this->vEqual['field']] = $_POST[$formName][$this->vEqual['field']] ?? '';
+                if ($_POST[$formName][$this->name] !== $_POST[$formName][$this->vEqual['field']]) {
+                    $err[$this->name][] = empty($this->vEqual['comment']) ? "неверное значение" : $this->vEqual['comment'];
                 }
             }
 
             /* MASK */
             if ($_POST[$formName][$this->name] !== '') {
-                $this->v_mask = is_array($this->v_mask) ? $this->v_mask : [];
-                $this->v_mask['pattern'] = isset($this->v_mask['pattern']) ? (string)$this->v_mask['pattern'] : '';
-                if ($this->v_mask['pattern'] && !preg_match($this->v_mask['pattern'], $_POST[$formName][$this->name])) {
-                    $err[$this->name][] = empty($this->v_mask['comment']) ? "некорректное значение" : $this->v_mask['comment'];
+                $this->vMask = is_array($this->vMask) ? $this->vMask : [];
+                $this->vMask['pattern'] = isset($this->vMask['pattern']) ? (string)$this->vMask['pattern'] : '';
+                if ($this->vMask['pattern'] && !preg_match($this->vMask['pattern'], $_POST[$formName][$this->name])) {
+                    $err[$this->name][] = empty($this->vMask['comment']) ? "некорректное значение" : $this->vMask['comment'];
                 }
             }
 
             /* UNIQUE */
-            $this->v_unique = is_array($this->v_unique) ? $this->v_unique : [];
-            $this->v_unique['key'] = isset($this->v_unique['key']) ? (string)$this->v_unique['key'] : '';
-            if ($this->v_unique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->v_unique['key'], $key)) {
+            $this->vUnique = is_array($this->vUnique) ? $this->vUnique : [];
+            $this->vUnique['key'] = isset($this->vUnique['key']) ? (string)$this->vUnique['key'] : '';
+            if ($this->vUnique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->vUnique['key'], $key)) {
                 $q = "SELECT COUNT(*) cnt FROM " . DB::wrapName($key[1]) . " WHERE " . DB::wrapName($key[2]) . " = ?";
                 if ((int)DB::result($q, 'cnt', [$_POST[$formName][$this->name]]) > 0) {
-                    $err[$this->name][] = empty($this->v_unique['comment']) ? "занято" : $this->v_unique['comment'];
+                    $err[$this->name][] = empty($this->vUnique['comment']) ? "занято" : $this->vUnique['comment'];
                 }
             }
         }

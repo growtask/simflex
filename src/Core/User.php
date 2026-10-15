@@ -19,8 +19,8 @@ class User
 {
     public static int $id = 0;
     public static string $login = '';
-    public static int $role_id = 0;
-    public static string $role_name = '';
+    public static int $roleId = 0;
+    public static string $roleName = '';
 
     protected static UserInstance $instance;
 
@@ -38,8 +38,8 @@ class User
 
         self::$id = self::$instance->id;
         self::$login = self::$instance->login;
-        self::$role_id = self::$instance->role_id;
-        self::$role_name = self::$instance->role_name;
+        self::$roleId = self::$instance->roleId;
+        self::$roleName = self::$instance->roleName;
     }
 
     public static function logout(): void
@@ -47,8 +47,8 @@ class User
         self::$instance->logout();
         self::$id = 0;
         self::$login = '';
-        self::$role_id = 0;
-        self::$role_name = '';
+        self::$roleId = 0;
+        self::$roleName = '';
     }
 
     public static function logout2(): void
@@ -56,8 +56,8 @@ class User
         self::$instance = new UserInstance('', '', '', '', '');
         self::$id = 0;
         self::$login = '';
-        self::$role_id = 0;
-        self::$role_name = '';
+        self::$roleId = 0;
+        self::$roleName = '';
     }
 
     public static function privIds(): array

@@ -15,15 +15,15 @@ class Core
     protected static bool $ajax = false;
     protected static array $uri = [];
     protected static string $path = '';
-    protected static array $site_params = [];
-    protected static array $menu_tree = [];
-    protected static array $menu_by_id = [];
-    protected static array $menu_by_link = [];
-    protected static array $menu_by_ext = [];
-    protected static ?array $menu_cur = null;
-    protected static int $component_level = 0;
-    protected static int $component_menu_id = 0;
-    protected static bool $content_only = false;
+    protected static array $siteParams = [];
+    protected static array $menuTree = [];
+    protected static array $menuById = [];
+    protected static array $menuByLink = [];
+    protected static array $menuByExt = [];
+    protected static ?array $menuCur = null;
+    protected static int $componentLevel = 0;
+    protected static int $componentMenuId = 0;
+    protected static bool $contentOnly = false;
 
     private function __construct()
     {
@@ -48,7 +48,7 @@ class Core
 
         if ($request->isAjax()) {
             self::$ajax = true;
-            self::$content_only = true;
+            self::$contentOnly = true;
             $sf_module_id = isset($_REQUEST['sf_module_id']) ? (int)$_REQUEST['sf_module_id'] : 0;
             if ($sf_module_id > 0) {
                 Page::moduleById($sf_module_id);
@@ -64,7 +64,7 @@ class Core
         $q = "SELECT alias, value FROM settings";
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
-            self::$site_params[$row['alias']] = $row['value'];
+            self::$siteParams[$row['alias']] = $row['value'];
         }
 
         static::initMenu();
@@ -80,12 +80,12 @@ class Core
 
         $rows = DB::assoc($q);
         foreach ($rows as $row) {
-            self::$menu_tree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
-            self::$menu_by_id[(int)$row['menu_id']] = $row;
-            self::$menu_by_link[md5($row['link'])] = $row;
-            self::$menu_by_ext[strtolower(substr($row['class'], 3))][] = $row;
-            if ($row['link'] == self::$path && !self::$menu_cur) {
-                self::$menu_cur = $row;
+            self::$menuTree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
+            self::$menuById[(int)$row['menu_id']] = $row;
+            self::$menuByLink[md5($row['link'])] = $row;
+            self::$menuByExt[strtolower(substr($row['class'], 3))][] = $row;
+            if ($row['link'] == self::$path && !self::$menuCur) {
+                self::$menuCur = $row;
             }
         }
     }
@@ -109,7 +109,7 @@ class Core
             return $uri;
         }
 
-        $i += self::$component_level;
+        $i += self::$componentLevel;
         return $uri[$i] ?? '';
     }
 
@@ -157,19 +157,19 @@ class Core
      */
     public static function siteParam(string|bool $key = false, mixed $defaultValue = null, array $interp = []): mixed
     {
-        if (!self::$site_params) {
+        if (!self::$siteParams) {
             $q = "SELECT alias, value FROM settings";
             $rows = DB::assoc($q);
             foreach ($rows as $row) {
-                self::$site_params[$row['alias']] = $row['value'];
+                self::$siteParams[$row['alias']] = $row['value'];
             }
         }
 
         if ($key === false) {
-            return self::$site_params;
+            return self::$siteParams;
         }
-        if (!array_key_exists($key, self::$site_params)) {
-            self::$site_params[$key] = $defaultValue;
+        if (!array_key_exists($key, self::$siteParams)) {
+            self::$siteParams[$key] = $defaultValue;
             if ($key !== true && $key !== '' && (is_scalar($defaultValue) || is_null($defaultValue))) {
                 $type = match (true) {
                     is_int($defaultValue) => 'int',
@@ -183,7 +183,7 @@ class Core
                 );
             }
         }
-        $value = self::$site_params[$key] ?? $defaultValue;
+        $value = self::$siteParams[$key] ?? $defaultValue;
         if (is_string($value)) {
             $value = str_replace(
                 array_map(fn($k) => '{' . $k . '}', array_keys($interp)),
@@ -197,7 +197,7 @@ class Core
     public static function getComponent(): object
     {
         $route = (new Resolver())
-            ->setMenuByLink(self::$menu_by_link) // for deprecated routing by menu database table
+            ->setMenuByLink(self::$menuByLink) // for deprecated routing by menu database table
             ->resolve(Container::getConfig()->getRoutes());
 
         // set route here so we can use it later, if needed
@@ -212,19 +212,19 @@ class Core
         $class = '';
         $path = '/';
         $i = 0;
-        if (!empty(self::$menu_by_link[md5($path)]['class'])) {
-            $class = self::$menu_by_link[md5($path)]['class'];
-            self::$component_level = $i;
-            self::$component_menu_id = self::$menu_by_link[md5($path)]['menu_id'];
+        if (!empty(self::$menuByLink[md5($path)]['class'])) {
+            $class = self::$menuByLink[md5($path)]['class'];
+            self::$componentLevel = $i;
+            self::$componentMenuId = self::$menuByLink[md5($path)]['menu_id'];
         }
         $i++;
         foreach (self::uri() as $u) {
             if ($u) {
                 $path .= $u . '/';
-                if (!empty(self::$menu_by_link[md5($path)]['class'])) {
-                    $class = self::$menu_by_link[md5($path)]['class'];
-                    self::$component_level = $i;
-                    self::$component_menu_id = self::$menu_by_link[md5($path)]['menu_id'];
+                if (!empty(self::$menuByLink[md5($path)]['class'])) {
+                    $class = self::$menuByLink[md5($path)]['class'];
+                    self::$componentLevel = $i;
+                    self::$componentMenuId = self::$menuByLink[md5($path)]['menu_id'];
                 }
             }
             $i++;
@@ -249,7 +249,7 @@ class Core
 
     public static function execute(): void
     {
-        if (self::$content_only) {
+        if (self::$contentOnly) {
             Page::content();
         } else {
             $config = Container::getConfig();
@@ -267,38 +267,38 @@ class Core
     {
         switch ($type) {
             case 'by_id' :
-                return self::$menu_by_id;
+                return self::$menuById;
             case 'by_link' :
-                return self::$menu_by_link;
+                return self::$menuByLink;
             case 'by_ext' :
-                return self::$menu_by_ext;
+                return self::$menuByExt;
         }
-        return self::$menu_tree;
+        return self::$menuTree;
     }
 
     public static function menuCurItem(): ?array
     {
-        return self::$menu_cur;
+        return self::$menuCur;
     }
 
     public static function componentPath(): string
     {
-        return self::path(self::$component_level);
+        return self::path(self::$componentLevel);
     }
 
     public static function componentLevel(): int
     {
-        return self::$component_level;
+        return self::$componentLevel;
     }
 
     public static function componentMenuID(): int
     {
-        return self::$component_menu_id;
+        return self::$componentMenuId;
     }
 
     public static function componentTitle(): ?string
     {
-        return self::$menu_by_id[self::$component_menu_id]['name'];
+        return self::$menuById[self::$componentMenuId]['name'];
     }
 
     public static function error404(): void
@@ -307,7 +307,7 @@ class Core
         header("HTTP/1.0 404 Not Found");
         Page::seo('Error 404');
         if (is_file(SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl')) {
-            self::$content_only = true;
+            self::$contentOnly = true;
             include SF_ROOT_PATH . '/theme/' . $config->theme . '/404.tpl';
         } else {
             echo self::siteParam('error404');

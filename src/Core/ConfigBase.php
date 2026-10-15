@@ -86,7 +86,12 @@ abstract class ConfigBase
     public string $adminPath = '/admin';
 
     /**
-     * @var string Log path
+     * @var bool Also write the log to a file in $logPath (by default the log goes to stdout only)
+     */
+    public bool $logToFile = false;
+
+    /**
+     * @var string Log path, used when $logToFile is enabled
      */
     public string $logPath = SF_ROOT_PATH . '/log';
 

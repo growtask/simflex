@@ -6,42 +6,42 @@ class Pagecontrol
 {
 
     private int $p = 0;
-    private int $p_on = 0;
-    private int $p_count = 0;
+    private int $pOn = 0;
+    private int $pCount = 0;
     private int $count = 0;
     private string $link = '?p={p}';
-    private bool $p_on_show = false;
-    public int $p_count_max = 7;
+    private bool $pOnShow = false;
+    public int $pCountMax = 7;
 
-    public function __construct($p, $p_on, $count, $link = '?p={p}', $p_on_show = false)
+    public function __construct($p, $pOn, $count, $link = '?p={p}', $pOnShow = false)
     {
         $this->p = abs($p);
-        $this->p_on = abs($p_on);
+        $this->pOn = abs($pOn);
         $this->count = abs($count);
-        $this->p_count = (int) ceil($count / $this->p_on);
-        if ($this->p + 1 > $this->p_count) {
-            $this->p_count++;
+        $this->pCount = (int) ceil($count / $this->pOn);
+        if ($this->p + 1 > $this->pCount) {
+            $this->pCount++;
         }
         $this->link = (string)$link;
-        $this->p_on_show = (bool)$p_on_show;
+        $this->pOnShow = (bool)$pOnShow;
     }
 
     public function content(): void
     {
-        if ($this->p_count > 1) {
-            if ($this->p_count > $this->p_count_max) {
-                $p_max_count = $this->p_count_max - 5;
-                $min = $this->p - floor($p_max_count / 2);
-                $max = $this->p + ceil($p_max_count / 2);
+        if ($this->pCount > 1) {
+            if ($this->pCount > $this->pCountMax) {
+                $pMaxCount = $this->pCountMax - 5;
+                $min = $this->p - floor($pMaxCount / 2);
+                $max = $this->p + ceil($pMaxCount / 2);
                 $since = max([1, $min]);
-                $till = min([$this->p_count - 2, $max]);
+                $till = min([$this->pCount - 2, $max]);
                 $since = $since == 2 ? $since - 1 : $since;
-                $till = $till == $this->p_count - 3 ? $till + 1 : $till;
+                $till = $till == $this->pCount - 3 ? $till + 1 : $till;
                 if ($min < 2) {
-                    $till = $this->p_count_max - 3;
+                    $till = $this->pCountMax - 3;
                 }
-                if ($max > $this->p_count - 3) {
-                    $since = $this->p_count - $this->p_count_max + 2;
+                if ($max > $this->pCount - 3) {
+                    $since = $this->pCount - $this->pCountMax + 2;
                 }
             }
 

@@ -16,10 +16,10 @@ class UserInstance
 
     public int $id = 0;
     public string $login = '';
-    public int $role_id = 0;
-    public string $role_name = '';
-    private array $priv_ids = [];
-    private array $priv_names = [];
+    public int $roleId = 0;
+    public string $roleName = '';
+    private array $privIds = [];
+    private array $privNames = [];
     private array|false $info;
     private string $idName;
     private string $hashName;
@@ -56,8 +56,8 @@ class UserInstance
     {
         $this->id = $model->getId();
         $this->login = $model->login;
-        $this->role_id = $model->roleId;
-        $this->role_name = $model->role->name;
+        $this->roleId = $model->roleId;
+        $this->roleName = $model->role->name;
         $this->login();
     }
 
@@ -88,8 +88,8 @@ class UserInstance
                 if (md5($GLOBALS[self::class]['password']) === $row['password']) {
                     $this->id = (int)$row[$this->idName];
                     $this->login = $row['login'];
-                    $this->role_id = (int)$row['role_id'];
-                    $this->role_name = $row['role_name'];
+                    $this->roleId = (int)$row['role_id'];
+                    $this->roleName = $row['role_name'];
                 }
             }
         }
@@ -106,8 +106,8 @@ class UserInstance
                 if ($_SESSION[$this->hashName] === $row[$this->dbHashName]) {
                     $this->id = (int)$_SESSION[$this->idName];
                     $this->login = $row['login'];
-                    $this->role_id = (int)$row['role_id'];
-                    $this->role_name = $row['role_name'];
+                    $this->roleId = (int)$row['role_id'];
+                    $this->roleName = $row['role_name'];
                 }
             }
         }
@@ -118,14 +118,14 @@ class UserInstance
                 FROM user_priv
                 WHERE active=1
                 AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id" . ($this->role_id ? '=' . (int)$this->role_id : " IS NULL") . ")
+                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id" . ($this->roleId ? '=' . (int)$this->roleId : " IS NULL") . ")
                     OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=" . $this->id . ")
                 )
             ";
             $r = DB::query($q);
             while ($row = DB::fetch($r)) {
-                $this->priv_ids[(int)$row['priv_id']] = (int)$row['priv_id'];
-                $this->priv_names[$row['name']] = $row['name'];
+                $this->privIds[(int)$row['priv_id']] = (int)$row['priv_id'];
+                $this->privNames[$row['name']] = $row['name'];
             }
         }
     }
@@ -143,7 +143,7 @@ class UserInstance
         if (!isset($this->info) || !$buffered) {
             $q = "select * from user where user_id = " . $this->id;
             $this->info = DB::result($q);
-            $this->info['role_name'] = $this->role_name;
+            $this->info['role_name'] = $this->roleName;
         }
         $ret = false;
         if ($field === false) {
@@ -156,23 +156,23 @@ class UserInstance
 
     public function privIds(): array
     {
-        return count($this->priv_ids) ? $this->priv_ids : [0];
+        return count($this->privIds) ? $this->privIds : [0];
     }
 
     public function privNames(): array
     {
-        return count($this->priv_names) ? $this->priv_names : [''];
+        return count($this->privNames) ? $this->privNames : [''];
     }
 
     public function ican(string|int|bool $priv): array|bool
     {
         if (false === $priv) {
-            return $this->priv_names;
+            return $this->privNames;
         }
         if (is_int($priv)) {
-            return isset($this->priv_ids[$priv]);
+            return isset($this->privIds[$priv]);
         }
-        return isset($this->priv_names[$priv]);
+        return isset($this->privNames[$priv]);
     }
 
 }

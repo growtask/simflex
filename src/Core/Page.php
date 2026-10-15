@@ -14,15 +14,15 @@ class Page
     protected static array $positions = [];
     protected static array $modules = [];
     protected static array $css = [];
-    protected static array $css_check = [];
+    protected static array $cssCheck = [];
     protected static array $js = [];
-    protected static array $js_check = [];
-    public static string $seo_title = '';
-    protected static string $seo_description = '';
-    protected static string $seo_keywords = '';
-    protected static string $seo_metatags = '';
-    protected static bool $seo_is = false;
-    protected static string $meta_raw = '';
+    protected static array $jsCheck = [];
+    public static string $seoTitle = '';
+    protected static string $seoDescription = '';
+    protected static string $seoKeywords = '';
+    protected static string $seoMetatags = '';
+    protected static bool $seoIs = false;
+    protected static string $metaRaw = '';
     public static bool $showAside = false;
 
     public static array $override = [
@@ -133,11 +133,11 @@ class Page
             return;
         }
         if (empty(self::$css[$idx][md5($file)])) {
-            if (isset(self::$css_check[md5($file)])) {
-                unset(self::$css[self::$css_check[md5($file)]][md5($file)]);
-                unset(self::$css_check[md5($file)]);
+            if (isset(self::$cssCheck[md5($file)])) {
+                unset(self::$css[self::$cssCheck[md5($file)]][md5($file)]);
+                unset(self::$cssCheck[md5($file)]);
             }
-            self::$css_check[md5($file)] = $idx;
+            self::$cssCheck[md5($file)] = $idx;
             self::$css[$idx][md5($file)] = $file;
         }
     }
@@ -153,11 +153,11 @@ class Page
             return;
         }
         if (empty(self::$js[$idx][md5($file)])) {
-            if (isset(self::$js_check[md5($file)])) {
-                unset(self::$js[self::$js_check[md5($file)]][md5($file)]);
-                unset(self::$js_check[md5($file)]);
+            if (isset(self::$jsCheck[md5($file)])) {
+                unset(self::$js[self::$jsCheck[md5($file)]][md5($file)]);
+                unset(self::$jsCheck[md5($file)]);
             }
-            self::$js_check[md5($file)] = $idx;
+            self::$jsCheck[md5($file)] = $idx;
             self::$js[$idx][md5($file)] = $file;
         }
     }
@@ -177,7 +177,7 @@ class Page
 
     public static function addMetaRaw(string $str): void
     {
-        self::$meta_raw .= "$str\n";
+        self::$metaRaw .= "$str\n";
     }
 
     public static function title(): string
@@ -185,22 +185,22 @@ class Page
         return str_replace(
                 '<br/>',
                 '',
-                htmlspecialchars(self::$seo_title)
-            ) . (self::$seo_title ? ' | ' : '') . Core::siteParam('site_name');
+                htmlspecialchars(self::$seoTitle)
+            ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
     }
 
     public static function meta(): void
     {
-        $title = self::$override['title'] ?: self::$seo_title;
+        $title = self::$override['title'] ?: self::$seoTitle;
         $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
                 'site_name'
             ) : '');
         echo '<title>', str_replace('<br/>', '', htmlspecialchars($title)), $sname, '</title>', "\r\n";
-        echo self::$seo_metatags ? self::$seo_metatags . "\r\n" : '';
+        echo self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
 
         self::metaCSS();
 
-        echo self::$meta_raw;
+        echo self::$metaRaw;
 
         echo '<meta charset="utf-8">', "\r\n";
 
@@ -283,12 +283,12 @@ class Page
         ?string $metatags = ''
     ): void
     {
-        if (!self::$seo_is) {
-            self::$seo_title = $title;
-            self::$seo_description = $description ? $description : self::$seo_description;
-            self::$seo_keywords = $keywords ? $keywords : self::$seo_keywords;
-            self::$seo_metatags = $metatags ? $metatags : self::$seo_metatags;
-            self::$seo_is = $final;
+        if (!self::$seoIs) {
+            self::$seoTitle = $title;
+            self::$seoDescription = $description ? $description : self::$seoDescription;
+            self::$seoKeywords = $keywords ? $keywords : self::$seoKeywords;
+            self::$seoMetatags = $metatags ? $metatags : self::$seoMetatags;
+            self::$seoIs = $final;
         }
     }
 

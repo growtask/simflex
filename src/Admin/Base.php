@@ -42,16 +42,16 @@ class Base
     protected array $params = ['left' => [], 'right' => []];
     protected array $where = [];
     protected array $whereOr = [];
-    protected array $where_sys = [];
+    protected array $whereSys = [];
     protected string $order = '';
     protected string $order2 = '';
     protected int $desc = 0;
     protected array $errors = [];
     protected int $p = 0;
-    protected int $p_on = 20;
-    protected int $p_count = 0;
-    protected bool $is_filter = false;
-    static protected bool $is_init = false;
+    protected int $pOn = 20;
+    protected int $pCount = 0;
+    protected bool $isFilter = false;
+    static protected bool $isInit = false;
     protected array $actionHandlers = [
         '' => ['method' => 'show'],
         'form' => ['method' => 'form'],
@@ -390,7 +390,7 @@ class Base
 
     protected function getSelectWhere(): string
     {
-        $where = array_merge($this->where_sys, $this->where);
+        $where = array_merge($this->whereSys, $this->where);
         $ret = count($where) ? "\r\nWHERE " . join(' AND ', $where) : '';
         self::$currentWhere = $ret;
         return $ret;
@@ -410,7 +410,7 @@ class Base
 
     protected function getSelectLimit(): string
     {
-        return $this->isHierarchy ? "" : "\r\nLIMIT " . $this->p * $this->p_on . ", " . $this->p_on;
+        return $this->isHierarchy ? "" : "\r\nLIMIT " . $this->p * $this->pOn . ", " . $this->pOn;
     }
 
     protected function getQueryCount(): string
@@ -489,8 +489,8 @@ class Base
             }
         }
 
-        $this->p_on = $this->isHierarchy ? 200 : $this->p_on;
-        $pagecontrol = new Pagecontrol($this->p, $this->p_on, $cnt);
+        $this->pOn = $this->isHierarchy ? 200 : $this->pOn;
+        $pagecontrol = new Pagecontrol($this->p, $this->pOn, $cnt);
 
         $q = $this->getQuerySelect();
         $r = DB::query($q);
@@ -543,7 +543,7 @@ class Base
             $pkName = '';
             foreach ($fields as $field) {
                 if (!empty($field['params']['main']['filter'])) {
-                    $this->is_filter = true;
+                    $this->isFilter = true;
                 }
                 if (!empty($field['params']['main']['pk'])) {
                     $pkName = $field['name'];
@@ -564,8 +564,8 @@ class Base
         isset($_GET['p']) ? $this->p = abs($_GET['p']) : null;
 
         // ORDER SETTINGS
-        if (!self::$is_init) {
-            self::$is_init = true;
+        if (!self::$isInit) {
+            self::$isInit = true;
             if (isset($_REQUEST['o']) && isset($this->fields[$_REQUEST['o']])) {
                 $o = $_REQUEST['o'];
                 if (isset($_SESSION[$this->table]['order_by']) && $_SESSION[$this->table]['order_by'] == $o) {
@@ -632,7 +632,7 @@ class Base
 
     protected function filter(): void
     {
-        if ($this->is_filter) {
+        if ($this->isFilter) {
             include dirname(__FILE__) . '/Base/tpl/filter.tpl';
         }
     }
@@ -667,14 +667,14 @@ class Base
             /* SYSTEM FILTER */
             if ($field->name == 'priv_id' && !User::ican('dev')) {
                 if ($field->isnull) {
-                    $this->where_sys[] = "(" . $this->table . ".priv_id IN(" . join(',', User::privIds())
+                    $this->whereSys[] = "(" . $this->table . ".priv_id IN(" . join(',', User::privIds())
                         . ") OR " . $this->table . ".priv_id IS NULL)";
                 } else {
-                    $this->where_sys[] = "" . $this->table . ".priv_id IN(" . join(',', User::privIds()) . ")";
+                    $this->whereSys[] = "" . $this->table . ".priv_id IN(" . join(',', User::privIds()) . ")";
                 }
             }
             if ($field->name == 'role_id' && !User::ican('dev')) {
-                $this->where_sys[] = "" . $this->table
+                $this->whereSys[] = "" . $this->table
                     . ".role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(" . join(',', User::privIds()) . "))";
             }
         }
@@ -710,7 +710,7 @@ class Base
             exit;
         }
 
-        $where = $this->where_sys;
+        $where = $this->whereSys;
 
         $title = 'Добавить запись';
 
@@ -1128,7 +1128,7 @@ class Base
                 }
                 if ($field_path && $field_alias) {
                     if ($this->pid) {
-                        $where = $this->where_sys;
+                        $where = $this->whereSys;
                         $where[] = "" . $this->table . "." . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
                         $q = "
                             SELECT " . $this->table . "." . $this->pk->name . ", " . $this->table . "." . $this->pid->name . ", " . $this->table . "." . $field_alias->name . ", t2." . $field_path->name . "
@@ -1152,7 +1152,7 @@ class Base
                         $counter = 0;
                         while ($i < count($steck)) {
                             $cur = $steck[$i];
-                            $where = $this->where_sys;
+                            $where = $this->whereSys;
                             $where[] = "" . $this->table . "." . $this->pid->name . "=" . $cur[$this->pk->name];
                             $q = "
                                 SELECT " . $this->pk->name . ", " . $field_alias->name . ", " . $field_path->name . "
@@ -1164,7 +1164,7 @@ class Base
                                 if ($row[$field_path->name] != $cur[$field_path->name] . $row[$field_alias->name] . '/') {
                                     $counter++;
                                     $path = $cur[$field_path->name] . $row[$field_alias->name] . '/';
-                                    $where = $this->where_sys;
+                                    $where = $this->whereSys;
                                     $where[] = "" . $this->table . "." . $this->pk->name . "=" . $row[$this->pk->name];
                                     $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path
                                         . "' WHERE " . join(" AND ", $where);
@@ -1177,7 +1177,7 @@ class Base
                             $i++;
                         }
                     } else {
-                        $where = $this->where_sys;
+                        $where = $this->whereSys;
                         $where[] = "" . $this->table . "." . $this->pk->name . "=" . (int)$_POST[$this->pk->name];
                         $path = '/' . $_POST[$field_alias->name] . '/';
                         $q = "UPDATE " . $this->table . " SET " . $field_path->name . "='" . $path . "' WHERE " . join(
@@ -1325,7 +1325,7 @@ class Base
      */
     protected function deleteItem(int $id): string
     {
-        $where = $this->where_sys;
+        $where = $this->whereSys;
         $where[] = $this->pk->name . "=" . (int)$id;
         $q = "DELETE FROM `" . $this->table . "` WHERE " . join(' AND ', $where);
         DB::query($q);

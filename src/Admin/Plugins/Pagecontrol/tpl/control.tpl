@@ -2,8 +2,8 @@
 
 $req = \Simflex\Core\Container::getRequest(); ?>
 <div class="table__pagination">
-    <div class="table__pagination-text">Показаны записи: с <?= $this->p * $this->p_on + 1 ?> по <?= min($this->count, $this->p * $this->p_on + $this->p_on) ?> из <?= $this->count ?></div>
-    <div class="table__pagination-text-mobile">с <?= $this->p * $this->p_on + 1 ?> по <?= min($this->count, $this->p * $this->p_on + $this->p_on) ?> из <?= $this->count ?></div>
+    <div class="table__pagination-text">Показаны записи: с <?= $this->p * $this->pOn + 1 ?> по <?= min($this->count, $this->p * $this->pOn + $this->pOn) ?> из <?= $this->count ?></div>
+    <div class="table__pagination-text-mobile">с <?= $this->p * $this->pOn + 1 ?> по <?= min($this->count, $this->p * $this->pOn + $this->pOn) ?> из <?= $this->count ?></div>
     <div class="table__pagination-btns">
         <?php
         if ($this->p != 0): ?>
@@ -16,7 +16,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
         <?php
         endif; ?>
         <?php
-        if ($this->p_count > $this->p_count_max): ?>
+        if ($this->pCount > $this->pCountMax): ?>
             <?php
             $i = 0; ?>
             <?php
@@ -50,7 +50,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
             endfor; ?>
 
             <?php
-            if ($till < $this->p_count - 2): ?>
+            if ($till < $this->pCount - 2): ?>
                 <button class="BtnIconOutlineNoneXs table__pagination-btns-mobile-next">
                     ...
                 </button>
@@ -58,7 +58,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
             endif; ?>
 
             <?php
-            $i = $this->p_count - 1; ?>
+            $i = $this->pCount - 1; ?>
             <?php
             if ($i == $this->p): ?>
                 <button class="BtnSecondaryMonoXs"><?= $i + 1 ?></button>
@@ -70,7 +70,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
         <?php
         else: ?>
             <?php
-            for ($i = 0; $i < $this->p_count; $i++): ?>
+            for ($i = 0; $i < $this->pCount; $i++): ?>
                 <?php
                 if ($i == $this->p): ?>
                     <button class="BtnSecondaryMonoXs"><?= $i + 1 ?></button>
@@ -84,7 +84,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
         <?php
         endif; ?>
         <?php
-        if ($this->p < $this->p_count - 1) : ?>
+        if ($this->p < $this->pCount - 1) : ?>
             <a href="./?<?= $req->buildQuery(['p' => $this->p + 1]) ?>"
                class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
                 <svg viewBox="0 0 24 24">

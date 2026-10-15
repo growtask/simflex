@@ -9,7 +9,7 @@ use Simflex\Core\File;
 class Image extends File
 {
 
-    public string $path_base = 'images';
+    public string $pathBase = 'images';
     protected string $uploadedFilePath;
 
     /**

@@ -9,14 +9,14 @@ class ForeignKey
     public string $table = '';
     public string $key = '';
     public string $label = '';
-    public bool $is_pid = false;
+    public bool $isPid = false;
 
     public function __construct($params)
     {
         $this->table = $params['fk_table'];
         $this->key = $params['fk_key'];
         $this->label = $params['fk_label'];
-        $this->is_pid = !empty($params['fk_is_pid']);
+        $this->isPid = !empty($params['fk_is_pid']);
     }
 
 }
