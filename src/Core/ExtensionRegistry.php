@@ -3,25 +3,26 @@
 namespace Simflex\Core;
 
 /**
- * Components and modules declared in code: the app's provider/components.php and provider/modules.php.
+ * Components and modules declared in code: the lists of classes in the app's provider/components.php and
+ * provider/modules.php; their settings are static methods of the classes.
  * menu.component and module_item.module store the class names listed there.
  */
 class ExtensionRegistry
 {
-    /** @var array<string, string>|null */
+    /** @var array<class-string<ComponentBase>, string>|null */
     protected static ?array $components = null;
-    /** @var array<string, array{name: string, type: string, postexec: bool}>|null */
+    /** @var array<class-string<ModuleBase>, array{name: string, type: ModuleType, postexec: bool}>|null */
     protected static ?array $modules = null;
 
     /**
-     * @return array<string, string> component class => name
+     * @return array<class-string<ComponentBase>, string> component class => name, see ExtensionBase::extensionTitle()
      */
     public static function components(): array
     {
         if (static::$components === null) {
             static::$components = [];
-            foreach (static::load('components') as $class => $name) {
-                static::$components[ltrim($class, '\\')] = (string)$name;
+            foreach (static::load('components', ComponentBase::class) as $class) {
+                static::$components[$class] = $class::extensionTitle();
             }
         }
 
@@ -34,18 +35,19 @@ class ExtensionRegistry
     }
 
     /**
-     * @param string|null $type site|admin, all modules when null
-     * @return array<string, array{name: string, type: string, postexec: bool}> module class => settings
+     * @param ModuleType|null $type all modules when null
+     * @return array<class-string<ModuleBase>, array{name: string, type: ModuleType, postexec: bool}> module class => settings,
+     *         see ExtensionBase::extensionTitle(), ModuleBase::moduleType(), ModuleBase::modulePostexec()
      */
-    public static function modules(?string $type = null): array
+    public static function modules(?ModuleType $type = null): array
     {
         if (static::$modules === null) {
             static::$modules = [];
-            foreach (static::load('modules') as $class => $data) {
-                static::$modules[ltrim($class, '\\')] = [
-                    'name' => (string)($data['name'] ?? $class),
-                    'type' => (string)($data['type'] ?? 'site'),
-                    'postexec' => !empty($data['postexec']),
+            foreach (static::load('modules', ModuleBase::class) as $class) {
+                static::$modules[$class] = [
+                    'name' => $class::extensionTitle(),
+                    'type' => $class::moduleType(),
+                    'postexec' => $class::modulePostexec(),
                 ];
             }
         }
@@ -58,7 +60,7 @@ class ExtensionRegistry
     }
 
     /**
-     * @return array{name: string, type: string, postexec: bool}|null
+     * @return array{name: string, type: ModuleType, postexec: bool}|null
      */
     public static function module(string $class): ?array
     {
@@ -71,11 +73,24 @@ class ExtensionRegistry
         static::$modules = null;
     }
 
-    protected static function load(string $name): array
+    /**
+     * @template T of ExtensionBase
+     * @param class-string<T> $base
+     * @return list<class-string<T>> classes listed in provider/$name.php
+     */
+    protected static function load(string $name, string $base): array
     {
         $file = SF_ROOT_PATH . "/provider/$name.php";
         $data = is_file($file) ? require $file : [];
 
-        return is_array($data) ? $data : [];
+        $classes = [];
+        foreach (is_array($data) ? $data : [] as $class) {
+            $class = ltrim((string)$class, '\\');
+            if (is_subclass_of($class, $base)) {
+                $classes[] = $class;
+            }
+        }
+
+        return $classes;
     }
 }

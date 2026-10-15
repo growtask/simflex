@@ -9,6 +9,7 @@ use Simflex\Admin\Notify\Collection;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
+use Simflex\Core\ModuleType;
 use Simflex\Core\Page as CorePage;
 use Simflex\Core\Request;
 use Simflex\Core\User;
@@ -82,7 +83,7 @@ class Page
                 WHERE active = 1
                 ORDER BY npp, item_id
             ";
-            $rows = CorePage::moduleRows(DB::assoc($q), 'admin');
+            $rows = CorePage::moduleRows(DB::assoc($q), ModuleType::Admin);
             foreach ($rows as $row) {
                 if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {
                     $mod = new $row['class']($row);

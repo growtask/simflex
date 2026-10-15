@@ -9,6 +9,7 @@ use Simflex\Admin\Plugins\Editor\Editor;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Core\DB;
 use Simflex\Core\ExtensionRegistry;
+use Simflex\Core\ModuleType;
 
 class ModuleItem extends Base
 {
@@ -27,7 +28,7 @@ class ModuleItem extends Base
         $module = ExtensionRegistry::module($moduleClass);
         $moduleClass = $module ? ltrim($moduleClass, '\\') : '';
 
-        $menuTable = ($module['type'] ?? 'site') == 'site' ? 'menu' : 'admin_menu';
+        $menuTable = ($module['type'] ?? ModuleType::Site) === ModuleType::Site ? 'menu' : 'admin_menu';
         $q = "SELECT menu_id, menu_pid pid, name FROM $menuTable ORDER BY npp, menu_id";
         $menuItems = DB::assoc($q);
 

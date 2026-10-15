@@ -14,6 +14,11 @@ use Simflex\Core\ModuleBase;
  */
 class Code extends ModuleBase
 {
+    public static function extensionTitle(): string
+    {
+        return 'Код';
+    }
+
     protected static bool $editorFull = false;
 
     public static function adminParams(): array

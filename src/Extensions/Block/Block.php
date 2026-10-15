@@ -9,5 +9,10 @@ use Simflex\Extensions\Code\Code;
  */
 class Block extends Code
 {
+    public static function extensionTitle(): string
+    {
+        return 'Текстовый блок';
+    }
+
     protected static bool $editorFull = true;
 }

@@ -11,6 +11,15 @@ abstract class ExtensionBase implements HasAdminParams
     protected string $rootDir;
     protected string $root = '';
 
+    /**
+     * Title in the admin panel lists
+     */
+    public static function extensionTitle(): string
+    {
+        $parts = explode('\\', static::class);
+        return end($parts);
+    }
+
     public static function adminParams(): array
     {
         return [];
