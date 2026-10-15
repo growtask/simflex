@@ -11,6 +11,9 @@ use Simflex\Core\Sms\DriverBase;
 /**
  * Class DriverSmpp
  * @require https://github.com/glushkovds/php-smpp
+ *
+ * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
  */
 class DriverSmpp extends DriverBase
 {

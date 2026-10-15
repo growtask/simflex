@@ -7,6 +7,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Simflex\Core\Core;
 use Simflex\Core\DB;
 
+/**
+ * @todo Incomplete: there are no migrations for the mail_log table, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
+ */
 class Mail {
 
     const MAIL_TRANSPORT_DAEMON = 1;

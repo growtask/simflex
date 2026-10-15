@@ -73,18 +73,19 @@ class Core
             Auth::logout();
         }
 
-        if (!Container::getUser()) {
+        $user = Container::getUser();
+        if (!$user || !$user->ican(Auth::LOGIN_PRIV)) {
             return;
         }
 
-        $privIds = Container::getUser()->getPrivileges()['ids'] ?? [];
+        $privIds = array_map('intval', $user->getPrivileges()['ids'] ?? []) ?: [0];
         $q = "
             SELECT menu_id, menu_pid, link, name, model, icon, hidden
             FROM admin_menu
             WHERE priv_id IN(" . join(',', $privIds) . ")
             ORDER BY npp, menu_id
         ";
-        $rows = DB::assoc($q);
+        $rows = DB::assoc($q) ?: [];
         foreach ($rows as $row) {
             self::$menu_tree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
             self::$menu_by_id[(int)$row['menu_id']] = $row;
@@ -150,7 +151,11 @@ class Core
 
     public static function execute(): void
     {
-        if (Container::getUser()) {
+        $user = Container::getUser();
+        if ($user && !$user->ican(Auth::LOGIN_PRIV)) {
+            http_response_code(403);
+            include 'theme/tpl/denied.tpl';
+        } elseif ($user) {
             if (self::ajax()) {
                 Page::content();
             } else {

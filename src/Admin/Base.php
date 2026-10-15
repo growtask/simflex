@@ -1002,12 +1002,21 @@ class Base
     public function saveGroup(): string
     {
         $success = true;
-        $ids = @$_POST['group_ids'];
+        $idList = array_values(array_unique(array_filter(array_map('intval', explode(',', (string)($_POST['group_ids'] ?? ''))))));
+        $ids = implode(',', $idList);
+        if (!$idList) {
+            Alert::error('Не выбраны записи для сохранения!');
+            return 'ids';
+        }
+        $pkName = DB::wrapName($this->pk->name);
+        $idPlaceholders = implode(', ', array_fill(0, count($idList), '?'));
+
         $set = [];
+        $setValues = [];
         foreach ($this->fields as $index => $field) {
             if (isset($_POST['set'][$field->name]) && !($field instanceof FieldVirtual)) {
-                $value = $field->getPOST();
-                $set[] = "$field->name = '$value'";
+                $set[] = DB::wrapName($field->name) . ' = ?';
+                $setValues[] = $field->getPOST();
             }
         }
 
@@ -1020,8 +1029,8 @@ class Base
         }
 
         if ($hasSetParams) {
-            $q = "SELECT {$this->pk->name} id, params FROM `$this->table` WHERE {$this->pk->name} in ($ids)";
-            $rows = DB::assoc($q);
+            $q = "SELECT $pkName id, params FROM `$this->table` WHERE $pkName IN ($idPlaceholders)";
+            $rows = DB::assoc($q, false, false, $idList) ?: [];
             foreach ($rows as $row) {
                 $params = unserialize($row['params']);
                 if (!is_array($params)) {
@@ -1059,16 +1068,14 @@ class Base
                 }
                 $_POST = $MY_POST;
 
-                $q = "UPDATE `$this->table` SET params = '" . serialize(
-                        $params
-                    ) . "' WHERE {$this->pk->name} = {$row['id']}";
-                $success = DB::query($q) !== false && $success;
+                $q = "UPDATE `$this->table` SET params = ? WHERE $pkName = ?";
+                $success = DB::query($q, [serialize($params), $row['id']]) !== false && $success;
             }
         }
 
         if (count($set)) {
-            $q = "UPDATE `$this->table` SET " . implode(', ', $set) . " WHERE {$this->pk->name} in ($ids)";
-            $success = DB::query($q) !== false && $success;
+            $q = "UPDATE `$this->table` SET " . implode(', ', $set) . " WHERE $pkName IN ($idPlaceholders)";
+            $success = DB::query($q, array_merge($setValues, $idList)) !== false && $success;
         }
 
         if ($success) {

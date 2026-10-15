@@ -4,6 +4,10 @@ namespace Simflex\Admin\Fields;
 use Simflex\Admin\Fields\Field;
 use Simflex\Core\DB;
 
+/**
+ * @todo Incomplete: there are no migrations for the shared_category table, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
+ */
 class FieldCategorySelect extends Field
 {
     public function input($value): string

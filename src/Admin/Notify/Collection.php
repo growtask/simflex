@@ -3,6 +3,9 @@
 namespace Simflex\Admin\Notify;
 
 
+/**
+ * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
+ */
 class Collection
 {
 

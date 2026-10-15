@@ -191,6 +191,9 @@ class Page
         }
     }
 
+    /**
+     * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
+     */
     public static function notifications(): void
     {
         Collection::getInstance()->content();
