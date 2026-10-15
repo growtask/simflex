@@ -16,7 +16,6 @@ class ContentTemplateParam extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'content_template_param',
             privAdd: 1,
             privEdit: 1,
             privDelete: 1,

@@ -15,7 +15,6 @@ class Cron extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'cron',
             privAdd: 1,
             privEdit: 1,
             privDelete: 1,

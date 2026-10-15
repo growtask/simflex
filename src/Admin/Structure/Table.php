@@ -15,7 +15,6 @@ abstract class Table
      *                       Most tables leave this empty and get the generic \Simflex\Admin\Base driver.
      */
     public function __construct(
-        public readonly string $name,
         public readonly string $orderBy = '',
         public readonly bool $orderDesc = false,
         public readonly int|string|null $privAdd = null,
@@ -30,7 +29,6 @@ abstract class Table
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
             'order_by' => $this->orderBy,
             'order_desc' => $this->orderDesc,
             'priv_add' => $this->privAdd,

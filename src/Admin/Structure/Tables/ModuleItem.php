@@ -17,7 +17,6 @@ class ModuleItem extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'module_item',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(

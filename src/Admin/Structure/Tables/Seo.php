@@ -14,7 +14,6 @@ class Seo extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'seo',
             fields: [
                 new FieldDefinition(
                     name: 'seo_id',

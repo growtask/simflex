@@ -15,7 +15,6 @@ class UserPriv extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'user_priv',
             fields: [
                 new FieldDefinition(
                     name: 'priv_id',

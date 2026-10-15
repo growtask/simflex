@@ -16,7 +16,6 @@ class ModuleParam extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'module_param',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(

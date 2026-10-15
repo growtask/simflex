@@ -15,7 +15,6 @@ class ComponentParam extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'component_param',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(

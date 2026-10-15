@@ -12,7 +12,6 @@ class UserRolePriv extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'user_role_priv',
             fields: [
                 new FieldDefinition(
                     name: 'id',

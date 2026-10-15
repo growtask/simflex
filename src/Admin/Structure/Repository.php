@@ -127,9 +127,8 @@ class Repository
         }
 
         $tables = [];
-        foreach (static::tableClasses() as $class) {
-            $instance = new $class();
-            $tables[$instance->name] = $instance->toArray();
+        foreach (static::tableClasses() as $name => $class) {
+            $tables[$name] = (new $class())->toArray();
         }
 
         static::$tables = $tables;
@@ -137,7 +136,7 @@ class Repository
     }
 
     /**
-     * @return class-string<Table>[]
+     * @return array<string, class-string<Table>> table name => Table class
      */
     protected static function tableClasses(): array
     {
@@ -148,7 +147,7 @@ class Repository
             $classes = array_merge($classes, require $appFile);
         }
 
-        return array_values($classes);
+        return $classes;
     }
 
     protected static function discoverFieldTypeClasses(): array

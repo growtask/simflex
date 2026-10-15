@@ -15,7 +15,6 @@ class UserRole extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'user_role',
             fields: [
                 new FieldDefinition(
                     name: 'role_id',

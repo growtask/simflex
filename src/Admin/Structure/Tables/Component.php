@@ -13,7 +13,6 @@ class Component extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'component',
             fields: [
                 new FieldDefinition(
                     name: 'component_id',

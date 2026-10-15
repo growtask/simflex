@@ -14,7 +14,6 @@ class AdminMenu extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'admin_menu',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(

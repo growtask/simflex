@@ -15,7 +15,6 @@ class Log extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'log',
             orderBy: 'log_id',
             orderDesc: true,
             fields: [

@@ -15,7 +15,6 @@ class Menu extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'menu',
             orderBy: 'npp',
             fields: [
                 new FieldDefinition(

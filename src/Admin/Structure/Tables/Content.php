@@ -22,7 +22,6 @@ class Content extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'content',
             class: AdminContent::class,
             fields: [
                 new FieldDefinition(

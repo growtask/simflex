@@ -15,7 +15,6 @@ class Module extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'module',
             fields: [
                 new FieldDefinition(
                     name: 'module_id',

@@ -15,7 +15,6 @@ class User extends Table
     public function __construct()
     {
         parent::__construct(
-            name: 'user',
             fields: [
                 new FieldDefinition(
                     name: 'user_id',
