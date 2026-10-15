@@ -7,6 +7,7 @@
         if ($e->getCode() == 999) {
             continue;
         }
+        throw $e;
     }
     ?>
     <tr class="modal-info__table-row">

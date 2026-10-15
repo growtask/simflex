@@ -1437,10 +1437,10 @@ class Base
         if (empty($field = &$this->fields[$key])) {
             throw new \Exception('Skip this field', 999);
         }
-        if (mb_strlen($value) > 1500) {
+        if (is_string($value) && mb_strlen($value) > 1500) {
             $value = mb_substr($value, 0, 1500) . '...';
         }
-        if ($key == 'params' && substr($value, 0, 2) == 'a:') {
+        if ($key == 'params' && is_string($value) && substr($value, 0, 2) == 'a:') {
             $value = '<pre>' . print_r(unserialize($value), true) . '</pre>';
         } else {
             $value = $field->showDetail($row);
