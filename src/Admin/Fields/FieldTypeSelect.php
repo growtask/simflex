@@ -18,6 +18,26 @@ class FieldTypeSelect extends Field
         return $out .'</select>';
     }
 
+    public function show($row): void
+    {
+        echo '<div class="table__row-' . $this->name . ' table__row-text">' . htmlspecialchars($this->typeName((string)$row[$this->name])) . '</div>';
+    }
+
+    public function showDetail($row): ?string
+    {
+        return htmlspecialchars($this->typeName((string)$row[$this->name]));
+    }
+
+    protected function typeName(string $class): string
+    {
+        if ($class === '') {
+            return '';
+        }
+
+        $type = StructureRepository::fieldTypeByClass($class);
+        return $type['name'] ?? $class;
+    }
+
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $simple && $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
