@@ -25,27 +25,15 @@ class FieldTags extends Field
                 $this->values = array_unique($this->values);
             }
         }
-        ob_start();
-        echo '<div class="form-control__tags" data-readonly="false">
-<input class="form-control__tags-value" value="'.$value.'" type="hidden" name="'.$this->name.'">
-<ul class="form-control__tags-list">
-    <input type="text" class="form-control__tags-input">
-</ul>
-<div class="form-control__tags-popup list1">
-    <div class="list1__wrapper">
-        <ul class="list1__items">
-        <li class="list1__item list1__item--add-new" data-value="" style="display: none"><strong>Добавить <span></span></strong></li>
-';
 
-        foreach ($this->values as $row) {
-            echo '<li data-value="'.$row.'" class="list1__item">' .$row. '</li>';
-        }
-
-        echo ' </ul>
-        </div>
-    </div>
-</div>';
-        return (string)ob_get_clean();
+        return $this->render('tags', [
+            'readonly' => false,
+            'ajax' => false,
+            'addNew' => true,
+            'name' => $this->name,
+            'value' => $value,
+            'items' => array_map(fn($v) => [$v, $v], $this->values),
+        ]);
     }
 
     public static function typeLabel(): string

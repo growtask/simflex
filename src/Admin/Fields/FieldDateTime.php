@@ -23,14 +23,11 @@ class FieldDateTime extends Field
     public function input($value): string
     {
         $value = \Simflex\Core\Time::normal($value, true, false);
-        $classes = ['form-control input-medium'];
-        if (!$this->readonly) {
-            $classes[] = 'form-datetimepicker';
-        }
-
-        return '<div id="calendar" class="form-control form-control--sm">
-                                    <input value="'.date('Y-m-d H:i:s', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="datetime-local" class="form-control__input">
-                                </div>';
+        return $this->render('datetime', [
+            'value' => date('Y-m-d H:i:s', strtotime($value)),
+            'name' => $this->inputName(),
+            'placeholder' => $this->placeholder,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -48,10 +45,7 @@ class FieldDateTime extends Field
     public function show($row): void
     {
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
-        $isNumericReal = false;
-        $value = str_replace(' ', '<br/>', $value);
-        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
-
+        echo $this->cell(str_replace(' ', '<br/>', $value));
     }
 
     public static function typeLabel(): string

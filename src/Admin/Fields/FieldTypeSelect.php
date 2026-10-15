@@ -8,19 +8,23 @@ class FieldTypeSelect extends Field
 {
     public function input($value): string
     {
-        $out = '<select name="' . $this->inputName() . '" onchange="' . $this->onchange . '" class="form-control__input">';
-        $out .= '<option value=""></option>';
+        $options = [['', '', false]];
         foreach (StructureRepository::fieldTypes() as $type) {
-            $class = $type['class'];
-            $selected = $class === $value ? ' selected' : '';
-            $out .= '<option value="' . htmlspecialchars($class) . '"' . $selected . '>' . htmlspecialchars($type['name']) . '</option>';
+            $options[] = [$type['class'], $type['name'], $type['class'] === $value];
         }
-        return $out .'</select>';
+        return $this->render('select', [
+            'name' => $this->inputName(),
+            'onchange' => $this->onchange,
+            'class' => 'form-control__input',
+            'multiple' => false,
+            'wrap' => false,
+            'options' => $options,
+        ]);
     }
 
     public function show($row): void
     {
-        echo '<div class="table__row-' . $this->name . ' table__row-text">' . htmlspecialchars($this->typeName((string)$row[$this->name])) . '</div>';
+        echo $this->cell(htmlspecialchars($this->typeName((string)$row[$this->name])));
     }
 
     public function showDetail($row): ?string

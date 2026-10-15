@@ -21,17 +21,14 @@ class FieldVirtualTable extends Field
     public function input($value): string
     {
         if (!($_REQUEST[$this->tablePk] ?? 0)) {
-            return '<p><em>Для редактирования этой таблицы сначала создайте запись</em></p>';
+            return $this->render('vtable-notice');
         }
 
         $value = $this->getValue();
         $jsId = (string)crc32($this->inputName());
         $total = $this->getCount();
 
-        ob_start();
-        include 'tpl/vtable.tpl';
-        echo $this->customjs;
-        return ob_get_clean();
+        return $this->render('vtable', compact('value', 'jsId', 'total')) . $this->customjs;
     }
 
     public function getCount(): mixed

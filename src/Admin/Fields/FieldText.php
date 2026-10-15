@@ -35,10 +35,7 @@ class FieldText extends Field
 
     public function input($value): string
     {
-        return '<div class="form-control form-control--sm">
-                                    <textarea class="form-control__textarea '.($this->readonly ? ' sf-editor-readonly' : ''). ($this->editor ? ' sf-editor-' . $this->editor : '').'" placeholder="' . $this->placeholder . '"
-                                        name="' . $this->inputName() . '">' . htmlspecialchars($value) . '</textarea>
-                                </div>';
+        return $this->render('textarea', ['value' => $value, 'editor' => $this->editor] + $this->inputVars());
     }
 
     public static function typeLabel(): string

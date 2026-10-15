@@ -14,13 +14,19 @@ class FieldCategorySelect extends Field
     {
         $this->syncCategories();
 
-        $existing = DB::assoc('SELECT name FROM shared_category');
-
-        $out = '<select name="' . $this->inputName() . '[]" class="form-control cat-select" multiple>';
-        foreach ($existing as $cat) {
-            $out .= '<option ' . (in_array($cat['name'], explode(',', $value)) ? ' selected' : '') . '>' . $cat['name'] . '</option>';
+        $selected = explode(',', $value);
+        $options = [];
+        foreach (DB::assoc('SELECT name FROM shared_category') as $cat) {
+            $options[] = [$cat['name'], $cat['name'], in_array($cat['name'], $selected)];
         }
-        return $out .'</select>';
+        return $this->render('select', [
+            'name' => $this->inputName() . '[]',
+            'onchange' => null,
+            'class' => 'form-control cat-select',
+            'multiple' => true,
+            'wrap' => false,
+            'options' => $options,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

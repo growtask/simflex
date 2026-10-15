@@ -28,12 +28,16 @@ class FieldTime extends Field
 
     public function input($value): string
     {
-        $value = $value ? Time::convert($value, $this->pattern, false) : '';
         $classes = ['form-control'];
         if (!$this->readonly) {
             $classes[] = 'form-timepicker' . (@$this->params['use_seconds'] ? '-seconds' : '');
         }
-        return '<input class="' . implode(' ', $classes) . '" type="text" name="' . $this->inputName() . '" value="' . $value . '"' . ($this->readonly ? ' readonly' : '') . ' />';
+        return $this->render('time', [
+            'classes' => $classes,
+            'name' => $this->inputName(),
+            'value' => $value ? Time::convert($value, $this->pattern, false) : '',
+            'readonly' => $this->readonly,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

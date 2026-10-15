@@ -39,7 +39,7 @@ class FieldVirtual extends Field
             if (@$this->params['in_modal']) {
                 $href = "javascript:openModal('$href')";
             }
-            $value = '<a href="' . $href . '">' . $value . '</a>';
+            $value = $this->render('link', ['href' => $href, 'class' => '', 'label' => $value, 'blank' => false]);
         }
         echo $value;
     }

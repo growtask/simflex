@@ -45,29 +45,21 @@ class FieldMultiKey extends Field
                 $valReal[] = $row[(string)$this->params['key']];
             }
         }
+        unset($row);
 
-        $valReal = implode(',', $valReal);
-
-        ob_start();
-        echo '<div class="form-control__tags" data-readonly="true">
-                                                <input class="form-control__tags-value" value="'.$valReal.'" type="hidden" name="'.$this->name.'">
-                                                <ul class="form-control__tags-list">
-                                                    <input type="text" class="form-control__tags-input">
-                                                </ul>
-                                                <div class="form-control__tags-popup list1">
-                                                    <div class="list1__wrapper">
-                                                        <ul class="list1__items">
-';
-
-        for ($i = 0; $i < count($rows); ++$i) {
-            echo '<li data-value="'.$rows[$i][(string)$this->params['key']].'" class="list1__item">'.$rows[$i][(string)$this->params['key_alias']].'</li>';
+        $items = [];
+        foreach ($rows as $row) {
+            $items[] = [$row[(string)$this->params['key']], $row[(string)$this->params['key_alias']]];
         }
 
-        echo ' </ul>
-                                                    </div>
-                                                </div>
-                                            </div>';
-        return (string)ob_get_clean();
+        return $this->render('tags', [
+            'readonly' => true,
+            'ajax' => false,
+            'addNew' => false,
+            'name' => $this->name,
+            'value' => implode(',', $valReal),
+            'items' => $items,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -118,7 +110,7 @@ class FieldMultiKey extends Field
             }
         }
 
-        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-text">' . (string)@self::$buffer[$pkValue] . '</div>';
+        echo $this->cell((string)@self::$buffer[$pkValue]);
     }
 
     public function filter($value): void
@@ -151,26 +143,13 @@ class FieldMultiKey extends Field
             }
         }
 
-        $icons = asset('img/icons/svg-defs.svg');
-        echo <<<HTML
-<div class="form-control form-control--sm">
-    <div class="form-control__dropdown" data-action="searchMultiKey" data-ajax="true">
-        <div class="form-control__dropdown-top">
-            <input class="form-control__dropdown-input" value="$value" type="hidden" name="filter[{$this->name}]" >
-            <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
-            <div class="form-control__dropdown-current">—</div>
-            <button class="form-control__dropdown-toggle" type="button">
-                <svg viewBox="0 0 24 24">
-                    <use xlink:href="$icons#chevron-mini"></use>
-                </svg>
-            </button>
-        </div>
-        <div class="form-control__dropdown-list">
-            <div data-value="{$value}" class="form-control__dropdown-item">{$r[$this->params['key_alias']]}</div>
-        </div>
-    </div>
-</div>
-HTML;
+        echo $this->dropdown([
+            'name' => 'filter[' . $this->name . ']',
+            'value' => $value,
+            'action' => 'searchMultiKey',
+            'search' => true,
+            'items' => [[$value, $r[$this->params['key_alias']]]],
+        ]);
 
     }
 

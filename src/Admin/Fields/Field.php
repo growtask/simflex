@@ -157,13 +157,59 @@ class Field
 
     public function input($value): string
     {
-        $value = $this->value ?: $value;
-        return '<div class="form-control form-control--sm">
-                                    <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"
-                                    ' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"')
-            . ($this->readonly ? ' readonly' : '') . '
-                                        type="text" class="form-control__input">
-                                </div>';
+        return $this->render('input', ['value' => $value] + $this->inputVars());
+    }
+
+    /**
+     * Renders the template from the tpl directory next to this file
+     *
+     * @param string $tpl Template name without extension
+     * @param array<string, mixed> $vars Variables available in the template as $name, along with $this
+     */
+    protected function render(string $tpl, array $vars = []): string
+    {
+        extract($vars, EXTR_SKIP);
+        ob_start();
+        include __DIR__ . '/tpl/' . $tpl . '.tpl';
+        return (string)ob_get_clean();
+    }
+
+    protected function inputVars(): array
+    {
+        return [
+            'name' => $this->inputName(),
+            'placeholder' => $this->placeholder,
+            'readonly' => $this->readonly,
+        ];
+    }
+
+    protected function cell(string $value, string $kind = 'text'): string
+    {
+        return $this->render('cell', [
+            'name' => $this->name,
+            'isId' => (bool)$this->fk,
+            'kind' => $kind,
+            'value' => $value,
+        ]);
+    }
+
+    /**
+     * @param array $vars name, value, onchange, data, readonly, disabled, action, search, current, items [[value, label]]
+     */
+    protected function dropdown(array $vars): string
+    {
+        return $this->render('dropdown', $vars + [
+            'name' => '',
+            'value' => '',
+            'onchange' => null,
+            'data' => [],
+            'readonly' => false,
+            'disabled' => false,
+            'action' => '',
+            'search' => false,
+            'current' => '—',
+            'items' => [],
+        ]);
     }
 
     public function inputName(): string
@@ -174,7 +220,7 @@ class Field
     public function inputHidden($value): string
     {
         $value = $this->value ?: $value;
-        return '<input type="hidden" name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '" />';
+        return $this->render('input-hidden', ['name' => $this->inputName(), 'value' => $value]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -200,10 +246,15 @@ class Field
         $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
         if ($this->name == 'name') {
-            echo '<a href="?action=form&' . $this->tablePk . '=' . $this->pkValue . '" class="table__row-' . $this->name . '">' . $value . '</a>';
+            echo $this->render('link', [
+                'href' => '?action=form&' . $this->tablePk . '=' . $this->pkValue,
+                'class' => 'table__row-' . $this->name,
+                'label' => $value,
+                'blank' => false,
+            ]);
         } else {
             $isNumericReal = $this->isNumeric || ((string)intval($value) == $value);
-            echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
+            echo $this->cell($value, $isNumericReal ? 'num' : 'text');
         }
     }
 
@@ -230,10 +281,11 @@ class Field
     {
         if ($this->filter) {
             $inExtra = $this->width == 0;
-            echo ' <div class="form-control form-control--sm">
-                        <input class="form-control__input" name="filter[' . $this->name . ']" placeholder="'
-                . ($inExtra ? htmlspecialchars($this->label) : '') . '" value="' . htmlspecialchars($value) . '" type="text" />
-                    </div>';
+            echo $this->render('filter', [
+                'name' => $this->name,
+                'placeholder' => $inExtra ? $this->label : '',
+                'value' => $value,
+            ]);
         }
     }
 

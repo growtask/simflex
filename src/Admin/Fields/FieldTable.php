@@ -127,9 +127,7 @@ class FieldTable extends Field
         // generate id for the js
         $jsId = (string)crc32($this->inputName());
 
-        ob_start();
-        include 'tpl/table.tpl';
-        return ob_get_clean();
+        return $this->render('table', compact('value', 'jsId'));
     }
 
     public static function typeLabel(): string

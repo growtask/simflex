@@ -26,13 +26,11 @@ class FieldDate extends Field
     public function input($value): string
     {
         $value = \Simflex\Core\Time::normal($value ?: time());
-        $classes = ['form-control'];
-        if (!$this->readonly) {
-            $classes[] = 'form-datepicker';
-        }
-        return '<div id="calendar" class="form-control form-control--sm">
-                                    <input value="'.date('Y-m-d', strtotime($value)).'" name="' . $this->inputName() . '" placeholder="'.$this->placeholder.'" type="date" class="form-control__input">
-                                </div>';
+        return $this->render('date', [
+            'value' => date('Y-m-d', strtotime($value)),
+            'name' => $this->inputName(),
+            'placeholder' => $this->placeholder,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -49,10 +47,7 @@ class FieldDate extends Field
 
     public function show($row): void
     {
-        $value = $row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '';
-        $isNumericReal = false;
-        echo '<div class="table__row-' . $this->name . ' ' . ($this->fk ? 'table__row-id' : '') . ' table__row-' . ($isNumericReal ? 'num' : 'text') . '">' . $value . '</div>';
-
+        echo $this->cell($row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '');
     }
 
     public static function typeLabel(): string

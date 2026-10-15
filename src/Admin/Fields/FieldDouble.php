@@ -19,16 +19,12 @@ class FieldDouble extends Field
 
     public function input($value): string
     {
-        return '<div class="form-control form-control--sm">
-                                    <input name="' . $this->inputName() . '" value="' . $this->doubleFormat($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
-                                        type="text" class="form-control__input">
-                                </div>';
+        return $this->render('input', ['value' => $this->doubleFormat($value)] + $this->inputVars());
     }
 
     public function show($row): void
     {
-        $value = $this->doubleFormat($row[$this->name], true);
-        echo '<div class="table__row-'.$this->name.' '.($this->fk ? 'table__row-id' : '').' table__row-text">'.$value.'</div>';
+        echo $this->cell($this->doubleFormat($row[$this->name], true));
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

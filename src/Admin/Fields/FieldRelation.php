@@ -36,26 +36,19 @@ class FieldRelation extends Field
 
         $value = implode(',', $value);
 
-        ob_start();
-        echo '<div class="form-control__tags" data-readonly="true" data-ajax="true">
-<input class="form-control__tags-value" value="' . $value . '" type="hidden" name="' . $this->name . '">
-<ul class="form-control__tags-list">
-    <input type="text" class="form-control__tags-input">
-</ul>
-<div class="form-control__tags-popup list1">
-    <div class="list1__wrapper">
-        <ul class="list1__items">
-';
-
+        $items = [];
         foreach ($rows as $row) {
-            echo '<li data-value="' . $row[$this->tablePk] . '" class="list1__item">' . $row[$this->params['name']] . '</li>';
+            $items[] = [$row[$this->tablePk], $row[$this->params['name']]];
         }
 
-        echo ' </ul>
-        </div>
-    </div>
-</div>';
-        return (string)ob_get_clean();
+        return $this->render('tags', [
+            'readonly' => true,
+            'ajax' => true,
+            'addNew' => false,
+            'name' => $this->name,
+            'value' => $value,
+            'items' => $items,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

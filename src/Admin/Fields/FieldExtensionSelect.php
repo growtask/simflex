@@ -15,13 +15,18 @@ abstract class FieldExtensionSelect extends Field
     public function input($value): string
     {
         $value = (string)($this->value ?: $value);
-        $out = '<select name="' . $this->inputName() . '" onchange="' . $this->onchange . '" class="form-control__input">';
-        $out .= '<option value=""></option>';
+        $options = [['', '', false]];
         foreach ($this->options() as $class => $name) {
-            $selected = $class === ltrim($value, '\\') ? ' selected' : '';
-            $out .= '<option value="' . htmlspecialchars($class) . '"' . $selected . '>' . htmlspecialchars($name) . '</option>';
+            $options[] = [$class, $name, $class === ltrim($value, '\\')];
         }
-        return $out . '</select>';
+        return $this->render('select', [
+            'name' => $this->inputName(),
+            'onchange' => $this->onchange,
+            'class' => 'form-control__input',
+            'multiple' => false,
+            'wrap' => false,
+            'options' => $options,
+        ]);
     }
 
     public function filter($value): void
@@ -30,18 +35,23 @@ abstract class FieldExtensionSelect extends Field
             return;
         }
 
-        echo '<div class="form-control form-control--sm"><select name="filter[' . $this->name . ']" class="form-control__input">';
-        echo '<option value="">' . htmlspecialchars($this->label) . '</option>';
+        $options = [['', $this->label, false]];
         foreach ($this->options() as $class => $name) {
-            $selected = $class === $value ? ' selected' : '';
-            echo '<option value="' . htmlspecialchars($class) . '"' . $selected . '>' . htmlspecialchars($name) . '</option>';
+            $options[] = [$class, $name, $class === $value];
         }
-        echo '</select></div>';
+        echo $this->render('select', [
+            'name' => 'filter[' . $this->name . ']',
+            'onchange' => null,
+            'class' => 'form-control__input',
+            'multiple' => false,
+            'wrap' => true,
+            'options' => $options,
+        ]);
     }
 
     public function show($row): void
     {
-        echo '<div class="table__row-' . $this->name . ' table__row-text">' . $this->showDetail($row) . '</div>';
+        echo $this->cell((string)$this->showDetail($row));
     }
 
     public function showDetail($row): ?string

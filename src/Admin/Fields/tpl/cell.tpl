@@ -1,0 +1,1 @@
+<div class="table__row-<?= $name ?><?= $isId ? ' table__row-id' : '' ?> table__row-<?= $kind ?>"><?= $value ?></div>

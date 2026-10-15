@@ -14,7 +14,7 @@ class FieldPasswordVisible extends Field
 
     public function show($row): void
     {
-        echo '<div style="text-align: center">***</div>';
+        echo $this->render('password-visible');
     }
 
     public static function typeLabel(): string

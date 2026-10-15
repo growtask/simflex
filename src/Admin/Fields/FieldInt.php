@@ -72,75 +72,60 @@ class FieldInt extends Field
 
     public function input($value): string
     {
-        if ($this->fk) {
-            if ($this->params['fk_is_pid']) {
-                $pidColumn = $this->fkPidColumn($this->params['fk_table']);
-                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
-                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            } else {
-                $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
-                $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            }
-
-            $sel = DB::fetch($sel) ?: [];
-
-            $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown ' . ($this->readonly ? ' disabled' : '') . '" data-action="searchInt" data-ajax="true">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" onchange="' . $this->onchange . '" value="' . (!$value ? '' : $value) . '" type="hidden" name="' . $this->name . '"' . ($this->readonly ? ' readonly' : '') . ' >
-                               <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text" ' . ($this->readonly ? ' readonly' : '') . '>
-                                <div class="form-control__dropdown-current">' . ($sel['name'] ?? '') . '</div>
-                                <button type="button" class="form-control__dropdown-toggle"' . ($this->readonly ? ' readonly' : '') . '>
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                           
-                                        ';
-
-            $tempSel = '';
-
-            $hasId = false;
-            foreach ($items as $r) {
-                if ($r['id'] == ($sel['id'] ?? null)) {
-                    $hasId = true;
-                }
-
-                if ($this->params['fk_is_pid']) {
-                    $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
-                    if ($pidName) {
-                        $r['name'] = $pidName . ' -> ' . $r['name'];
-                    }
-                }
-                $tempSel .= '<div data-value="' . $r['id'] . '" class="form-control__dropdown-item">' . $r['name'] . '</div>';
-            }
-
-            if (!$hasId && $sel) {
-                if ($this->params['fk_is_pid']) {
-                    $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
-                    if ($pidName) {
-                        $sel['name'] = $pidName . ' -> ' . $sel['name'];
-                    }
-                }
-                $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
-            }
-
-            $select .= $tempSel;
-
-            $select .= '</div>
-                                    </div>
-                                </div>';
-
-            return $select;
+        if (!$this->fk) {
+            return $this->render('input', ['value' => $value] + $this->inputVars());
         }
-        return '<div class="form-control form-control--sm">
-                                    <input name="' . $this->inputName() . '" value="' . htmlspecialchars($value) . '"' . (empty($this->placeholder) ? '' : ' placeholder="' . $this->placeholder . '"') . ($this->readonly ? ' readonly' : '') . '
-                                        type="text" class="form-control__input">
-                                </div>';
+
+        if ($this->params['fk_is_pid']) {
+            $pidColumn = $this->fkPidColumn($this->params['fk_table']);
+            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from
+                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+        } else {
+            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
+            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
+                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
+        }
+
+        $sel = DB::fetch($sel) ?: [];
+
+        $listItems = [];
+        $hasId = false;
+        foreach ($items as $r) {
+            if ($r['id'] == ($sel['id'] ?? null)) {
+                $hasId = true;
+            }
+
+            if ($this->params['fk_is_pid']) {
+                $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
+                if ($pidName) {
+                    $r['name'] = $pidName . ' -> ' . $r['name'];
+                }
+            }
+            $listItems[] = [$r['id'], $r['name']];
+        }
+
+        if (!$hasId && $sel) {
+            if ($this->params['fk_is_pid']) {
+                $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
+                if ($pidName) {
+                    $sel['name'] = $pidName . ' -> ' . $sel['name'];
+                }
+            }
+            array_unshift($listItems, [$sel['id'], $sel['name']]);
+        }
+
+        return $this->dropdown([
+            'name' => $this->name,
+            'value' => !$value ? '' : $value,
+            'onchange' => $this->onchange,
+            'readonly' => $this->readonly,
+            'disabled' => $this->readonly,
+            'action' => 'searchInt',
+            'search' => true,
+            'current' => $sel['name'] ?? '',
+            'items' => $listItems,
+        ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
@@ -158,35 +143,16 @@ class FieldInt extends Field
                                       `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
             $sel = DB::fetch($sel) ?: [];
 
-            $select = '<div class="form-control form-control--sm">
-                        <div class="form-control__dropdown" data-action="searchInt" data-ajax="true">
-                            <div class="form-control__dropdown-top">
-                                <input class="form-control__dropdown-input" value="' . $value . '" type="hidden" name="filter[' . $this->name . ']" >
-                                <input placeholder="Начните вводить название..." class="form-control__dropdown-text" type="text">
-                                <div class="form-control__dropdown-current">—</div>
-                                <button class="form-control__dropdown-toggle" type="button">
-                                    <svg viewBox="0 0 24 24">
-                                        <use xlink:href="' . asset('img/icons/svg-defs.svg') . '#chevron-mini"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-control__dropdown-list">
-                                
-                            ';
-
-            if ($sel) {
-                $select .= '<div data-value="' . $sel['id'] . '" class="form-control__dropdown-item">' . $sel['name'] . '</div>';
-            }
-
-            $select .= '</div>
-                        </div>
-                    </div>';
-
-            echo $select;
+            echo $this->dropdown([
+                'name' => 'filter[' . $this->name . ']',
+                'value' => $value,
+                'action' => 'searchInt',
+                'search' => true,
+                'items' => $sel ? [[$sel['id'], $sel['name']]] : [],
+            ]);
         } else {
             parent::filter($value);
         }
-
     }
 
     public static function typeLabel(): string
