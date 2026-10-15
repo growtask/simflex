@@ -15,6 +15,12 @@ use Simflex\Core\Models\Migration as Migration;
 
 class Migrator extends ConsoleBase
 {
+    /**
+     * Миграция, создающая таблицы migration и seeder. Не откатывается: без этих таблиц
+     * migrate/up не сможет запомнить выполненные миграции.
+     */
+    protected const BOOTSTRAP_MIGRATION = '00_migration';
+
     protected array $migrationFiles = [];
 
     public function __construct()
@@ -90,9 +96,10 @@ class Migrator extends ConsoleBase
         #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = 'all'
     ): void {
         // find migrations that were not processed yet
-        $list = Migration::findAdv()
-            ->asArray()
-            ->all();
+        // на пустой базе таблицы migration ещё нет: её создаст миграция 00_migration
+        $list = DB::result("SHOW TABLES LIKE 'migration'")
+            ? Migration::findAdv()->asArray()->all()
+            : [];
 
         $migrations = $this->getNewMigrations($list);
         if (empty($migrations)) {
@@ -160,6 +167,7 @@ class Migrator extends ConsoleBase
         #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = '1'
     ): void {
         $list = Migration::findAdv()
+            ->where("`file` <> '" . static::BOOTSTRAP_MIGRATION . "'")
             ->orderBy('`id` DESC');
 
         if ($steps != 'all') {
@@ -200,6 +208,12 @@ class Migrator extends ConsoleBase
             }
 
             Log::notice('Migration {migration} is down', ['migration' => $migration->file]);
+        }
+
+        if (!Migration::findAdv()->where("`file` <> '" . static::BOOTSTRAP_MIGRATION . "'")->asArray()->all()) {
+            // данные сидов удалены вместе с таблицами, их можно накатывать заново
+            DB::query('DELETE FROM `seeder`');
+            Log::notice('Seeders history is cleared');
         }
     }
 

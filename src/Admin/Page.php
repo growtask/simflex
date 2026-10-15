@@ -62,7 +62,7 @@ class Page
 
         if (!self::$driver) {
             // todo: lol fix this
-            if (Container::getRequest()->getPath() == Core::url('account/')) {
+            if (Core::path() === Core::url('account')) {
                 self::$driver = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
             } elseif ($menuCurModel === 'content_template_param') {
                 self::$driver = new Struct();

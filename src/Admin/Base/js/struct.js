@@ -9,7 +9,7 @@ function onChangeField(select) {
         $('.row-content .col-md-12').removeClass('col-md-12').addClass('col-md-8').after('<div class="col-md-4"><div class="ajax-params"></div></div>');
     }
     
-    $.get('./', params, function (r) {
+    $.get(location.pathname, params, function (r) {
         var $portlet = $('.field-params-' + fieldName);
         if ($portlet.length) {
             $portlet.replaceWith(r);

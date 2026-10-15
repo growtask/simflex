@@ -68,7 +68,7 @@ $artLeftArr = [];
 
                                 Сохранить и выйти
                             </button>
-                            <a href="./" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                            <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -309,7 +309,7 @@ $artLeftArr = [];
                     </svg>
                     Сохранить и выйти
                 </button>
-                <a href="./" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                     <svg stroke="none" fill="#343434" viewBox="0 0 24 24">
                         <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#close"></use>
                     </svg>

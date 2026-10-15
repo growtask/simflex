@@ -21,7 +21,7 @@ class Cron extends Base
     public function save(): string|int|false
     {
         if (empty($_POST['group_ids']) && empty($_POST['id'])) {
-            Alert::error('Задачи cron объявляются в коде: provider/cron.php', './');
+            Alert::error('Задачи cron объявляются в коде: provider/cron.php', \Simflex\Admin\Core::path());
         }
 
         return parent::save();

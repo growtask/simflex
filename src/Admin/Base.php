@@ -214,12 +214,12 @@ class Base
             if ($action == 'save') {
                 if ($keyValue = $this->save()) {
                     if (isset($_REQUEST['submit_apply'])) {
-                        $href = './?action=form&' . $this->pk->name . '=' . $keyValue;
+                        $href = \Simflex\Admin\Core::path() . '?action=form&' . $this->pk->name . '=' . $keyValue;
                         header('location: ' . $href);
                     } elseif (isset($_REQUEST['submit_save_add'])) {
-                        header('location: ./?action=form');
+                        header('location: ' . \Simflex\Admin\Core::path() . '?action=form');
                     } else {
-                        header("location: ./?save_id=$keyValue");
+                        header("location: " . \Simflex\Admin\Core::path() . "?save_id=$keyValue");
                     }
                     exit();
                 }
@@ -261,10 +261,10 @@ class Base
     protected function beforeChangeENUM(Field $field, $row, $newValue): mixed
     {
         if (!$this->canEdit) {
-            Alert::error('В этом разделе запрещено редактировать записи', './');
+            Alert::error('В этом разделе запрещено редактировать записи', \Simflex\Admin\Core::path());
         }
         if ($field->readonly) {
-            Alert::error("Поле <b>{$field->label}</b> только для чтения!", './');
+            Alert::error("Поле <b>{$field->label}</b> только для чтения!", \Simflex\Admin\Core::path());
         }
         return $newValue;
     }
@@ -279,7 +279,7 @@ class Base
         $newValue = $_REQUEST['newstatus'];
         $field = $this->fields[$fieldName] ?? null;
         if (!$field) {
-            Alert::error('Некорректный запрос. Поле не найдено.', './');
+            Alert::error('Некорректный запрос. Поле не найдено.', \Simflex\Admin\Core::path());
         }
 
         $id = (int)$_REQUEST[$this->pk->name];
@@ -306,7 +306,7 @@ class Base
         $fieldDB = StructureRepository::field($this->table, $field);
         $fieldParams = $fieldDB['params'] ?? [];
         if (@$fieldParams['main']['readonly']) {
-            Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", './');
+            Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", \Simflex\Admin\Core::path());
         }
 
         if (isset($_GET['val'])) {
@@ -321,7 +321,7 @@ class Base
             DB::query($q);
         }
 
-        header('location: ./');
+        header('location: ' . \Simflex\Admin\Core::path());
         exit;
     }
 
@@ -431,7 +431,7 @@ class Base
     protected function filterReset(): never
     {
         $_SESSION[$this->table] = [];
-        header('Location: ./');
+        header('location: ' . \Simflex\Admin\Core::path());
         exit;
     }
 
@@ -715,10 +715,10 @@ class Base
         $isEdit = self::$isEdit = !$isGroup && !$isAdd;
 
         if ($isAdd && !$this->canAdd) {
-            Alert::error('Ошибка! Недостаточно прав для добавления записей в данный раздел', './');
+            Alert::error('Ошибка! Недостаточно прав для добавления записей в данный раздел', \Simflex\Admin\Core::path());
         }
         if ($isEdit && !$this->canEdit) {
-            Alert::error('Ошибка! Недостаточно прав для редактирования записей в данном разделе', './');
+            Alert::error('Ошибка! Недостаточно прав для редактирования записей в данном разделе', \Simflex\Admin\Core::path());
         }
 
         $row = &$this->row;
@@ -770,7 +770,7 @@ class Base
                     }
                 }
             } else {
-                Alert::error('Ошибка! Запись не найдена или недостаточно прав для редактирования.', './');
+                Alert::error('Ошибка! Запись не найдена или недостаточно прав для редактирования.', \Simflex\Admin\Core::path());
             }
         }
 
@@ -967,7 +967,7 @@ class Base
                 Alert::error(DB::error());
             }
         }
-        header('location: ./');
+        header('location: ' . \Simflex\Admin\Core::path());
         exit;
     }
 
@@ -1334,7 +1334,7 @@ class Base
     public function delete(): never
     {
         if (!$this->canDelete) {
-            Alert::error('Ошибка! Недостаточно прав для удаления записей в данном разделе', './');
+            Alert::error('Ошибка! Недостаточно прав для удаления записей в данном разделе', \Simflex\Admin\Core::path());
         }
 
         $ids_temp = (isset($_REQUEST['rows']) && is_array($_REQUEST['rows'])) ? $_REQUEST['rows'] : [];
@@ -1382,7 +1382,7 @@ class Base
                 Alert::success("#$id &mdash; Успех. Запись удалена");
             }
         }
-        header('location: ./');
+        header('location: ' . \Simflex\Admin\Core::path());
         exit;
     }
 

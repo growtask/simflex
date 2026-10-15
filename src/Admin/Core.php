@@ -42,11 +42,15 @@ class Core
     /**
      * Адрес внутри админки
      * @param string $path Путь относительно корня админки, например 'content/'
-     * @return string like /admin/content/
+     * @return string like /admin/content (без завершающего слеша)
      */
     public static function url(string $path = ''): string
     {
-        return static::root() . '/' . ltrim($path, '/');
+        $url = static::root() . '/' . ltrim($path, '/');
+        $query = strpos($url, '?');
+        $base = $query === false ? $url : substr($url, 0, $query);
+
+        return rtrim($base, '/') . ($query === false ? '' : substr($url, $query));
     }
 
     /**
@@ -84,6 +88,13 @@ class Core
 
         $url_info = parse_url($_SERVER['REQUEST_URI']);
         self::$path = $url_info['path'];
+        if (strlen(self::$path) > 1 && str_ends_with(self::$path, '/') && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET') {
+            // адреса админки без завершающего слеша: /admin/content/ => /admin/content
+            $query = isset($url_info['query']) ? '?' . $url_info['query'] : '';
+            header('Location: ' . rtrim(self::$path, '/') . $query, true, 301);
+            exit;
+        }
+        self::$path = rtrim(self::$path, '/');
         // сегменты пути относительно корня админки: /admin/content/ => ['content', '']
         self::$uri = explode('/', ltrim(substr(self::$path, strlen(static::root())), '/'));
 
@@ -120,6 +131,8 @@ class Core
             // ссылки хранятся относительно корня админки
             if (str_starts_with($row['link'], '/')) {
                 $row['link'] = static::url($row['link']);
+            } else {
+                $row['link'] = rtrim($row['link'], '/');
             }
             self::$menuTree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
             self::$menuById[(int)$row['menu_id']] = $row;

@@ -23,9 +23,9 @@ class Account extends ModuleBase
             }
             $success = UserModel::bulkUpdate($set, ['user_id' => $user->getId()]);
             if ($success) {
-                Alert::success('Данные успешно обновлены', './');
+                Alert::success('Данные успешно обновлены', \Simflex\Admin\Core::path());
             } else {
-                Alert::error('Данные не обновлены', './');
+                Alert::error('Данные не обновлены', \Simflex\Admin\Core::path());
             }
         }
 
