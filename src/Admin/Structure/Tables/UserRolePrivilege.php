@@ -2,10 +2,11 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ForeignKeyField;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 use Simflex\Core\Privilege;
 
@@ -21,36 +22,14 @@ class UserRolePrivilege extends Table
             privilegeEdit: Privilege::DEV,
             privilegeDelete: Privilege::DEV,
             fields: [
-                new FieldDefinition(
-                    name: 'id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '60',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new IdField(),
+                new ForeignKeyField(
                     name: 'role_id',
-                    class: FieldInt::class,
                     label: 'Роль',
+                    table: 'user_role',
                     help: 'Роль, пользователи которой получают привилегию',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '300',
-                            required: true,
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'user_role',
-                            fkKey: 'role_id',
-                            fkLabel: 'name',
-                            fk: 'user_role.role_id.name',
-                        ),
-                    ],
+                    width: '300',
+                    required: true,
                 ),
                 new FieldDefinition(
                     name: 'privilege',

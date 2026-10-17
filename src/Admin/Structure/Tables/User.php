@@ -3,11 +3,13 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldPassword;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\ForeignKeyField;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 
 class User extends Table
@@ -16,46 +18,18 @@ class User extends Table
     {
         parent::__construct(
             fields: [
-                new FieldDefinition(
+                new IdField(
                     name: 'user_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '80',
-                            filter: true,
-                            widthMob: '50',
-                        ),
-                    ],
+                    width: '80',
+                    filter: true,
+                    widthMob: '50',
                 ),
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            defaultValue: '0',
-                            filter: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new ActiveField(width: 0, defaultValue: '0'),
+                new ForeignKeyField(
                     name: 'role_id',
-                    class: FieldInt::class,
                     label: 'Роль',
-                    params: [
-                        'main' => new FieldParams(
-                            required: true,
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'user_role',
-                            fkKey: 'role_id',
-                            fkLabel: 'name',
-                        ),
-                    ],
+                    table: 'user_role',
+                    required: true,
                 ),
                 new FieldDefinition(
                     name: 'login',

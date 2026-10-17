@@ -2,12 +2,12 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldPrivilegeSelect;
+use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 
 class UserRole extends Table
@@ -16,32 +16,12 @@ class UserRole extends Table
     {
         parent::__construct(
             fields: [
-                new FieldDefinition(
+                new IdField(
                     name: 'role_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '54',
-                            filter: true,
-                        ),
-                    ],
+                    width: '54',
+                    filter: true,
                 ),
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '104',
-                            defaultValue: '1',
-                            filter: true,
-                        ),
-                    ],
-                ),
+                new ActiveField(),
                 new FieldDefinition(
                     name: 'privilege',
                     class: FieldPrivilegeSelect::class,
