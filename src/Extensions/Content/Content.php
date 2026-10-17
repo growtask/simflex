@@ -239,7 +239,7 @@ class Content extends ComponentBase
                 }
             }
 
-            $html = $this->render(static::findTemplateFile($content->template_path ?? 'default.tpl'), get_defined_vars());
+            $html = $this->render(static::findTemplateFile(ContentTemplates::file($content->template)), get_defined_vars());
         } else {
             if ($link == '/404') {
                 http_response_code(404);

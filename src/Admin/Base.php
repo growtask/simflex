@@ -854,10 +854,6 @@ class Base
             }
         }
 
-        if ($this->table == 'content_template_param' && !$this->params['right']) {
-            $this->params['right'] = [1];
-        }
-
         if (Core::$isAjax) {
             if (!empty($_REQUEST['field']) && isset($this->fields[$_REQUEST['field']]) && $pk) {
                 $field = $this->fields[$_REQUEST['field']];

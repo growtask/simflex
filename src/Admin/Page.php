@@ -3,7 +3,6 @@
 namespace Simflex\Admin;
 
 use Simflex\Admin\Base\ModuleItem;
-use Simflex\Admin\Base\Struct;
 use Simflex\Admin\Modules\Account\Account;
 use Simflex\Admin\Notify\Collection;
 use Simflex\Admin\Structure\Repository as StructureRepository;
@@ -65,8 +64,6 @@ class Page
             // todo: lol fix this
             if (Core::path() === Core::url('account')) {
                 self::$driver = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
-            } elseif ($menuCurModel === 'content_template_param') {
-                self::$driver = new Struct();
             } elseif (in_array($menuCurModel, ['module_item'])) {
                 self::$driver = new ModuleItem();
             } else {

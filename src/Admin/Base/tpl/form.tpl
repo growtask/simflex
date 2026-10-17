@@ -375,23 +375,21 @@ $artLeftArr = [];
                     if (count($this->params['right'])): ?>
                         <?php
                         $group = null;
-                        $hasWithoutGroup = false;
+                        // the fields without a group, in blocks by their group_name (like in the left column)
+                        $rightGroups = [];
                         foreach ($this->params['right'] as $param) {
                             if (isset($param['field'])) {
-                                $hasWithoutGroup = true;
-                                break;
+                                $rightGroups[($param['group_name'] ?? '') ?: 'Параметры'][] = $param;
                             }
                         }
-                        ?>
-                        <?php
-                        if ($hasWithoutGroup): ?>
+                        foreach ($rightGroups as $rightGroupName => $rightGroupParams): ?>
                             <div class="data3">
                                 <div class="data3__head">
-                                    <div class="data3__title">Параметры</div>
+                                    <div class="data3__title"><?= $rightGroupName ?></div>
                                 </div>
                                 <div class="data3__content">
                                     <?php
-                                    foreach ($this->params['right'] as $param): ?>
+                                    foreach ($rightGroupParams as $param): ?>
                                         <?php
                                         if (isset($param['field'])): ?>
                                             <?php
@@ -412,7 +410,7 @@ $artLeftArr = [];
                                 </div>
                             </div>
                         <?php
-                        endif ?>
+                        endforeach ?>
                         <?php
                         foreach ($this->params['right'] as $group): ?>
                             <?php

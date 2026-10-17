@@ -7,6 +7,7 @@ use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\ParamDefinition;
 use Simflex\Admin\Structure\Data\ParamGroup;
 use Simflex\Core\HasAdminParams;
+use Simflex\Extensions\Content\ContentTemplates;
 
 class Repository
 {
@@ -99,6 +100,32 @@ class Repository
                 }
             } else {
                 $row = static::extensionFieldRow($item, $class, '', $table);
+                $out[''][$row['param_id']] = $row;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Fields of a page template declared in code (\Simflex\Extensions\Content\ContentTemplate).
+     * They aren't nested in their blocks: the values are kept in content.params by the field name,
+     * the block is the 'group_name' the form shows them under.
+     *
+     * @return array<string, array<string, array>> like {@see params()}: '' => param_id => row
+     */
+    public static function templateParams(string $template, string $table = 'content'): array
+    {
+        $out = [];
+        foreach (ContentTemplates::get($template)?->params ?? [] as $block) {
+            foreach ($block->fields as $field) {
+                $row = static::normalizeField($field, $table);
+                $row['param_id'] = static::stableId('template.' . $template . '.' . $row['name']);
+                $row['param_pid'] = '';
+                $row['pos'] = $row['position'] = $block->pos;
+                $row['group_name'] = $block->label;
+                $row['field_type'] = $row['class'];
+                $row['default_value'] = (string)($field->params['main']->defaultValue ?? '');
                 $out[''][$row['param_id']] = $row;
             }
         }
