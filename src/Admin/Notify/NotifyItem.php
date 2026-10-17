@@ -5,7 +5,7 @@ namespace Simflex\Admin\Notify;
 use Simflex\Core\View;
 
 /**
- * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
+ * @incomplete The Notify subsystem is not wired into the admin panel yet; it will be finished and used later.
  */
 class NotifyItem
 {

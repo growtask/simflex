@@ -12,15 +12,7 @@ interface Adapter
     public function connect(): bool;
 
     /**
-     * Bounds array items to the query
-     *
-     * @param array $params Items to bind
-     * @deprecated Use $params in query() instead
-     */
-    public function bind(array $params): void;
-
-    /**
-     * Executes a SQL query with previously (optional) bound items
+     * Executes a SQL query
      *
      * @param string $q SQL query
      * @param array $params Vars for prepared statement

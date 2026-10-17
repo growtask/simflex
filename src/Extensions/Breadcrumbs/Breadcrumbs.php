@@ -15,11 +15,7 @@ class Breadcrumbs extends ModuleBase
     {
         $arr = [];
         $menu = Core::menu('by_id');
-        $id = Core::componentMenuID();
-        $curmenu = Core::menuCurItem();
-        if (isset($menu[$curmenu['menu_id']])) {
-            $id = $curmenu['menu_id'];
-        }
+        $id = Core::menuCurItem()['menu_id'] ?? 0;
         $is_main = false;
         while (isset($menu[$id])) {
             $arr[md5($menu[$id]['link'])] = ['name' => $menu[$id]['name'], 'link' => $menu[$id]['link']];

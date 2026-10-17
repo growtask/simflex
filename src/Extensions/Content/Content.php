@@ -8,7 +8,6 @@ use Simflex\Core\Log;
 use Simflex\Core\Factory;
 use Simflex\Core\Profiler;
 use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
-use Simflex\Core\Core;
 use Simflex\Core\DB;
 use Simflex\Core\Page;
 use Simflex\Extensions\Content\Model\ModelContent;
@@ -182,7 +181,7 @@ class Content extends ComponentBase
 
         $link = Container::getRequest()->getPath();
         if ($content) {
-            if (!Core::ajax()) {
+            if (!Container::getRequest()->isAjax()) {
                 $this->breadcrumbs($content);
             }
 

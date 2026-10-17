@@ -10,17 +10,12 @@ use Simflex\Core\Routing\Resolver;
 
 class Core
 {
-    protected static bool $ajax = false;
-    protected static array $uri = [];
-    protected static string $path = '';
     protected static array $siteParams = [];
     protected static array $menuTree = [];
     protected static array $menuById = [];
     protected static array $menuByLink = [];
     protected static array $menuByExt = [];
     protected static ?array $menuCur = null;
-    protected static int $componentLevel = 0;
-    protected static int $componentMenuId = 0;
     protected static bool $contentOnly = false;
 
     private function __construct()
@@ -41,11 +36,7 @@ class Core
 
         $request = Container::getRequest();
 
-        // TODO: get rid of deprecated code
-        DB::bind(['SITE_PATH' => $request->getPath(), 'SITE_LINK' => $request->getPath()]);
-
         if ($request->isAjax()) {
-            self::$ajax = true;
             self::$contentOnly = true;
             $sf_module_id = isset($_REQUEST['sf_module_id']) ? (int)$_REQUEST['sf_module_id'] : 0;
             if ($sf_module_id > 0) {
@@ -53,8 +44,8 @@ class Core
                 exit();
             }
         } else {
-            $q = 'SELECT title, description, keywords, metatags FROM seo WHERE link=@SITE_LINK';
-            if ($row = DB::result($q)) {
+            $q = 'SELECT title, description, keywords, metatags FROM seo WHERE link = ?';
+            if ($row = DB::result($q, '', [$request->getPath()])) {
                 Page::seo($row['title'], $row['description'], $row['keywords'], true, $row['metatags']);
             }
         }
@@ -76,66 +67,16 @@ class Core
         ORDER BY npp';
 
         $rows = DB::assoc($q);
+        $path = Container::getRequest()->getPath();
         foreach ($rows as $row) {
             self::$menuTree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
             self::$menuById[(int)$row['menu_id']] = $row;
             self::$menuByLink[md5($row['link'])] = $row;
             self::$menuByExt[strtolower(substr($row['class'], 3))][] = $row;
-            if ($row['link'] == self::$path && !self::$menuCur) {
+            if ($row['link'] == $path && !self::$menuCur) {
                 self::$menuCur = $row;
             }
         }
-    }
-
-    /**
-     * @deprecated use Request::isAjax() instead
-     */
-    public static function ajax(): bool
-    {
-        return Container::getRequest()->isAjax();
-    }
-
-    /**
-     * @deprecated use Request::getUrlParts() instead
-     */
-    public static function uri(int|false $i = false): array|string
-    {
-        $uri = Container::getRequest()->getUrlParts();
-
-        if ($i === false) {
-            return $uri;
-        }
-
-        $i += self::$componentLevel;
-        return $uri[$i] ?? '';
-    }
-
-    /**
-     * @deprecated use Request::getUrlParts() instead
-     */
-    public static function uri_r($i): string
-    {
-        $uri = Container::getRequest()->getUrlParts();
-
-        $i = count($uri) - 2 - $i;
-        ;
-        return $uri[$i] ?? '';
-    }
-
-    /**
-     * @deprecated use Request::getPath() instead
-     */
-    public static function path(int $beg = 0, int $len = 0): string
-    {
-        $path = Container::getRequest()->getPath();
-        $uri = self::uri();
-
-        $beg = $beg < 0 ? count($uri) + $beg : $beg;
-        if ($beg + $len > 0) {
-            $path = $len ? join('/', array_slice($uri, $beg, $len)) : join('/', array_slice($uri, $beg));
-            $path = str_replace('//', '/', '/' . $path . '/');
-        }
-        return $path ? $path : '/';
     }
 
     /**
@@ -198,7 +139,7 @@ class Core
     public static function getComponent(): object
     {
         $route = (new Resolver())
-            ->setMenuByLink(self::$menuByLink) // for deprecated routing by menu database table
+            ->setMenuByLink(self::$menuByLink) // menu items with a component are routes too
             ->resolve(Container::getConfig()->getRoutes());
 
         // set route here so we can use it later, if needed
@@ -206,37 +147,6 @@ class Core
 
         $componentClass = $route->getComponentClassName();
         return new $componentClass(...Injector::resolveClass($componentClass));
-    }
-
-    public static function getComponentAPI(): object|false
-    {
-        $class = '';
-        $path = '/';
-        $i = 0;
-        if (!empty(self::$menuByLink[md5($path)]['class'])) {
-            $class = self::$menuByLink[md5($path)]['class'];
-            self::$componentLevel = $i;
-            self::$componentMenuId = self::$menuByLink[md5($path)]['menu_id'];
-        }
-        $i++;
-        foreach (self::uri() as $u) {
-            if ($u) {
-                $path .= $u . '/';
-                if (!empty(self::$menuByLink[md5($path)]['class'])) {
-                    $class = self::$menuByLink[md5($path)]['class'];
-                    self::$componentLevel = $i;
-                    self::$componentMenuId = self::$menuByLink[md5($path)]['menu_id'];
-                }
-            }
-            $i++;
-        }
-
-        if ($class) {
-            $class = 'Api' . substr($class, 3);
-            return new $class();
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -280,26 +190,6 @@ class Core
     public static function menuCurItem(): ?array
     {
         return self::$menuCur;
-    }
-
-    public static function componentPath(): string
-    {
-        return self::path(self::$componentLevel);
-    }
-
-    public static function componentLevel(): int
-    {
-        return self::$componentLevel;
-    }
-
-    public static function componentMenuID(): int
-    {
-        return self::$componentMenuId;
-    }
-
-    public static function componentTitle(): ?string
-    {
-        return self::$menuById[self::$componentMenuId]['name'];
     }
 
     /**

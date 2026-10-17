@@ -3,7 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
-use Simflex\Core\Service;
+use Simflex\Core\Helpers\Str;
 
 class FieldAlias extends Field
 {
@@ -11,7 +11,7 @@ class FieldAlias extends Field
     {
         $val = $_POST[$this->name];
         if (empty($val) && !empty($this->params['source'])) {
-            $val = isset($_POST[$this->params['source']]) ? Service::translite($_POST[$this->params['source']]) : '';
+            $val = isset($_POST[$this->params['source']]) ? Str::translite($_POST[$this->params['source']]) : '';
         }
         $ret = $this->e2n && $val === '' ? null : '' . DB::escape($val) . '';
         return $ret;
