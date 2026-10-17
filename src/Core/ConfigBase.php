@@ -65,6 +65,11 @@ abstract class ConfigBase
     public string $defaultComponent = '\Simflex\Extensions\Content\Content';
 
     /**
+     * @var string Class declaring the user privileges: \Simflex\Core\Privilege or the app's subclass
+     */
+    public string $privilegeClass = Privilege::class;
+
+    /**
      * @var string Default theme to load
      */
     #[Deprecated]

@@ -45,6 +45,9 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
                                 <div class="form-control table__head-sort">
                                     <div class="form-control__sort">
                                         <span class="form-control__sort-title"><?=$f->label?></span>
+                                        <?php if ($f->help !== ''): ?>
+                                        <span class="table__head-help" title="<?= htmlspecialchars(strip_tags($f->help)) ?>">?</span>
+                                        <?php endif ?>
                                         <div class="form-control__sort-btns">
                                             <div class="form-control__sort-up <?=($f->name == $this->order && !$this->desc) ? 'form-control__sort-up--active' : ''?>">
                                                 <a class="form-control__sort-link" href="?o=<?=$f->name?>"></a>
@@ -110,6 +113,13 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
     </div>
 </div>
 
+<style>
+    .table__head-help {
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 16px; height: 16px; margin-left: 4px; border-radius: 50%;
+        background: #c4cbd6; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; cursor: help;
+    }
+</style>
 <script>
     const nd =  document.createElement('style');
     nd.innerHTML = `

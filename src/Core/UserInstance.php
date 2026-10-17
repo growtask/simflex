@@ -14,8 +14,7 @@ class UserInstance
     public string $login = '';
     public int $roleId = 0;
     public string $roleName = '';
-    private array $privIds = [];
-    private array $privNames = [];
+    private array $privilegeNames = [];
     private array|false $info;
     private string $idName;
     private string $hashName;
@@ -110,18 +109,10 @@ class UserInstance
 
         if ($this->id) {
             $q = '
-                SELECT priv_id, name
-                FROM user_priv
-                WHERE active=1
-                AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id' . ($this->roleId ? '=' . (int)$this->roleId : ' IS NULL') . ')
-                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=' . $this->id . ')
-                )
-            ';
-            $r = DB::query($q);
-            while ($row = DB::fetch($r)) {
-                $this->privIds[(int)$row['priv_id']] = (int)$row['priv_id'];
-                $this->privNames[$row['name']] = $row['name'];
+                SELECT privilege FROM user_role_privilege WHERE role_id' . ($this->roleId ? '=' . (int)$this->roleId : ' IS NULL') . '
+                UNION SELECT privilege FROM user_privilege_personal WHERE user_id=' . $this->id;
+            foreach (Privilege::granted(array_column(DB::assoc($q) ?: [], 'privilege')) as $name) {
+                $this->privilegeNames[$name] = $name;
             }
         }
     }
@@ -150,24 +141,16 @@ class UserInstance
         return $ret;
     }
 
-    public function privIds(): array
+    public function privilegeNames(): array
     {
-        return count($this->privIds) ? $this->privIds : [0];
+        return count($this->privilegeNames) ? $this->privilegeNames : [''];
     }
 
-    public function privNames(): array
+    public function ican(string|bool $privilege): array|bool
     {
-        return count($this->privNames) ? $this->privNames : [''];
-    }
-
-    public function ican(string|int|bool $priv): array|bool
-    {
-        if (false === $priv) {
-            return $this->privNames;
+        if (false === $privilege) {
+            return $this->privilegeNames;
         }
-        if (is_int($priv)) {
-            return isset($this->privIds[$priv]);
-        }
-        return isset($this->privNames[$priv]);
+        return isset($this->privilegeNames[$privilege]);
     }
 }

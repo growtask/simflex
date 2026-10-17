@@ -11,6 +11,7 @@ use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\ModuleType;
 use Simflex\Core\Page as CorePage;
+use Simflex\Core\Privilege;
 use Simflex\Core\Request;
 use Simflex\Core\User;
 
@@ -30,7 +31,7 @@ class Page
     public static function init(): void
     {
 
-        if (!User::ican('simplex_admin')) {
+        if (!User::ican(Privilege::ADMIN)) {
             return;
         }
 

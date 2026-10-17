@@ -6,6 +6,7 @@ use Exception;
 use Simflex\Core\Buffer;
 use Simflex\Core\DB;
 use Simflex\Core\ModelBase;
+use Simflex\Core\Privilege;
 
 /**
  * User model
@@ -35,64 +36,48 @@ class User extends ModelBase
     }
 
     /**
-     * @param int|string $priv User privilege id or name
+     * @param string $privilege Privilege name, see \Simflex\Core\Privilege
      */
-    public function ican(int|string $priv): bool
+    public function ican(string $privilege): bool
     {
-        $privileges = $this->getPrivileges();
-        if (is_int($priv)) {
-            return isset($privileges['ids'][$priv]);
-        }
-        return isset($privileges['names'][$priv]);
+        return isset($this->getPrivileges()[$privilege]);
     }
 
     /**
-     * @return array ids => 1,2,3, names => priv1, priv2
+     * Privileges of the role and the personal ones, declared in code and enabled
+     *
+     * @return array<string, string> name => name
      */
     public function getPrivileges(): array
     {
-        return Buffer::getOrSet('user-priv-' . $this->id, function () {
+        return Buffer::getOrSet('user-privilege-' . $this->id, function () {
             $q = '
-                SELECT priv_id, name
-                FROM user_priv
-                WHERE active=1
-                AND (
-                    priv_id IN(SELECT priv_id FROM user_role_priv WHERE role_id' . ($this->role_id ? '=' . (int)$this->role_id : ' IS NULL') . ')
-                    OR priv_id IN(SELECT priv_id FROM user_priv_personal WHERE user_id=' . $this->id . ')
-                )
-            ';
-            $r = DB::query($q);
-            $ids = $names = [];
-            while ($row = DB::fetch($r)) {
-                $ids[(int)$row['priv_id']] = (int)$row['priv_id'];
-                $names[$row['name']] = $row['name'];
-            }
-            return compact('ids', 'names');
+                SELECT privilege FROM user_role_privilege WHERE role_id' . ($this->role_id ? '=' . (int)$this->role_id : ' IS NULL') . '
+                UNION SELECT privilege FROM user_privilege_personal WHERE user_id=' . (int)$this->id;
+            $names = Privilege::granted(array_column(DB::assoc($q) ?: [], 'privilege'));
+            return array_combine($names, $names);
         });
     }
 
     /**
-     * @example User::findAdv()->modify('hasPrivileges', ['priv_name'])->all()
+     * Users having any of the privileges by their role or personally, and the developers
+     *
+     * @example User::findAdv()->modify('hasPrivileges', ['privilege_name'])->all()
      */
     public static function aqModifyHasPrivileges(\Simflex\Core\DB\AQ $AQ, array $privileges): void
     {
         if (empty($privileges)) {
             return;
         }
-        // Allow multiple invoke this modifier
-        $tableSuffix = str_replace('.', '', microtime(true)) . rand(1000000, 9999999);
+        // developers have all the privileges
+        $privileges = [...Privilege::filterActive($privileges), Privilege::DEV];
+        $in = "'" . implode("','", DB::escape($privileges)) . "'";
         $table = static::$table;
-        $AQ->where("
-        $table.user_id IN(
-            SELECT user_id FROM $table
-            JOIN user_priv_personal AS user_priv_personal_$tableSuffix USING(user_id)
-            JOIN user_role AS user_role_$tableSuffix 
-                ON user_role_$tableSuffix.role_id = $table.role_id AND user_role_$tableSuffix.active = 1
-            JOIN user_role_priv AS user_role_priv_$tableSuffix ON user_role_priv_$tableSuffix.role_id = user_role_$tableSuffix.role_id
-            JOIN user_priv AS user_priv_$tableSuffix 
-                ON user_priv_$tableSuffix.priv_id=COALESCE(user_priv_personal_$tableSuffix.priv_id,user_role_priv_$tableSuffix.priv_id) 
-                AND user_priv_$tableSuffix.name IN('" . implode("','", DB::escape($privileges)) . "')
-        )
-        ");
+        $AQ->where("(
+            $table.user_id IN(SELECT user_id FROM user_privilege_personal WHERE privilege IN($in))
+            OR $table.role_id IN(
+                SELECT role_id FROM user_role_privilege JOIN user_role USING(role_id) WHERE user_role.active = 1 AND privilege IN($in)
+            )
+        )");
     }
 }

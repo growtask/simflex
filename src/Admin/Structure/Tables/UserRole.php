@@ -4,8 +4,8 @@ namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
+use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
@@ -43,30 +43,15 @@ class UserRole extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'npp',
-                    class: FieldNPP::class,
-                    label: '№ п/п',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '107',
-                            defaultValue: '0',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'priv_id',
-                    class: FieldInt::class,
+                    name: 'privilege',
+                    class: FieldPrivilegeSelect::class,
                     label: 'Привилегия',
+                    help: 'Кто управляет ролью: роль и её пользователей видят и редактируют только пользователи с этой привилегией (и разработчики). Привилегии, которые роль даёт своим пользователям, задаются в разделе «Привилегии ролей»',
                     params: [
                         'main' => new FieldParams(
-                            width: '140',
+                            width: '200',
                             required: true,
                             filter: true,
-                            isFk: true,
-                            fkTable: 'user_priv',
-                            fkKey: 'priv_id',
-                            fkLabel: 'name',
-                            fk: 'user_priv.priv_id.name',
                         ),
                     ],
                 ),

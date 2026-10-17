@@ -38,7 +38,7 @@ function deleteRowsForce() {
 
 
 function showInfoModal(id, pk) {
-    fetch('?action=showDetail&id=' + id).then((res) => {
+    fetch('?action=showDetail&id=' + id, {headers: {'X-Requested-With': 'XMLHttpRequest'}}).then((res) => {
         res.text().then((data) => {
             document.querySelector('.modal-info__talbe-wrapper').innerHTML = data;
             document.querySelector('.modal-info__btn-edit').href = `?action=form&${pk}=${id}`;

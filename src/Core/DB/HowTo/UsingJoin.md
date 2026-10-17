@@ -24,11 +24,11 @@ ON `user`.`role_id` = `user_role`.`role_id`
 **Extra ON clause conditions**
 
 ```php
-User::findAdv()->leftJoin(UserRole::class, '.role_id', '.role_id', ['priv_id' => 2]);
+User::findAdv()->leftJoin(UserRole::class, '.role_id', '.role_id', ['privilege' => 'admin']);
 ```
 ```sql
 SELECT * FROM `user` LEFT JOIN `user_role` 
-ON `user`.`role_id` = `user_role`.`role_id` AND priv_id = 2
+ON `user`.`role_id` = `user_role`.`role_id` AND privilege = 'admin'
 ```
 **Other JOIN types**
 ```php

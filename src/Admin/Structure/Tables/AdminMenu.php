@@ -6,6 +6,7 @@ use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldTableSelect;
+use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
@@ -60,19 +61,14 @@ class AdminMenu extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'priv_id',
-                    class: FieldInt::class,
+                    name: 'privilege',
+                    class: FieldPrivilegeSelect::class,
                     label: 'Привилегия',
                     params: [
                         'main' => new FieldParams(
                             width: '120',
                             required: true,
                             filter: true,
-                            isFk: true,
-                            fkTable: 'user_priv',
-                            fkKey: 'priv_id',
-                            fkLabel: 'name',
-                            fk: 'user_priv.priv_id.name',
                         ),
                     ],
                 ),
