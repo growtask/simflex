@@ -2,19 +2,22 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
-use Simflex\Admin\Fields\FieldContentTemplateSelect;
 use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldBool;
+use Simflex\Admin\Fields\FieldContentTemplateSelect;
 use Simflex\Admin\Fields\FieldDate;
 use Simflex\Admin\Fields\FieldImage;
 use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldPath;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\ParamDefinition;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\IdField;
+use Simflex\Admin\Structure\Presets\NppField;
+use Simflex\Admin\Structure\Presets\ParentField;
 use Simflex\Admin\Structure\Table;
 use Simflex\Extensions\Content\Admin\AdminContent;
 
@@ -25,32 +28,8 @@ class Content extends Table
         parent::__construct(
             class: AdminContent::class,
             fields: [
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '104',
-                            defaultValue: '1',
-                            filter: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'content_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '60',
-                            filter: true,
-                        ),
-                    ],
-                ),
+                new ActiveField(),
+                new IdField(name: 'content_id', filter: true),
                 new FieldDefinition(
                     name: 'template',
                     class: FieldContentTemplateSelect::class,
@@ -64,30 +43,12 @@ class Content extends Table
                         ),
                     ],
                 ),
-                new FieldDefinition(
-                    name: 'npp',
-                    class: FieldNPP::class,
-                    label: '№ п/п',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '107',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new NppField(),
+                new ParentField(
                     name: 'pid',
-                    class: FieldInt::class,
-                    label: 'Родитель',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            isFk: true,
-                            fkTable: 'content',
-                            fkKey: 'content_id',
-                            fkLabel: 'title',
-                            fkIsPid: true,
-                        ),
-                    ],
+                    table: 'content',
+                    key: 'content_id',
+                    display: 'title',
                 ),
                 new FieldDefinition(
                     name: 'date',

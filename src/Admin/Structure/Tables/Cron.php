@@ -3,12 +3,12 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Base\Cron as CronDriver;
-use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldCronJobSelect;
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 use Simflex\Core\Privilege;
 
@@ -24,30 +24,8 @@ class Cron extends Table
             privilegeEdit: Privilege::DEV,
             class: CronDriver::class,
             fields: [
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '85',
-                            defaultValue: '1',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '60',
-                        ),
-                    ],
-                ),
+                new ActiveField(width: '85', filter: false),
+                new IdField(),
                 new FieldDefinition(
                     name: 'job',
                     class: FieldCronJobSelect::class,

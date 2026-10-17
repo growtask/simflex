@@ -2,11 +2,12 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\IdField;
+use Simflex\Admin\Structure\Presets\ParentField;
 use Simflex\Admin\Structure\Table;
 
 class Seo extends Table
@@ -15,35 +16,17 @@ class Seo extends Table
     {
         parent::__construct(
             fields: [
-                new FieldDefinition(
+                new IdField(
                     name: 'seo_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '54',
-                            filter: true,
-                            widthMob: '60',
-                        ),
-                    ],
+                    width: '54',
+                    filter: true,
+                    widthMob: '60',
                 ),
-                new FieldDefinition(
+                new ParentField(
                     name: 'seo_pid',
-                    class: FieldInt::class,
-                    label: 'PID',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            isFk: true,
-                            fkTable: 'seo',
-                            fkKey: 'seo_id',
-                            fkLabel: 'title',
-                            fkIsPid: true,
-                        ),
-                    ],
+                    table: 'seo',
+                    key: 'seo_id',
+                    display: 'title',
                 ),
                 new FieldDefinition(
                     name: 'link',
