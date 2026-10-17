@@ -16,7 +16,7 @@ use Simflex\Core\Models\Migration as Migration;
 class Migrator extends ConsoleBase
 {
     /**
-     * Миграция, создающая таблицы migration и seeder. Не откатывается: без этих таблиц
+     * Миграция, создающая таблицу migration. Не откатывается: без неё
      * migrate/up не сможет запомнить выполненные миграции.
      */
     protected const BOOTSTRAP_MIGRATION = '00_migration';
@@ -208,12 +208,6 @@ class Migrator extends ConsoleBase
             }
 
             Log::notice('Migration {migration} is down', ['migration' => $migration->file]);
-        }
-
-        if (!Migration::findAdv()->where("`file` <> '" . static::BOOTSTRAP_MIGRATION . "'")->asArray()->all()) {
-            // данные сидов удалены вместе с таблицами, их можно накатывать заново
-            DB::query('DELETE FROM `seeder`');
-            Log::notice('Seeders history is cleared');
         }
     }
 
