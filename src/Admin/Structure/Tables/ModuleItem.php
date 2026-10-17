@@ -3,14 +3,16 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldModuleSelect;
-use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldText;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Data\ParamDefinition;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\ForeignKeyField;
+use Simflex\Admin\Structure\Presets\IdField;
+use Simflex\Admin\Structure\Presets\NppField;
 use Simflex\Admin\Structure\Table;
 
 class ModuleItem extends Table
@@ -20,43 +22,14 @@ class ModuleItem extends Table
         parent::__construct(
             orderBy: 'npp',
             fields: [
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '104',
-                            defaultValue: '1',
-                            filter: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new ActiveField(),
+                new IdField(
                     name: 'item_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            hidden: true,
-                            width: '80',
-                            filter: true,
-                            widthMob: '40',
-                        ),
-                    ],
+                    width: '80',
+                    filter: true,
+                    widthMob: '40',
                 ),
-                new FieldDefinition(
-                    name: 'npp',
-                    class: FieldNPP::class,
-                    label: '№ п/п',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '107',
-                            defaultValue: '0',
-                        ),
-                    ],
-                ),
+                new NppField(),
                 new FieldDefinition(
                     name: 'name',
                     class: FieldString::class,
@@ -91,21 +64,11 @@ class ModuleItem extends Table
                         ),
                     ],
                 ),
-                new FieldDefinition(
+                new ForeignKeyField(
                     name: 'menu_id',
-                    class: FieldInt::class,
                     label: 'Меню',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            width: '200',
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'menu',
-                            fkKey: 'menu_id',
-                            fkLabel: 'name',
-                        ),
-                    ],
+                    table: 'menu',
+                    width: '200',
                 ),
                 new FieldDefinition(
                     name: 'params',

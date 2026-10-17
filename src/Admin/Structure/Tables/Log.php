@@ -4,10 +4,10 @@ namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldDateTime;
 use Simflex\Admin\Fields\FieldEnum;
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 
 class Log extends Table
@@ -18,19 +18,7 @@ class Log extends Table
             orderBy: 'log_id',
             orderDesc: true,
             fields: [
-                new FieldDefinition(
-                    name: 'log_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '60',
-                        ),
-                    ],
-                ),
+                new IdField(name: 'log_id'),
                 new FieldDefinition(
                     name: 'datetime',
                     class: FieldDateTime::class,

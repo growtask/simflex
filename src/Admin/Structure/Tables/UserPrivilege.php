@@ -3,11 +3,11 @@
 namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Base\Privileges as PrivilegesDriver;
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\IdField;
 use Simflex\Admin\Structure\Table;
 
 /**
@@ -21,18 +21,7 @@ class UserPrivilege extends Table
         parent::__construct(
             class: PrivilegesDriver::class,
             fields: [
-                new FieldDefinition(
-                    name: 'privilege_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                        ),
-                    ],
-                ),
+                new IdField(name: 'privilege_id', width: 0),
                 new FieldDefinition(
                     name: 'name',
                     class: FieldPrivilegeSelect::class,
@@ -43,16 +32,7 @@ class UserPrivilege extends Table
                         ),
                     ],
                 ),
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            defaultValue: '1',
-                        ),
-                    ],
-                ),
+                new ActiveField(width: 0, filter: false),
             ],
             params: [
             ],

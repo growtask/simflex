@@ -4,11 +4,13 @@ namespace Simflex\Admin\Structure\Tables;
 
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldComponentSelect;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\ActiveField;
+use Simflex\Admin\Structure\Presets\IdField;
+use Simflex\Admin\Structure\Presets\NppField;
+use Simflex\Admin\Structure\Presets\ParentField;
 use Simflex\Admin\Structure\Table;
 
 class Menu extends Table
@@ -18,32 +20,12 @@ class Menu extends Table
         parent::__construct(
             orderBy: 'npp',
             fields: [
-                new FieldDefinition(
-                    name: 'active',
-                    class: FieldBool::class,
-                    label: 'Активно',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '104',
-                            defaultValue: '1',
-                            filter: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new ActiveField(),
+                new IdField(
                     name: 'menu_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '54',
-                            filter: true,
-                            widthMob: '40',
-                        ),
-                    ],
+                    width: '54',
+                    filter: true,
+                    widthMob: '40',
                 ),
                 new FieldDefinition(
                     name: 'hidden',
@@ -56,32 +38,12 @@ class Menu extends Table
                         ),
                     ],
                 ),
-                new FieldDefinition(
-                    name: 'npp',
-                    class: FieldNPP::class,
-                    label: '№ п/п',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '107',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
+                new NppField(),
+                new ParentField(
                     name: 'menu_pid',
-                    class: FieldInt::class,
-                    label: 'Родитель',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'menu',
-                            fkKey: 'menu_id',
-                            fkLabel: 'name',
-                            fkIsPid: true,
-                            fk: 'menu.menu_id.name',
-                        ),
-                    ],
+                    table: 'menu',
+                    key: 'menu_id',
+                    filter: true,
                 ),
                 new FieldDefinition(
                     name: 'component',

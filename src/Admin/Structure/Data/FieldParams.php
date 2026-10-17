@@ -31,7 +31,6 @@ readonly class FieldParams
         public string $large = '',
         public bool $editorMini = false,
         public bool $editorFull = false,
-        public string $fk = '',
     ) {
     }
 
@@ -64,7 +63,6 @@ readonly class FieldParams
             'large' => $this->large,
             'editor_mini' => $this->editorMini,
             'editor_full' => $this->editorFull,
-            'fk' => $this->fk,
         ];
     }
 }

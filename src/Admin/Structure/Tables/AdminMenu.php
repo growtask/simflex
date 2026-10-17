@@ -2,13 +2,14 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldNPP;
+use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Fields\FieldTableSelect;
-use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
+use Simflex\Admin\Structure\Presets\IdField;
+use Simflex\Admin\Structure\Presets\NppField;
+use Simflex\Admin\Structure\Presets\ParentField;
 use Simflex\Admin\Structure\Table;
 
 class AdminMenu extends Table
@@ -18,48 +19,18 @@ class AdminMenu extends Table
         parent::__construct(
             orderBy: 'npp',
             fields: [
-                new FieldDefinition(
+                new IdField(
                     name: 'menu_id',
-                    class: FieldInt::class,
-                    label: 'ID',
-                    params: [
-                        'main' => new FieldParams(
-                            pk: true,
-                            e2n: true,
-                            hidden: true,
-                            width: '54',
-                            filter: true,
-                        ),
-                    ],
+                    width: '54',
+                    filter: true,
                 ),
-                new FieldDefinition(
+                new ParentField(
                     name: 'menu_pid',
-                    class: FieldInt::class,
-                    label: 'Родитель',
-                    params: [
-                        'main' => new FieldParams(
-                            e2n: true,
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'admin_menu',
-                            fkKey: 'menu_id',
-                            fkLabel: 'name',
-                            fkIsPid: true,
-                            fk: 'admin_menu.menu_id.name',
-                        ),
-                    ],
+                    table: 'admin_menu',
+                    key: 'menu_id',
+                    filter: true,
                 ),
-                new FieldDefinition(
-                    name: 'npp',
-                    class: FieldNPP::class,
-                    label: '№ п/п',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '107',
-                            defaultValue: '0',
-                        ),
-                    ],
-                ),
+                new NppField(),
                 new FieldDefinition(
                     name: 'privilege',
                     class: FieldPrivilegeSelect::class,
