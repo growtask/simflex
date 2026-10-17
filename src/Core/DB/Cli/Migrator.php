@@ -25,8 +25,10 @@ class Migrator extends ConsoleBase
 
     public function __construct()
     {
-        // populate migration files
-        foreach (scandir('database/migrations') as $file) {
+        // populate migration files: numbered, in natural order (9_x before 10_x)
+        $files = scandir('database/migrations');
+        natsort($files);
+        foreach ($files as $file) {
             $path = pathinfo($file);
             if (($path['extension'] ?? '') == 'php') {
                 $this->migrationFiles[$path['filename']] = [
@@ -229,7 +231,11 @@ class Migrator extends ConsoleBase
     #[Command('Create new migration')]
     public function create(#[Help('Migration name')] string $name): void
     {
-        $fileName = date('Y_m_d') . '_' . $name . '.php';
+        $last = 0;
+        foreach ($this->migrationFiles as $file) {
+            $last = max($last, (int)$file['name']);
+        }
+        $fileName = sprintf('%02d', $last + 1) . '_' . $name . '.php';
         copy(__DIR__ . '/../migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
 
         Log::notice('Created new migration {name}', ['name' => $fileName]);
