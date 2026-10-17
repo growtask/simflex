@@ -155,8 +155,6 @@ class Core
         foreach ($rows as $row) {
             self::$siteParams[$row['alias']] = $row['value'];
         }
-
-        DB::bind(['SITE_PATH' => self::$path]);
     }
 
     public static function ajax(): bool

@@ -46,7 +46,7 @@ abstract class ModuleBase extends ExtensionBase
     final public function execute(): string
     {
         $content = $this->content();
-        if (Core::ajax() || $content === '') {
+        if (Container::getRequest()->isAjax() || $content === '') {
             return $content;
         }
 

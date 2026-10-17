@@ -458,22 +458,11 @@ class Time
                 return $res_time;
             }
             if ($to == 'normal') {
-                return self::sub_time($res_time, $show_sec);
+                return self::secondsToTime($res_time, $show_sec);
             }
         } else {
             return '-';
         }
-    }
-
-    /**
-     * вход: 129; выход 02:09
-     * @param int $res_time
-     * @param boolean $show_sec - выводить секунды или нет
-     * @deprecated use secondsToTime
-     */
-    public static function sub_time($res_time, bool $show_sec = true): string
-    {
-        return static::secondsToTime($res_time, $show_sec);
     }
 
     /**
@@ -631,7 +620,7 @@ class Time
         $pagetime = round(microtime(1) - self::$timestamp, $precision);
         $pagetime = number_format($pagetime, $precision, '.', '');
         if ($pagetime > 60) {
-            $pagetime = self::sub_time($pagetime);
+            $pagetime = self::secondsToTime($pagetime);
         }
         return $pagetime;
     }

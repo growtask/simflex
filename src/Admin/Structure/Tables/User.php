@@ -53,26 +53,6 @@ class User extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'hash',
-                    class: FieldString::class,
-                    label: 'Хеш',
-                    params: [
-                        'main' => new FieldParams(
-                            hidden: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'hash_admin',
-                    class: FieldString::class,
-                    label: 'Admin. Хеш',
-                    params: [
-                        'main' => new FieldParams(
-                            hidden: true,
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
                     name: 'email',
                     class: FieldString::class,
                     label: 'Email',

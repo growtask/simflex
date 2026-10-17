@@ -16,8 +16,6 @@ use Simflex\Core\Privilege;
  * @property bool active
  * @property string login
  * @property string password
- * @property string hash
- * @property string hash_admin
  * @property string email
  * @property string name
  * @property string code
