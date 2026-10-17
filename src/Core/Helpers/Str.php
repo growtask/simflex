@@ -4,18 +4,27 @@ namespace Simflex\Core\Helpers;
 
 class Str
 {
+    /**
+     * Russian letters in the common URL style (я → ya, ж → zh, щ → sch), ICU's ISO 9 gives â, ž, ŝ instead
+     */
+    protected const CYRILLIC = [
+        'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh',
+        'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o',
+        'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'ts',
+        'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '', 'ы' => 'y', 'ь' => '', 'э' => 'e', 'ю' => 'yu',
+        'я' => 'ya',
+    ];
+
+    /**
+     * URL slug: "Вторая запись" → "vtoraya-zapis"
+     */
     public static function translite($str): string
     {
-        $tl = \Transliterator::create('Any-Latin; Latin-ASCII; Lower()');
-        return str_replace(
-            ' ',
-            '-',
-            preg_replace(
-                '/[^A-Za-z0-9\\- ]/',
-                '',
-                $tl->transliterate($str)
-            )
-        );
+        $str = strtr(mb_strtolower((string)$str), static::CYRILLIC);
+        // other scripts and the diacritics
+        $str = \Transliterator::create('Any-Latin; Latin-ASCII; Lower()')->transliterate($str);
+        $str = preg_replace('/[^a-z0-9\\- ]/', '', $str);
+        return trim(preg_replace('/[ -]+/', '-', $str), '-');
     }
 
     public static function sizeToStr(string $path): string
