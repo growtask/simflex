@@ -15,15 +15,15 @@ use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Structure\Repository as StructureRepository;
 use Simflex\Admin\Plugins\Alert\Alert;
 use Simflex\Admin\Plugins\Pagecontrol\Pagecontrol;
+use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Core\File;
 use Simflex\Core\Image;
 use Simflex\Core\Privilege;
-use Simflex\Core\Service;
+use Simflex\Core\Helpers\Tree;
 use Simflex\Core\Time;
-use Simflex\Core\User;
 use Simflex\Core\View;
 
 class Base
@@ -108,11 +108,11 @@ class Base
         $this->initTableName();
         $this->initTableData();
 
-        $this->canAdd = !empty($this->tableData['privilege_add']) ? User::ican($this->tableData['privilege_add']) : true;
+        $this->canAdd = !empty($this->tableData['privilege_add']) ? (Container::getUser()?->ican($this->tableData['privilege_add']) ?? false) : true;
         $this->canCopy = $this->canAdd;
-        $this->canEdit = !empty($this->tableData['privilege_edit']) ? User::ican($this->tableData['privilege_edit']) : true;
+        $this->canEdit = !empty($this->tableData['privilege_edit']) ? (Container::getUser()?->ican($this->tableData['privilege_edit']) ?? false) : true;
         $this->canEditGroup = $this->canEdit;
-        $this->canDelete = !empty($this->tableData['privilege_delete']) ? User::ican($this->tableData['privilege_delete']) : true;
+        $this->canDelete = !empty($this->tableData['privilege_delete']) ? (Container::getUser()?->ican($this->tableData['privilege_delete']) ?? false) : true;
     }
 
     protected function initTableName(): void
@@ -250,7 +250,7 @@ class Base
         }
         $html = '';
         foreach ($rows as $row) {
-            if (!$row['privilege'] || User::ican($row['privilege'])) {
+            if (!$row['privilege'] || Container::getUser()?->ican($row['privilege'])) {
                 $class = $row['class'];
                 $widget = new $class($row);
                 $html .= $widget->execute();
@@ -512,7 +512,7 @@ class Base
                 $tree[(int)$row[$this->pid->name]][(int)$row[$this->pk->name]] = $row;
             }
             $id_start = isset($_SESSION[$this->table]['filter'][$this->pid->name]) ? (int)$_SESSION[$this->table]['filter'][$this->pid->name] : 0;
-            $list = Service::tree2list($tree, $id_start);
+            $list = Tree::toList($tree, $id_start);
             foreach ($list as $l) {
                 if ($l['tree_level']) {
                     $l[$tree_name] = '<div style="padding-left:' . (25 * $l['tree_level']) . 'px">' . $l[$tree_name] . '</div>';
@@ -663,16 +663,16 @@ class Base
             }
 
             /* SYSTEM FILTER */
-            if ($field->name == 'privilege' && !User::ican(Privilege::DEV)) {
-                $privilegeNames = "'" . join("','", DB::escape(User::privilegeNames())) . "'";
+            if ($field->name == 'privilege' && !Container::getUser()?->ican(Privilege::DEV)) {
+                $privilegeNames = "'" . join("','", DB::escape(array_values(Container::getUser()?->getPrivileges() ?? []) ?: [''])) . "'";
                 if ($field->isnull) {
                     $this->whereSys[] = "($this->table.privilege IN($privilegeNames) OR $this->table.privilege IS NULL)";
                 } else {
                     $this->whereSys[] = "$this->table.privilege IN($privilegeNames)";
                 }
             }
-            if ($field->name == 'role_id' && !User::ican(Privilege::DEV)) {
-                $privilegeNames = "'" . join("','", DB::escape(User::privilegeNames())) . "'";
+            if ($field->name == 'role_id' && !Container::getUser()?->ican(Privilege::DEV)) {
+                $privilegeNames = "'" . join("','", DB::escape(array_values(Container::getUser()?->getPrivileges() ?? []) ?: [''])) . "'";
                 $this->whereSys[] = "$this->table.role_id IN(SELECT role_id FROM user_role WHERE privilege IN($privilegeNames))";
             }
         }

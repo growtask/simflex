@@ -33,13 +33,6 @@ class UI
         static::css('/theme/ui/fileinput/bootstrap-fileinput.css', 5);
     }
 
-    public static function treeView(): void
-    {
-        static::js('/theme/ui/treeview/jstree.min.js', 5);
-        static::js('/theme/ui/treeview/ui-tree.js', 5);
-        static::css('/theme/ui/treeview/style.min.css', 5);
-    }
-
     protected static function js(string $file, int $idx): void
     {
         Container::getPage()::js(Core::webVendorPath() . $file, $idx);

@@ -43,20 +43,6 @@ class DB
     }
 
     /**
-     * @see Adapter::bind()
-     * @deprecated Use $params in query()/assoc()/result() instead
-     */
-    public static function bind($params): bool
-    {
-        if (is_array($params)) {
-            static::db()->bind($params);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * @see Adapter::query()
      */
     public static function query(string $q, array $params = []): mixed

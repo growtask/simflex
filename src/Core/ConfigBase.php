@@ -2,7 +2,6 @@
 
 namespace Simflex\Core;
 
-use JetBrains\PhpStorm\Deprecated;
 use Simflex\Core\DB\MySQL;
 
 /**
@@ -72,7 +71,6 @@ abstract class ConfigBase
     /**
      * @var string Default theme to load
      */
-    #[Deprecated]
     public string $theme = 'default';
 
     /**

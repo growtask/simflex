@@ -9,7 +9,6 @@ use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\JavascriptRenderer;
 use Simflex\Core\Assets;
-use Simflex\Core\Container;
 use Simflex\Core\DI\Service;
 
 class DebugBar implements Service
@@ -23,11 +22,6 @@ class DebugBar implements Service
 
     public function __construct()
     {
-        // deprecated
-        if (!Container::getConfig()->devMode) {
-            return;
-        }
-
         $this->debugBar = new \DebugBar\DebugBar();
         $this->debugBar->addCollector(new MessagesCollector());
         $this->debugBar->addCollector(new TimeDataCollector());

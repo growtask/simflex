@@ -2,7 +2,6 @@
 
 namespace Simflex\Core\Wrapper;
 
-use Simflex\Core\Container;
 use Simflex\Core\DI\Service;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -18,11 +17,6 @@ class Whoops implements Service
 
     public function __construct()
     {
-        // deprecated
-        if (!Container::getConfig()->devMode) {
-            return;
-        }
-
         $this->whoops = new Run();
         $this->whoops->pushHandler(new PrettyPageHandler());
         $this->whoops->register();

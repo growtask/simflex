@@ -27,13 +27,9 @@ class AQ
     protected string $prefix = '';
     protected array $binds = [];
 
-    /** @var string|int|null {column name} or {column index in query result} for asScalar functionality */
-    protected string|int|null $scalarColumn = null;
-
     public function asArray(bool $asArray = true): static
     {
         $this->asArray = $asArray;
-        $this->scalarColumn = null;
         return $this;
     }
 
@@ -153,32 +149,6 @@ class AQ
     }
 
     /**
-     * @param null|string $column If null query will return primary key
-     * @throws \Exception
-     * @deprecated use fetchScalar
-     */
-    public function selectColumn(?string $column = null): static
-    {
-        if ($column === null) {
-            if (empty($this->modelClass)) {
-                throw new \Exception('Model class not specified');
-            }
-            $column = $this->modelClass::getPrimaryKeyName();
-        }
-        return $this->select($column)->asScalar($column);
-    }
-
-    /**
-     * @deprecated use fetchScalar
-     */
-    public function asScalar(int|string $column = 0): static
-    {
-        $this->asArray = false;
-        $this->scalarColumn = $column;
-        return $this;
-    }
-
-    /**
      * @throws \Exception
      */
     public function fetchScalar(int|string $column = 0): string|int|float|null
@@ -186,10 +156,38 @@ class AQ
         $q = $this->build();
         $r = DB::query($q, $this->binds);
         $row = DB::fetch($r);
-        if ($row && is_int($column)) {
+        if (!$row) {
+            return null;
+        }
+        return static::columnValue($row, $column);
+    }
+
+    /**
+     * Values of one column of all the rows
+     *
+     * @param int|string $column Column name or index in the selected fields
+     * @return list<string|int|float|null>
+     * @throws \Exception
+     */
+    public function fetchColumn(int|string $column = 0): array
+    {
+        $r = DB::query($this->build(), $this->binds);
+        $result = [];
+        while ($row = DB::fetch($r)) {
+            $result[] = static::columnValue($row, $column);
+        }
+        return $result;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected static function columnValue(array $row, int|string $column): string|int|float|null
+    {
+        if (is_int($column)) {
             $row = array_values($row);
         }
-        if ($row && !array_key_exists($column, $row)) {
+        if (!array_key_exists($column, $row)) {
             throw new \Exception("Column $column does not exist in fetched row");
         }
         return $row[$column];
@@ -222,7 +220,7 @@ class AQ
      */
     public function all(string|array|bool|null $assocKey = null): array
     {
-        if ((is_bool($assocKey) || !$this->asArray && !$this->scalarColumn) && empty($this->modelClass)) {
+        if ((is_bool($assocKey) || !$this->asArray) && empty($this->modelClass)) {
             throw new \Exception('Model class not specified');
         }
         $q = $this->build();
@@ -233,12 +231,6 @@ class AQ
             $firstIteration = $counter == 0;
             if ($this->asArray) {
                 $payload = $row;
-            } elseif ($this->scalarColumn !== null) {
-                if (is_int($this->scalarColumn)) {
-                    $payload = array_values($row)[$this->scalarColumn];
-                } else {
-                    $payload = $row[$this->scalarColumn];
-                }
             } else {
                 $payload = (new $this->modelClass())->fill($row);
             }

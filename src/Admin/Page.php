@@ -12,7 +12,6 @@ use Simflex\Core\ModuleType;
 use Simflex\Core\Page as CorePage;
 use Simflex\Core\Privilege;
 use Simflex\Core\Request;
-use Simflex\Core\User;
 
 class Page
 {
@@ -30,7 +29,7 @@ class Page
     public static function init(): void
     {
 
-        if (!User::ican(Privilege::ADMIN)) {
+        if (!Container::getUser()?->ican(Privilege::ADMIN)) {
             return;
         }
 
@@ -171,7 +170,7 @@ class Page
     }
 
     /**
-     * @deprecated The Notify subsystem is not used by the admin panel and will be removed.
+     * @incomplete The Notify subsystem is not wired into the admin panel yet; it will be finished and used later.
      */
     public static function notifications(): string
     {

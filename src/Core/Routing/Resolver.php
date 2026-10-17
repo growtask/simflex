@@ -38,7 +38,7 @@ class Resolver
             }
         }
 
-        if ($resolved = $this->resolveDeprecated()) {
+        if ($resolved = $this->resolveByMenu()) {
             return static::makeRoute($resolved['class'], $resolved['path']);
         }
         if ($routeDefault = $routes['/'] ?? null) {
@@ -56,8 +56,11 @@ class Resolver
         return $this;
     }
 
+    /**
+     * Routes by the menu table: the deepest menu item with a component matching the request path
+     */
     #[ArrayShape(['class' => 'string', 'path' => 'string'])]
-    protected function resolveDeprecated(): ?array
+    protected function resolveByMenu(): ?array
     {
         if (empty($this->menuByLink)) {
             return null;

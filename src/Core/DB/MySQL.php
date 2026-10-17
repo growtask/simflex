@@ -37,17 +37,6 @@ class MySQL implements Adapter
         return true;
     }
 
-    public function bind(array $params): void
-    {
-        $sql = [];
-        foreach ($params as $k => $v) {
-            $sql[] = "@$k=" . (is_numeric($v) ? $v : "'" . $this->escape($v) . "'");
-        }
-
-        $query = $this->db->prepare('SET ' . implode(',', $sql));
-        $query->execute();
-    }
-
     public function query(string $q, array $params = []): PDOStatement|false
     {
         $_ENV['lastq'] = $q;
