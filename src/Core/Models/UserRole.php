@@ -9,9 +9,8 @@ use Simflex\Core\ModelBase;
  * Class UserRole
  *
  * @property int $role_id
- * @property int $priv_id
+ * @property string $privilege Privilege required to see and assign the role
  * @property bool $active
- * @property int $npp
  * @property string $alias
  * @property string $name
  */
@@ -32,13 +31,14 @@ class UserRole extends ModelBase
     }
 
     /**
+     * @param string $privilege Privilege name, see \Simflex\Core\Privilege
      * @throws Exception
      */
-    public function addPriv(UserPriv $priv): void
+    public function addPrivilege(string $privilege): void
     {
-        UserRolePriv::insertStatic([
+        UserRolePrivilege::insertStatic([
             'role_id' => $this->role_id,
-            'priv_id' => $priv->priv_id,
+            'privilege' => $privilege,
         ]);
     }
 }

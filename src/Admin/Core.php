@@ -6,6 +6,7 @@ use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
+use Simflex\Core\Privilege;
 
 class Core
 {
@@ -98,7 +99,8 @@ class Core
         // сегменты пути относительно корня админки: /admin/content/ => ['content', '']
         self::$uri = explode('/', ltrim(substr(self::$path, strlen(static::root())), '/'));
 
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        // ajax: the response is the section content only, without the admin panel layout
+        if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
             self::$ajax = true;
             self::$isAjax = true;
         }
@@ -115,15 +117,15 @@ class Core
         }
 
         $user = Container::getUser();
-        if (!$user || !$user->ican(Auth::LOGIN_PRIV)) {
+        if (!$user || !$user->ican(Privilege::ADMIN)) {
             return;
         }
 
-        $privIds = array_map('intval', $user->getPrivileges()['ids'] ?? []) ?: [0];
+        $privilegeNames = "'" . join("','", DB::escape(array_values($user->getPrivileges()) ?: [''])) . "'";
         $q = '
             SELECT menu_id, menu_pid, link, name, model, icon, hidden
             FROM admin_menu
-            WHERE priv_id IN(' . join(',', $privIds) . ')
+            WHERE privilege IN(' . $privilegeNames . ')
             ORDER BY npp, menu_id
         ';
         $rows = DB::assoc($q) ?: [];
@@ -201,7 +203,7 @@ class Core
     public static function execute(): void
     {
         $user = Container::getUser();
-        if ($user && !$user->ican(Auth::LOGIN_PRIV)) {
+        if ($user && !$user->ican(Privilege::ADMIN)) {
             http_response_code(403);
             include 'theme/tpl/denied.tpl';
         } elseif ($user) {

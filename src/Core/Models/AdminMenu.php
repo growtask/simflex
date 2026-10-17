@@ -7,7 +7,7 @@ use Simflex\Core\ModelBase;
 /**
  * @property int $menu_id
  * @property int $menu_pid
- * @property int $priv_id
+ * @property string $privilege Privilege name, see \Simflex\Core\Privilege
  * @property int $npp
  * @property string $name
  * @property string $link

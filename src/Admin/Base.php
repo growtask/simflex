@@ -20,6 +20,7 @@ use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Core\File;
 use Simflex\Core\Image;
+use Simflex\Core\Privilege;
 use Simflex\Core\Service;
 use Simflex\Core\Time;
 use Simflex\Core\User;
@@ -107,11 +108,11 @@ class Base
         $this->initTableName();
         $this->initTableData();
 
-        $this->canAdd = !empty($this->tableData['priv_add']) ? User::ican((int)$this->tableData['priv_add']) : true;
+        $this->canAdd = !empty($this->tableData['privilege_add']) ? User::ican($this->tableData['privilege_add']) : true;
         $this->canCopy = $this->canAdd;
-        $this->canEdit = !empty($this->tableData['priv_edit']) ? User::ican((int)$this->tableData['priv_edit']) : true;
+        $this->canEdit = !empty($this->tableData['privilege_edit']) ? User::ican($this->tableData['privilege_edit']) : true;
         $this->canEditGroup = $this->canEdit;
-        $this->canDelete = !empty($this->tableData['priv_delete']) ? User::ican((int)$this->tableData['priv_delete']) : true;
+        $this->canDelete = !empty($this->tableData['privilege_delete']) ? User::ican($this->tableData['privilege_delete']) : true;
     }
 
     protected function initTableName(): void
@@ -225,7 +226,8 @@ class Base
                     }
                     exit();
                 }
-                return '';
+                // not saved: the form again, with the errors
+                return $this->form();
             }
 
             $method = isset($this->actionHandlers[$action]) ? $this->actionHandlers[$action]['method'] : $action;
@@ -248,7 +250,7 @@ class Base
         }
         $html = '';
         foreach ($rows as $row) {
-            if (!$row['priv_id'] || User::ican((int)$row['priv_id'])) {
+            if (!$row['privilege'] || User::ican($row['privilege'])) {
                 $class = $row['class'];
                 $widget = new $class($row);
                 $html .= $widget->execute();
@@ -661,17 +663,17 @@ class Base
             }
 
             /* SYSTEM FILTER */
-            if ($field->name == 'priv_id' && !User::ican('dev')) {
+            if ($field->name == 'privilege' && !User::ican(Privilege::DEV)) {
+                $privilegeNames = "'" . join("','", DB::escape(User::privilegeNames())) . "'";
                 if ($field->isnull) {
-                    $this->whereSys[] = '(' . $this->table . '.priv_id IN(' . join(',', User::privIds())
-                        . ') OR ' . $this->table . '.priv_id IS NULL)';
+                    $this->whereSys[] = "($this->table.privilege IN($privilegeNames) OR $this->table.privilege IS NULL)";
                 } else {
-                    $this->whereSys[] = '' . $this->table . '.priv_id IN(' . join(',', User::privIds()) . ')';
+                    $this->whereSys[] = "$this->table.privilege IN($privilegeNames)";
                 }
             }
-            if ($field->name == 'role_id' && !User::ican('dev')) {
-                $this->whereSys[] = '' . $this->table
-                    . '.role_id IN(SELECT role_id FROM user_role WHERE priv_id IN(' . join(',', User::privIds()) . '))';
+            if ($field->name == 'role_id' && !User::ican(Privilege::DEV)) {
+                $privilegeNames = "'" . join("','", DB::escape(User::privilegeNames())) . "'";
+                $this->whereSys[] = "$this->table.role_id IN(SELECT role_id FROM user_role WHERE privilege IN($privilegeNames))";
             }
         }
     }
@@ -1093,6 +1095,7 @@ class Base
             return $this->saveGroup();
         }
 
+        $pkValue = null;
         if ($this->isValid()) {
             foreach ($this->fields as $index => $field) {
                 if ($field instanceof FieldVirtual) {
@@ -1188,14 +1191,12 @@ class Base
             }
             if (count($this->errors)) {
                 Alert::error('Ошибка при сохранении записи' . ($pkValue ? " №$pkValue" : ''));
-                $this->form();
             } else {
                 Alert::success('Запись №' . $pkValue . ' успешно сохранена!');
             }
-        } else {
-            $this->form();
         }
 
+        // on errors content() shows the form again, with the errors and the posted values
         return count($this->errors) ? false : $pkValue;
     }
 
