@@ -6,16 +6,16 @@ use Exception;
 use Simflex\Core\ModelBase;
 
 /**
- * UserRolePriv model
+ * UserRolePrivilege model
  *
  * @property int $id
  * @property int $role_id
- * @property int $priv_id
+ * @property string $privilege Privilege name, see \Simflex\Core\Privilege
  */
-class UserRolePriv extends ModelBase
+class UserRolePrivilege extends ModelBase
 {
     protected static string $primaryKeyName = 'id';
-    protected static string $table = 'user_role_priv';
+    protected static string $table = 'user_role_privilege';
 
     /**
      * @throws Exception
@@ -23,13 +23,5 @@ class UserRolePriv extends ModelBase
     public function offsetGetRole(): ?UserRole
     {
         return UserRole::findOne(['role_id' => $this->role_id]);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function offsetGetPriv(): ?UserPriv
-    {
-        return UserPriv::findOne(['priv_id' => $this->priv_id]);
     }
 }

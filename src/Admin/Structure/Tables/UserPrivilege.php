@@ -2,19 +2,27 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Base\Privileges as PrivilegesDriver;
+use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldInt;
+use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
 
-class UserRolePriv extends Table
+/**
+ * Privileges are declared in code (\Simflex\Core\Privilege), the optional table keeps the activity switched
+ * in the admin panel. The section has its own handler, \Simflex\Admin\Base\Privileges
+ */
+class UserPrivilege extends Table
 {
     public function __construct()
     {
         parent::__construct(
+            class: PrivilegesDriver::class,
             fields: [
                 new FieldDefinition(
-                    name: 'id',
+                    name: 'privilege_id',
                     class: FieldInt::class,
                     label: 'ID',
                     params: [
@@ -22,40 +30,26 @@ class UserRolePriv extends Table
                             pk: true,
                             e2n: true,
                             hidden: true,
-                            width: '60',
                         ),
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'role_id',
-                    class: FieldInt::class,
-                    label: 'Роль',
+                    name: 'name',
+                    class: FieldPrivilegeSelect::class,
+                    label: 'Название',
                     params: [
                         'main' => new FieldParams(
-                            width: '1',
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'user_role',
-                            fkKey: 'role_id',
-                            fkLabel: 'name',
-                            fk: 'user_role.role_id.name',
-                        ),
-                    ],
-                ),
-                new FieldDefinition(
-                    name: 'priv_id',
-                    class: FieldInt::class,
-                    label: 'Привилегия',
-                    params: [
-                        'main' => new FieldParams(
-                            width: '1',
                             required: true,
-                            filter: true,
-                            isFk: true,
-                            fkTable: 'user_priv',
-                            fkKey: 'priv_id',
-                            fkLabel: 'name',
-                            fk: 'user_priv.priv_id.name',
+                        ),
+                    ],
+                ),
+                new FieldDefinition(
+                    name: 'active',
+                    class: FieldBool::class,
+                    label: 'Активно',
+                    params: [
+                        'main' => new FieldParams(
+                            defaultValue: '1',
                         ),
                     ],
                 ),

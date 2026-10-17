@@ -56,22 +56,17 @@ class User
         self::$roleName = '';
     }
 
-    public static function privIds(): array
+    public static function privilegeNames(): array
     {
-        return self::$instance->privIds();
-    }
-
-    public static function privNames(): array
-    {
-        return self::$instance->privNames();
+        return self::$instance->privilegeNames();
     }
 
     /**
-     * @param string|int|bool $priv - можно указать название привилегии, можно ее ID. Если false, то вернет все привилегии
+     * @param string|bool $privilege - название привилегии, см. \Simflex\Core\Privilege. Если false, то вернет все привилегии
      */
-    public static function ican(string|int|bool $priv = false): array|bool
+    public static function ican(string|bool $privilege = false): array|bool
     {
-        return self::$instance->ican($priv);
+        return self::$instance->ican($privilege);
     }
 
     /**

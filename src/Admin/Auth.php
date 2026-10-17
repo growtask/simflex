@@ -12,11 +12,11 @@ use Simflex\Auth\Models\UserAuth;
 use Simflex\Auth\SessionStorage;
 use Simflex\Core\DB;
 use Simflex\Core\Models\User;
+use Simflex\Core\Privilege;
 
 class Auth
 {
     public const REMEMBER_ME_INTERVAL = '1 WEEK';
-    public const LOGIN_PRIV = 'simplex_admin';
 
     public static function login($login, $password, bool $isRemember, string $redirect): void
     {
@@ -38,7 +38,7 @@ class Auth
             $row = DB::result($q, '', ['login' => strtolower($login)]);
             if ($row && md5($password) === $row['password']) {
                 $user = (new User())->fill($row);
-                if ($user->ican(static::LOGIN_PRIV)) {
+                if ($user->ican(Privilege::ADMIN)) {
                     SessionStorage::set($row['user_id']);
                     Bootstrap::authByUser($user);
                     if ($isRemember) {

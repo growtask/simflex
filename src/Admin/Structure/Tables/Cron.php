@@ -10,6 +10,7 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
+use Simflex\Core\Privilege;
 
 /**
  * Jobs are declared in provider/cron.php, the table keeps only their activity and schedule
@@ -20,7 +21,7 @@ class Cron extends Table
     {
         parent::__construct(
             orderBy: 'job',
-            privEdit: 1,
+            privilegeEdit: Privilege::DEV,
             class: CronDriver::class,
             fields: [
                 new FieldDefinition(

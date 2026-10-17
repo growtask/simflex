@@ -17,10 +17,10 @@ use Simflex\Admin\Structure\Tables\ModuleItem;
 use Simflex\Admin\Structure\Tables\Seo;
 use Simflex\Admin\Structure\Tables\Settings;
 use Simflex\Admin\Structure\Tables\User;
-use Simflex\Admin\Structure\Tables\UserPriv;
-use Simflex\Admin\Structure\Tables\UserPrivPersonal;
+use Simflex\Admin\Structure\Tables\UserPrivilege;
+use Simflex\Admin\Structure\Tables\UserPrivilegePersonal;
 use Simflex\Admin\Structure\Tables\UserRole;
-use Simflex\Admin\Structure\Tables\UserRolePriv;
+use Simflex\Admin\Structure\Tables\UserRolePrivilege;
 
 return [
     'admin_menu' => AdminMenu::class,
@@ -34,8 +34,8 @@ return [
     'seo' => Seo::class,
     'settings' => Settings::class,
     'user' => User::class,
-    'user_priv' => UserPriv::class,
-    'user_priv_personal' => UserPrivPersonal::class,
+    'user_privilege' => UserPrivilege::class,
+    'user_privilege_personal' => UserPrivilegePersonal::class,
     'user_role' => UserRole::class,
-    'user_role_priv' => UserRolePriv::class,
+    'user_role_privilege' => UserRolePrivilege::class,
 ];

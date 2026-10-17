@@ -7,15 +7,16 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Structure\Data\FieldDefinition;
 use Simflex\Admin\Structure\Data\FieldParams;
 use Simflex\Admin\Structure\Table;
+use Simflex\Core\Privilege;
 
 class ContentTemplate extends Table
 {
     public function __construct()
     {
         parent::__construct(
-            privAdd: 1,
-            privEdit: 1,
-            privDelete: 1,
+            privilegeAdd: Privilege::DEV,
+            privilegeEdit: Privilege::DEV,
+            privilegeDelete: Privilege::DEV,
             fields: [
                 new FieldDefinition(
                     name: 'template_id',
@@ -36,7 +37,7 @@ class ContentTemplate extends Table
                     label: 'Название',
                     params: [
                         'main' => new FieldParams(
-                            width: '1',
+                            width: '400',
                         ),
                     ],
                 ),
