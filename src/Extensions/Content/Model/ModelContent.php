@@ -3,7 +3,6 @@
 namespace Simflex\Extensions\Content\Model;
 
 use Simflex\Core\Buffer;
-use Simflex\Core\DB\AQ;
 use Simflex\Core\ModelBase;
 
 /**
@@ -19,24 +18,13 @@ use Simflex\Core\ModelBase;
  * @property string $params
  * @property string $file
  * @property string $photo
- * @property int $template_id
+ * @property string|null $template Page template key, see \Simflex\Extensions\Content\ContentTemplates
  * @property int $npp
- * @property null|string $template_path
  */
 class ModelContent extends ModelBase
 {
     protected static string $table = 'content';
     protected static string $primaryKeyName = 'content_id';
-
-    public static function aqModifyWithTemplate(AQ $AQ): void
-    {
-        $AQ->leftJoin(ModelContentTemplate::class, 'template_id');
-    }
-
-    public static function aqModifiersDefault(): array
-    {
-        return ['withTemplate'];
-    }
 
     public function loadFrom(string $path): ?ModelContent
     {
