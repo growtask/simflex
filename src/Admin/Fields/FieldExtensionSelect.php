@@ -3,29 +3,33 @@
 namespace Simflex\Admin\Fields;
 
 /**
- * Base for the fields choosing a class from the registry in code, see \Simflex\Core\ExtensionRegistry
+ * Base for the fields choosing a value from a registry in code (classes, privileges, tables...),
+ * see \Simflex\Core\ExtensionRegistry. Rendered as the same custom dropdown as a foreign key
  */
 abstract class FieldExtensionSelect extends Field
 {
     /**
-     * @return array<string, string> class => name
+     * @return array<string, string> value => name
      */
     abstract protected function options(): array;
 
     public function input($value): string
     {
-        $value = (string)($this->value ?: $value);
-        $options = [['', '', false]];
-        foreach ($this->options() as $class => $name) {
-            $options[] = [$class, $name, $class === ltrim($value, '\\')];
+        $value = ltrim((string)($this->value ?: $value), '\\');
+        $options = $this->options();
+        $items = [['', '—']];
+        foreach ($options as $optionValue => $name) {
+            $items[] = [$optionValue, $name];
         }
-        return $this->render('select', [
+
+        return $this->dropdown([
             'name' => $this->inputName(),
+            'value' => $value,
             'onchange' => $this->onchange,
-            'class' => 'form-control__input',
-            'multiple' => false,
-            'wrap' => false,
-            'options' => $options,
+            'readonly' => $this->readonly,
+            'disabled' => $this->readonly,
+            'current' => $options[$value] ?? '—',
+            'items' => $items,
         ]);
     }
 
@@ -35,17 +39,17 @@ abstract class FieldExtensionSelect extends Field
             return '';
         }
 
-        $options = [['', $this->label, false]];
-        foreach ($this->options() as $class => $name) {
-            $options[] = [$class, $name, $class === $value];
+        $options = $this->options();
+        $items = [['', $this->label]];
+        foreach ($options as $optionValue => $name) {
+            $items[] = [$optionValue, $name];
         }
-        return $this->render('select', [
+
+        return $this->dropdown([
             'name' => 'filter[' . $this->name . ']',
-            'onchange' => null,
-            'class' => 'form-control__input',
-            'multiple' => false,
-            'wrap' => true,
-            'options' => $options,
+            'value' => (string)$value,
+            'current' => $options[$value] ?? $this->label,
+            'items' => $items,
         ]);
     }
 
@@ -56,8 +60,8 @@ abstract class FieldExtensionSelect extends Field
 
     public function showDetail($row): ?string
     {
-        $class = ltrim((string)($row[$this->name] ?? ''), '\\');
-        return htmlspecialchars($this->options()[$class] ?? $class);
+        $value = ltrim((string)($row[$this->name] ?? ''), '\\');
+        return htmlspecialchars($this->options()[$value] ?? $value);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed

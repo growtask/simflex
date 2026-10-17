@@ -2,6 +2,7 @@
 
 namespace Simflex\Admin\Structure\Tables;
 
+use Simflex\Admin\Fields\FieldContentTemplateSelect;
 use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldDate;
@@ -51,18 +52,15 @@ class Content extends Table
                     ],
                 ),
                 new FieldDefinition(
-                    name: 'template_id',
-                    class: FieldInt::class,
+                    name: 'template',
+                    class: FieldContentTemplateSelect::class,
                     label: 'Шаблон',
+                    help: 'Шаблоны страниц объявляются в provider/templates.php',
                     params: [
                         'main' => new FieldParams(
                             e2n: true,
                             width: '176',
                             filter: true,
-                            isFk: true,
-                            fkTable: 'content_template',
-                            fkKey: 'template_id',
-                            fkLabel: 'template_name',
                         ),
                     ],
                 ),

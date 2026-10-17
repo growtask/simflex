@@ -86,17 +86,12 @@ class AdminContent extends Base
         $contentId = (int)($_REQUEST[$this->pk->name] ?? 0);
         $params = parent::tableParamsLoad();
 
-        $q = "
-            SELECT ctp_id + 1000000 as param_id, param_pid, position as pos, t1.group_name as group_name,
-                   t1.name, t1.label, t1.params, t1.field_type, '$this->table' `table`, default_value, t1.npp
-            FROM content_template_param t1
-            JOIN content c USING(template_id)
-            WHERE c.content_id = $contentId
-            ORDER BY npp
-        ";
-        $templateParams = StructureRepository::hydrateFieldClasses(DB::assoc($q) ?: []);
-        foreach ($templateParams as $param) {
-            $params[(string)$param['param_pid']][(string)$param['param_id']] = $param;
+        // the fields of the page's template, declared in code (provider/templates.php)
+        $template = $contentId ? DB::result('SELECT template FROM content WHERE content_id = ?', 'template', [$contentId]) : null;
+        foreach (StructureRepository::templateParams((string)$template, $this->table) as $pid => $rows) {
+            foreach ($rows as $id => $row) {
+                $params[(string)$pid][(string)$id] = $row;
+            }
         }
 
         return $params;

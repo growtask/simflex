@@ -45,7 +45,7 @@ class FieldCategorySelect extends Field
     {
         // DB::assoc возвращает список строк-массивов: array_diff по ним сравнивает "Array" с "Array",
         // поэтому сравниваем плоские списки имён
-        $realCats = array_column(DB::assoc('SELECT content_id, title FROM content WHERE template_id = 6') ?: [], 'content_id', 'title');
+        $realCats = array_column(DB::assoc("SELECT content_id, title FROM content WHERE template = 'category'") ?: [], 'content_id', 'title');
         $existing = array_column(DB::assoc('SELECT name FROM shared_category') ?: [], 'name');
 
         $toAdd = array_diff(array_map('strval', array_keys($realCats)), $existing);
