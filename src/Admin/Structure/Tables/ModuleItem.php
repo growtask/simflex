@@ -134,7 +134,6 @@ class ModuleItem extends Table
                     paramId: 28,
                     paramPid: '',
                     pos: 'right',
-                    defaultValue: '1',
                     params: [],
                 ),
                 new ParamDefinition(
@@ -144,7 +143,6 @@ class ModuleItem extends Table
                     paramId: 29,
                     paramPid: '',
                     pos: 'right',
-                    defaultValue: '1',
                     params: [],
                 ),
                 new ParamDefinition(

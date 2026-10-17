@@ -4,6 +4,7 @@ namespace Simflex\Core\DB;
 
 use Simflex\Core\Container;
 use Simflex\Core\DB;
+use Simflex\Core\Log;
 use Simflex\Core\DB\Schema\Table;
 
 class Schema
@@ -21,6 +22,9 @@ class Schema
     protected array $sessionCreated = [];
 
     protected array $awaitingAlter = [];
+
+    /** @var callable[] Data to write once the tables are created, see seed() */
+    protected array $awaitingSeed = [];
 
     public function __construct()
     {
@@ -117,6 +121,16 @@ class Schema
         $this->awaitingDelete[] = $this->tables[$name] ?? $this->sessionCreated[$name];
     }
 
+    /**
+     * Writes initial data once the tables of the migration are created (on commit), e.g. the rows of a new table:
+     * $s->createTable('menu', ...); $s->seed(fn () => Menu::bulkInsert([...]));
+     * An exception thrown by the callback or false returned fails the commit, the migration is rolled back with its tables.
+     */
+    public function seed(callable $fn): void
+    {
+        $this->awaitingSeed[] = $fn;
+    }
+
     public function table(string $name, callable $fn): void
     {
         if (!$this->hasTable($name)) {
@@ -137,7 +151,7 @@ class Schema
      */
     public function commit(): bool
     {
-        return $this->commitDeletion() && $this->commitCreation();
+        return $this->commitDeletion() && $this->commitCreation() && $this->commitSeed();
     }
 
     /**
@@ -166,6 +180,26 @@ class Schema
 
         // clear pool
         $this->awaitingDelete = [];
+        return true;
+    }
+
+    protected function commitSeed(): bool
+    {
+        $seeds = $this->awaitingSeed;
+        $this->awaitingSeed = [];
+        foreach ($seeds as $fn) {
+            try {
+                // false is a failure, e.g. of ModelBase::bulkInsert() given as fn () => Model::bulkInsert([...])
+                if ($fn() === false) {
+                    Log::critical('Failed to write the migration data: {error}', ['error' => DB::error()]);
+                    return false;
+                }
+            } catch (\Throwable $e) {
+                Log::critical('Failed to write the migration data: {error}', ['error' => $e->getMessage()]);
+                return false;
+            }
+        }
+
         return true;
     }
 

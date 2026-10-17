@@ -32,7 +32,6 @@ class PackageInstaller
 
         // copy files
         static::copyContents($path . '/database/migrations', $root . '/database/migrations', 'migration');
-        static::copyContents($path . '/database/seeders', $root . '/database/seeders', 'seeder');
         static::copyContents($path . '/provider/extension', $root . '/provider/extension', 'extension');
 
         // clear cache
