@@ -2,18 +2,18 @@
 
 namespace Simflex\Core;
 
-use Simflex\Admin\Structure\Data\FieldDefinition;
-use Simflex\Admin\Structure\Data\ParamGroup;
+use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Admin\Table\ParamGroup;
 
 /**
- * Module with settings edited in the admin panel.
- * Values are stored serialized in module_item.params.
+ * Модуль с настройками, которые редактируются в админке.
+ * Значения хранятся сериализованными в module_item.params.
  */
 interface HasAdminParams
 {
     /**
-     * @return array<FieldDefinition|ParamGroup> FieldDefinition goes to the common "Параметры" block,
-     *         ParamGroup makes its own block
+     * @return array<FieldDefinition|ParamGroup> FieldDefinition попадает в общий блок "Параметры",
+     *         ParamGroup образует свой блок
      */
     public static function adminParams(): array;
 }

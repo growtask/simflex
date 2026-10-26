@@ -2,18 +2,18 @@
 
 namespace Simflex\Extensions\Content;
 
-use Simflex\Admin\Structure\Data\FieldDefinition;
+use Simflex\Admin\Table\FieldDefinition;
 
 /**
- * Block of the page template's fields in the page form. The block only groups them on the screen:
- * the values are kept in content.params by the field name, not by the block
+ * Блок полей шаблона страницы в форме страницы. Блок только группирует их на экране:
+ * значения хранятся в content.params по имени поля, а не по блоку
  */
 readonly class ContentTemplateBlock
 {
     /**
-     * @param string $label Block title
+     * @param string $label Заголовок блока
      * @param FieldDefinition[] $fields
-     * @param string $pos Form column: left|right
+     * @param string $pos Колонка формы: left|right
      */
     public function __construct(
         public string $label,

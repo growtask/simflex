@@ -7,10 +7,10 @@ use Simflex\Admin\Modules\Menu\Menu as MenuModule;
 use Simflex\Core\CodeRegistry;
 
 /**
- * Modules of the admin panel layout declared in code. The site modules are placed in the module_item table.
+ * Модули макета админки, объявленные в коде. Модули сайта размещаются в таблице module_item.
  *
- * The app adds its modules in a subclass named in the config (adminModulesClass): init() calling parent::init()
- * and add() / remove(). Modules of a position go in the order they are added.
+ * Приложение добавляет свои модули в подклассе, указанном в конфиге (adminModulesClass): init() с вызовом
+ * parent::init() и add() / remove(). Модули одной позиции идут в порядке добавления.
  */
 class AdminModules extends CodeRegistry
 {
@@ -18,7 +18,7 @@ class AdminModules extends CodeRegistry
     private static ?array $modules = null;
 
     /**
-     * Declares the core modules. The app's subclass calls parent::init() and adds or removes its own
+     * Объявляет модули ядра. Подкласс приложения вызывает parent::init() и добавляет или удаляет свои
      */
     protected static function init(): void
     {
@@ -32,7 +32,7 @@ class AdminModules extends CodeRegistry
     }
 
     /**
-     * Removes all the placements of the module class
+     * Удаляет все размещения класса модуля
      */
     protected static function remove(string $class): void
     {
@@ -43,9 +43,9 @@ class AdminModules extends CodeRegistry
     }
 
     /**
-     * @return list<AdminModule> the core and the app ones, in order
+     * @return list<AdminModule> модули ядра и приложения, по порядку
      */
-    public static function all(): array
+    public static function getModules(): array
     {
         if (self::$modules === null) {
             self::$modules = [];
@@ -57,15 +57,15 @@ class AdminModules extends CodeRegistry
     }
 
     /**
-     * Modules shown in the section
+     * Модули, показываемые в разделе
      *
-     * @param string $section Link of the current menu item as declared in Menu, '' outside the menu
+     * @param string $section Ссылка текущего пункта меню, как она объявлена в Menu, '' вне меню
      * @return list<AdminModule>
      */
-    public static function forSection(string $section): array
+    public static function getForSection(string $section): array
     {
         return array_values(array_filter(
-            static::all(),
+            static::getModules(),
             fn(AdminModule $module) => !$module->sections || in_array($section, $module->sections, true)
         ));
     }

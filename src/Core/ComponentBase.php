@@ -13,7 +13,7 @@ abstract class ComponentBase extends ExtensionBase
     }
 
     /**
-     * Component content. Returns HTML, does not output it
+     * Контент компонента. Возвращает HTML, а не выводит его
      */
     abstract protected function content(): string;
 

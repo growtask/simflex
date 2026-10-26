@@ -8,7 +8,7 @@ class PackageInstaller
 {
     public static function onPackageEvent(PackageEvent $event): void
     {
-        // get package
+        // получаем пакет
         $operation = $event->getOperation();
         if (method_exists($operation, 'getPackage')) {
             $package = $operation->getPackage();
@@ -21,7 +21,7 @@ class PackageInstaller
             return;
         }
 
-        // check if it's a Simflex package
+        // проверяем, что это пакет Simflex
         $path = $event->getComposer()->getInstallationManager()->getInstallPath($package) . '/src';
         if (!is_dir($path . '/provider/extension')) {
             echo "[!] Not a Simflex package, skipping.\n";
@@ -30,11 +30,11 @@ class PackageInstaller
 
         $root = dirname($event->getComposer()->getConfig()->get('vendor-dir'));
 
-        // copy files
+        // копируем файлы
         static::copyContents($path . '/database/migrations', $root . '/database/migrations', 'migration');
         static::copyContents($path . '/provider/extension', $root . '/provider/extension', 'extension');
 
-        // clear cache
+        // очищаем кэш
         if (is_file($root . '/cache/extensions.php')) {
             unlink($root . '/cache/extensions.php');
         }

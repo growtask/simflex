@@ -10,19 +10,19 @@ use Simflex\Core\Models\User;
 abstract class Base
 {
     /**
-     * @var bool Should require authentication on all methods?
+     * @var bool Требовать ли авторизацию во всех методах
      */
     protected bool $requireAuth = false;
 
     /**
-     * @var User|null Authenticated user (set ONLY if requireAuth = true)
+     * @var User|null Авторизованный пользователь (задан ТОЛЬКО при requireAuth = true)
      */
     protected ?User $user = null;
 
     abstract public function execute(): string;
 
     /**
-     * Gets name of the method to execute
+     * Возвращает имя метода для выполнения
      *
      * @throws \Simflex\Core\Errors\Error
      */
@@ -38,7 +38,7 @@ abstract class Base
     }
 
     /**
-     * Assert that user is currently authenticated
+     * Проверяет, что пользователь авторизован
      *
      * @throws Error
      */

@@ -29,7 +29,7 @@ class Field
     public string $editor = '';
     public bool $filter = false;
 
-    /* INPUT */
+    /* ВВОД */
     public array $styleCol = [];
     public string $styleCell = '';
     public bool $hidden = false;
@@ -43,17 +43,6 @@ class Field
     protected bool $isNumeric = false;
 
     public bool $isVirtual = false; //  FVirtual,  FMultiKey
-
-    public static function typeLabel(): string
-    {
-        $parts = explode('\\', static::class);
-        return end($parts) ?: static::class;
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
-    }
 
     public function __construct($row)
     {
@@ -163,10 +152,10 @@ class Field
     }
 
     /**
-     * Renders the template from the tpl directory next to this file
+     * Рендерит шаблон из каталога tpl рядом с этим файлом
      *
-     * @param string $tpl Template name without extension
-     * @param array<string, mixed> $vars Variables available in the template as $name, along with $this
+     * @param string $tpl Имя шаблона без расширения
+     * @param array<string, mixed> $vars Переменные, доступные в шаблоне как $name, вместе с $this
      */
     protected function render(string $tpl, array $vars = []): string
     {
@@ -258,7 +247,7 @@ class Field
     }
 
     /**
-     * Show in detail card in show mode
+     * Показывать в карточке записи в режиме просмотра
      */
     public function showDetail($row): ?string
     {
@@ -290,7 +279,7 @@ class Field
     }
 
     /**
-     * Registers the field assets, returns HTML required by the field UI (init scripts)
+     * Регистрирует ресурсы поля, возвращает HTML, нужный интерфейсу поля (скрипты инициализации)
      */
     public function loadUI(bool $onForm = false): string
     {

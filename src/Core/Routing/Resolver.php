@@ -57,7 +57,7 @@ class Resolver
     }
 
     /**
-     * Routes by the menu table: the deepest menu item with a component matching the request path
+     * Маршрутизация по таблице menu: самый глубокий пункт меню с компонентом, подходящий под путь запроса
      */
     #[ArrayShape(['class' => 'string', 'path' => 'string'])]
     protected function resolveByMenu(): ?array

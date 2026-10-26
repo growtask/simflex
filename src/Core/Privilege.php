@@ -3,30 +3,30 @@
 namespace Simflex\Core;
 
 /**
- * User privileges declared in code. Checked by name: User::ican(Privilege::ADMIN).
+ * Привилегии пользователей, объявленные в коде. Проверяются по имени: User::ican(Privilege::ADMIN).
  *
- * The app adds its privileges in a subclass named in the config (privilegeClass): new constants for the names
- * and init() calling parent::init() and define(). The core calls Privilege::... and gets the app's registry.
+ * Приложение добавляет свои привилегии в подклассе, указанном в конфиге (privilegeClass): новые константы для имен
+ * и init(), вызывающий parent::init() и define(). Ядро вызывает Privilege::... и получает реестр приложения.
  *
- * The user_privilege table is optional: it keeps the activity switched in the admin panel, a privilege without a row
- * takes it from code. Roles, users, menu items and widgets refer to a privilege by its name.
+ * Таблица user_privilege необязательна: в ней хранится активность, переключенная в админке, привилегия без записи
+ * берет ее из кода. Роли, пользователи, пункты меню и виджеты ссылаются на привилегию по имени.
  */
 class Privilege extends CodeRegistry
 {
-    /** Developer: full access, has all the privileges, even the switched off ones. Can't be switched off */
+    /** Разработчик: полный доступ, есть все привилегии, даже выключенные. Выключить нельзя */
     public const DEV = 'dev';
 
-    /** Access to the admin panel. Switching it off closes the admin panel for everybody but the developers */
+    /** Доступ в админку. Если выключить, админка закрывается для всех, кроме разработчиков */
     public const ADMIN = 'admin';
 
-    /** @var array<string, PrivilegeParams>|null name => params */
+    /** @var array<string, PrivilegeParams>|null имя => параметры */
     private static ?array $registry = null;
 
-    /** @var array<string, bool>|null name => activity switched in the admin panel */
+    /** @var array<string, bool>|null имя => активность, переключенная в админке */
     private static ?array $switched = null;
 
     /**
-     * Declares the privileges. The app's subclass calls parent::init() and adds or redefines its own
+     * Объявляет привилегии. Подкласс приложения вызывает parent::init() и добавляет или переопределяет свои
      */
     protected static function init(): void
     {
@@ -40,9 +40,9 @@ class Privilege extends CodeRegistry
     }
 
     /**
-     * @return array<string, PrivilegeParams> name => params, the core and the app ones
+     * @return array<string, PrivilegeParams> имя => параметры, ядра и приложения
      */
-    public static function all(): array
+    public static function getAll(): array
     {
         if (self::$registry === null) {
             self::$registry = [];
@@ -53,17 +53,17 @@ class Privilege extends CodeRegistry
         return self::$registry;
     }
 
-    public static function params(string $name): ?PrivilegeParams
+    public static function getParams(string $name): ?PrivilegeParams
     {
-        return static::all()[$name] ?? null;
+        return static::getAll()[$name] ?? null;
     }
 
     /**
-     * Declared in code and enabled: the activity switched in the admin panel, otherwise the default from code
+     * Объявлена в коде и включена: активность, переключенная в админке, иначе значение по умолчанию из кода
      */
     public static function isActive(string $name): bool
     {
-        $params = static::params($name);
+        $params = static::getParams($name);
         if (!$params) {
             return false;
         }
@@ -75,11 +75,11 @@ class Privilege extends CodeRegistry
     }
 
     /**
-     * Keeps the activity switched in the admin panel
+     * Сохраняет активность, переключенную в админке
      */
     public static function setActive(string $name, bool $active): bool
     {
-        $params = static::params($name);
+        $params = static::getParams($name);
         if (!$params || !$params->switchable) {
             return false;
         }
@@ -94,7 +94,7 @@ class Privilege extends CodeRegistry
 
     /**
      * @param string[] $names
-     * @return string[] the declared and enabled ones
+     * @return string[] объявленные и включенные
      */
     public static function filterActive(array $names): array
     {
@@ -102,14 +102,14 @@ class Privilege extends CodeRegistry
     }
 
     /**
-     * Privileges the user actually has
+     * Привилегии, которые реально есть у пользователя
      *
-     * @param string[] $names assigned to the user's role and to the user personally
-     * @return string[] all declared ones for a developer, otherwise the declared and enabled assigned ones
+     * @param string[] $names назначенные роли пользователя и ему лично
+     * @return string[] для разработчика все объявленные, иначе назначенные из объявленных и включенных
      */
     public static function granted(array $names): array
     {
-        return in_array(self::DEV, $names, true) ? array_keys(static::all()) : static::filterActive($names);
+        return in_array(self::DEV, $names, true) ? array_keys(static::getAll()) : static::filterActive($names);
     }
 
     protected static function configProperty(): string

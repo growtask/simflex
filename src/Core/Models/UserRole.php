@@ -6,10 +6,10 @@ use Exception;
 use Simflex\Core\ModelBase;
 
 /**
- * Class UserRole
+ * Класс UserRole
  *
  * @property int $role_id
- * @property string $privilege Privilege required to see and assign the role
+ * @property string $privilege Привилегия, нужная, чтобы видеть и назначать роль
  * @property bool $active
  * @property string $alias
  * @property string $name
@@ -20,9 +20,9 @@ class UserRole extends ModelBase
     protected static string $primaryKeyName = 'role_id';
 
     /**
-     * Get role by alias
+     * Роль по алиасу
      *
-     * @param string $alias Role alias
+     * @param string $alias Алиас роли
      * @throws Exception
      */
     public static function byAlias(string $alias): ?static
@@ -31,7 +31,7 @@ class UserRole extends ModelBase
     }
 
     /**
-     * @param string $privilege Privilege name, see \Simflex\Core\Privilege
+     * @param string $privilege Имя привилегии, см. \Simflex\Core\Privilege
      * @throws Exception
      */
     public function addPrivilege(string $privilege): void

@@ -9,19 +9,19 @@ use Simflex\Core\Container;
 class Injector
 {
     /**
-     * Shortcut for resolving dependencies for a class constructor
+     * Подбирает зависимости для конструктора класса
      *
-     * @param object|string $target Class name
-     * @param mixed ...$params Additional parameters
-     * @return array Resolved dependencies
-     * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
+     * @param object|string $target Имя класса
+     * @param mixed ...$params Дополнительные параметры
+     * @return array Найденные зависимости
+     * @throws DIException Если у параметра нет типа, тип встроенный или обнаружена циклическая зависимость
      * @throws ReflectionException
      */
     public static function resolveClass(object|string $target, ...$params): array
     {
         $ref = new \ReflectionClass($target);
 
-        // get constructor
+        // получаем конструктор
         $ct = $ref->getConstructor();
         if (!$ct) {
             return [];
@@ -31,13 +31,13 @@ class Injector
     }
 
     /**
-     * Shortcut for resolving dependencies for a method of a class
+     * Подбирает зависимости для метода класса
      *
-     * @param object|string $target Target class name
-     * @param string $method Method name
-     * @param mixed ...$params Additional parameters
-     * @return array Resolved dependencies
-     * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
+     * @param object|string $target Имя класса
+     * @param string $method Имя метода
+     * @param mixed ...$params Дополнительные параметры
+     * @return array Найденные зависимости
+     * @throws DIException Если у параметра нет типа, тип встроенный или обнаружена циклическая зависимость
      * @throws ReflectionException
      */
     public static function resolveMethod(object|string $target, string $method, ...$params): array
@@ -49,12 +49,12 @@ class Injector
     }
 
     /**
-     * Resolves dependencies for a function
+     * Подбирает зависимости для функции
      *
-     * @param ReflectionFunctionAbstract $fn Function to resolve
-     * @param mixed ...$params Additional parameters
-     * @return array Resolved dependencies
-     * @throws DIException If a parameter has no type, is a built-in type, or a circular dependency is detected
+     * @param ReflectionFunctionAbstract $fn Функция
+     * @param mixed ...$params Дополнительные параметры
+     * @return array Найденные зависимости
+     * @throws DIException Если у параметра нет типа, тип встроенный или обнаружена циклическая зависимость
      * @throws ReflectionException
      */
     public static function resolve(ReflectionFunctionAbstract $fn, ...$params): array
@@ -64,28 +64,28 @@ class Injector
         $added = [];
         $args = [];
 
-        // get parameters
+        // получаем параметры
         foreach ($fn->getParameters() as $parameter) {
-            // won't work for typeless parameters
+            // для параметров без типа не работает
             if (!$parameter->hasType()) {
                 throw new DIException("Parameter {$parameter->getName()} in {$target} has no type");
             }
 
             $type = $parameter->getType();
 
-            // won't resolve built-in types
+            // встроенные типы не подбираем
             if ($type->isBuiltin()) {
                 throw new DIException("Parameter {$parameter->getName()} in {$target} is a built-in type");
             }
 
             $className = $type->getName();
 
-            // safeguard against circular dependencies
+            // защита от циклических зависимостей
             if (in_array($className, $added)) {
                 throw new DIException("Circular dependency detected in {$target}");
             }
 
-            // check if params contain the class we need
+            // проверяем, есть ли нужный класс среди параметров
             foreach ($params as $p) {
                 if ($p instanceof $className) {
                     $args[] = $p;
@@ -94,7 +94,7 @@ class Injector
                 }
             }
 
-            // check container for the class
+            // ищем класс в контейнере
             $classRef = new \ReflectionClass($className);
             if (!$classRef->implementsInterface(\Simflex\Core\DI\Service::class)) {
                 throw new DIException("Class {$className} does not implement Service interface");

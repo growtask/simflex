@@ -3,8 +3,8 @@
 namespace Simflex\Core\Sms;
 
 /**
- * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает
+ *       на SQL. Будет вынесено в отдельный composer-пакет.
  */
 class DriverFake extends DriverBase
 {

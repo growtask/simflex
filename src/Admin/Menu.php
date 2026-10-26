@@ -2,26 +2,26 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\Structure\Handlers;
 use Simflex\Core\CodeRegistry;
 use Simflex\Core\Privilege;
 
 /**
- * Admin panel menu declared in code. An item is identified by its link.
+ * Меню админки, объявленное в коде. Пункт определяется своей ссылкой.
  *
- * The app adds its sections in a subclass named in the config (adminMenuClass): init() calling parent::init()
- * and add() / remove(). Items go in the order they are added, add(..., before: link) puts one before another.
+ * Приложение добавляет свои разделы в подклассе, указанном в конфиге (adminMenuClass): init() с вызовом
+ * parent::init() и add() / remove(). Пункты идут в порядке добавления, add(..., before: link) ставит пункт
+ * перед другим.
  */
 class Menu extends CodeRegistry
 {
-    /** @var array<string, MenuItem>|null link => item, subitems in $parents */
+    /** @var array<string, MenuItem>|null ссылка => пункт, подпункты в $parents */
     private static ?array $items = null;
 
-    /** @var array<string, string> link => parent link, '' for the root items */
+    /** @var array<string, string> ссылка => ссылка родителя, '' для корневых пунктов */
     private static array $parents = [];
 
     /**
-     * Declares the core sections. The app's subclass calls parent::init() and adds or removes its own
+     * Объявляет разделы ядра. Подкласс приложения вызывает parent::init() и добавляет или удаляет свои
      */
     protected static function init(): void
     {
@@ -59,10 +59,10 @@ class Menu extends CodeRegistry
     }
 
     /**
-     * Adds an item with its subitems. An item with the same link is replaced
+     * Добавляет пункт с подпунктами. Пункт с той же ссылкой заменяется
      *
-     * @param string $parent Link of the parent item, '' for a root one
-     * @param string|null $before Link of the sibling to put the item before, null — after the others
+     * @param string $parent Ссылка родительского пункта, '' для корневого
+     * @param string|null $before Ссылка соседнего пункта, перед которым поставить пункт, null — после остальных
      */
     protected static function add(MenuItem $item, string $parent = '', ?string $before = null): void
     {
@@ -91,7 +91,26 @@ class Menu extends CodeRegistry
     }
 
     /**
-     * Removes an item with its subitems
+     * Задаёт пункту другой обработчик, остальное в пункте не меняется: например, подкласс раздела ядра
+     * из приложения
+     *
+     * @param class-string<Handler> $handler
+     */
+    protected static function setHandler(string $link, string $handler): void
+    {
+        $item = self::$items[$link] ?? throw new \LogicException("Admin menu: no item $link");
+        self::$items[$link] = new MenuItem(
+            $item->name,
+            $item->link,
+            $handler,
+            $item->icon,
+            $item->privilege,
+            $item->hidden,
+        );
+    }
+
+    /**
+     * Удаляет пункт с подпунктами
      */
     protected static function remove(string $link): void
     {
@@ -102,9 +121,9 @@ class Menu extends CodeRegistry
     }
 
     /**
-     * @return array<string, MenuItem> link => item, the core and the app ones, in order
+     * @return array<string, MenuItem> ссылка => пункт, ядра и приложения, по порядку
      */
-    public static function all(): array
+    public static function getItems(): array
     {
         if (self::$items === null) {
             self::$items = self::$parents = [];
@@ -116,11 +135,11 @@ class Menu extends CodeRegistry
     }
 
     /**
-     * Link of the parent item, '' for a root one
+     * Ссылка родительского пункта, '' для корневого
      */
-    public static function parent(string $link): string
+    public static function getParent(string $link): string
     {
-        static::all();
+        static::getItems();
         return self::$parents[$link] ?? '';
     }
 

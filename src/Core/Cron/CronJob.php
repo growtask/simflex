@@ -3,18 +3,18 @@
 namespace Simflex\Core\Cron;
 
 /**
- * Cron job declared in the app's provider/cron.php.
- * $timing and $active are the defaults: the cron table keeps the values edited in the admin panel.
+ * Задание cron, объявленное в provider/cron.php приложения.
+ * $timing и $active - значения по умолчанию: таблица cron хранит значения, отредактированные в админке.
  */
 readonly class CronJob
 {
     /**
-     * @param string $name Title in the admin panel
-     * @param array{0: class-string, 1: string} $handler [class, method]; a non-static method is called on an
-     *        instance whose constructor dependencies are resolved by \Simflex\Core\DI\Injector
-     * @param string $timing Default schedule, as in *nix crontab, e.g. '30 3 * * *'
-     * @param bool $active Enabled by default
-     * @param array $params Arguments of the method (positional or named)
+     * @param string $name Название в админке
+     * @param array{0: class-string, 1: string} $handler [класс, метод]; нестатический метод вызывается у экземпляра,
+     *        зависимости конструктора которого подставляет \Simflex\Core\DI\Injector
+     * @param string $timing Расписание по умолчанию, как в crontab *nix, например '30 3 * * *'
+     * @param bool $active Включено по умолчанию
+     * @param array $params Аргументы метода (позиционные или именованные)
      */
     public function __construct(
         public string $name,

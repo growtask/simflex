@@ -24,8 +24,8 @@ class Core
 
     public static function init(): void
     {
-        // if request or response wasn't set, we still have to construct them
-        // useful for backwards compatibility
+        // если request или response не заданы, все равно их создаем
+        // нужно для обратной совместимости
         if (!Container::isSet('request')) {
             Container::set('request', new HtmlRequest());
         }
@@ -76,19 +76,19 @@ class Core
     }
 
     /**
-     * Get setting value by alias
+     * Значение настройки сайта по алиасу
      *
-     * Can interpolate values from array, example:
-     * `value (k = 'greeting') = 'Hello {name}'`, then
-     * `Core::siteParam('greeting', 'Hello {name}', ['name' => 'John'])` equals to `'Hello John'`
+     * Умеет подставлять значения из массива, например:
+     * `value (k = 'greeting') = 'Hello {name}'`, тогда
+     * `Core::siteParam('greeting', 'Hello {name}', ['name' => 'John'])` вернет `'Hello John'`
      *
-     * If the setting is not found and $key is given, it is created in `settings` table
-     * with $defaultValue (scalar or null), so it becomes editable in admin panel.
+     * Если настройка не найдена и $key задан, она создается в таблице `settings`
+     * со значением $defaultValue (скаляр или null) и становится доступной для редактирования в админке.
      *
-     * @param string|bool $key false to get all settings, otherwise alias
-     * @param mixed $defaultValue Default value if setting not found
-     * @param array $interp Array of values to interpolate
-     * @return array|bool|string|string[] Value of setting
+     * @param string|bool $key false - получить все настройки, иначе алиас
+     * @param mixed $defaultValue Значение по умолчанию, если настройка не найдена
+     * @param array $interp Массив значений для подстановки
+     * @return array|bool|string|string[] Значение настройки
      */
     public static function siteParam(string|bool $key = false, mixed $defaultValue = null, array $interp = []): mixed
     {
@@ -131,10 +131,10 @@ class Core
     public static function getComponent(): object
     {
         $route = (new Resolver())
-            ->setMenuByLink(self::$menuByLink) // menu items with a component are routes too
+            ->setMenuByLink(self::$menuByLink) // пункты меню с компонентом - тоже маршруты
             ->resolve(Container::getConfig()->getRoutes());
 
-        // set route here so we can use it later, if needed
+        // запоминаем маршрут, чтобы использовать его дальше при необходимости
         Container::getRequest()->route = $route;
 
         $componentClass = $route->getComponentClassName();
@@ -185,7 +185,7 @@ class Core
     }
 
     /**
-     * Sets the 404 status and returns the error page HTML
+     * Ставит статус 404 и возвращает HTML страницы ошибки
      */
     public static function error404(): string
     {
@@ -206,7 +206,7 @@ class Core
 
     /**
      *
-     * @param bool $withSlashDots [optional = false] ://
+     * @param bool $withSlashDots [по умолчанию false] ://
      * @return string https / http
      */
     public static function httpProtocol(bool $withSlashDots = false): string
@@ -216,7 +216,7 @@ class Core
 
     /**
      * Url опубликованной статики ядра (см. Assets::publish)
-     * @return string like /cache/assets/1a2b3c4d5e6f7a8b
+     * @return string например /cache/assets/1a2b3c4d5e6f7a8b
      */
     public static function webVendorPath(): string
     {

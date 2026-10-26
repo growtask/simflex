@@ -5,10 +5,10 @@ namespace Simflex\Core\Events;
 use Simflex\Core\DI\Injector;
 
 /**
- * Implements onEvent in a way that allows to call methods with event name
+ * Реализует onEvent так, что вызывается метод по имени события
  *
- * For example, if event name is Events::PreInit, then method onPreInit will be called
- * Method arguments are: Event $event, ...$params
+ * Например, для события Events::PreInit будет вызван метод onPreInit
+ * Аргументы метода: Event $event, ...$params
  */
 trait GroupEvents
 {

@@ -25,7 +25,7 @@ class Migrator extends ConsoleBase
 
     public function __construct()
     {
-        // populate migration files: numbered, in natural order (9_x before 10_x)
+        // собираем файлы миграций: пронумерованные, в естественном порядке (9_x раньше 10_x)
         $files = scandir('database/migrations');
         natsort($files);
         foreach ($files as $file) {
@@ -40,9 +40,9 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Get new migrations
-     * @param array $list List of completed migrations
-     * @return array List of new migrations
+     * Новые миграции
+     * @param array $list Список выполненных миграций
+     * @return array Список новых миграций
      */
     protected function getNewMigrations(array $list): array
     {
@@ -64,8 +64,8 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Attempts to get migration object
-     * @param string $name Migration name
+     * Пытается получить объект миграции
+     * @param string $name Имя миграции
      */
     protected function getMigrationObject(string $name): ?MigrationInterface
     {
@@ -89,15 +89,15 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Ups the migrations
-     * @param string $steps Amount of steps to go
+     * Применяет миграции
+     * @param string $steps Количество шагов
      * @throws Exception
      */
     #[Command('Up migrations')]
     public function up(
         #[Help('"all" = run all migrations. Otherwise, amount of steps to go')] string $steps = 'all'
     ): void {
-        // find migrations that were not processed yet
+        // ищем ещё не выполненные миграции
         // на пустой базе таблицы migration ещё нет: её создаст миграция 00_migration
         $list = DB::result("SHOW TABLES LIKE 'migration'")
             ? Migration::findAdv()->asArray()->all()
@@ -109,7 +109,7 @@ class Migrator extends ConsoleBase
             return;
         }
 
-        // run migrations
+        // выполняем миграции
         $counter = 0;
         foreach ($migrations as $migration) {
             if ($steps != 'all') {
@@ -118,7 +118,7 @@ class Migrator extends ConsoleBase
                 }
             }
 
-            // run and remember the migration
+            // выполняем и запоминаем миграцию
             $class = $this->getMigrationObject($migration);
             if (!$class) {
                 Log::error('Migration {migration} cannot be loaded', ['migration' => $migration]);
@@ -138,7 +138,7 @@ class Migrator extends ConsoleBase
                 return;
             }
 
-            // force reload to update existing tables
+            // принудительно перезагружаем, чтобы обновить существующие таблицы
             $schema->reload();
 
             $dbMigration = new Migration();
@@ -161,7 +161,7 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Downs the migrations
+     * Откатывает миграции
      * @throws Exception
      */
     #[Command('Down migrations')]
@@ -214,7 +214,7 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Refreshes the migrations
+     * Перевыполняет миграции
      * @throws Exception
      */
     #[Command('Refresh migrations')]
@@ -226,7 +226,7 @@ class Migrator extends ConsoleBase
     }
 
     /**
-     * Creates a new migration
+     * Создаёт новую миграцию
      */
     #[Command('Create new migration')]
     public function create(#[Help('Migration name')] string $name): void

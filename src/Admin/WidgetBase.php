@@ -16,12 +16,12 @@ abstract class WidgetBase
     }
 
     /**
-     * Widget content. Returns HTML, does not output it
+     * Содержимое виджета. Возвращает HTML, а не выводит его
      */
     abstract protected function content(): string;
 
     /**
-     * Widget header actions HTML
+     * HTML действий в заголовке виджета
      */
     protected function actions(): string
     {

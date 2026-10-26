@@ -5,11 +5,11 @@ namespace Simflex\Core;
 class ConsoleBase
 {
     /**
-     * @param string $job "ext/job" for example
-     * @param int|null $maxSame Max parallel processes allowed
-     * @param string|null $sameKey Used only with $maxSame parameter.
-     *                             Optional, if empty it will be calculated as md5 of $job and $params
-     * @param int|false $timeout max execution time in seconds. false = limitless
+     * @param string $job например "ext/job"
+     * @param int|null $maxSame Максимум параллельных процессов
+     * @param string|null $sameKey Используется только вместе с $maxSame.
+     *                             Необязательный, если пуст, вычисляется как md5 от $job и $params
+     * @param int|false $timeout максимальное время выполнения в секундах. false - без ограничения
      */
     public static function toBackground(string $job, array $params = [], ?int $maxSame = null, ?string $sameKey = null, $timeout = false): void
     {

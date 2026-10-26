@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Admin\Base;
+use Simflex\Admin\Table\Table;
 use Simflex\Core\DB;
 
 class FieldMultiKey extends Field
@@ -33,7 +33,7 @@ class FieldMultiKey extends Field
 
         $valReal = [];
         foreach ($rows as &$row) {
-            // remove this hack as well
+            // этот костыль тоже убрать
             if ($this->table == 'catalog_product' && $row['pid']) {
                 $par = DB::result('select name from catalog_category where category_id = ?', 0, [$row['pid']]);
                 if ($par) {
@@ -96,15 +96,15 @@ class FieldMultiKey extends Field
         if (!isset(self::$buffer)) {
             $q = "SELECT {$this->params['key']}, {$this->params['key_alias']} FROM {$this->params['table_values']}";
             $values = DB::assoc($q, $this->params['key']);
-            $where = Base::$currentWhere;
+            // связи записей показываемого списка
+            $list = Table::$currentQuery ? (clone Table::$currentQuery)->select($this->table . '.' . $this->tablePk)->orderBy(null)->limit('') : null;
+            $listSql = $list ? $list->build() : "SELECT $this->tablePk FROM $this->table";
             $q = "
                 SELECT $this->tablePk,
                     (SELECT {$this->params['key_alias']} FROM {$this->params['table_values']} WHERE {$this->params['key']} = r.{$this->params['key']}) label
-                FROM {$this->params['table_relations']} r WHERE $this->tablePk IN (
-                    SELECT $this->tablePk FROM $this->table $where
-                )
+                FROM {$this->params['table_relations']} r WHERE $this->tablePk IN ($listSql)
             ";
-            $rels = DB::assoc($q, $this->tablePk, 'label');
+            $rels = DB::assoc($q, $this->tablePk, 'label', $list ? $list->getBinds() : []);
             foreach ($rels as $key => $keyAliases) {
                 self::$buffer[$key] = implode(', ', array_keys($keyAliases));
             }
@@ -118,7 +118,7 @@ class FieldMultiKey extends Field
         $value = DB::escape($value);
 
         if ($this->table == 'catalog_product') {
-            // a dumb hack again...
+            // опять костыль...
             if (!$value) {
                 return '';
             }
@@ -133,7 +133,7 @@ class FieldMultiKey extends Field
         }
         $r = DB::fetch($q);
 
-        // one more hack
+        // ещё один костыль
         if ($this->table == 'catalog_product') {
             if ($r['pid']) {
                 $par = DB::result('select name from catalog_category where category_id = ?', 0, [$r['pid']]);
@@ -156,44 +156,5 @@ class FieldMultiKey extends Field
     public function selectQueryField(): string
     {
         return '';
-    }
-
-    public static function typeLabel(): string
-    {
-        return 'Связь многие ко многим';
-    }
-
-    public static function typeParams(): array
-    {
-        return [
-            [
-                'name' => 'table_values',
-                'label' => 'Таблица сущностей',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'table_relations',
-                'label' => 'Таблица связей',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'key',
-                'label' => 'Ключ таблицы сущностей',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'key_alias',
-                'label' => 'Поле-ярлык у сущности',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => 'Например name у catalog_category',
-                'default_value' => '',
-            ],
-        ];
     }
 }

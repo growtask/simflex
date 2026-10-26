@@ -19,7 +19,7 @@ class FieldNPP extends Field
     public function input($value): string
     {
         if (!isset($_REQUEST[$this->tablePk])) {
-            // TODO: make it nice
+            // TODO: сделать по-нормальному
             if ($this->table == 'catalog_product') {
                 $value = 1;
             } else {
@@ -46,15 +46,5 @@ class FieldNPP extends Field
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
-    }
-
-    public static function typeLabel(): string
-    {
-        return '№ п/п';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
     }
 }

@@ -3,19 +3,19 @@
 namespace Simflex\Core;
 
 /**
- * Template rendering. The only place where template output is buffered:
- * components, modules, widgets, fields and admin pages return strings, and output
- * goes to the browser only from the system layer (Response, layout).
+ * Рендеринг шаблонов. Единственное место, где буферизуется вывод шаблона:
+ * компоненты, модули, виджеты, поля и страницы админки возвращают строки, а вывод
+ * уходит в браузер только из системного слоя (Response, layout).
  */
 final class View
 {
     /**
-     * Renders the template file into a string
+     * Рендерит файл шаблона в строку
      *
-     * @param string $file Absolute path to the template
-     * @param array<string, mixed> $vars Variables available in the template as $name
-     * @param object|string|null $context Object available in the template as $this,
-     *                                    or a class name for self:: and static:: in the template
+     * @param string $file Абсолютный путь к шаблону
+     * @param array<string, mixed> $vars Переменные, доступные в шаблоне как $name
+     * @param object|string|null $context Объект, доступный в шаблоне как $this,
+     *                                    или имя класса для self:: и static:: в шаблоне
      */
     public static function render(string $file, array $vars = [], object|string|null $context = null): string
     {

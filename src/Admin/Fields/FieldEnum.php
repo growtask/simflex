@@ -93,22 +93,4 @@ class FieldEnum extends FieldString
             'items' => $this->dropdownItems(true),
         ]);
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Варианты';
-    }
-
-    public static function typeParams(): array
-    {
-        return [
-            [
-                'name' => 'enum',
-                'label' => 'Варианты (key=value;;)',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-        ];
-    }
 }

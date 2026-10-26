@@ -6,9 +6,9 @@ use Simflex\Admin\Core;
 use Simflex\Core\Container;
 
 /**
- * Editor class
+ * Класс Editor
  *
- * Get access to javascript WYSIWYG Editors
+ * Доступ к JavaScript WYSIWYG-редакторам
  *
  */
 class Editor
@@ -16,7 +16,7 @@ class Editor
     public static array $inited = [];
 
     /**
-     * Registers the TinyMCE script and returns the editor init HTML (once per editor type)
+     * Регистрирует скрипт TinyMCE и возвращает HTML инициализации редактора (один раз на тип редактора)
      */
     public static function tinymce(string $type, string $css_class = ''): string
     {

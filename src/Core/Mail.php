@@ -6,8 +6,8 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
- * @todo Incomplete: there are no migrations for the mail_log table, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: нет миграции для таблицы mail_log, поэтому в реальном окружении код падает
+ *       на SQL. Будет вынесено в отдельный composer-пакет.
  */
 class Mail
 {
@@ -82,7 +82,7 @@ class Mail
     /**
      *
      * @param string $str Допускается: Иванов Иван или ivanov@mail.ru или Иванов Иван <ivanov@mail.ru>
-     * @param string $str2 (optional = '') Имя отправителя. Имеет значение, если $str - это email
+     * @param string $str2 (по умолчанию '') Имя отправителя. Имеет значение, если $str - это email
      */
     public function setFrom($str, $str2 = ''): static
     {
@@ -146,7 +146,7 @@ class Mail
     /**
      *
      * @param string $sender Допускается mail@mail.ru или mail@mail.ru:12345
-     * @param string $pass (optional = false) указывается, если в $sender нет пароля
+     * @param string $pass (по умолчанию false) указывается, если в $sender нет пароля
      */
     public function setSMTPSender($sender, $pass = false): static
     {

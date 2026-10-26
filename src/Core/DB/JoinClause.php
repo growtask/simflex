@@ -11,10 +11,12 @@ class JoinClause
     protected ?string $joinColumn2;
     protected string $type;
     protected ?Where $extraOnConditions;
+    protected string $alias;
 
     /**
-     * @param string|null $joinColumn2 if not specified, will be used USING clause
-     * @param string $type for example INNER, LEFT, RIGHT, FULL
+     * @param string|null $joinColumn2 Если не задан, используется выражение USING
+     * @param string $type Например INNER, LEFT, RIGHT, FULL
+     * @param string $alias Алиас присоединяемой таблицы, чтобы присоединить одну таблицу несколько раз
      * @throws \Exception
      */
     public function __construct(
@@ -22,7 +24,8 @@ class JoinClause
         string $joinColumn1,
         ?string $joinColumn2 = null,
         string $type = 'INNER',
-        string|array|Where|Expr|null $extraOnConditions = null
+        string|array|Where|Expr|null $extraOnConditions = null,
+        string $alias = '',
     ) {
         $this->table = (is_subclass_of($table, ModelBase::class)) ? $table::getTableName() : (string)$table;
         $this->joinColumn1 = $joinColumn1;
@@ -33,17 +36,18 @@ class JoinClause
         }
         $this->type = $type;
         $this->extraOnConditions = is_null($extraOnConditions) ? null : new Where($extraOnConditions);
+        $this->alias = $alias;
     }
 
     public function toSql(string $leftTable): string
     {
-        $sql = "$this->type JOIN `$this->table`";
+        $sql = "$this->type JOIN `$this->table`" . ($this->alias ? " `$this->alias`" : '');
         if (!$this->joinColumn2 && !$this->extraOnConditions) {
             $c1 = self::escapeColumn($this->joinColumn1);
             $sql .= " USING($c1)";
         } else {
             $c1 = self::prepareColumn($this->joinColumn1, $leftTable);
-            $c2 = self::prepareColumn($this->joinColumn2 ?? $this->joinColumn1, $this->table);
+            $c2 = self::prepareColumn($this->joinColumn2 ?? $this->joinColumn1, $this->alias ?: $this->table);
             $sql .= " ON $c1 = $c2";
             if (
                 $this->extraOnConditions
@@ -53,6 +57,14 @@ class JoinClause
             }
         }
         return $sql;
+    }
+
+    /**
+     * Значения параметров запроса дополнительных условий ON, после toSql()
+     */
+    public function getBinds(): array
+    {
+        return $this->extraOnConditions?->getBinds() ?? [];
     }
 
     protected static function prepareColumn(?string $column, string $possibleTable): ?string

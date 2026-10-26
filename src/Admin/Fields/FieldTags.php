@@ -11,7 +11,7 @@ class FieldTags extends Field
     public function input($value): string
     {
         if (!$this->values) {
-            // load shit
+            // загрузка данных
             $q = DB::query('SELECT DISTINCT ' . $this->name . ' FROM ' . $this->table);
             while ($r = DB::fetch($q)) {
                 if (!$r[$this->name]) {
@@ -34,15 +34,5 @@ class FieldTags extends Field
             'value' => $value,
             'items' => array_map(fn($v) => [$v, $v], $this->values),
         ]);
-    }
-
-    public static function typeLabel(): string
-    {
-        return 'Теги';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
     }
 }

@@ -4,6 +4,7 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
 use Simflex\Core\DB;
+use Simflex\Core\Time;
 
 class FieldDate extends Field
 {
@@ -26,7 +27,7 @@ class FieldDate extends Field
 
     public function input($value): string
     {
-        $value = \Simflex\Core\Time::normal($value ?: time());
+        $value = Time::normal($value ?: time());
         return $this->render('date', [
             'value' => date('Y-m-d', strtotime($value)),
             'name' => $this->inputName(),
@@ -36,7 +37,7 @@ class FieldDate extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
+        $value = $_POST[$this->name] ?? '';
         if ($simple) {
             return $value;
         }
@@ -48,16 +49,6 @@ class FieldDate extends Field
 
     public function show($row): string
     {
-        return $this->cell($row[$this->name] ? \Simflex\Core\Time::userfull($row[$this->name]) : '');
-    }
-
-    public static function typeLabel(): string
-    {
-        return 'Дата';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
+        return $this->cell($row[$this->name] ? Time::userfull($row[$this->name]) : '');
     }
 }

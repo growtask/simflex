@@ -24,7 +24,7 @@ class ModelSettings extends ModelBase
     }
 
     /**
-     * @return array<string, string> alias => value of all the settings
+     * @return array<string, string> alias => value всех настроек
      */
     public static function values(): array
     {

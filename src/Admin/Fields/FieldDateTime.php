@@ -48,14 +48,4 @@ class FieldDateTime extends Field
         $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
         return $this->cell(str_replace(' ', '<br/>', $value));
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Дата и время';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
-    }
 }

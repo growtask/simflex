@@ -13,9 +13,9 @@ use Simflex\Core\Page;
 use Simflex\Extensions\Content\Model\ModelContent;
 
 /**
- * ComContent class
+ * Класс ComContent
  *
- * Output content on site page
+ * Вывод контента на странице сайта
  *
  */
 class Content extends ComponentBase
@@ -31,7 +31,7 @@ class Content extends ComponentBase
             $content['params'] = unserialize($content['params']);
         }
 
-        // /404 is the service page that missing paths are redirected to
+        // /404 — служебная страница, на которую перенаправляются несуществующие пути
         if (!$content && $path !== '/404') {
             Log::warning('active content with path {path} not found', ['path' => $path]);
         }
@@ -93,7 +93,7 @@ class Content extends ComponentBase
             $child['params'] = unserialize($child['params']);
         }
 
-        // sort ascending, by param
+        // сортировка по возрастанию, по параметру
         usort($children, function ($a, $b) use ($sort) {
             return $a['params'][$sort] > $b['params'][$sort] ? 1 : -1;
         });
@@ -203,7 +203,7 @@ class Content extends ComponentBase
                     }
                 }
 
-                // count all values
+                // считаем все значения
                 $cnt = DB::result(
                     'SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
                         ' AND ',
@@ -212,7 +212,7 @@ class Content extends ComponentBase
                     'cnt'
                 );
 
-                // hack: fix this.
+                // костыль: исправить.
                 $pageCount = 15;
                 $pages = $cnt / $pageCount;
                 $page = (int)Container::getRequest()->get('page');
@@ -248,7 +248,7 @@ class Content extends ComponentBase
                 exit;
             }
 
-            // load home here to avoid issues with templater
+            // загружаем главную здесь, чтобы избежать проблем с шаблонизатором
             $content = $this->get('/');
             $html = $this->render(self::findTemplateFile('base/404.tpl'), get_defined_vars());
         }

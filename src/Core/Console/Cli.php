@@ -13,42 +13,42 @@ use Simflex\Core\DI\Injector;
 use Simflex\Core\Log;
 
 /**
- * CLI command bootstrapper
+ * Запуск CLI-команд
  */
 class Cli
 {
     /**
-     * @var array|mixed List of all available providers
+     * @var array|mixed Список всех доступных провайдеров
      */
     protected array $providers;
 
     /**
-     * @var string|mixed User input provider
+     * @var string|mixed Провайдер, введенный пользователем
      */
     public string $provider;
 
     /**
-     * @var string|mixed User input command (method)
+     * @var string|mixed Команда (метод), введенная пользователем
      */
     public string $command;
 
     /**
-     * @var ReflectionClass Loaded reflection class
+     * @var ReflectionClass Загруженный класс
      */
     protected ReflectionClass $class;
 
     /**
-     * @var ReflectionMethod Loaded method
+     * @var ReflectionMethod Загруженный метод
      */
     protected ReflectionMethod $method;
 
     /**
-     * @var Help Method's attribute
+     * @var Help Атрибут метода
      */
     protected Help $methodHelp;
 
     /**
-     * @param array{0: string, 1: string} $cmd Command list
+     * @param array{0: string, 1: string} $cmd Команда
      */
     public function __construct(array $cmd)
     {
@@ -59,7 +59,7 @@ class Cli
     }
 
     /**
-     * @return bool true if provider was found
+     * @return bool true, если провайдер найден
      */
     public function hasProvider(): bool
     {
@@ -67,8 +67,8 @@ class Cli
     }
 
     /**
-     * Attempts to load the class
-     * @return bool true if loaded
+     * Пытается загрузить класс
+     * @return bool true, если загружен
      */
     public function tryLoadClass(): bool
     {
@@ -81,8 +81,8 @@ class Cli
     }
 
     /**
-     * Attempts to load the method
-     * @return bool true if loaded
+     * Пытается загрузить метод
+     * @return bool true, если загружен
      */
     public function tryLoadMethod(): bool
     {
@@ -100,17 +100,17 @@ class Cli
     }
 
     /**
-     * Executes the command
-     * @param array $args Argument list
+     * Выполняет команду
+     * @param array $args Список аргументов
      */
     public function execute(array $args): void
     {
         try {
-            // setup class
+            // готовим класс
             $ctor = $this->class->getConstructor();
             $instance = $this->class->newInstance(...($ctor ? Injector::resolve($ctor) : []));
 
-            // resolve method
+            // находим метод
             $argList = [];
             $lastIdx = 0;
             foreach ($this->method->getParameters() as $param) {
@@ -133,7 +133,7 @@ class Cli
                 }
             }
 
-            // invoke method
+            // вызываем метод
             $this->method->invoke($instance, ...$argList);
         } catch (Exception $ex) {
             Log::emergency('Unable to execute. Error: {error}', ['error' => $ex->getMessage()]);
@@ -141,10 +141,10 @@ class Cli
     }
 
     /**
-     * Returns command attribute for an item, if any
-     * @param ReflectionMethod|ReflectionParameter $item item
-     * @param string $class attribute class
-     * @return Help|null object or null
+     * Возвращает атрибут команды элемента, если он есть
+     * @param ReflectionMethod|ReflectionParameter $item элемент
+     * @param string $class класс атрибута
+     * @return Help|null объект или null
      */
     protected function getAttribute(ReflectionMethod|ReflectionParameter $item, string $class): ?Help
     {
@@ -157,7 +157,7 @@ class Cli
     }
 
     /**
-     * Prints all available providers to log
+     * Выводит в лог все доступные провайдеры
      */
     public function printProviders(): void
     {
@@ -167,7 +167,7 @@ class Cli
     }
 
     /**
-     * Prints all available methods to log
+     * Выводит в лог все доступные методы
      */
     public function printMethods(): void
     {
@@ -181,7 +181,7 @@ class Cli
     }
 
     /**
-     * Prints current method's help to log
+     * Выводит в лог справку по текущему методу
      */
     public function printHelp(): void
     {
@@ -216,9 +216,9 @@ class Cli
     }
 
     /**
-     * Formats parameter name
-     * @param ReflectionParameter $param Parameter
-     * @return string Formatted name
+     * Форматирует имя параметра
+     * @param ReflectionParameter $param Параметр
+     * @return string Отформатированное имя
      */
     protected function formatParameterName(ReflectionParameter $param, ?int $idx = null): string
     {

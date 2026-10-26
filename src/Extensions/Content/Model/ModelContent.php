@@ -18,7 +18,7 @@ use Simflex\Core\ModelBase;
  * @property string $params
  * @property string $file
  * @property string $photo
- * @property string|null $template Page template key, see \Simflex\Extensions\Content\ContentTemplates
+ * @property string|null $template Ключ шаблона страницы, см. \Simflex\Extensions\Content\ContentTemplates
  * @property int $npp
  */
 class ModelContent extends ModelBase

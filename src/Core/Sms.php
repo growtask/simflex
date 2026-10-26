@@ -6,17 +6,17 @@ use Simflex\Core\Helpers\Phone;
 use Simflex\Core\Sms\DriverBase;
 
 /**
- * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает
+ *       на SQL. Будет вынесено в отдельный composer-пакет.
  */
 class Sms
 {
     protected static ?DriverBase $driver = null;
 
     /**
-     * @param string $from [optional = ''] Если '', берем значение из настроек сайта: sms_sender
-     * @param string $extra [optional = ''] - например номер заказа, чтобы потом можно было отследить
-     * @param int $lastSendTimeout [optional = 0] Лимит времени в секундах после последней отправки смс на этот номер
+     * @param string $from [по умолчанию ''] Если '', берем значение из настроек сайта: sms_sender
+     * @param string $extra [по умолчанию ''] - например номер заказа, чтобы потом можно было отследить
+     * @param int $lastSendTimeout [по умолчанию 0] Лимит времени в секундах после последней отправки смс на этот номер
      * @return boolean|string отправлено или нет, если сервис вернул ошибку, функция вернет эту ошибку в виде строки
      */
     public static function send($phone, string $text, string $from = '', $extra = '', int $lastSendTimeout = 0): string|bool
@@ -109,7 +109,7 @@ class Sms
     }
 
     /**
-     * @param array $driverInfo data from sms_driver
+     * @param array $driverInfo данные из sms_driver
      */
     protected static function setDriverByInfo($driverInfo): void
     {
@@ -117,7 +117,7 @@ class Sms
     }
 
     /**
-     * @param array $driverInfo data from sms_driver
+     * @param array $driverInfo данные из sms_driver
      */
     protected static function createDriverByInfo($driverInfo): ?DriverBase
     {

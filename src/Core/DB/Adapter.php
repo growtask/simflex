@@ -5,117 +5,117 @@ namespace Simflex\Core\DB;
 interface Adapter
 {
     /**
-     * Sets up connection to a database
+     * Устанавливает соединение с базой
      *
-     * @return bool Connection status
+     * @return bool Состояние соединения
      */
     public function connect(): bool;
 
     /**
-     * Executes a SQL query
+     * Выполняет SQL-запрос
      *
-     * @param string $q SQL query
-     * @param array $params Vars for prepared statement
-     * @return mixed False if fails, adapter-specific object containing result
+     * @param string $q SQL-запрос
+     * @param array $params Параметры подготовленного запроса
+     * @return mixed False при ошибке, иначе объект результата в формате адаптера
      */
     public function query(string $q, array $params = []): mixed;
 
     /**
-     * Fetches current row
+     * Получает текущую запись
      *
-     * @param mixed $result Adapter-specific result object
-     * @return mixed False if fails, assoc-array row if success
+     * @param mixed $result Объект результата в формате адаптера
+     * @return mixed False при ошибке, иначе запись в виде ассоциативного массива
      */
     public function fetch(mixed $result): mixed;
 
     /**
-     * Seeks result to a specific index
+     * Перемещает указатель результата на заданный индекс
      *
-     * @param mixed $result Adapter-specific result object
-     * @param int $index Index to seek to (0 <= $index <= rowCount)
-     * @return bool True on success, false on failure
+     * @param mixed $result Объект результата в формате адаптера
+     * @param int $index Индекс для перехода (0 <= $index <= rowCount)
+     * @return bool True при успехе, false при ошибке
      */
     public function seek(&$result, int $index): bool;
 
     /**
-     * Returns value for specific field
+     * Возвращает значение заданного поля
      *
-     * @param mixed $result Adapter-specific result object
-     * @param int|string $field Column name/index
-     * @return mixed False if fails, value on success
+     * @param mixed $result Объект результата в формате адаптера
+     * @param int|string $field Имя или индекс столбца
+     * @return mixed False при ошибке, иначе значение
      */
     public function result(mixed $result, int|string $field): mixed;
 
     /**
-     * Makes custom assoc-array
+     * Строит ассоциативный массив
      *
-     * @param mixed $result Adapter-specific result object
-     * @param bool|string $f1 Column name to use as key or false to use index
-     * @param bool|string $f2 Second column name for inner rows
-     * @return bool|array Array containing results
+     * @param mixed $result Объект результата в формате адаптера
+     * @param bool|string $f1 Имя столбца для ключа или false, чтобы использовать индекс
+     * @param bool|string $f2 Имя второго столбца для вложенных записей
+     * @return bool|array Массив с результатами
      */
     public function assoc(mixed $result, bool|string $f1, bool|string $f2): bool|array;
 
     /**
-     * Returns last insert ID
+     * Возвращает ID последней вставки
      *
-     * @return string Last insert ID
+     * @return string ID последней вставки
      */
     public function insertId(): string;
 
     /**
-     * Returns last SQL error code
+     * Возвращает код последней ошибки SQL
      *
-     * @return int Last error code
+     * @return int Код последней ошибки
      */
     public function errno(): int;
 
     /**
-     * Returns error string or null if error code was not specified by the adapter
+     * Возвращает текст ошибки или null, если адаптер не задал код ошибки
      *
-     * @return string|null Error message
+     * @return string|null Сообщение об ошибке
      */
     public function error(): ?string;
 
     /**
-     * Returns SQLSTATE error code
+     * Возвращает код ошибки SQLSTATE
      */
     public function errorCode(): ?string;
 
     /**
-     * Returns formatted error message
+     * Возвращает отформатированное сообщение об ошибке
      *
-     * @return string Error message
+     * @return string Сообщение об ошибке
      */
     public function errorPrepared(): string;
 
     /**
-     * Escapes string
+     * Экранирует строку
      *
-     * @param string $str String to escape
-     * @return string Escaped string
+     * @param string $str Строка для экранирования
+     * @return string Экранированная строка
      */
     public function escape(string $str): string;
 
     /**
-     * Returns amount of affected rows by the last executed statement
+     * Возвращает число записей, затронутых последним запросом
      *
-     * @return int Row count
+     * @return int Число записей
      */
     public function affectedRows(): int;
 
     /**
-     * Begins transaction
+     * Начинает транзакцию
      */
     public function beginTransaction(): void;
 
     /**
-     * Commits transaction
+     * Фиксирует транзакцию
      */
     public function commitTransaction(): void;
 
     /**
-     * Rollbacks transaction
+     * Откатывает транзакцию
      */
     public function rollbackTransaction(): void;
 }

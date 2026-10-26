@@ -33,13 +33,13 @@ class Column extends TableElementBase
         return $this->params->compare($other->params) && $this->name == $other->name && $this->type == $other->type;
     }
 
-    // ------------ BUILDER ------------ //
+    // ------------ ПОСТРОЕНИЕ ------------ //
 
     /**
-     * Set data type
+     * Задаёт тип данных
      *
-     * @param string $type Type name
-     * @param int|null $length Type length
+     * @param string $type Имя типа
+     * @param int|null $length Длина типа
      */
     public function dataType(string $type, ?int $length = null): static
     {
@@ -116,10 +116,10 @@ class Column extends TableElementBase
         return $this;
     }
 
-    // ------------ UTIL ------------ //
+    // ------------ УТИЛИТЫ ------------ //
 
     /**
-     * Returns params
+     * Возвращает параметры
      */
     public function getParams(): ColumnParams
     {

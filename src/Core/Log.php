@@ -5,7 +5,7 @@ namespace Simflex\Core;
 use Psr\Log\LoggerInterface;
 
 /**
- * PSR-3 logger facade
+ * Фасад PSR-3 логгера
  *
  * @method static void emergency(string|\Stringable $message, array $context = [])
  * @method static void alert(string|\Stringable $message, array $context = [])

@@ -6,11 +6,11 @@ use Exception;
 use Simflex\Core\ModelBase;
 
 /**
- * UserRolePrivilege model
+ * Модель UserRolePrivilege
  *
  * @property int $id
  * @property int $role_id
- * @property string $privilege Privilege name, see \Simflex\Core\Privilege
+ * @property string $privilege Имя привилегии, см. \Simflex\Core\Privilege
  */
 class UserRolePrivilege extends ModelBase
 {

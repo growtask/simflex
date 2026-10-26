@@ -6,7 +6,7 @@ use Simflex\Core\DB\Expr;
 use Simflex\Core\ModelBase;
 
 /**
- * Class UserAuth
+ * Класс UserAuth
  * @package Simflex\Auth\Models
  * @property string $token
  */

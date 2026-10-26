@@ -3,14 +3,14 @@
 namespace Simflex\Core\Mail;
 
 /**
- * Mail transport interface
+ * Интерфейс почтового транспорта
  */
 interface Transport
 {
     /**
-     * Sends the mail
-     * @param Mail $mail Mail object
-     * @return bool "true" if sent successfully
+     * Отправляет письмо
+     * @param Mail $mail Письмо
+     * @return bool true, если отправлено успешно
      */
     public function send(Mail $mail): bool;
 }

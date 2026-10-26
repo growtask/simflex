@@ -9,7 +9,7 @@ return new class () implements \Simflex\Core\DB\Migration {
         //     $c->id('blog_id');
         //     $c->string('name');
         // });
-        // initial data, written once the tables are created:
+        // начальные данные, записываются после создания таблиц:
         // $s->seed(fn () => \App\Models\Blog::bulkInsert([['name' => 'First']]));
     }
 

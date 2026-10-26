@@ -44,14 +44,4 @@ class FieldBool extends FieldInt
         }
         return '';
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Булевая переменная';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
-    }
 }

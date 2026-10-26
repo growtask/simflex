@@ -5,7 +5,7 @@ namespace Simflex\Core\Models;
 use Simflex\Core\ModelBase;
 
 /**
- * Class Migration
+ * Класс Migration
  * @package Simflex\Core\Models
  *
  * @property int id

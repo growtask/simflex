@@ -5,7 +5,7 @@ namespace Simflex\Core;
 use Simflex\Core\DB\Adapter;
 
 /**
- * Class DB
+ * Класс DB
  * @package Simflex\Core
  * @see Adapter
  */
@@ -25,7 +25,7 @@ class DB
     }
 
     /**
-     * Creates new adapter instance
+     * Создаёт новый экземпляр адаптера
      */
     private static function create(): Adapter
     {
@@ -66,7 +66,7 @@ class DB
     }
 
     /**
-     * @param string $q SQL query to execute
+     * @param string $q SQL-запрос для выполнения
      * @see Adapter::result()
      */
     public static function result(string $q, int|string $field = '', array $params = []): mixed
@@ -75,7 +75,7 @@ class DB
     }
 
     /**
-     * @param string $q SQL query to execute
+     * @param string $q SQL-запрос для выполнения
      * @see Adapter::assoc()
      */
     public static function assoc(string $q, bool|string $field1 = false, bool|string $field2 = false, array $params = []): bool|array
@@ -116,10 +116,10 @@ class DB
     }
 
     /**
-     * Returns time delta
+     * Возвращает разницу во времени
      *
-     * @param string $time Time point
-     * @param int $length String limit
+     * @param string $time Момент времени
+     * @param int $length Ограничение длины строки
      */
     public static function getTime(string $time, int $length = 4): string
     {
@@ -153,9 +153,9 @@ class DB
     }
 
     /**
-     * Escapes array or string
+     * Экранирует массив или строку
      *
-     * @param array|string $mixed Target to escape
+     * @param array|string $mixed Что экранировать
      * @see Adapter::escape()
      */
     public static function escape(array|string $mixed): array|string
@@ -172,11 +172,11 @@ class DB
     }
 
     /**
-     * Enumerates possible values for column
+     * Перечисляет возможные значения столбца
      *
-     * @param string $table Table name
-     * @param string $field Column name
-     * @return array All possible values
+     * @param string $table Имя таблицы
+     * @param string $field Имя столбца
+     * @return array Все возможные значения
      */
     public static function enumValues(string $table, string $field): array
     {
@@ -209,10 +209,10 @@ class DB
     }
 
     /**
-     * Returns column information
+     * Возвращает сведения о столбце
      *
-     * @param string $table Table name
-     * @param string $field Column name
+     * @param string $table Имя таблицы
+     * @param string $field Имя столбца
      */
     public static function columnInfo(string $table, string $field): mixed
     {
@@ -228,7 +228,7 @@ class DB
     }
 
     /**
-     * Starts DB transaction
+     * Начинает транзакцию
      */
     public static function transactionStart(): void
     {
@@ -236,7 +236,7 @@ class DB
     }
 
     /**
-     * Commits DB transaction
+     * Фиксирует транзакцию
      */
     public static function transactionCommit(): void
     {
@@ -244,7 +244,7 @@ class DB
     }
 
     /**
-     * Rolls back DB transaction
+     * Откатывает транзакцию
      */
     public static function transactionRollback(): void
     {
@@ -252,9 +252,9 @@ class DB
     }
 
     /**
-     * Ends transaction
+     * Завершает транзакцию
      *
-     * @param bool $success True to commit, false to rollback
+     * @param bool $success True — зафиксировать, false — откатить
      */
     public static function transactionEnd(bool $success): void
     {
@@ -262,8 +262,8 @@ class DB
     }
 
     /**
-     * @param mixed $r Adapter-specific result
-     * @param int $index Index
+     * @param mixed $r Результат в формате адаптера
+     * @param int $index Индекс
      * @see Adapter::seek()
      */
     public static function seek(&$r, int $index): bool
@@ -272,9 +272,9 @@ class DB
     }
 
     /**
-     * Resets result to position 0
+     * Сбрасывает результат на позицию 0
      *
-     * @param mixed $r Adapter-specific result
+     * @param mixed $r Результат в формате адаптера
      */
     public static function fetchReset(&$r): bool
     {

@@ -67,7 +67,7 @@ class Page
     }
 
     /**
-     * @param string $delimiter (optional = '') разделитель, например: '<hr/>'
+     * @param string $delimiter (по умолчанию '') разделитель, например: '<hr/>'
      */
     public static function position(string $posname, string $delimiter = ''): string
     {
@@ -96,7 +96,7 @@ class Page
     }
 
     /**
-     * Adds class and postexec from the modules declared in code, skips the items of unknown modules
+     * Добавляет class и postexec из модулей, объявленных в коде, пропускает записи неизвестных модулей
      */
     public static function moduleRows(array $rows): array
     {
@@ -115,9 +115,9 @@ class Page
     }
 
     /**
-     * @param string $file Web path to asset file
-     * @param int $idx Priority from highest 0 to lowest 100
-     * @param string|null $type css/js - optional, to specify directly what is this asset
+     * @param string $file Веб-путь к файлу статики
+     * @param int $idx Приоритет от высшего 0 до низшего 100
+     * @param string|null $type css/js - необязательно, явно задает тип файла
      * @throws \Exception
      */
     public static function addAsset(string $file, int $idx = 100, ?string $type = null): void
@@ -151,7 +151,7 @@ class Page
 
     /**
      * @param string $file Путь к подключаемому скрипту
-     * @param int $idx [optional = 100] Приоритет, 0 - самый высокий, 100 - самый низкий
+     * @param int $idx [по умолчанию 100] Приоритет, 0 - самый высокий, 100 - самый низкий
      */
     public static function js(string $file, int $idx = 100): void
     {
@@ -171,7 +171,7 @@ class Page
 
     /**
      * Добавляет JS код в блок подключения скриптов
-     * @param string $js inline js code
+     * @param string $js встроенный js-код
      */
     public static function jsInline(string $js, int $idx = 100): bool
     {

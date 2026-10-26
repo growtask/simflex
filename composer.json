@@ -30,6 +30,7 @@
     "ext-gd": "*",
     "ext-pdo": "*",
     "ext-json": "*",
+    "ext-mbstring": "*",
     "psr/log": "*",
     "maximebf/debugbar": "1.22.*",
     "filp/whoops": "2.15.*",
@@ -43,6 +44,9 @@
   "autoload": {
     "psr-4": {
       "Simflex\\": "src"
-    }
+    },
+    "files": [
+      "src/functions.php"
+    ]
   }
 }

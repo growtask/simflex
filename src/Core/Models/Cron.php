@@ -5,9 +5,9 @@ namespace Simflex\Core\Models;
 use Simflex\Core\ModelBase;
 
 /**
- * Admin panel settings of a cron job declared in provider/cron.php, see \Simflex\Core\Cron\CronRegistry
+ * Настройки в админке задачи cron, объявленной в provider/cron.php, см. \Simflex\Core\Cron\CronRegistry
  * @property int id
- * @property string job Job key in provider/cron.php
+ * @property string job Ключ задачи в provider/cron.php
  * @property bool active
  * @property string timing
  */

@@ -27,11 +27,11 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Request constructor.
+     * Конструктор Request.
      */
     public function __construct()
     {
-        // cache values
+        // кешируем значения
         $this->host = (string)($_SERVER['HTTP_HOST'] ?? '');
         $this->isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off';
         $this->requestMethod = (string)($_SERVER['REQUEST_METHOD'] ?? 'GET');
@@ -44,12 +44,12 @@ class Request implements \Simflex\Core\DI\Service
 
         foreach ($_SERVER as $key => $value) {
             if (str_starts_with($key, 'HTTP_')) {
-                // convert HTTP_X_X to x-x
+                // превращаем HTTP_X_X в x-x
                 $this->headers[strtolower(str_replace('_', '-', substr($key, 5)))] = $value;
             }
         }
 
-        // parse and compose URL
+        // разбираем и собираем URL
         $this->setPath(parse_url((string)($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
     }
 
@@ -66,7 +66,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Returns full URL path
+     * Возвращает полный путь URL
      */
     public function getPath(): string
     {
@@ -74,7 +74,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Returns broken down URL parts
+     * Возвращает URL, разобранный на части
      */
     public function getUrlParts(): array
     {
@@ -82,8 +82,8 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Returns last part of URL path
-     * @return string  Last part of URL path
+     * Возвращает последнюю часть пути URL
+     * @return string  Последняя часть пути URL
      */
     public function getUrlLastPart(): string
     {
@@ -91,7 +91,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Checks if the request was POST
+     * Проверяет, что запрос - POST
      */
     public function isPost(): bool
     {
@@ -99,7 +99,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Checks if the request body is JSON data
+     * Проверяет, что тело запроса - JSON
      */
     public function isJson(): bool
     {
@@ -107,7 +107,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Checks if the request was AJAX
+     * Проверяет, что запрос - AJAX
      */
     public function isAjax(): bool
     {
@@ -120,7 +120,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Gets GET parameters
+     * Параметры GET
      */
     public function get(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -128,7 +128,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Gets POST parameters
+     * Параметры POST
      */
     public function post(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -136,7 +136,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Gets REQUEST parameters
+     * Параметры REQUEST
      */
     public function request(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -144,7 +144,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Gets input cookies
+     * Входящие cookies
      */
     public function cookie(int|string|null $k = null, mixed $default = null): mixed
     {
@@ -152,7 +152,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Gets input files
+     * Входящие файлы
      */
     public function file(int|string|null $k = null): mixed
     {
@@ -160,7 +160,7 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Returns input headers
+     * Входящие заголовки
      */
     public function header(?string $k = null): mixed
     {
@@ -188,10 +188,10 @@ class Request implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Builds query from existing GET parameters.
-     * @param array $extra Extra parameters
-     * @param array $ignore Ignore keys
-     * @return string Query
+     * Собирает строку запроса из текущих GET-параметров.
+     * @param array $extra Дополнительные параметры
+     * @param array $ignore Ключи, которые нужно пропустить
+     * @return string Строка запроса
      */
     public function buildQuery(array $extra = [], array $ignore = []): string
     {

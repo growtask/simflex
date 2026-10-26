@@ -1,10 +1,10 @@
 <?php
 
 /*
-Fill in the events you want to listen to
-Namespace => [Listener, Listener, ...]
+Перечислите события, которые нужно слушать
+Событие => [Слушатель, Слушатель, ...]
 
-Example:
+Пример:
 
 return [
     Init::class => [

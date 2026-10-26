@@ -20,8 +20,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sets redirect url
-     * @param string $url URL to redirect to
+     * Задает url редиректа
+     * @param string $url URL для редиректа
      */
     public function redirect(string $url): static
     {
@@ -30,8 +30,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Redirect and quit
-     * @param string $url URL to redirect to
+     * Редирект и завершение
+     * @param string $url URL для редиректа
      */
     #[NoReturn]
     public function redirectNow(string $url): never
@@ -41,11 +41,11 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sets the cookie
+     * Устанавливает cookie
      *
-     * @param string $name Name
-     * @param string $value Value
-     * @param array $options Options
+     * @param string $name Имя
+     * @param string $value Значение
+     * @param array $options Параметры
      */
     public function setCookie(string $name, string $value = '', array $options = []): static
     {
@@ -58,10 +58,10 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sets the header
+     * Устанавливает заголовок
      *
-     * @param string $name Name
-     * @param string $value Value
+     * @param string $name Имя
+     * @param string $value Значение
      */
     public function setHeader(string $name, string $value): static
     {
@@ -70,8 +70,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sends a header with status code
-     * @param int $code Status code string
+     * Отправляет заголовок с кодом статуса
+     * @param int $code Код статуса
      */
     public function setStatusCode(int $code): static
     {
@@ -80,8 +80,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sets the content type
-     * @param string $contentType Content type
+     * Устанавливает тип содержимого
+     * @param string $contentType Тип содержимого
      */
     public function setContentType(string $contentType): static
     {
@@ -90,8 +90,8 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Sets the content disposition header
-     * @param string $fileName File name
+     * Устанавливает заголовок Content-Disposition
+     * @param string $fileName Имя файла
      */
     public function setContentDisposition(string $fileName): static
     {
@@ -100,10 +100,10 @@ abstract class Response implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Utility function to send a file
+     * Вспомогательная функция для отдачи файла
      *
-     * @param string $fileName File name
-     * @param string $fileContent Content of the file
+     * @param string $fileName Имя файла
+     * @param string $fileContent Содержимое файла
      */
     public function outputFile(string $fileName, string $fileContent): void
     {

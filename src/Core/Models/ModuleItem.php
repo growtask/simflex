@@ -6,7 +6,7 @@ use Simflex\Core\ModelBase;
 
 /**
  * @property int item_id
- * @property string module Module class, see \Simflex\Core\ExtensionRegistry
+ * @property string module Класс модуля, см. \Simflex\Core\ExtensionRegistry
  * @property int menu_id
  * @property string posname
  * @property boolean active

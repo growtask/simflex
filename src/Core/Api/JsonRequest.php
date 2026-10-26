@@ -12,7 +12,7 @@ class JsonRequest extends Request
     }
 
     /**
-     * Returns JSON array
+     * Возвращает JSON в виде массива
      */
     public function json(): array
     {

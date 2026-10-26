@@ -3,13 +3,13 @@
 namespace Simflex\Admin\Fields;
 
 /**
- * Base for the fields choosing a value from a registry in code (classes, privileges, tables...),
- * see \Simflex\Core\ExtensionRegistry. Rendered as the same custom dropdown as a foreign key
+ * Основа полей выбора значения из реестра в коде (классы, привилегии, таблицы...),
+ * см. \Simflex\Core\ExtensionRegistry. Выводится тем же выпадающим списком, что и внешний ключ
  */
 abstract class FieldExtensionSelect extends Field
 {
     /**
-     * @return array<string, string> value => name
+     * @return array<string, string> значение => название
      */
     abstract protected function options(): array;
 

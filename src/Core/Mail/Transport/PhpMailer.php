@@ -15,7 +15,7 @@ class PhpMailer implements Transport
     {
         $cfg = Container::getConfig();
 
-        // setup phpmailer
+        // настраиваем phpmailer
         $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
         $mailer->isSMTP();
         $mailer->SMTPAuth = true;
@@ -28,7 +28,7 @@ class PhpMailer implements Transport
         $mailer->CharSet = \PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
         $mailer->SMTPOptions = [
             'ssl' => [
-                'verify_peer' => false, // this has to be done to support local network mailing (e.g. connecting to 10.x.x.x)
+                'verify_peer' => false, // нужно для отправки через локальную сеть (например, подключение к 10.x.x.x)
                 'verify_peer_name' => false,
                 'allow_self_signed' => true,
             ],
@@ -41,7 +41,7 @@ class PhpMailer implements Transport
             };
         }
 
-        // fill in addresses
+        // заполняем адреса
         $mailer->addAddress($mail->to);
         array_walk($mail->cc, fn(string $str) => $mailer->addCC($str));
         array_walk($mail->bcc, fn(string $str) => $mailer->addBCC($str));
@@ -49,16 +49,16 @@ class PhpMailer implements Transport
             $mailer->addReplyTo($mail->replyTo);
         }
 
-        // fill in attachments
+        // заполняем вложения
         array_walk($mail->attachments, fn(string $str) => $mailer->addAttachment($str));
 
-        // fill body
+        // заполняем тело
         $mailer->isHTML();
         $mailer->Body = $mail->body;
         $mailer->AltBody = $mail->altBody;
         $mailer->Subject = $mail->subject;
 
-        // take off
+        // отправляем
         return $mailer->send();
     }
 }

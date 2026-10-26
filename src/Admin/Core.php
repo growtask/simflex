@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\Structure\Repository;
 use Simflex\Core\Container;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
@@ -28,7 +27,7 @@ class Core
 
     /**
      * Корень админки без завершающего слеша, задаётся в конфиге (adminPath)
-     * @return string like /admin
+     * @return string например /admin
      */
     public static function root(): string
     {
@@ -43,7 +42,7 @@ class Core
     /**
      * Адрес внутри админки
      * @param string $path Путь относительно корня админки, например 'content/'
-     * @return string like /admin/content (без завершающего слеша)
+     * @return string например /admin/content (без завершающего слеша)
      */
     public static function url(string $path = ''): string
     {
@@ -64,7 +63,7 @@ class Core
 
     /**
      * Url опубликованной статики админки ядра (см. Assets::publish)
-     * @return string like /cache/assets/1a2b3c4d5e6f7a8b/Admin
+     * @return string например /cache/assets/1a2b3c4d5e6f7a8b/Admin
      */
     public static function webVendorPath(): string
     {
@@ -99,7 +98,7 @@ class Core
         // сегменты пути относительно корня админки: /admin/content/ => ['content', '']
         self::$uri = explode('/', ltrim(substr(self::$path, strlen(static::root())), '/'));
 
-        // ajax: the response is the section content only, without the admin panel layout
+        // ajax: в ответе только содержимое раздела, без макета админки
         if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
             self::$ajax = true;
             self::$isAjax = true;
@@ -121,19 +120,17 @@ class Core
             return;
         }
 
-        foreach (Menu::all() as $key => $item) {
+        foreach (Menu::getItems() as $key => $item) {
             if (!$user->ican($item->privilege)) {
                 continue;
             }
             $row = [
                 'id' => $key,
-                'pid' => Menu::parent($key),
+                'pid' => Menu::getParent($key),
                 // ссылки объявлены относительно корня админки
                 'link' => str_starts_with($item->link, '/') ? static::url($item->link) : rtrim($item->link, '/'),
                 'name' => $item->name,
                 'handler' => $item->handler,
-                // table name of a section handled by a table description
-                'table' => $item->handler ? Repository::tableName($item->handler) : '',
                 'icon' => $item->icon,
                 'hidden' => $item->hidden,
             ];
@@ -167,9 +164,9 @@ class Core
     }
 
     /**
-     * Menu items available to the user: parent id ('' for the root) => id => row
-     * (id, pid, link, name, handler, table, icon, hidden).
-     * The id is the item's link as declared in Menu
+     * Пункты меню, доступные пользователю: id родителя ('' для корня) => id => запись
+     * (id, pid, link, name, handler, icon, hidden).
+     * id — ссылка пункта, как она объявлена в Menu
      */
     public static function menu(): array
     {
