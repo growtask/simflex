@@ -15,9 +15,6 @@ function onChangeModule(select) {
         $('.ajax-params').html(r.right);
         $('.ajax-params-left').html(r.left);
         $('.ajax-params :checkbox, .ajax-params-left :checkbox').uniform();
-        
-        var $menuId = $('[name="menu_id"]');
-        $menuId.data('val',$menuId.val()).html(r.menu_items).val($menuId.data('val'));
     });
 }
 

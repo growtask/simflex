@@ -65,7 +65,7 @@ class Repository
     /**
      * Settings of a module/component declared in code (ExtensionBase::adminParams()).
      *
-     * @param string $class Module/component class; admin modules may be given by short name
+     * @param string $class Module/component class
      * @param string $table Admin table the form belongs to
      * @return array<string, array<string, array>> param_pid => param_id => row.
      *         Groups have an empty 'class' and are listed under pid ''; their fields under the group id.
@@ -227,13 +227,31 @@ class Repository
     }
 
     /**
+     * Table name of a Table class, as it is registered in handlers.php
+     *
+     * @return string '' for a class not in the registry or not a table
+     */
+    public static function tableName(string $class): string
+    {
+        return (string)array_search(ltrim($class, '\\'), static::tableClasses(), true);
+    }
+
+    /**
      * @return array<string, class-string<Table>> table name => Table class
      */
     public static function tableClasses(): array
     {
-        $classes = require SF_CORE_ROOT_PATH . '/Admin/Structure/tables.php';
+        return array_filter(static::handlerClasses(), fn(string $class) => is_subclass_of($class, Table::class));
+    }
 
-        $appFile = SF_ROOT_PATH . '/Admin/Structure/tables.php';
+    /**
+     * @return array<string, class-string<Handler>> name => Handler class, the core and the app ones
+     */
+    public static function handlerClasses(): array
+    {
+        $classes = require SF_CORE_ROOT_PATH . '/Admin/Structure/handlers.php';
+
+        $appFile = SF_ROOT_PATH . '/Admin/Structure/handlers.php';
         if (is_file($appFile)) {
             $classes = array_merge($classes, require $appFile);
         }
@@ -295,14 +313,7 @@ class Repository
     protected static function extensionClass(string $class): string
     {
         $class = ltrim($class, '\\');
-        if ($class === '') {
-            return '';
-        }
-        if (!str_contains($class, '\\')) {
-            $class = "Simflex\\Admin\\Modules\\$class\\$class";
-        }
-
-        return is_a($class, HasAdminParams::class, true) ? $class : '';
+        return $class !== '' && is_a($class, HasAdminParams::class, true) ? $class : '';
     }
 
     protected static function extensionFieldRow(FieldDefinition $field, string $class, int|string $pid, string $table): array

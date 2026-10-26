@@ -11,7 +11,7 @@ namespace Simflex\Core;
  * The user_privilege table is optional: it keeps the activity switched in the admin panel, a privilege without a row
  * takes it from code. Roles, users, menu items and widgets refer to a privilege by its name.
  */
-class Privilege
+class Privilege extends CodeRegistry
 {
     /** Developer: full access, has all the privileges, even the switched off ones. Can't be switched off */
     public const DEV = 'dev';
@@ -112,13 +112,9 @@ class Privilege
         return in_array(self::DEV, $names, true) ? array_keys(static::all()) : static::filterActive($names);
     }
 
-    /**
-     * Class declaring the privileges: the app's subclass from the config
-     */
-    public static function registryClass(): string
+    protected static function configProperty(): string
     {
-        $class = Container::isSet('config') ? (Container::getConfig()->privilegeClass ?? '') : '';
-        return $class && is_a($class, self::class, true) ? $class : self::class;
+        return 'privilegeClass';
     }
 
     /**

@@ -50,11 +50,7 @@ class Core
             }
         }
 
-        $q = 'SELECT alias, value FROM settings';
-        $rows = DB::assoc($q);
-        foreach ($rows as $row) {
-            self::$siteParams[$row['alias']] = $row['value'];
-        }
+        self::$siteParams = ModelSettings::values();
 
         static::initMenu();
     }
@@ -97,11 +93,7 @@ class Core
     public static function siteParam(string|bool $key = false, mixed $defaultValue = null, array $interp = []): mixed
     {
         if (!self::$siteParams) {
-            $q = 'SELECT alias, value FROM settings';
-            $rows = DB::assoc($q);
-            foreach ($rows as $row) {
-                self::$siteParams[$row['alias']] = $row['value'];
-            }
+            self::$siteParams = ModelSettings::values();
         }
 
         if ($key === false) {

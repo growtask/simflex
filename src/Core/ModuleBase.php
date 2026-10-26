@@ -11,14 +11,6 @@ abstract class ModuleBase extends ExtensionBase
     protected string $position = '';
 
     /**
-     * The panel the module is displayed in
-     */
-    public static function moduleType(): ModuleType
-    {
-        return ModuleType::Site;
-    }
-
-    /**
      * Run the module after the page content
      */
     public static function modulePostexec(): bool

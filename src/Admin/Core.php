@@ -2,10 +2,11 @@
 
 namespace Simflex\Admin;
 
+use Simflex\Admin\Structure\Repository;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Html\HtmlResponse;
+use Simflex\Core\Models\ModelSettings;
 use Simflex\Core\Privilege;
 
 class Core
@@ -16,7 +17,6 @@ class Core
     private static string $path = '';
     private static array $menuTree = [];
     private static array $menuById = [];
-    private static array $menuByLink = [];
     private static array|false $menuCur = false;
     private static array $crumbs = [];
     private static array $siteParams = [];
@@ -121,24 +121,24 @@ class Core
             return;
         }
 
-        $privilegeNames = "'" . join("','", DB::escape(array_values($user->getPrivileges()) ?: [''])) . "'";
-        $q = '
-            SELECT menu_id, menu_pid, link, name, model, icon, hidden
-            FROM admin_menu
-            WHERE privilege IN(' . $privilegeNames . ')
-            ORDER BY npp, menu_id
-        ';
-        $rows = DB::assoc($q) ?: [];
-        foreach ($rows as $row) {
-            // ссылки хранятся относительно корня админки
-            if (str_starts_with($row['link'], '/')) {
-                $row['link'] = static::url($row['link']);
-            } else {
-                $row['link'] = rtrim($row['link'], '/');
+        foreach (Menu::all() as $key => $item) {
+            if (!$user->ican($item->privilege)) {
+                continue;
             }
-            self::$menuTree[(int)$row['menu_pid']][(int)$row['menu_id']] = $row;
-            self::$menuById[(int)$row['menu_id']] = $row;
-            self::$menuByLink[md5($row['link'])] = $row;
+            $row = [
+                'id' => $key,
+                'pid' => Menu::parent($key),
+                // ссылки объявлены относительно корня админки
+                'link' => str_starts_with($item->link, '/') ? static::url($item->link) : rtrim($item->link, '/'),
+                'name' => $item->name,
+                'handler' => $item->handler,
+                // table name of a section handled by a table description
+                'table' => $item->handler ? Repository::tableName($item->handler) : '',
+                'icon' => $item->icon,
+                'hidden' => $item->hidden,
+            ];
+            self::$menuTree[$row['pid']][$key] = $row;
+            self::$menuById[$key] = $row;
             if ($row['link'] == self::$path) {
                 self::$menuCur = $row;
             }
@@ -150,11 +150,7 @@ class Core
             }
         }
 
-        $q = 'SELECT alias, value FROM settings';
-        $rows = DB::assoc($q);
-        foreach ($rows as $row) {
-            self::$siteParams[$row['alias']] = $row['value'];
-        }
+        self::$siteParams = ModelSettings::values();
     }
 
     public static function ajax(): bool
@@ -170,6 +166,11 @@ class Core
         return self::$uri[$i] ?? '';
     }
 
+    /**
+     * Menu items available to the user: parent id ('' for the root) => id => row
+     * (id, pid, link, name, handler, table, icon, hidden).
+     * The id is the item's link as declared in Menu
+     */
     public static function menu(): array
     {
         return self::$menuTree;
@@ -182,8 +183,8 @@ class Core
 
     private static function crumbsSet(array $item = []): void
     {
-        if (isset(self::$menuById[(int)$item['menu_pid']])) {
-            self::crumbsSet(self::$menuById[(int)$item['menu_pid']]);
+        if (isset(self::$menuById[$item['pid']])) {
+            self::crumbsSet(self::$menuById[$item['pid']]);
         }
         self::$crumbs[] = ['link' => $item['link'], 'name' => $item['name']];
     }

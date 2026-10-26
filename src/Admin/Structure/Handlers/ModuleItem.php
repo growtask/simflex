@@ -1,7 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Structure\Tables;
+namespace Simflex\Admin\Structure\Handlers;
 
+use Simflex\Admin\Base\ModuleItem as ModuleItemDriver;
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldModuleSelect;
 use Simflex\Admin\Fields\FieldString;
@@ -21,6 +22,7 @@ class ModuleItem extends Table
     {
         parent::__construct(
             orderBy: 'npp',
+            class: ModuleItemDriver::class,
             fields: [
                 new ActiveField(),
                 new IdField(

@@ -37,7 +37,7 @@ class Page
             WHERE active=1
             ORDER BY npp, item_id
         ';
-        $rows = static::moduleRows(DB::assoc($q), ModuleType::Site);
+        $rows = static::moduleRows(DB::assoc($q));
         $curmenu = Core::menuCurItem();
         foreach ($rows as $row) {
             if (!$row['postexec'] && (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id'])) {
@@ -97,15 +97,13 @@ class Page
 
     /**
      * Adds class and postexec from the modules declared in code, skips the items of unknown modules
-     *
-     * @param ModuleType|null $type
      */
-    public static function moduleRows(array $rows, ?ModuleType $type = null): array
+    public static function moduleRows(array $rows): array
     {
         $out = [];
         foreach ($rows as $row) {
             $module = ExtensionRegistry::module((string)$row['module']);
-            if (!$module || ($type !== null && $module['type'] !== $type)) {
+            if (!$module) {
                 continue;
             }
             $row['class'] = ltrim($row['module'], '\\');

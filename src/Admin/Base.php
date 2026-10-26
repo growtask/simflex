@@ -119,8 +119,8 @@ class Base
     {
         if (empty($this->table)) {
             $row = Core::menuCurItem();
-            if (!empty($row['model'])) {
-                $this->table = $row['model'];
+            if (!empty($row['table'])) {
+                $this->table = $row['table'];
             }
         }
         $this->name = $this->table;
@@ -209,7 +209,7 @@ class Base
     {
         $row = Core::menuCurItem();
 
-        if (!empty($row['model'])) {
+        if (!empty($row['table'])) {
             $this->initTable();
 
             $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -340,7 +340,7 @@ class Base
     private function index(): string
     {
         $cur = Core::menuCurItem();
-        $cur_id = isset($cur['menu_id']) ? $cur['menu_id'] : 0;
+        $cur_id = $cur['id'] ?? '';
         $menu = Core::menu();
         if (!isset($menu[$cur_id])) {
             return '';

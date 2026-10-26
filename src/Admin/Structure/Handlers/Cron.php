@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Structure\Tables;
+namespace Simflex\Admin\Structure\Handlers;
 
 use Simflex\Admin\Base\Cron as CronDriver;
 use Simflex\Admin\Fields\FieldCronJobSelect;

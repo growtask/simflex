@@ -1,6 +1,6 @@
 <div class="sidebar__menu menu" data-simplebar>
     <?php
-    foreach ($menu[0] as $id => $item): ?><?php
+    foreach ($menu[''] ?? [] as $id => $item): ?><?php
         if ($item['hidden']) {
             continue;
         } ?>
