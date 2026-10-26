@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Structure\Tables;
+namespace Simflex\Admin\Structure\Handlers;
 
 use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldBool;

@@ -7,10 +7,8 @@ use Simflex\Admin\Fields\Helper;
 use Simflex\Admin\Page;
 use Simflex\Admin\Plugins\Editor\Editor;
 use Simflex\Admin\Structure\Repository as StructureRepository;
-use Simflex\Core\DB;
 use Simflex\Core\ExtensionRegistry;
 use Simflex\Core\Models\ModuleItem as ModuleItemModel;
-use Simflex\Core\ModuleType;
 
 class ModuleItem extends Base
 {
@@ -29,17 +27,12 @@ class ModuleItem extends Base
         $module = ExtensionRegistry::module($moduleClass);
         $moduleClass = $module ? ltrim($moduleClass, '\\') : '';
 
-        $menuTable = ($module['type'] ?? ModuleType::Site) === ModuleType::Site ? 'menu' : 'admin_menu';
-        $q = "SELECT menu_id, menu_pid pid, name FROM $menuTable ORDER BY npp, menu_id";
-        $menuItems = DB::assoc($q);
-
         $rows = StructureRepository::extensionParams($moduleClass, $this->table);
         $tableParams = $itemId
             ? (ModuleItemModel::findOne(['item_id' => $itemId])?->getParams() ?: [])
             : [];
+        $positions = ['left' => '', 'right' => ''];
         if (count($rows)) {
-
-            $positions = ['left' => '', 'right' => ''];
             $editorInited = false;
 
             $hasWithoutGroup = false;
@@ -90,13 +83,6 @@ class ModuleItem extends Base
             }
         }
 
-        $menuOptions = ['<option value=""></option>'];
-        foreach ($menuItems as $mitem) {
-            $span = $mitem['pid'] ? str_repeat('&nbsp;', 4) : '';
-            $menuOptions[] = '<option value="' . $mitem['menu_id'] . '">' . $span . htmlspecialchars($mitem['name']) . '</option>';
-        }
-        $positions['menu_items'] = implode("\n", $menuOptions);
-
         return json_encode($positions);
     }
 
@@ -105,8 +91,17 @@ class ModuleItem extends Base
         $params = parent::getParams();
         if (!empty($_POST['module'])) {
             $class = ExtensionRegistry::module((string)$_POST['module']) ? ltrim((string)$_POST['module'], '\\') : '';
+            // the module's fields are loaded into the form by ajax: the ones not posted keep their saved values
+            $itemId = (int)($_REQUEST['item_id'] ?? 0);
+            $saved = $itemId ? (ModuleItemModel::findOne(['item_id' => $itemId])?->getParams() ?: []) : [];
             foreach (StructureRepository::extensionFields($class, $this->table) as $row) {
                 $field = new $row['class']($row);
+                if (!array_key_exists($field->name, $_POST)) {
+                    if (array_key_exists($field->name, $saved)) {
+                        $params[$field->name] = $saved[$field->name];
+                    }
+                    continue;
+                }
                 $value = $field->getPost(true);
                 $value = preg_replace("@^'(.+)'$@", '$1', $value);
                 $params[$field->name] = $value;

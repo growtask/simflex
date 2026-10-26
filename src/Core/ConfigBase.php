@@ -69,6 +69,16 @@ abstract class ConfigBase
     public string $privilegeClass = Privilege::class;
 
     /**
+     * @var string Class declaring the admin panel menu: \Simflex\Admin\Menu or the app's subclass
+     */
+    public string $adminMenuClass = \Simflex\Admin\Menu::class;
+
+    /**
+     * @var string Class declaring the modules of the admin panel layout: \Simflex\Admin\AdminModules or the app's subclass
+     */
+    public string $adminModulesClass = \Simflex\Admin\AdminModules::class;
+
+    /**
      * @var string Default theme to load
      */
     public string $theme = 'default';
@@ -84,7 +94,7 @@ abstract class ConfigBase
     public bool $enableLogging = false;
 
     /**
-     * @var string Admin panel URL prefix, e.g. /admin. Links in admin_menu are stored relative to it
+     * @var string Admin panel URL prefix, e.g. /admin. Admin menu links are declared relative to it
      */
     public string $adminPath = '/admin';
 

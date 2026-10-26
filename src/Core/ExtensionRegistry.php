@@ -11,7 +11,7 @@ class ExtensionRegistry
 {
     /** @var array<class-string<ComponentBase>, string>|null */
     protected static ?array $components = null;
-    /** @var array<class-string<ModuleBase>, array{name: string, type: ModuleType, postexec: bool}>|null */
+    /** @var array<class-string<ModuleBase>, array{name: string, postexec: bool}>|null */
     protected static ?array $modules = null;
 
     /**
@@ -35,32 +35,26 @@ class ExtensionRegistry
     }
 
     /**
-     * @param ModuleType|null $type all modules when null
-     * @return array<class-string<ModuleBase>, array{name: string, type: ModuleType, postexec: bool}> module class => settings,
-     *         see ExtensionBase::extensionTitle(), ModuleBase::moduleType(), ModuleBase::modulePostexec()
+     * @return array<class-string<ModuleBase>, array{name: string, postexec: bool}> module class => settings,
+     *         see ExtensionBase::extensionTitle(), ModuleBase::modulePostexec()
      */
-    public static function modules(?ModuleType $type = null): array
+    public static function modules(): array
     {
         if (static::$modules === null) {
             static::$modules = [];
             foreach (static::load('modules', ModuleBase::class) as $class) {
                 static::$modules[$class] = [
                     'name' => $class::extensionTitle(),
-                    'type' => $class::moduleType(),
                     'postexec' => $class::modulePostexec(),
                 ];
             }
         }
 
-        if ($type === null) {
-            return static::$modules;
-        }
-
-        return array_filter(static::$modules, fn(array $module) => $module['type'] === $type);
+        return static::$modules;
     }
 
     /**
-     * @return array{name: string, type: ModuleType, postexec: bool}|null
+     * @return array{name: string, postexec: bool}|null
      */
     public static function module(string $class): ?array
     {

@@ -2,13 +2,10 @@
 
 namespace Simflex\Admin;
 
-use Simflex\Admin\Base\ModuleItem;
-use Simflex\Admin\Modules\Account\Account;
 use Simflex\Admin\Notify\Collection;
-use Simflex\Admin\Structure\Repository as StructureRepository;
+use Simflex\Admin\Structure\Handler;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
-use Simflex\Core\ModuleType;
 use Simflex\Core\Page as CorePage;
 use Simflex\Core\Privilege;
 use Simflex\Core\Request;
@@ -42,52 +39,40 @@ class Page
             return;
         }
 
-        self::$driver = false;
-
-        $menuCurModel = Core::menuCurItem('model');
-        $tableData = null;
-        if ($menuCurModel) {
-            $tableData = StructureRepository::table($menuCurModel);
-        }
-        $extDriverClass = $tableData['class'] ?? null;
-
-        if ($extDriverClass && class_exists($extDriverClass)) {
-            self::$driver = new $extDriverClass();
-        }
-
         if (!Container::getRequest()) {
             Container::set('request', new Request());
         }
 
-        if (!self::$driver) {
-            // todo: lol fix this
-            if (Core::path() === Core::url('account')) {
-                self::$driver = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
-            } elseif (in_array($menuCurModel, ['module_item'])) {
-                self::$driver = new ModuleItem();
-            } else {
-                self::$driver = new Base();
-            }
-        }
+        self::$driver = static::driver((string)Core::menuCurItem('handler'));
 
         self::$content = self::$driver->execute();
 
         if (!Core::$isAjax) {
-            $curmenu = Core::menuCurItem();
-            $q = '
-                SELECT item_id, module, menu_id, name, 0 is_title, posname, params
-                FROM module_item
-                WHERE active = 1
-                ORDER BY npp, item_id
-            ';
-            $rows = CorePage::moduleRows(DB::assoc($q), ModuleType::Admin);
-            foreach ($rows as $row) {
-                if (empty($row['menu_id']) || (int)$row['menu_id'] == ($curmenu['menu_id'] ?? null)) {
-                    $mod = new $row['class']($row);
-                    self::$positions[$row['posname']][] = $mod->execute();
-                }
+            foreach (AdminModules::forSection((string)Core::menuCurItem('id')) as $module) {
+                $mod = new ($module->class)([
+                    'item_id' => 0,
+                    'class' => $module->class,
+                    'name' => $module->name,
+                    'posname' => $module->position,
+                    'params' => serialize($module->params),
+                ]);
+                self::$positions[$module->position][] = $mod->execute();
             }
         }
+    }
+
+    /**
+     * Class doing the current section: the one its handler names (Handler::$class), \Simflex\Admin\Base by default —
+     * the generic table section or the list of the subitems of a group
+     */
+    protected static function driver(string $handler): Base|\Simflex\Core\ModuleBase
+    {
+        $class = is_subclass_of($handler, Handler::class) ? (new $handler())->class : '';
+        if (is_subclass_of($class, \Simflex\Core\ModuleBase::class)) {
+            return new $class(['item_id' => 0, 'class' => $class, 'name' => '', 'posname' => '', 'params' => '']);
+        }
+
+        return $class && is_a($class, Base::class, true) ? new $class() : new Base();
     }
 
     public static function content(): string

@@ -22,4 +22,15 @@ class ModelSettings extends ModelBase
     {
         return static::findOne(['alias' => $key])['value'] ?? null;
     }
+
+    /**
+     * @return array<string, string> alias => value of all the settings
+     */
+    public static function values(): array
+    {
+        return array_map(
+            fn(array $row) => $row['value'],
+            static::findAdv()->select('alias, value')->asArray()->all('alias')
+        );
+    }
 }

@@ -15,7 +15,7 @@
             <?php
             $menu = \Simflex\Core\Container::getCore()::menu();
 
-            foreach ($menu[0] as $id => $item): ?><?php
+            foreach ($menu[''] ?? [] as $id => $item): ?><?php
                 if ($item['hidden']) {
                     continue;
                 } ?>

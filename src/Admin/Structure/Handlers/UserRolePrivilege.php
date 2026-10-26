@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Structure\Tables;
+namespace Simflex\Admin\Structure\Handlers;
 
 use Simflex\Admin\Fields\FieldPrivilegeSelect;
 use Simflex\Admin\Structure\Data\FieldDefinition;
@@ -11,10 +11,9 @@ use Simflex\Admin\Structure\Table;
 use Simflex\Core\Privilege;
 
 /**
- * Privileges given to a user personally, besides the ones of the user's role.
- * Only for the developers: any privilege, the dev one too, can be given here
+ * Privileges of the roles. Only for the developers: any privilege, the dev one too, can be given here
  */
-class UserPrivilegePersonal extends Table
+class UserRolePrivilege extends Table
 {
     public function __construct()
     {
@@ -25,19 +24,18 @@ class UserPrivilegePersonal extends Table
             fields: [
                 new IdField(),
                 new ForeignKeyField(
-                    name: 'user_id',
-                    label: 'Пользователь',
-                    table: 'user',
-                    display: 'login',
-                    help: 'Пользователь, которому привилегия выдаётся лично, сверх привилегий его роли',
-                    width: '250',
+                    name: 'role_id',
+                    label: 'Роль',
+                    table: 'user_role',
+                    help: 'Роль, пользователи которой получают привилегию',
+                    width: '300',
                     required: true,
                 ),
                 new FieldDefinition(
                     name: 'privilege',
                     class: FieldPrivilegeSelect::class,
                     label: 'Привилегия',
-                    help: 'Привилегия, которую получает пользователь',
+                    help: 'Привилегия, которую получают все пользователи роли. Не путать с полем «Привилегия» в разделе «Роли»: там указано, кто управляет ролью',
                     params: [
                         'main' => new FieldParams(
                             width: '1',
