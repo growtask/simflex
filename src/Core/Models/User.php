@@ -9,7 +9,7 @@ use Simflex\Core\ModelBase;
 use Simflex\Core\Privilege;
 
 /**
- * User model
+ * Модель пользователя
  *
  * @property int user_id
  * @property int role_id
@@ -34,7 +34,7 @@ class User extends ModelBase
     }
 
     /**
-     * @param string $privilege Privilege name, see \Simflex\Core\Privilege
+     * @param string $privilege Имя привилегии, см. \Simflex\Core\Privilege
      */
     public function ican(string $privilege): bool
     {
@@ -42,7 +42,7 @@ class User extends ModelBase
     }
 
     /**
-     * Privileges of the role and the personal ones, declared in code and enabled
+     * Привилегии роли и личные, объявленные в коде и включённые
      *
      * @return array<string, string> name => name
      */
@@ -58,7 +58,7 @@ class User extends ModelBase
     }
 
     /**
-     * Users having any of the privileges by their role or personally, and the developers
+     * Пользователи, у которых есть любая из привилегий по роли или лично, и разработчики
      *
      * @example User::findAdv()->modify('hasPrivileges', ['privilege_name'])->all()
      */
@@ -67,7 +67,7 @@ class User extends ModelBase
         if (empty($privileges)) {
             return;
         }
-        // developers have all the privileges
+        // у разработчиков есть все привилегии
         $privileges = [...Privilege::filterActive($privileges), Privilege::DEV];
         $in = "'" . implode("','", DB::escape($privileges)) . "'";
         $table = static::$table;

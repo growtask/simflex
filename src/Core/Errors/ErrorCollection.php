@@ -3,7 +3,7 @@
 namespace Simflex\Core\Errors;
 
 /**
- * Class ErrorCollection реализует интерфейс массива. Представляет собой список ошибок.
+ * Класс ErrorCollection реализует интерфейс массива. Представляет собой список ошибок.
  * Можно например так
  * $errors = new ErrorCollection([Error::byCode(101)]);
  * $errors[101]->getMessage();

@@ -3,10 +3,9 @@
 namespace Simflex\Admin;
 
 use Simflex\Admin\Notify\Collection;
-use Simflex\Admin\Structure\Handler;
+use Simflex\Admin\Handlers\Group;
 use Simflex\Core\Container;
 use Simflex\Core\DB;
-use Simflex\Core\Page as CorePage;
 use Simflex\Core\Privilege;
 use Simflex\Core\Request;
 
@@ -21,7 +20,7 @@ class Page
     protected static array $js = [];
     protected static array $jsCheck = [];
 
-    protected static Base|\Simflex\Core\ModuleBase|false $driver = false;
+    protected static Handler|false $handler = false;
 
     public static function init(): void
     {
@@ -43,12 +42,12 @@ class Page
             Container::set('request', new Request());
         }
 
-        self::$driver = static::driver((string)Core::menuCurItem('handler'));
+        self::$handler = static::handler((string)Core::menuCurItem('handler'));
 
-        self::$content = self::$driver->execute();
+        self::$content = self::$handler->content();
 
         if (!Core::$isAjax) {
-            foreach (AdminModules::forSection((string)Core::menuCurItem('id')) as $module) {
+            foreach (AdminModules::getForSection((string)Core::menuCurItem('id')) as $module) {
                 $mod = new ($module->class)([
                     'item_id' => 0,
                     'class' => $module->class,
@@ -62,17 +61,12 @@ class Page
     }
 
     /**
-     * Class doing the current section: the one its handler names (Handler::$class), \Simflex\Admin\Base by default —
-     * the generic table section or the list of the subitems of a group
+     * Обработчик текущего раздела: указанный в его пункте меню, по умолчанию страница группы
+     * (подпункты, виджеты)
      */
-    protected static function driver(string $handler): Base|\Simflex\Core\ModuleBase
+    protected static function handler(string $handler): Handler
     {
-        $class = is_subclass_of($handler, Handler::class) ? (new $handler())->class : '';
-        if (is_subclass_of($class, \Simflex\Core\ModuleBase::class)) {
-            return new $class(['item_id' => 0, 'class' => $class, 'name' => '', 'posname' => '', 'params' => '']);
-        }
-
-        return $class && is_a($class, Base::class, true) ? new $class() : new Base();
+        return is_subclass_of($handler, Handler::class) ? new $handler() : new Group();
     }
 
     public static function content(): string
@@ -155,7 +149,7 @@ class Page
     }
 
     /**
-     * @incomplete The Notify subsystem is not wired into the admin panel yet; it will be finished and used later.
+     * @incomplete Подсистема Notify пока не подключена к админке; она будет доработана и использована позже.
      */
     public static function notifications(): string
     {

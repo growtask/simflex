@@ -2,32 +2,31 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\Container;
 
 class FieldTable extends Field
 {
     /**
-     * String field
+     * Строковое поле
      */
     public const TYPE_TEXT = 'text';
 
     /**
-     * Combobox (select) field
+     * Поле-список (select)
      */
     public const TYPE_COMBO = 'combo';
 
     /**
-     * WYSIWYG editor field
+     * Поле с WYSIWYG-редактором
      */
     public const TYPE_EDITOR = 'editor';
 
     /**
-     * Image upload field
+     * Поле загрузки изображения
      */
     public const TYPE_IMAGE = 'image';
 
     /**
-     * File upload field
+     * Поле загрузки файла
      */
     public const TYPE_FILE = 'file';
 
@@ -92,7 +91,7 @@ class FieldTable extends Field
 
     public function input($value): string
     {
-        // fallback value = []
+        // значение по умолчанию = []
         $value = !json_decode($value, true) ? '[]' : $value;
         if ($value == '[]' && $this->params['struct']) {
             $s = json_decode($this->params['struct'], true);
@@ -120,27 +119,9 @@ class FieldTable extends Field
             $value = json_encode($v);
         }
 
-        // generate id for the js
+        // генерируем id для js
         $jsId = (string)crc32($this->inputName());
 
         return $this->render('table', compact('value', 'jsId'));
-    }
-
-    public static function typeLabel(): string
-    {
-        return 'Таблица';
-    }
-
-    public static function typeParams(): array
-    {
-        return [
-            [
-                'name' => 'struct',
-                'label' => 'Параметры',
-                'type' => \Simflex\Admin\Fields\FieldTable::class,
-                'help' => '',
-                'default_value' => '{"s":[{"n":"n","t":"text","l":"Имя","v":"","e":""},{"n":"t","t":"combo","l":"Тип","v":"text","e":"text=Текст,,int=Число,,combo=Список,,editor=Редактор,,image=Изображение,,file=Файл"},{"n":"l","t":"text","l":"Заголовок","v":"","e":""},{"n":"v","t":"text","l":"Значение","v":"","e":""},{"n":"e","t":"text","l":"Дополнительно","v":"","e":""}],"v":[]}',
-            ],
-        ];
     }
 }

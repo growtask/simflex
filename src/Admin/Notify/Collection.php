@@ -5,7 +5,7 @@ namespace Simflex\Admin\Notify;
 use Simflex\Core\View;
 
 /**
- * @incomplete The Notify subsystem is not wired into the admin panel yet; it will be finished and used later.
+ * @incomplete Подсистема Notify пока не подключена к админке; она будет доработана и использована позже.
  */
 class Collection
 {

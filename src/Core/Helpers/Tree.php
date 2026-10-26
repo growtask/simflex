@@ -5,8 +5,8 @@ namespace Simflex\Core\Helpers;
 class Tree
 {
     /**
-     * Flattens a tree [pid => [id => row]] into a depth-first list [id => row].
-     * Each row gets tree_level (depth from $rootId) and tree_nchild (number of direct children).
+     * Разворачивает дерево [pid => [id => row]] в список [id => row] обходом в глубину.
+     * Каждая запись получает tree_level (глубину от $rootId) и tree_nchild (число прямых потомков).
      */
     public static function toList(array $tree, int|string $rootId = 0): array
     {

@@ -10,14 +10,14 @@ class CliRequest extends Request
 
     public function __construct()
     {
-        // set parameters for CLI request
+        // задаем параметры CLI-запроса
         $_SERVER['REQUEST_URI'] = '/';
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         $_SERVER['DOCUMENT_ROOT'] = SF_PUBLIC_PATH;
         $_SERVER['HTTP_HOST'] = 'localhost';
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        // parse commandline options
+        // разбираем параметры командной строки
         global $argv;
         $_REQUEST = [];
 
@@ -31,7 +31,7 @@ class CliRequest extends Request
             }
         }
 
-        // legacy: set GET, POST, REQUEST for compatibility
+        // наследие: заполняем GET, POST, REQUEST для совместимости
         $_GET = $_POST = $_REQUEST;
         $this->argv = $_REQUEST;
 
@@ -39,10 +39,10 @@ class CliRequest extends Request
     }
 
     /**
-     * Get CLI argument
-     * @param int|string|null $key Argument key
-     * @param mixed $default Default value
-     * @return array|string|null Argument value
+     * Аргумент CLI
+     * @param int|string|null $key Ключ аргумента
+     * @param mixed $default Значение по умолчанию
+     * @return array|string|null Значение аргумента
      */
     public function arg(int|string|null $key = null, mixed $default = null): array|string|null
     {

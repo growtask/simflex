@@ -11,7 +11,7 @@ abstract class ModuleBase extends ExtensionBase
     protected string $position = '';
 
     /**
-     * Run the module after the page content
+     * Запускать модуль после контента страницы
      */
     public static function modulePostexec(): bool
     {
@@ -31,7 +31,7 @@ abstract class ModuleBase extends ExtensionBase
     }
 
     /**
-     * Module content. Returns HTML, does not output it
+     * Контент модуля. Возвращает HTML, а не выводит его
      */
     abstract protected function content(): string;
 

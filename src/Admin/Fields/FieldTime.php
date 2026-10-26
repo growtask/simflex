@@ -55,22 +55,4 @@ class FieldTime extends Field
     {
         return $row[$this->name] ? (string)Time::convert($row[$this->name], $this->pattern, false) : '';
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Время';
-    }
-
-    public static function typeParams(): array
-    {
-        return [
-            [
-                'name' => 'use_seconds',
-                'label' => 'С секундами',
-                'type' => \Simflex\Admin\Fields\FieldBool::class,
-                'help' => 'Учитывать секунды',
-                'default_value' => '0',
-            ],
-        ];
-    }
 }

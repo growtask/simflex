@@ -57,14 +57,14 @@ abstract class Field
         $err = [];
         $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
 
-        /* REQUIED */
+        /* ОБЯЗАТЕЛЬНОСТЬ */
         $this->vRequired = is_array($this->vRequired) ? $this->vRequired : [];
         if (!empty($this->vRequired['is']) && $_POST[$formName][$this->name] === '') {
             $err[$this->name][] = empty($this->vRequired['comment']) ? 'обязательно для заполнения' : $this->vRequired['comment'];
         }
 
         if (empty($err[$this->name])) {
-            /* LENGTH */
+            /* ДЛИНА */
             $len = mb_strlen($_POST[$formName][$this->name]);
             $this->vLength = is_array($this->vLength) ? $this->vLength : [];
             $this->vLength['min'] = isset($this->vLength['min']) ? (int)$this->vLength['min'] : 0;
@@ -73,7 +73,7 @@ abstract class Field
                 $err[$this->name][] = empty($this->vLength['comment']) ? 'недопустимая длина' : $this->vLength['comment'];
             }
 
-            /* EQUAL */
+            /* РАВЕНСТВО */
             $this->vEqual = is_array($this->vEqual) ? $this->vEqual : [];
             $this->vEqual['field'] = isset($this->vEqual['field']) ? (string)$this->vEqual['field'] : '';
             if ($this->vEqual['field']) {
@@ -83,7 +83,7 @@ abstract class Field
                 }
             }
 
-            /* MASK */
+            /* МАСКА */
             if ($_POST[$formName][$this->name] !== '') {
                 $this->vMask = is_array($this->vMask) ? $this->vMask : [];
                 $this->vMask['pattern'] = isset($this->vMask['pattern']) ? (string)$this->vMask['pattern'] : '';
@@ -92,7 +92,7 @@ abstract class Field
                 }
             }
 
-            /* UNIQUE */
+            /* УНИКАЛЬНОСТЬ */
             $this->vUnique = is_array($this->vUnique) ? $this->vUnique : [];
             $this->vUnique['key'] = isset($this->vUnique['key']) ? (string)$this->vUnique['key'] : '';
             if ($this->vUnique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->vUnique['key'], $key)) {

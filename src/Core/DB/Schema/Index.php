@@ -16,7 +16,7 @@ class Index extends ElementBase
     }
 
     /**
-     * Sets index
+     * Задаёт индекс
      */
     public function index(array|string $column): static
     {
@@ -34,7 +34,7 @@ class Index extends ElementBase
     }
 
     /**
-     * Sets key
+     * Задаёт ключ
      */
     public function key(array|string $column): static
     {

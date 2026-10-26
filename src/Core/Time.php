@@ -88,8 +88,9 @@ class Time
 
     /**
      * Вернуть в формате MySQL
-     * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
+     * @param bool (по умолчанию auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть,
+     *        то будет показано
+     * @param bool (по умолчанию false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
      */
     public function asMySQL(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
@@ -98,8 +99,9 @@ class Time
 
     /**
      * Вернуть в читаемом формате: 31.12.1999 00:00:00
-     * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
+     * @param bool (по умолчанию auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть,
+     *        то будет показано
+     * @param bool (по умолчанию false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
      */
     public function asNormal(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
@@ -108,8 +110,9 @@ class Time
 
     /**
      * Вернуть в читаемом формате: 31 янв 1999 00:00:00
-     * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
+     * @param bool (по умолчанию auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть,
+     *        то будет показано
+     * @param bool (по умолчанию false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
      */
     public function asUser(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
@@ -118,8 +121,9 @@ class Time
 
     /**
      * Вернуть в читаемом формате: 31 января 1999 00:00:00
-     * @param bool (default: auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
+     * @param bool (по умолчанию auto) $showHourMin - Показывать часы:минуты. По умолчанию если в исходном формате есть,
+     *        то будет показано
+     * @param bool (по умолчанию false) $showSec - Показывать :секунды. Не имеет эффекта с неустановленным $showHourMin.
      */
     public function asUserFull(bool|string $showHourMin = 'auto', bool|string $showSec = false): string
     {
@@ -178,8 +182,10 @@ class Time
     /**
      * Преобразовывает время в Читаемый формат (12 янв 2012 12:23:34)
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
-     * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
+     * @param bool (по умолчанию auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате
+     *        есть, то будет показано
+     * @param bool (по умолчанию auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным
+     *        $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
      */
     public static function user($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
@@ -194,8 +200,10 @@ class Time
     /**
      * Преобразовывает время в Читаемый формат (12 января 2012 12:23:34)
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
-     * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
+     * @param bool (по умолчанию auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате
+     *        есть, то будет показано
+     * @param bool (по умолчанию auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным
+     *        $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
      */
     public static function userfull($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = false): string
@@ -213,8 +221,10 @@ class Time
     /**
      * Преобразовывает время в mysql-формат
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
-     * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
+     * @param bool (по умолчанию auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате
+     *        есть, то будет показано
+     * @param bool (по умолчанию auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным
+     *        $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
      */
     public static function mysql($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
@@ -225,8 +235,10 @@ class Time
     /**
      * Преобразовывает время в Читаемый формат (normal)
      * @param mixed $value - Время в любом доступном формате: normal, mysql, excel, unix
-     * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
+     * @param bool (по умолчанию auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате
+     *        есть, то будет показано
+     * @param bool (по умолчанию auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным
+     *        $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
      */
     public static function normal($value, bool|string $show_hour_min = 'auto', bool|string $show_sec = 'auto'): string|false|null
@@ -310,8 +322,10 @@ class Time
      * <b>K</b> = 3 буквы месяца
      * Например "Y-m-d"
      *
-     * @param bool (default: auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате есть, то будет показано
-     * @param bool (default: auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным $show_hour_min.
+     * @param bool (по умолчанию auto) $show_hour_min - Показывать часы:минуты. По умолчанию если в исходном формате
+     *        есть, то будет показано
+     * @param bool (по умолчанию auto) $show_sec - Показывать :секунды. Не имеет эффекта с неустановленным
+     *        $show_hour_min.
      * По умолчанию если в исходном формате есть, то будет показано
      */
     public static function convert(
@@ -648,7 +662,7 @@ class Time
     /**
      * Возвращает время из даты
      * @param int|string $value - Датавремя в любом допустимом формате
-     * @param bool (optional = auto) $show_sec
+     * @param bool (по умолчанию auto) $show_sec
      * @return string 12:34 или 12:34:56
      */
     public static function extractTime($value, bool|string $show_sec = 'auto'): string
@@ -664,7 +678,7 @@ class Time
      * Добавляет к дате интервал, сохраняя формат даты
      * @param string|int $value
      * @param string|int $interval - или строка типа "+1 year" или число секунд (3600)
-     * @param bool (optional = false) $toUnix - перевести в unix формат или нет. Со значением true отработает быстрее
+     * @param bool (по умолчанию false) $toUnix - перевести в unix формат или нет. Со значением true отработает быстрее
      * @return string|int
      */
     public static function addInterval($value, string|int $interval, bool $toUnix = false): mixed
@@ -694,7 +708,7 @@ class Time
     /**
      * Вычисляет разницу между двумя датами
      * @param string|int|Time $value
-     * @param bool $dropTime [optional = false] не учитывать часы минуты
+     * @param bool $dropTime [по умолчанию false] не учитывать часы минуты
      */
     public function diff($value, bool $dropTime = false): TimeDiff
     {
@@ -707,9 +721,9 @@ class Time
     }
 
     /**
-     * Returns date - start of the week (Monday) of specified date
-     * @param string $forDate format Y-m-d (mysql)
-     * @return string format Y-m-d (mysql)
+     * Возвращает дату начала недели (понедельник) для указанной даты
+     * @param string $forDate формат Y-m-d (mysql)
+     * @return string формат Y-m-d (mysql)
      */
     public static function weekStart(string $forDate): string
     {
@@ -719,9 +733,9 @@ class Time
     }
 
     /**
-     * Returns date - end of the week (Sunday) of specified date
-     * @param string $forDate format Y-m-d (mysql)
-     * @return string format Y-m-d (mysql)
+     * Возвращает дату конца недели (воскресенье) для указанной даты
+     * @param string $forDate формат Y-m-d (mysql)
+     * @return string формат Y-m-d (mysql)
      */
     public static function weekEnd(string $forDate): string
     {
@@ -731,9 +745,9 @@ class Time
     }
 
     /**
-     * Returns date - end of the month of specified date
-     * @param string $forDate format Y-m-d (mysql)
-     * @return string format Y-m-d (mysql)
+     * Возвращает дату конца месяца для указанной даты
+     * @param string $forDate формат Y-m-d (mysql)
+     * @return string формат Y-m-d (mysql)
      * @throws \Exception
      */
     public static function monthEnd(string $forDate): string

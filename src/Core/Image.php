@@ -289,9 +289,9 @@ class Image extends File
     /**
      *
      * @param string $filename
-     * @param int|false $image_type (optional) IMAGETYPE_JPEG, IMAGETYPE_GIF, ...
-     * @param int (optional) $compression Процент сжатия качества
-     * @param int (optional) $permissions Только для *nix систем
+     * @param int|false $image_type (необязательный) IMAGETYPE_JPEG, IMAGETYPE_GIF, ...
+     * @param int (необязательный) $compression Процент сжатия качества
+     * @param int (необязательный) $permissions Только для *nix систем
      */
     public function saveAs($filename, $image_type = false, $compression = 100, $permissions = null): void
     {

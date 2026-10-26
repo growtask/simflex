@@ -25,8 +25,8 @@ class Cache
     }
 
     /**
-     * @param int $expires Cache value validity in seconds
-     * @param bool $fetchedFromCache additional return value, true if fetched from cache, false if pushed to cache
+     * @param int $expires Время жизни значения в кеше, в секундах
+     * @param bool $fetchedFromCache дополнительное возвращаемое значение: true - взято из кеша, false - записано в кеш
      * @throws \Exception
      */
     public static function getOrSet(string $key, callable $callback, int $expires = 0, &$fetchedFromCache = null): mixed

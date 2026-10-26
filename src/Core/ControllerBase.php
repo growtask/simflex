@@ -7,16 +7,16 @@ use Simflex\Core\Controller\Action;
 use Simflex\Core\Controller\ActionMatcher;
 
 /**
- * Automatic controller
+ * Автоматический контроллер
  *
- * Use Action attribute to create attributes within child class.
- * Action methods return HTML as a string, they do not output it
+ * Действия объявляются в дочернем классе атрибутом Action.
+ * Методы действий возвращают HTML строкой, а не выводят его
  * @see Action
  */
 class ControllerBase extends ComponentBase
 {
     /**
-     * @var array|ActionMatcher[] Actions
+     * @var array|ActionMatcher[] Действия
      */
     protected array $actions = [];
 
@@ -27,16 +27,16 @@ class ControllerBase extends ComponentBase
     }
 
     /**
-     * Fallback method, returns HTML when no action was matched
+     * Запасной метод, возвращает HTML, когда ни одно действие не подошло
      */
     protected function fallback(): string
     {
-        // redirect to 404
+        // отдаем 404
         $this->response->redirectNow('/404');
     }
 
     /**
-     * Collects actions
+     * Собирает действия
      */
     protected function collectActions(): void
     {
@@ -54,7 +54,7 @@ class ControllerBase extends ComponentBase
     }
 
     /**
-     * Try to resolve controller's actions
+     * Пытается подобрать действие контроллера
      */
     protected function resolve(): ?ActionMatcher
     {
@@ -77,11 +77,11 @@ class ControllerBase extends ComponentBase
         $vars = $maybeAction->getVars();
         $request = $this->request->request();
 
-        // get the method
+        // получаем метод
         $class = new ReflectionClass($this);
         $method = $class->getMethod($maybeAction->methodName);
 
-        // resolve arguments
+        // подбираем аргументы
         $varPos = [];
         foreach ($method->getParameters() as $param) {
             if (isset($vars[$param->name])) {
@@ -94,7 +94,7 @@ class ControllerBase extends ComponentBase
             }
         }
 
-        // invoke the method, actions return HTML
+        // вызываем метод, действия возвращают HTML
         return (string)$method->invoke($this, ...$varPos);
     }
 }

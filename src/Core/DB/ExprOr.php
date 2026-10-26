@@ -5,14 +5,14 @@ namespace Simflex\Core\DB;
 use Simflex\Core\DB;
 
 /**
- * Class ExprOr
- * Joins conditions with OR. Values are escaped inline (no bindings), so the expression
- * can be safely used inside Where / AQ::where() / Model::find().
+ * Класс ExprOr
+ * Объединяет условия через OR. Значения экранируются прямо в выражении (без параметров запроса),
+ * поэтому его можно безопасно использовать внутри Where / AQ::where() / Model::find().
  *
- * Usage:
+ * Использование:
  * $where = ['param' => 1, new ExprOr(['param2' => 2, 'param3' => [3, 4]])];
  * Model::findOne($where);
- * With inner Expr: Model::findOne(new ExprOr(['param2' => 2, new Expr('param2 IN (4,5)')]));
+ * С вложенным Expr: Model::findOne(new ExprOr(['param2' => 2, new Expr('param2 IN (4,5)')]));
  */
 class ExprOr extends Expr
 {

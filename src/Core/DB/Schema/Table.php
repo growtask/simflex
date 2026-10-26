@@ -37,10 +37,10 @@ class Table extends ElementBase
         $this->oldElements = $this->elements;
     }
 
-    // ------------ BUILDER ------------ //
+    // ------------ ПОСТРОЕНИЕ ------------ //
 
     /**
-     * Create table only if one doesn't exist yet
+     * Создавать таблицу, только если её ещё нет
      */
     public function ifNotExists(): static
     {
@@ -49,7 +49,7 @@ class Table extends ElementBase
     }
 
     /**
-     * Create temporary table
+     * Создавать временную таблицу
      */
     public function temporary(): static
     {
@@ -58,7 +58,7 @@ class Table extends ElementBase
     }
 
     /**
-     * Set auto increment counter
+     * Задаёт счётчик автоинкремента
      */
     public function autoIncrement(int $n): static
     {
@@ -67,7 +67,7 @@ class Table extends ElementBase
     }
 
     /**
-     * Set table comment
+     * Задаёт комментарий таблицы
      */
     public function comment(string $comment): static
     {
@@ -76,10 +76,10 @@ class Table extends ElementBase
     }
 
     /**
-     * Set table character set
+     * Задаёт кодировку таблицы
      *
-     * @param string $charset Character set
-     * @param bool $isDefault DEFAULT modifier
+     * @param string $charset Кодировка
+     * @param bool $isDefault Модификатор DEFAULT
      */
     public function characterSet(string $charset, bool $isDefault = false): static
     {
@@ -90,11 +90,11 @@ class Table extends ElementBase
     }
 
     /**
-     * Adds a column
+     * Добавляет столбец
      *
-     * @param string $name Column name
-     * @param string $type Column type
-     * @param int|null $length Column type length
+     * @param string $name Имя столбца
+     * @param string $type Тип столбца
+     * @param int|null $length Длина типа столбца
      */
     public function addColumn(string $name, string $type, ?int $length = null): Column
     {
@@ -106,9 +106,9 @@ class Table extends ElementBase
     }
 
     /**
-     * Adds a constraint
+     * Добавляет ограничение
      *
-     * @param string $name Constraint symbol name
+     * @param string $name Имя ограничения
      */
     public function addConstraint(string $name = ''): Constraint
     {
@@ -119,9 +119,9 @@ class Table extends ElementBase
     }
 
     /**
-     * Adds an index
+     * Добавляет индекс
      *
-     * @param string $name Index name
+     * @param string $name Имя индекса
      */
     public function addIndex(string $name = ''): Index
     {
@@ -132,9 +132,9 @@ class Table extends ElementBase
     }
 
     /**
-     * Drops a column
+     * Удаляет столбец
      *
-     * @param string|array $name Column name(s)
+     * @param string|array $name Имя (имена) столбца
      */
     public function dropColumns(string|array $name): static
     {
@@ -147,7 +147,7 @@ class Table extends ElementBase
         return $this;
     }
 
-    // ------------ HELPERS ------------ //
+    // ------------ ХЕЛПЕРЫ ------------ //
 
     public function id(string $name): Column
     {
@@ -212,10 +212,10 @@ class Table extends ElementBase
         );
     }
 
-    // ------------ UTIL ------------ //
+    // ------------ УТИЛИТЫ ------------ //
 
     /**
-     * Returns params
+     * Возвращает параметры
      */
     public function getParams(): TableParams
     {
@@ -244,7 +244,7 @@ class Table extends ElementBase
         $sql = 'ALTER TABLE ' . DB::wrapName($this->name) . ' ';
         $firstCmd = true;
 
-        // drop columns
+        // удаляем столбцы
         foreach ($this->dropQueue as $col) {
             if (!$firstCmd) {
                 $sql .= ', ';
@@ -286,7 +286,7 @@ class Table extends ElementBase
             }
         }
 
-        // modify old ones
+        // изменяем существующие
         foreach ($toMod as $col) {
             if (!$firstCmd) {
                 $sql .= ', ';
@@ -296,7 +296,7 @@ class Table extends ElementBase
             $firstCmd = false;
         }
 
-        // add new ones
+        // добавляем новые
         foreach ($toAdd as $col) {
             if (!$firstCmd) {
                 $sql .= ', ';

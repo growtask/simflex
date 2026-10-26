@@ -3,8 +3,8 @@
 namespace Simflex\Core\DB;
 
 /**
- * Class Expr
- * Use instance of this class to unescape your statement
+ * Класс Expr
+ * Экземпляр этого класса вставляет выражение в запрос без экранирования
  */
 class Expr
 {

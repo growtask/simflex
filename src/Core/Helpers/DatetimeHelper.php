@@ -73,7 +73,7 @@ class DatetimeHelper
 
     /**
      * @param string $time PT1H30M
-     * @return int seconds
+     * @return int секунды
      * @throws \Exception
      */
     public static function iso8601DurationToSeconds(string $time): int
@@ -83,7 +83,7 @@ class DatetimeHelper
 
     /**
      * @param string $time PT1H30M
-     * @return int seconds
+     * @return int секунды
      */
     public static function iso8601DurationToSecondsSilent(string $time, int $default): int
     {
@@ -129,7 +129,7 @@ class DatetimeHelper
     }
 
     /**
-     * @return int seconds
+     * @return int секунды
      * @throws \Exception
      */
     public static function dateIntervalToSeconds(\DateInterval $dateInterval): int
@@ -170,7 +170,7 @@ class DatetimeHelper
     }
 
     /**
-     * Also changes timezone to UTC
+     * Заодно переводит часовой пояс в UTC
      * @return string 2007-03-02T19:00:00Z -> 2007-03-02 19:00:00,
      *                2007-03-02T19:00:00+01:00 -> 2007-03-02 18:00:00
      * @throws \Exception
@@ -191,7 +191,7 @@ class DatetimeHelper
     }
 
     /**
-     * Convert any datetime format to DateTime instance
+     * Преобразует дату-время в любом формате в экземпляр DateTime
      * @param int|string|DateTime $mixed
      * @throws \Exception
      */
@@ -208,14 +208,14 @@ class DatetimeHelper
                 return DateTime::createFromFormat('Y-m-d H:i:s', $mixed) ?: new DateTime($mixed);
             }
         } catch (\Throwable $e) {
-            // Will replace exception by next
+            // исключение заменится следующим
         }
         throw new \Exception('Unknown datetime format: ' . var_export($mixed, true));
     }
 
     /**
-     * Convert any datetime format to string Y-m-d H:i:s
-     * Also changes timezone to UTC
+     * Преобразует дату-время в любом формате в строку Y-m-d H:i:s
+     * Заодно переводит часовой пояс в UTC
      * @param int|string|DateTime $mixed
      * @throws \Exception
      */
@@ -233,7 +233,7 @@ class DatetimeHelper
                 return (new DateTime($mixed))->setTimezone(new \DateTimeZone('UTC'))->format($format);
             }
         } catch (\Throwable $e) {
-            // Will replace exception by next
+            // исключение заменится следующим
         }
         throw new \Exception('Unknown datetime format: ' . var_export($mixed, true));
     }

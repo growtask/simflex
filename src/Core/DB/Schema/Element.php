@@ -5,12 +5,12 @@ namespace Simflex\Core\DB\Schema;
 interface Element
 {
     /**
-     * Builds output SQL
+     * Строит итоговый SQL
      */
     public function toString(): string;
 
     /**
-     * Returns element name
+     * Возвращает имя элемента
      */
     public function getName(): string;
 }

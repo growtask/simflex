@@ -5,12 +5,12 @@ namespace Simflex\Core\Mail;
 use Simflex\Core\DI\Service;
 
 /**
- * Mailer service
+ * Сервис отправки почты
  */
 class Mailer implements Service
 {
     /**
-     * @var Transport Mail transport
+     * @var Transport Почтовый транспорт
      */
     public Transport $transport;
 
@@ -20,37 +20,37 @@ class Mailer implements Service
     }
 
     /**
-     * Send mail
-     * @param string $subject Subject
-     * @param string $to Recipient address
-     * @param callable $fn Mail object configure callback. Provides a single object of type Mail
-     * @return bool "true" if sent successfully
+     * Отправляет письмо
+     * @param string $subject Тема
+     * @param string $to Адрес получателя
+     * @param callable $fn Колбэк настройки письма. Получает единственный объект типа Mail
+     * @return bool true, если отправлено успешно
      */
     public function send(string $subject, string $to, callable $fn): bool
     {
-        // make sure transport is set
+        // проверяем, что транспорт задан
         if (!$this->transport) {
             throw new \AssertionError('Transport is not set');
         }
 
-        // configure mail object
+        // настраиваем письмо
         $mail = new Mail();
         $mail->subject = $subject;
         $mail->to = $to;
         $fn($mail);
 
-        // send it
+        // отправляем
         return $this->transport->send($mail);
     }
 
     /**
-     * Send mail with templated content
-     * @param string $subject Subject
-     * @param string $to Recipient address
-     * @param string $template Template to run
-     * @param array $data Arbitrary template data
-     * @param bool $strip Whether to strip tags from alt body
-     * @return bool "true" if sent successfully
+     * Отправляет письмо с содержимым из шаблона
+     * @param string $subject Тема
+     * @param string $to Адрес получателя
+     * @param string $template Шаблон
+     * @param array $data Произвольные данные для шаблона
+     * @param bool $strip Вырезать ли теги из альтернативного тела
+     * @return bool true, если отправлено успешно
      */
     public function sendTemplate(string $subject, string $to, string $template, array $data = [], bool $strip = true): bool
     {
@@ -60,12 +60,12 @@ class Mailer implements Service
     }
 
     /**
-     * Send mail with text content
-     * @param string $subject Subject
-     * @param string $to Recipient address
-     * @param string $body Body
-     * @param string|null $altBody Alt body (if set to null, will use $body instead)
-     * @return bool "true" if sent successfully
+     * Отправляет письмо с текстовым содержимым
+     * @param string $subject Тема
+     * @param string $to Адрес получателя
+     * @param string $body Тело письма
+     * @param string|null $altBody Альтернативное тело (если null, используется $body)
+     * @return bool true, если отправлено успешно
      */
     public function sendText(string $subject, string $to, string $body, ?string $altBody = null): bool
     {

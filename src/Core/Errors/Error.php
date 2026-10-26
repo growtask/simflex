@@ -7,7 +7,7 @@ use Simflex\Core\Log;
 use Throwable;
 
 /**
- * Class Error
+ * Класс Error
  *
  */
 class Error extends \Error
@@ -54,7 +54,7 @@ class Error extends \Error
     }
 
     /**
-     * @param int $code from ErrorCodes
+     * @param int $code из ErrorCodes
      */
     public static function byCode(int $code, ?Throwable $previous = null, array $params = []): Error
     {
@@ -106,7 +106,7 @@ class Error extends \Error
     }
 
     /**
-     * Send this error to logs
+     * Пишет ошибку в лог
      */
     public function report(): void
     {

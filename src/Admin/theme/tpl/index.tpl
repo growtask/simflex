@@ -29,7 +29,7 @@ Page::coreJs('/theme/js/vtable.js');
     <noscript>
         <style>
             /**
-              * Reinstate scrolling for non-JS clients
+              * Возвращает прокрутку для клиентов без JS
               */
             .simplebar-content-wrapper {
                 scrollbar-width: auto;

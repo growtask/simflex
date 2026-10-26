@@ -8,7 +8,7 @@ class Chain implements Handler
     protected array $middlewares = [];
 
     /**
-     * Chain constructor.
+     * Конструктор Chain.
      * @param Handler[] $middlewares
      */
     public function __construct(array $middlewares)

@@ -16,14 +16,4 @@ class FieldPasswordVisible extends Field
     {
         return $this->render('password-visible');
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Пароль видимый';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
-    }
 }

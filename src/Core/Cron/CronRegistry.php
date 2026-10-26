@@ -5,8 +5,8 @@ namespace Simflex\Core\Cron;
 use Simflex\Core\Models\Cron as CronModel;
 
 /**
- * Cron jobs declared in code: the app's provider/cron.php returns job key => CronJob.
- * The cron table keeps only the settings editable in the admin panel (active, timing), one row per job key.
+ * Задания cron, объявленные в коде: provider/cron.php приложения возвращает ключ задания => CronJob.
+ * Таблица cron хранит только настройки, редактируемые в админке (active, timing), одна запись на ключ задания.
  */
 class CronRegistry
 {
@@ -14,7 +14,7 @@ class CronRegistry
     protected static ?array $jobs = null;
 
     /**
-     * @return array<string, CronJob> job key => job
+     * @return array<string, CronJob> ключ задания => задание
      */
     public static function jobs(): array
     {
@@ -39,8 +39,8 @@ class CronRegistry
     }
 
     /**
-     * Brings the cron table in line with the code: adds the rows of new jobs with their defaults,
-     * deletes the rows of the jobs removed from the code. The settings of the existing rows are kept.
+     * Приводит таблицу cron в соответствие с кодом: добавляет записи новых заданий со значениями по умолчанию,
+     * удаляет записи заданий, убранных из кода. Настройки существующих записей сохраняются.
      */
     public static function sync(): void
     {

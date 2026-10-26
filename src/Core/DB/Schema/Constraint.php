@@ -15,12 +15,12 @@ class Constraint extends ElementBase
         $this->params = new ConstraintParams();
     }
 
-    // ------------ BUILDER ------------ //
+    // ------------ ПОСТРОЕНИЕ ------------ //
 
     /**
-     * Sets primary key constraint
+     * Задаёт ограничение первичного ключа
      *
-     * @param array|string $column Column(s) to index
+     * @param array|string $column Столбец(ы) для индекса
      */
     public function primaryKey(array|string $column): static
     {
@@ -40,10 +40,10 @@ class Constraint extends ElementBase
     }
 
     /**
-     * Sets unique key/index constraint
+     * Задаёт ограничение уникального ключа/индекса
      *
-     * @param array|string $column Column(s) to index
-     * @param bool $isIndex Should mark this constraint as index
+     * @param array|string $column Столбец(ы) для индекса
+     * @param bool $isIndex Пометить ограничение как индекс
      */
     public function unique(array|string $column, bool $isIndex = false): static
     {
@@ -64,10 +64,10 @@ class Constraint extends ElementBase
     }
 
     /**
-     * References column(s) in another table
+     * Ссылается на столбец(ы) другой таблицы
      *
-     * @param string $referenceTable Target reference table
-     * @param string|array $colToReference Associative array or string of my_column => their_column
+     * @param string $referenceTable Таблица, на которую ссылаемся
+     * @param string|array $colToReference Ассоциативный массив или строка вида my_column => their_column
      */
     public function foreignKey(string $referenceTable, string|array $colToReference): static
     {
@@ -97,7 +97,7 @@ class Constraint extends ElementBase
     }
 
     /**
-     * Sets MATCH option for foreign key
+     * Задаёт опцию MATCH внешнего ключа
      *
      * @param string $match ConstraintParams::REFERENCE_MATCH_{X}
      */
@@ -108,7 +108,7 @@ class Constraint extends ElementBase
     }
 
     /**
-     * Sets ON DELETE option for foreign key
+     * Задаёт опцию ON DELETE внешнего ключа
      *
      * @param string $option ConstraintParams::REFERENCE_OPTION_{X}
      */
@@ -119,7 +119,7 @@ class Constraint extends ElementBase
     }
 
     /**
-     * Sets ON UPDATE option for foreign key
+     * Задаёт опцию ON UPDATE внешнего ключа
      *
      * @param string $option ConstraintParams::REFERENCE_OPTION_{X}
      */
@@ -129,7 +129,7 @@ class Constraint extends ElementBase
         return $this;
     }
 
-    // ------------ UTIL ------------ //
+    // ------------ УТИЛИТЫ ------------ //
 
     public function getParams(): ConstraintParams
     {

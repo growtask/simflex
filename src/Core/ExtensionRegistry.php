@@ -3,9 +3,9 @@
 namespace Simflex\Core;
 
 /**
- * Components and modules declared in code: the lists of classes in the app's provider/components.php and
- * provider/modules.php; their settings are static methods of the classes.
- * menu.component and module_item.module store the class names listed there.
+ * Компоненты и модули, объявленные в коде: списки классов в provider/components.php и provider/modules.php
+ * приложения; их настройки - статические методы классов.
+ * menu.component и module_item.module хранят имена перечисленных там классов.
  */
 class ExtensionRegistry
 {
@@ -15,7 +15,8 @@ class ExtensionRegistry
     protected static ?array $modules = null;
 
     /**
-     * @return array<class-string<ComponentBase>, string> component class => name, see ExtensionBase::extensionTitle()
+     * @return array<class-string<ComponentBase>, string> класс компонента => название, см.
+     *        ExtensionBase::extensionTitle()
      */
     public static function components(): array
     {
@@ -35,8 +36,8 @@ class ExtensionRegistry
     }
 
     /**
-     * @return array<class-string<ModuleBase>, array{name: string, postexec: bool}> module class => settings,
-     *         see ExtensionBase::extensionTitle(), ModuleBase::modulePostexec()
+     * @return array<class-string<ModuleBase>, array{name: string, postexec: bool}> класс модуля => настройки,
+     *         см. ExtensionBase::extensionTitle(), ModuleBase::modulePostexec()
      */
     public static function modules(): array
     {
@@ -70,7 +71,7 @@ class ExtensionRegistry
     /**
      * @template T of ExtensionBase
      * @param class-string<T> $base
-     * @return list<class-string<T>> classes listed in provider/$name.php
+     * @return list<class-string<T>> классы, перечисленные в provider/$name.php
      */
     protected static function load(string $name, string $base): array
     {

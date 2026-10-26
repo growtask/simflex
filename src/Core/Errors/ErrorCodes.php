@@ -57,9 +57,9 @@ class ErrorCodes
     }
 
     /**
-     * Returns HTTP status code for an error code or null if it should fall back
-     * @param int $code Error code
-     * @return int|null Output HTTP status code
+     * Возвращает HTTP-код статуса для кода ошибки или null, если подходит код по умолчанию
+     * @param int $code Код ошибки
+     * @return int|null HTTP-код статуса ответа
      */
     public static function getHttpStatusCode(int $code): ?int
     {

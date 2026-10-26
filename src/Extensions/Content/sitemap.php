@@ -1,3 +1,3 @@
 <?php
 
-// TODO make sitemap class
+// TODO сделать класс sitemap

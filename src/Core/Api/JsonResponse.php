@@ -19,7 +19,7 @@ class JsonResponse extends Response
     }
 
     /**
-     * @param mixed $mixed Input scalar type, associative array or Throwable
+     * @param mixed $mixed Скаляр, ассоциативный массив или Throwable
      * @throws \Simflex\Core\Errors\Error
      */
     public function setData(mixed $mixed): static
@@ -61,10 +61,10 @@ class JsonResponse extends Response
     }
 
     /**
-     * Sets value in data by key
+     * Устанавливает значение в data по ключу
      *
-     * @param int|string $key Key
-     * @param mixed $value Value
+     * @param int|string $key Ключ
+     * @param mixed $value Значение
      */
     public function set(int|string $key, mixed $value): static
     {
@@ -73,13 +73,13 @@ class JsonResponse extends Response
     }
 
     /**
-     * Sets error from throwable
+     * Устанавливает ошибку из Throwable
      *
-     * @param \Throwable $err Throwable to set from
+     * @param \Throwable $err Исключение, из которого берется ошибка
      */
     public function setError(\Throwable $err, bool $overwriteStatusCode = true): static
     {
-        // override status code if it wasn't set to other one yet
+        // переопределяем код статуса, если другой еще не задан
         if ($this->statusCode == 200 && $overwriteStatusCode) {
             $this->statusCode = ErrorCodes::getHttpStatusCode(intval($err->getCode())) ?? 500;
         }
@@ -90,7 +90,7 @@ class JsonResponse extends Response
     }
 
     /**
-     * Returns array with current error and data
+     * Возвращает массив с текущей ошибкой и данными
      */
     public function toArray(): array
     {

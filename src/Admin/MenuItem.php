@@ -5,21 +5,21 @@ namespace Simflex\Admin;
 use Simflex\Core\Privilege;
 
 /**
- * Admin panel menu item declared in code, see Menu::init()
+ * Пункт меню админки, объявленный в коде, см. Menu::init()
  */
 readonly class MenuItem
 {
     /**
-     * @param string $name Title in the menu
-     * @param string $link Address relative to the admin panel root (/site/menu => /admin/site/menu), the item's key.
-     *        A link without the leading slash is used as is
-     * @param class-string<\Simflex\Admin\Structure\Handler>|'' $handler Section handler: a table (Structure\Table
-     *        registered in Admin/Structure/handlers.php) or a section without a table (Structure\Handler naming its class).
-     *        Empty — a group listing its subitems
-     * @param string $icon Symbol id from theme/img/icons/svg-defs.svg
-     * @param string $privilege Privilege needed to see the item, see \Simflex\Core\Privilege
-     * @param bool $hidden Not shown in the menu, but the section is available by its link
-     * @param MenuItem[] $children Subitems
+     * @param string $name Название в меню
+     * @param string $link Адрес относительно корня админки (/site/menu => /admin/site/menu), ключ пункта.
+     *        Ссылка без начального слеша используется как есть
+     * @param class-string<\Simflex\Admin\Handler>|'' $handler Обработчик раздела: таблица (Table\Table,
+     *        зарегистрированная в Admin/handlers.php) или раздел без таблицы (Handler).
+     *        Пусто — группа со списком своих подпунктов
+     * @param string $icon id символа из theme/img/icons/svg-defs.svg
+     * @param string $privilege Привилегия, нужная, чтобы видеть пункт, см. \Simflex\Core\Privilege
+     * @param bool $hidden Не показывается в меню, но раздел доступен по ссылке
+     * @param MenuItem[] $children Подпункты
      */
     public function __construct(
         public string $name,

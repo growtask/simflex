@@ -3,7 +3,7 @@
 namespace Simflex\Core;
 
 /**
- * Class Container
+ * Класс Container
  *
  * @package App\Core
  * @method static ConfigBase getConfig

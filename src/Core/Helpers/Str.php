@@ -5,7 +5,7 @@ namespace Simflex\Core\Helpers;
 class Str
 {
     /**
-     * Russian letters in the common URL style (я → ya, ж → zh, щ → sch), ICU's ISO 9 gives â, ž, ŝ instead
+     * Русские буквы в привычном для URL виде (я → ya, ж → zh, щ → sch), ISO 9 из ICU дает вместо этого â, ž, ŝ
      */
     protected const CYRILLIC = [
         'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh',
@@ -16,12 +16,12 @@ class Str
     ];
 
     /**
-     * URL slug: "Вторая запись" → "vtoraya-zapis"
+     * Слаг для URL: "Вторая запись" → "vtoraya-zapis"
      */
     public static function translite($str): string
     {
         $str = strtr(mb_strtolower((string)$str), static::CYRILLIC);
-        // other scripts and the diacritics
+        // прочие алфавиты и диакритика
         $str = \Transliterator::create('Any-Latin; Latin-ASCII; Lower()')->transliterate($str);
         $str = preg_replace('/[^a-z0-9\\- ]/', '', $str);
         return trim(preg_replace('/[ -]+/', '-', $str), '-');
@@ -69,10 +69,10 @@ class Str
     }
 
     /**
-     * Generates random alphanumeric string.
+     * Генерирует случайную строку из букв и цифр.
      *
-     * @param int $size Out string size
-     * @return string Out string
+     * @param int $size Длина строки
+     * @return string Строка
      * @throws \Exception
      */
     public static function random(int $size): string
@@ -88,10 +88,10 @@ class Str
     }
 
     /**
-     * @param int $num Number
-     * @param string $s Base string. Omit ending for feminine words
-     * @param bool $isMale Whether masculine or not
-     * @return string Final string
+     * @param int $num Число
+     * @param string $s Основа слова. Для слов женского рода без окончания
+     * @param bool $isMale Мужской род или нет
+     * @return string Итоговая строка
      */
     public static function pluralize(int $num, string $s, bool $isMale = true, bool $iNum = true): string
     {
@@ -123,10 +123,10 @@ class Str
     }
 
     /**
-     * @param int $num Number
-     * @param string $s Base string. Omit ending for feminine words
-     * @param bool $isMale Whether masculine or not
-     * @return string Final string
+     * @param int $num Число
+     * @param string $s Основа слова. Для слов женского рода без окончания
+     * @param bool $isMale Мужской род или нет
+     * @return string Итоговая строка
      */
     public static function pluralizeParental(int $num, string $s, bool $isMale = true): string
     {
@@ -184,10 +184,10 @@ class Str
     }
 
     /**
-     * Interpolate string. Replaces {key} substrings in text with provided value in the $data array.
-     * @param string $in Input string
-     * @param array $data Interpolation array
-     * @return string Interpolated string
+     * Подстановка в строку. Заменяет подстроки {key} в тексте значениями из массива $data.
+     * @param string $in Исходная строка
+     * @param array $data Массив значений для подстановки
+     * @return string Строка с подставленными значениями
      */
     public static function interpolate(string $in, array $data): string
     {

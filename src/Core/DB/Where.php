@@ -13,9 +13,9 @@ class Where implements ArrayAccess
     protected array $bind = [];
 
     /**
-     * Where constructor.
+     * Конструктор Where.
      *
-     * @param mixed $where Filter conditions
+     * @param mixed $where Условия фильтра
      * @throws Exception
      */
     public function __construct(string|array|Where|Expr $where = [])
@@ -73,10 +73,10 @@ class Where implements ArrayAccess
     }
 
     /**
-     * Convert WHERE statement to string
+     * Преобразует выражение WHERE в строку
      *
-     * @param bool $withWhereWord Whether it should include WHERE word
-     * @return string SQL WHERE statement
+     * @param bool $withWhereWord Добавлять ли слово WHERE
+     * @return string SQL-выражение WHERE
      * @throws Exception
      */
     public function toString(bool $withWhereWord = true): string
@@ -98,10 +98,10 @@ class Where implements ArrayAccess
     }
 
     /**
-     * Prepare WHERE data
+     * Подготавливает данные WHERE
      *
-     * @param array $data input data
-     * @param array $oldBinds previous bindings (if any)
+     * @param array $data Входные данные
+     * @param array $oldBinds Прежние параметры запроса (если есть)
      * @throws Exception
      */
     #[ArrayShape(['result' => 'array', 'bind' => 'array'])]
@@ -146,9 +146,9 @@ class Where implements ArrayAccess
     }
 
     /**
-     * Add WHERE conditions
+     * Добавляет условия WHERE
      *
-     * @param string|array|Where|\Simflex\Core\DB\Expr $where Filter conditions
+     * @param string|array|Where|\Simflex\Core\DB\Expr $where Условия фильтра
      * @throws Exception
      */
     public function add(string|array|Where|Expr $where): void

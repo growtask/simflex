@@ -7,7 +7,7 @@ use Simflex\Core\Container;
 use Simflex\Core\DI\Service;
 
 /**
- * Telegram API service
+ * Сервис Telegram API
  */
 class TelegramApi implements Service
 {
@@ -17,9 +17,9 @@ class TelegramApi implements Service
     }
 
     /**
-     * Sanitize arbitrary input to be a valid Markdown text
-     * @param string $in Input string
-     * @return string Sanitized string
+     * Очищает произвольный текст, чтобы он был корректным Markdown
+     * @param string $in Исходная строка
+     * @return string Очищенная строка
      */
     public static function sanitize(string $in): string
     {
@@ -50,10 +50,10 @@ class TelegramApi implements Service
     }
 
     /**
-     * Send message to a chat
-     * @param string $chatId Chat ID
-     * @param string $message Message (Markdown format)
-     * @return bool "true" if sent successfully
+     * Отправляет сообщение в чат
+     * @param string $chatId ID чата
+     * @param string $message Сообщение (в формате Markdown)
+     * @return bool true, если отправлено успешно
      */
     public function send(string $chatId, string $message): bool
     {

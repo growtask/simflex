@@ -5,152 +5,152 @@ namespace Simflex\Core\Events;
 enum Events
 {
     /**
-     * Called before core/page init
+     * Вызывается перед инициализацией ядра и страницы
      */
     case PreInit;
 
     /**
-     * Called after core/page init
+     * Вызывается после инициализации ядра и страницы
      */
     case PostInit;
 
     /**
-     * Called before core exec
+     * Вызывается перед выполнением ядра
      */
     case PreExecute;
 
     /**
-     * Called after core exec
+     * Вызывается после выполнения ядра
      */
     case PostExecute;
 
     /**
-     * Called before page output is modified
+     * Вызывается перед изменением вывода страницы
      *
-     * Arguments:
-     *  - string $data - unmodified page content
+     * Аргументы:
+     *  - string $data - исходный контент страницы
      */
     case PrePrepareOutput;
 
     /**
-     * Called after page output is modified
+     * Вызывается после изменения вывода страницы
      *
-     * Arguments:
-     *  - string $data - possibly modified page content
+     * Аргументы:
+     *  - string $data - возможно измененный контент страницы
      */
     case PostPrepareOutput;
 
     /**
-     * Called before auth init
+     * Вызывается перед инициализацией авторизации
      */
     case PreAuthInit;
 
     /**
-     * Called after auth init
+     * Вызывается после инициализации авторизации
      */
     case PostAuthInit;
 
     /**
-     * Called before core and page are added to Container
+     * Вызывается перед добавлением ядра и страницы в Container
      */
     case PreCoreInit;
 
     /**
-     * Called after core and page are added to Container
+     * Вызывается после добавления ядра и страницы в Container
      */
     case PostCoreInit;
 
     /**
-     * Called before logger init
+     * Вызывается перед инициализацией логгера
      */
     case PreLoggerInit;
 
     /**
-     * Called after logger init
+     * Вызывается после инициализации логгера
      */
     case PostLoggerInit;
 
     /**
-     * Called before model's data is filled
+     * Вызывается перед заполнением данных модели
      *
-     * Arguments:
-     *  - mixed $model - model instance
+     * Аргументы:
+     *  - mixed $model - экземпляр модели
      */
     case PreModelFill;
 
     /**
-     * Called after model's data is filled
+     * Вызывается после заполнения данных модели
      *
-     * Arguments:
-     *  - mixed $model - model instance
+     * Аргументы:
+     *  - mixed $model - экземпляр модели
      */
     case PostModelFill;
 
     /**
-     * Called before model is saved
+     * Вызывается перед сохранением модели
      *
-     * Arguments:
-     * - mixed $model - model instance
+     * Аргументы:
+     * - mixed $model - экземпляр модели
      */
     case PreModelSave;
 
     /**
-     * Called after model is saved
+     * Вызывается после сохранения модели
      *
-     * Arguments:
-     * - mixed $model - model instance
-     * - bool $result - save result
+     * Аргументы:
+     * - mixed $model - экземпляр модели
+     * - bool $result - результат сохранения
      */
     case PostModelSave;
 
     /**
-     * Called before model is inserted
+     * Вызывается перед вставкой модели
      *
-     * Arguments:
-     * - mixed $model - model instance
+     * Аргументы:
+     * - mixed $model - экземпляр модели
      */
     case PreModelInsert;
 
     /**
-     * Called after model is inserted
+     * Вызывается после вставки модели
      *
-     * Arguments:
-     * - mixed $model - model instance
-     * - bool $result - insert result
+     * Аргументы:
+     * - mixed $model - экземпляр модели
+     * - bool $result - результат вставки
      */
     case PostModelInsert;
 
     /**
-     * Called before model is updated
+     * Вызывается перед обновлением модели
      *
-     * Arguments:
-     * - mixed $model - model instance
+     * Аргументы:
+     * - mixed $model - экземпляр модели
      */
     case PreModelUpdate;
 
     /**
-     * Called after model is updated
+     * Вызывается после обновления модели
      *
-     * Arguments:
-     * - mixed $model - model instance
-     * - bool $result - update result
+     * Аргументы:
+     * - mixed $model - экземпляр модели
+     * - bool $result - результат обновления
      */
     case PostModelUpdate;
 
     /**
-     * Called before model is deleted
+     * Вызывается перед удалением модели
      *
-     * Arguments:
-     * - mixed $model - model instance
+     * Аргументы:
+     * - mixed $model - экземпляр модели
      */
     case PreModelDelete;
 
     /**
-     * Called after model is deleted
+     * Вызывается после удаления модели
      *
-     * Arguments:
-     * - array $oldData - old model data
-     * - bool $result - delete result
+     * Аргументы:
+     * - array $oldData - прежние данные модели
+     * - bool $result - результат удаления
      */
     case PostModelDelete;
 

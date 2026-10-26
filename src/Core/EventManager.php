@@ -14,10 +14,10 @@ class EventManager implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Subscribes a listener to an event
+     * Подписывает слушателя на событие
      *
-     * @param string $eventName Event name
-     * @param string $listenerClass Listener class (must implement EventListener interface)
+     * @param string $eventName Имя события
+     * @param string $listenerClass Класс слушателя (должен реализовывать интерфейс EventListener)
      */
     public function subscribe(string $eventName, string $listenerClass): void
     {
@@ -29,10 +29,10 @@ class EventManager implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Subscribes many listeners to an event
+     * Подписывает несколько слушателей на событие
      *
-     * @param string $eventName Event name
-     * @param array $listenerClasses Array of listener classes (must implement EventListener interface)
+     * @param string $eventName Имя события
+     * @param array $listenerClasses Массив классов слушателей (должны реализовывать интерфейс EventListener)
      */
     public function subscribeMany(string $eventName, array $listenerClasses): void
     {
@@ -42,9 +42,9 @@ class EventManager implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Subscribes many listeners to many events
+     * Подписывает несколько слушателей на несколько событий
      *
-     * @param array $subscribers Array of event names and listener classes
+     * @param array $subscribers Массив имен событий и классов слушателей
      */
     public function subscribeAll(array $subscribers): void
     {
@@ -54,9 +54,9 @@ class EventManager implements \Simflex\Core\DI\Service
     }
 
     /**
-     * Fires an event
+     * Вызывает событие
      *
-     * @param Event $event Event object
+     * @param Event $event Объект события
      */
     public function dispatch(Event $event): void
     {

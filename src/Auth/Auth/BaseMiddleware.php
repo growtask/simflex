@@ -6,7 +6,8 @@ use Simflex\Core\Middleware\Handler;
 use Simflex\Core\Models\User;
 
 /**
- * The user model class is User; override it with Container::getFactory()->override(User::class, AppUser::class)
+ * Класс модели пользователя — User, переопределяется через
+ * Container::getFactory()->override(User::class, AppUser::class)
  */
 abstract class BaseMiddleware implements Handler
 {

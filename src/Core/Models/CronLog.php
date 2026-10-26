@@ -6,7 +6,7 @@ use Simflex\Core\ModelBase;
 
 /**
  * @property int id
- * @property string job Job key in provider/cron.php
+ * @property string job Ключ задачи в provider/cron.php
  * @property string datetime
  * @property string result
  */
@@ -16,7 +16,7 @@ class CronLog extends ModelBase
     protected static string $primaryKeyName = 'id';
 
     /**
-     * Cron job: deletes the log records older than $months
+     * Задача cron: удаляет записи лога старше $months месяцев
      */
     public static function deleteOld(int $months = 2): void
     {

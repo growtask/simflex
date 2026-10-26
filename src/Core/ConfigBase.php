@@ -5,7 +5,7 @@ namespace Simflex\Core;
 use Simflex\Core\DB\MySQL;
 
 /**
- * Base configuration class
+ * Базовый класс конфигурации
  */
 abstract class ConfigBase
 {
@@ -17,7 +17,7 @@ abstract class ConfigBase
      *     password: string,
      *     name: string
      * }
-     *     Database options
+     *     Параметры базы данных
      */
     public array $db = [
         'adapter' => MySQL::class,
@@ -35,10 +35,11 @@ abstract class ConfigBase
      *     security: string,
      *     username: string,
      *     password: string,
-     * } Mail options. "security" field value may differ per transport, check what exactly the transport you want to use
-     * expects. For PHPMailer, use these: https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-PHPMailer.html#property_SMTPSecure
+     * } Параметры почты. Значение поля "security" зависит от транспорта, проверьте, что именно ожидает
+     * нужный транспорт. Для PHPMailer подходят эти:
+     * https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-PHPMailer.html#property_SMTPSecure
      *
-     * Set the class to the "transport" field. Note that it MUST be implementing Transport interface.
+     * В поле "transport" указывается класс. Он ОБЯЗАН реализовывать интерфейс Transport.
      */
     public array $mail = [
         'transport' => null,
@@ -52,64 +53,64 @@ abstract class ConfigBase
     /**
      * @var array{
      *     token: string
-     * } Telegram options
+     * } Параметры Telegram
      */
     public array $telegram = [
         'token' => '',
     ];
 
     /**
-     * @var string Default component to load
+     * @var string Компонент, загружаемый по умолчанию
      */
     public string $defaultComponent = '\Simflex\Extensions\Content\Content';
 
     /**
-     * @var string Class declaring the user privileges: \Simflex\Core\Privilege or the app's subclass
+     * @var string Класс, объявляющий привилегии пользователей: \Simflex\Core\Privilege или подкласс приложения
      */
     public string $privilegeClass = Privilege::class;
 
     /**
-     * @var string Class declaring the admin panel menu: \Simflex\Admin\Menu or the app's subclass
+     * @var string Класс, объявляющий меню админки: \Simflex\Admin\Menu или подкласс приложения
      */
     public string $adminMenuClass = \Simflex\Admin\Menu::class;
 
     /**
-     * @var string Class declaring the modules of the admin panel layout: \Simflex\Admin\AdminModules or the app's subclass
+     * @var string Класс, объявляющий модули макета админки: \Simflex\Admin\AdminModules или подкласс приложения
      */
     public string $adminModulesClass = \Simflex\Admin\AdminModules::class;
 
     /**
-     * @var string Default theme to load
+     * @var string Тема по умолчанию
      */
     public string $theme = 'default';
 
     /**
-     * @var bool Enable dev tools
+     * @var bool Включить инструменты разработчика
      */
     public bool $devMode = false;
 
     /**
-     * @var bool Enable logging, despite of dev tools
+     * @var bool Включить логирование независимо от инструментов разработчика
      */
     public bool $enableLogging = false;
 
     /**
-     * @var string Admin panel URL prefix, e.g. /admin. Admin menu links are declared relative to it
+     * @var string Префикс URL админки, например /admin. Ссылки меню админки задаются относительно него
      */
     public string $adminPath = '/admin';
 
     /**
-     * @var bool Also write the log to a file in $logPath (by default the log goes to stdout only)
+     * @var bool Писать лог еще и в файл в $logPath (по умолчанию лог идет только в stdout)
      */
     public bool $logToFile = false;
 
     /**
-     * @var string Log path, used when $logToFile is enabled
+     * @var string Путь к логу, используется при включенном $logToFile
      */
     public string $logPath = SF_ROOT_PATH . '/log';
 
     /**
-     * @var array{routes: string, events: string, services: string} Data providers for autoloading
+     * @var array{routes: string, events: string, services: string} Провайдеры данных для автозагрузки
      */
     public array $files = [
         'routes' => SF_CORE_ROOT_PATH . '/routes.php',
@@ -119,12 +120,12 @@ abstract class ConfigBase
     ];
 
     /**
-     * @var array Extra, user-defined config data
+     * @var array Дополнительные пользовательские данные конфига
      */
     public array $extra = [];
 
     /**
-     * Getter for user-defined data
+     * Получение пользовательских данных
      */
     public function __get(string $name): mixed
     {
@@ -152,7 +153,7 @@ abstract class ConfigBase
     }
 
     /**
-     * Load config data
+     * Загружает данные конфига
      */
     abstract public function load(): void;
 }

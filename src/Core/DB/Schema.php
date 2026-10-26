@@ -9,21 +9,21 @@ use Simflex\Core\DB\Schema\Table;
 
 class Schema
 {
-    /** @var Table[] Existing tables */
+    /** @var Table[] Существующие таблицы */
     protected array $tables = [];
 
-    /** @var Table[] Tables that await their creation (commit) */
+    /** @var Table[] Таблицы, ожидающие создания (commit) */
     protected array $awaitingCreate = [];
 
-    /** @var Table[] Tables that await their deletion */
+    /** @var Table[] Таблицы, ожидающие удаления */
     protected array $awaitingDelete = [];
 
-    /** @var Table[] Tables that have been created while this object is alive */
+    /** @var Table[] Таблицы, созданные за время жизни этого объекта */
     protected array $sessionCreated = [];
 
     protected array $awaitingAlter = [];
 
-    /** @var callable[] Data to write once the tables are created, see seed() */
+    /** @var callable[] Данные для записи после создания таблиц, см. seed() */
     protected array $awaitingSeed = [];
 
     public function __construct()
@@ -31,7 +31,7 @@ class Schema
         $this->reload();
     }
 
-    // ------------ UTIL ------------ //
+    // ------------ УТИЛИТЫ ------------ //
     public function reload(): void
     {
         $dbName = Container::getConfig()->db['name'];
@@ -84,7 +84,7 @@ class Schema
 
         $table->keepParams();
 
-        // TODO: load constraints
+        // TODO: загружать ограничения
         return $table;
     }
 
@@ -93,11 +93,11 @@ class Schema
         return isset($this->tables[$name]);
     }
 
-    // ------------ ALTERNATION ------------ //
+    // ------------ ИЗМЕНЕНИЕ ------------ //
 
     /**
-     * @param string $name Table name
-     * @param callable $fn Table data callback (Schema\Table passed as argument)
+     * @param string $name Имя таблицы
+     * @param callable $fn Колбэк описания таблицы (аргументом передаётся Schema\Table)
      */
     public function createTable(string $name, callable $fn): void
     {
@@ -108,7 +108,7 @@ class Schema
     }
 
     /**
-     * Drops table
+     * Удаляет таблицу
      *
      * @throws \Exception
      */
@@ -122,9 +122,9 @@ class Schema
     }
 
     /**
-     * Writes initial data once the tables of the migration are created (on commit), e.g. the rows of a new table:
+     * Записывает начальные данные после создания таблиц миграции (при commit), например записи новой таблицы:
      * $s->createTable('menu', ...); $s->seed(fn () => Menu::bulkInsert([...]));
-     * An exception thrown by the callback or false returned fails the commit, the migration is rolled back with its tables.
+     * Исключение в колбэке или возврат false проваливает commit, миграция откатывается вместе с её таблицами.
      */
     public function seed(callable $fn): void
     {
@@ -142,10 +142,10 @@ class Schema
         }
     }
 
-    // ------------ EXECUTION ------------ //
+    // ------------ ВЫПОЛНЕНИЕ ------------ //
 
     /**
-     * Commits changes
+     * Фиксирует изменения
      *
      * @throws \Exception
      */
@@ -155,7 +155,7 @@ class Schema
     }
 
     /**
-     * Rollbacks created tables
+     * Откатывает созданные таблицы
      *
      * @throws \Exception
      */
@@ -170,7 +170,7 @@ class Schema
 
     protected function commitDeletion(): bool
     {
-        // delete tables, no rollback available
+        // удаляем таблицы, отката нет
         foreach ($this->awaitingDelete as $table) {
             $status = !!DB::query('DROP TABLE IF EXISTS `' . $table->getName() . '`');
             if (!$status) {
@@ -178,7 +178,7 @@ class Schema
             }
         }
 
-        // clear pool
+        // очищаем пул
         $this->awaitingDelete = [];
         return true;
     }
@@ -189,7 +189,7 @@ class Schema
         $this->awaitingSeed = [];
         foreach ($seeds as $fn) {
             try {
-                // false is a failure, e.g. of ModelBase::bulkInsert() given as fn () => Model::bulkInsert([...])
+                // false — провал, например ModelBase::bulkInsert(), переданного как fn () => Model::bulkInsert([...])
                 if ($fn() === false) {
                     Log::critical('Failed to write the migration data: {error}', ['error' => DB::error()]);
                     return false;
@@ -204,20 +204,20 @@ class Schema
     }
 
     /**
-     * Commits creation changes
+     * Фиксирует создание таблиц
      *
      * @throws \Exception
      */
     protected function commitCreation(): bool
     {
         foreach ($this->awaitingCreate as $table) {
-            // try creating the table
+            // пробуем создать таблицу
             $status = !!DB::query($table->toString());
             if (!$status) {
                 return false;
             }
 
-            // if everything went smooth, let's check if that table was already made
+            // если всё прошло гладко, проверяем, не была ли таблица уже создана
             if (!in_array($table->getName(), $this->awaitingAlter)) {
                 $params = $table->getParams();
                 if (!$params->ifNotExists || $params->ifNotExists && !$this->hasTable($table->getName())) {
@@ -226,7 +226,7 @@ class Schema
             }
         }
 
-        // clear pools
+        // очищаем пулы
         $this->awaitingCreate = [];
         $this->awaitingAlter = [];
         return true;

@@ -8,7 +8,7 @@ use PDOStatement;
 use Simflex\Core\Container;
 
 /**
- * Class MySQL
+ * Класс MySQL
  *
  * @package Simflex\Core\DB
  */

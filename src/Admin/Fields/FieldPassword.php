@@ -34,14 +34,4 @@ class FieldPassword extends Field
 
         return $pw;
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Пароль';
-    }
-
-    public static function typeParams(): array
-    {
-        return [];
-    }
 }

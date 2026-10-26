@@ -28,8 +28,8 @@ class Alert
     /**
      * Добавить сообщение об ошибке
      * @param array|string $mixed сообщение
-     * @param string $goto (optional = false) header("location: ".$goto) and exit;
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $goto (необязательный, по умолчанию false) header("location: ".$goto) и exit;
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function error(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
@@ -44,7 +44,7 @@ class Alert
     /**
      * Добавить предупреждающее сообщение
      * @param array|string $mixed сообщение
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function warning(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
@@ -59,8 +59,8 @@ class Alert
     /**
      * Добавить сообщение об успешной операции
      * @param array|string $mixed сообщение
-     * @param string $goto (optional = false) header("location: ".$goto) and exit;
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $goto (необязательный, по умолчанию false) header("location: ".$goto) и exit;
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function success(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
@@ -75,8 +75,8 @@ class Alert
     /**
      * Добавить информационное сообщение
      * @param array|string $mixed сообщение
-     * @param string $goto (optional = false) header("location: ".$goto) and exit;
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $goto (необязательный, по умолчанию false) header("location: ".$goto) и exit;
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function info(array|string $mixed, string|false $goto = false, string $page = ''): void
     {
@@ -90,7 +90,7 @@ class Alert
 
     /**
      * Получить все накопившиеся сообщения по идентификатору и очистить буфер. Формат HTML
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      * @return string HTML
      */
     public static function getHTML(string $page = ''): string
@@ -107,7 +107,7 @@ class Alert
 
     /**
      * Проверка, есть или нет сообщения в буфере
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function has(string $page = ''): int|bool
     {
@@ -120,7 +120,7 @@ class Alert
 
     /**
      * Проверка, есть или нет ошибки в буфере
-     * @param string $page (optional = '') ограничение, идентификатор. Например: "profile"
+     * @param string $page (необязательный, по умолчанию '') ограничение, идентификатор. Например: "profile"
      */
     public static function hasErrors(string $page = ''): bool
     {

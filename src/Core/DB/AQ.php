@@ -7,8 +7,8 @@ use Simflex\Core\DB;
 use Simflex\Core\ModelBase;
 
 /**
- * Class AQ
- * Simplex Framework DataBase Active Query
+ * Класс AQ
+ * Active Query базы данных Simplex Framework
  */
 class AQ
 {
@@ -95,6 +95,14 @@ class AQ
         return $this;
     }
 
+    /**
+     * Значения параметров запроса: привязанные и, после build(), параметры условий
+     */
+    public function getBinds(): array
+    {
+        return $this->binds;
+    }
+
     public function setModelClass(string $class): static
     {
         $this->modelClass = Container::getFactory()->getStatic($class);
@@ -132,6 +140,7 @@ class AQ
         $q[] = "FROM `$this->from`" . ($this->fromAlias ? (' ' . $this->fromAlias) : '');
         foreach ($this->join as $join) {
             $q[] = $join->toSql($this->from);
+            $this->bind($join->getBinds());
         }
 
         $where = new Where($this->where);
@@ -163,9 +172,9 @@ class AQ
     }
 
     /**
-     * Values of one column of all the rows
+     * Значения одного столбца всех записей
      *
-     * @param int|string $column Column name or index in the selected fields
+     * @param int|string $column Имя столбца или индекс среди выбранных полей
      * @return list<string|int|float|null>
      * @throws \Exception
      */
@@ -286,7 +295,7 @@ class AQ
     }
 
     /**
-     * @param string $type for example INNER, LEFT, RIGHT, FULL
+     * @param string $type Например INNER, LEFT, RIGHT, FULL
      * @throws \Exception
      * @see Core/DB/HowTo/UsingJoin.md
      */
@@ -295,9 +304,10 @@ class AQ
         string $joinColumn1,
         ?string $joinColumn2 = null,
         string $type = 'INNER',
-        string|array|Where|Expr|null $extraOnConditions = null
+        string|array|Where|Expr|null $extraOnConditions = null,
+        string $alias = '',
     ): static {
-        $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, $type, $extraOnConditions);
+        $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, $type, $extraOnConditions, $alias);
         return $this;
     }
 
@@ -309,9 +319,10 @@ class AQ
         string|ModelBase $table,
         string $joinColumn1,
         ?string $joinColumn2 = null,
-        string|array|Where|Expr|null $extraOnConditions = null
+        string|array|Where|Expr|null $extraOnConditions = null,
+        string $alias = '',
     ): static {
-        $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, 'LEFT', $extraOnConditions);
+        $this->join[] = new JoinClause($table, $joinColumn1, $joinColumn2, 'LEFT', $extraOnConditions, $alias);
         return $this;
     }
 }

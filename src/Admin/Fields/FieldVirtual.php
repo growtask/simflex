@@ -55,43 +55,4 @@ class FieldVirtual extends Field
         $subquery = $subquery ? "($subquery)" : "''";
         return "$subquery $this->name";
     }
-
-    public static function typeLabel(): string
-    {
-        return 'Виртуальное поле';
-    }
-
-    public static function typeParams(): array
-    {
-        return [
-            [
-                'name' => 'subquery',
-                'label' => 'Подзапрос',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'text',
-                'label' => 'Текст',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'href',
-                'label' => 'Ссылка',
-                'type' => \Simflex\Admin\Fields\FieldString::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-            [
-                'name' => 'in_modal',
-                'label' => 'Открыть в модальном окне',
-                'type' => \Simflex\Admin\Fields\FieldBool::class,
-                'help' => '',
-                'default_value' => '',
-            ],
-        ];
-    }
 }

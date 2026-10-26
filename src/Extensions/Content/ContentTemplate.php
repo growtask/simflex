@@ -3,15 +3,15 @@
 namespace Simflex\Extensions\Content;
 
 /**
- * Page template declared in the app's provider/templates.php, see ContentTemplates
+ * Шаблон страницы, объявленный в provider/templates.php приложения, см. ContentTemplates
  */
 readonly class ContentTemplate
 {
     /**
-     * @param string $name Title in the admin panel
-     * @param string $file Template file, relative to Extensions/Content/tpl, e.g. 'index.tpl' or 'news/item.tpl'
-     * @param ContentTemplateBlock[] $params Additional fields of the page form. Their values are kept in content.params
-     *        by the field name, e.g. $content->params['meta_title']
+     * @param string $name Название в админке
+     * @param string $file Файл шаблона относительно Extensions/Content/tpl, например 'index.tpl' или 'news/item.tpl'
+     * @param ContentTemplateBlock[] $params Дополнительные поля формы страницы. Их значения хранятся в content.params
+     *        по имени поля, например $content->params['meta_title']
      */
     public function __construct(
         public string $name,

@@ -5,15 +5,10 @@ namespace Simflex\Admin\Fields;
 use Simflex\Core\Cron\CronRegistry;
 
 /**
- * Cron job key from provider/cron.php, shown by the job name
+ * Ключ задачи cron из provider/cron.php, показывается по названию задачи
  */
 class FieldCronJobSelect extends FieldExtensionSelect
 {
-    public static function typeLabel(): string
-    {
-        return 'Выбор задачи cron';
-    }
-
     protected function options(): array
     {
         return array_map(fn($job) => $job->name, CronRegistry::jobs());

@@ -6,8 +6,8 @@ use Simflex\Core\DB;
 use Simflex\Core\Time;
 
 /**
- * @todo Incomplete: there are no migrations for the sms_log, sms_driver tables, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает
+ *       на SQL. Будет вынесено в отдельный composer-пакет.
  */
 abstract class DriverBase
 {
@@ -35,14 +35,14 @@ abstract class DriverBase
      * @param string $phone
      * @param string $text
      * @param string $from
-     * @return array  bool success, mixed driver_sms_id, float price, string error_text, int error_code
+     * @return array  bool success - успешно, mixed driver_sms_id, float price - цена, string error_text, int error_code
      */
     abstract public function send($phone, $text, $from, $smsId = 0): array|bool;
 
     /**
      * Получение статуса СМС
      * @param mixed $driverSmsId Идентификатор СМС в системе сервиса СМС-отправки
-     * @return array string state, string error_text, time
+     * @return array string state - состояние, string error_text, time - время
      */
     public function getState($driverSmsId): array
     {
@@ -59,7 +59,7 @@ abstract class DriverBase
 
     /**
      * @param string $driverSmsId
-     * @param array $result [string state, mixed time, error_code, error_text]
+     * @param array $result [string state, mixed time, error_code, error_text] - состояние, время, код и текст ошибки
      */
     protected function updateState($driverSmsId, array $result): void
     {

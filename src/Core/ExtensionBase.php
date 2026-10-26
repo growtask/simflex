@@ -12,7 +12,7 @@ abstract class ExtensionBase implements HasAdminParams
     protected string $root = '';
 
     /**
-     * Title in the admin panel lists
+     * Название в списках админки
      */
     public static function extensionTitle(): string
     {
@@ -57,10 +57,10 @@ abstract class ExtensionBase implements HasAdminParams
     }
 
     /**
-     * Renders the template into a string, $this in the template is the extension
+     * Рендерит шаблон в строку, $this в шаблоне - расширение
      *
-     * @param string $file Absolute path to the template
-     * @param array<string, mixed> $vars Variables available in the template as $name
+     * @param string $file Абсолютный путь к шаблону
+     * @param array<string, mixed> $vars Переменные, доступные в шаблоне как $name
      */
     protected function render(string $file, array $vars = []): string
     {

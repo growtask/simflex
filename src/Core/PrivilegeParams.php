@@ -3,15 +3,16 @@
 namespace Simflex\Core;
 
 /**
- * Privilege settings declared in code, see Privilege::init()
+ * Настройки привилегии, объявленной в коде, см. Privilege::init()
  */
 readonly class PrivilegeParams
 {
     /**
-     * @param string $title Description in the admin panel
-     * @param bool $active Enabled by default: the admin panel may switch it, the switched value is kept in user_privilege
-     * @param bool $switchable Can be switched in the admin panel. The developer one can't: without it nobody
-     *        could switch the others back
+     * @param string $title Описание в админке
+     * @param bool $active Включена по умолчанию: в админке ее можно переключить, переключенное значение хранится в
+     *        user_privilege
+     * @param bool $switchable Можно переключать в админке. Привилегию разработчика нельзя: без нее никто
+     *        не смог бы включить остальные обратно
      */
     public function __construct(
         public string $title,

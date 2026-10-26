@@ -18,10 +18,10 @@ use Simflex\Core\Models\Attrib\FieldOne;
 use Simflex\Core\Models\Enums\Relation;
 
 /**
- * Class ModelBase
+ * Класс ModelBase
  *
- * Base class for any ORM model
- * MUST set static properties $table and $primaryKeyName in child class
+ * Базовый класс любой ORM-модели
+ * В дочернем классе ОБЯЗАТЕЛЬНО задать статические свойства $table и $primaryKeyName
  */
 abstract class ModelBase implements ArrayAccess, JsonSerializable
 {
@@ -29,7 +29,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public const FLAG_SKIP_VIRTUAL = 1 << 1;
 
     /**
-     * @var array For debugging purposes. Logs inserts, deletions and updates.
+     * @var array Для отладки. Считает вставки, удаления и обновления.
      */
     public static array $stats = [
         'inserted' => 0,
@@ -38,46 +38,46 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     ];
 
     /**
-     * @var int|null Model ID
+     * @var int|null ID модели
      */
     protected ?int $id = null;
 
     /**
-     * @var array Model data
+     * @var array Данные модели
      */
     protected array $data = [];
 
     /**
-     * @var array Model data before update
+     * @var array Данные модели до обновления
      */
     protected array $dataBeforeUpdate = [];
 
     /**
-     * @var array Relation cache
+     * @var array Кэш связей
      */
     protected array $relations = [];
 
     /**
-     * @var string Table name
+     * @var string Имя таблицы
      */
     protected static string $table;
 
     /**
-     * @var string Primary key name
+     * @var string Имя первичного ключа
      */
     protected static string $primaryKeyName;
 
     /**
-     * @var array Last error
+     * @var array Последняя ошибка
      */
     #[ArrayShape(['code' => 'int', 'text' => 'string'])]
     protected array $lastError = ['code' => 0, 'text' => ''];
 
     /**
-     * Get table name
+     * Имя таблицы
      *
-     * @param bool $wrap Wrap table name in backticks
-     * @return string Table name
+     * @param bool $wrap Обернуть имя таблицы в обратные кавычки
+     * @return string Имя таблицы
      */
     public static function getTableName(bool $wrap = false): string
     {
@@ -85,10 +85,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get primary key name
+     * Имя первичного ключа
      *
-     * @param bool $wrap Wrap primary key name in backticks
-     * @return string Primary key name
+     * @param bool $wrap Обернуть имя первичного ключа в обратные кавычки
+     * @return string Имя первичного ключа
      */
     public static function getPrimaryKeyName(bool $wrap = false): string
     {
@@ -101,8 +101,8 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * ModelBase constructor.
-     * @param int|null $id Model ID
+     * Конструктор ModelBase.
+     * @param int|null $id ID модели
      * @throws Exception
      */
     public function __construct(?int $id = null)
@@ -114,7 +114,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Loads relations from reflection to local cache for speed
+     * Загружает связи из рефлексии в локальный кэш для скорости
      */
     protected function loadRelations(): void
     {
@@ -133,9 +133,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Load model data
-     * @param int $id Model ID
-     * @return bool True if found and loaded
+     * Загружает данные модели
+     * @param int $id ID модели
+     * @return bool True, если запись найдена и загружена
      * @throws Exception
      */
     public function load(int $id): bool
@@ -149,8 +149,8 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Reload model data
-     * @return bool True if found and loaded
+     * Перезагружает данные модели
+     * @return bool True, если запись найдена и загружена
      * @throws Exception
      */
     public function reload(): bool
@@ -159,7 +159,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get enum values for field
+     * Значения enum для поля
      */
     public static function enumValues(string $fieldName, bool $withBuffer = true): array
     {
@@ -172,13 +172,13 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Find models by where condition
+     * Ищет модели по условию
      *
-     * @param string|array|Where $where Where condition
-     * @param string|null $orderBy ORDER BY clause
-     * @param string|null $limit LIMIT clause
-     * @param bool|string $assocKey Get result array with model id's (or other field) in keys
-     * @return static[] Array of models
+     * @param string|array|Where $where Условие
+     * @param string|null $orderBy Выражение ORDER BY
+     * @param string|null $limit Выражение LIMIT
+     * @param bool|string $assocKey Вернуть массив с ID моделей (или другим полем) в ключах
+     * @return static[] Массив моделей
      * @throws Exception
      */
     public static function find(
@@ -191,9 +191,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get prepared AQ searcher based on this model
+     * Подготовленный запрос AQ на основе этой модели
      *
-     * @return AQ AQ searcher
+     * @return AQ Запрос AQ
      */
     public static function findAdv(): AQ
     {
@@ -201,10 +201,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Test if row exists
+     * Проверяет, существует ли запись
      *
-     * @param int $id Model ID
-     * @return bool True if found
+     * @param int $id ID модели
+     * @return bool True, если найдена
      * @throws Exception
      */
     public static function exists(int $id): bool
@@ -213,11 +213,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Find one model by where condition
+     * Ищет одну модель по условию
      *
-     * @param string|array|Where $where Where condition
-     * @param bool $returnModelIfNotFound Return new model if not found
-     * @return static|null Model or null if not found
+     * @param string|array|Where $where Условие
+     * @param bool $returnModelIfNotFound Вернуть новую модель, если не найдена
+     * @return static|null Модель или null, если не найдена
      * @throws Exception
      */
     public static function findOne(string|array|Where $where, bool $returnModelIfNotFound = false): ?static
@@ -227,7 +227,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get all models
+     * Все модели
      *
      * @return static[]
      * @throws Exception
@@ -238,7 +238,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Fill model with data
+     * Заполняет модель данными
      */
     public function fill(array $data): static
     {
@@ -254,17 +254,17 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked after model data is filled
+     * Вызывается после заполнения данных модели
      */
     protected function afterFill(): void
     {
     }
 
     /**
-     * Write model data to database
+     * Записывает данные модели в базу
      *
-     * @param array|null $data Data override
-     * @return bool True if success
+     * @param array|null $data Данные взамен текущих
+     * @return bool True при успехе
      * @throws Exception
      */
     public function save(?array $data = null): bool
@@ -283,10 +283,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Insert model data to database
+     * Вставляет данные модели в базу
      *
-     * @param array|null $data Data override
-     * @param int $flags Insert flags
+     * @param array|null $data Данные взамен текущих
+     * @param int $flags Флаги вставки
      */
     public function insert(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
@@ -303,7 +303,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             $values = [];
 
             foreach ($this->data as $key => $value) {
-                // skip virtual keys
+                // пропускаем виртуальные ключи
                 if (($flags & self::FLAG_SKIP_VIRTUAL) && method_exists(static::class, 'offsetGet' . $key)) {
                     continue;
                 }
@@ -312,7 +312,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 $values[] = is_bool($value) ? ($value ? 1 : 0) : $value;
             }
 
-            // build insert query
+            // собираем запрос вставки
             $ignore = $flags & self::FLAG_IGNORE ? ' ignore ' : '';
             $query = "insert $ignore into " . static::getTableName(true) . ' (';
             $query .= implode(', ', array_map(fn($key) => DB::wrapName($key), $keys)) . ') values (';
@@ -321,7 +321,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 array_map(fn($value) => $value instanceof Expr ? (string)$value : '?', $values)
             ) . ')';
 
-            // fix bindings to remove Expr statements
+            // убираем выражения Expr из параметров запроса
             $bind = [];
             foreach ($values as $value) {
                 if (!($value instanceof Expr)) {
@@ -340,11 +340,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Insert model data to database and return model instance
+     * Вставляет данные модели в базу и возвращает экземпляр модели
      *
-     * @param array $data Initial data
-     * @param int $flags Insert flags
-     * @return static|null Model instance or null if failed
+     * @param array $data Начальные данные
+     * @param int $flags Флаги вставки
+     * @return static|null Экземпляр модели или null при ошибке
      * @throws Exception
      */
     public static function insertStatic(array $data, int $flags = self::FLAG_SKIP_VIRTUAL): ?static
@@ -359,11 +359,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Insert many models at once
+     * Вставляет сразу много моделей
      *
-     * @param array $items Array of arrays with model data
-     * @param int $flags Insert flags
-     * @return bool True if all models were inserted successfully
+     * @param array $items Массив массивов с данными моделей
+     * @param int $flags Флаги вставки
+     * @return bool True, если все модели успешно вставлены
      */
     public static function bulkInsert(array $items, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
@@ -377,10 +377,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Update model data in database
+     * Обновляет данные модели в базе
      *
-     * @param array|null $data Data override
-     * @return bool True if success
+     * @param array|null $data Данные взамен текущих
+     * @return bool True при успехе
      * @throws Exception
      */
     public function update(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
@@ -402,7 +402,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             unset($updateData[static::$primaryKeyName]);
 
             foreach ($this->data as $key => $value) {
-                // skip virtual keys
+                // пропускаем виртуальные ключи
                 if (!($flags & self::FLAG_SKIP_VIRTUAL) || !method_exists(static::class, 'offsetGet' . $key)) {
                     continue;
                 }
@@ -425,7 +425,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Delete model from database
+     * Удаляет модель из базы
      */
     public function delete(): bool
     {
@@ -465,18 +465,18 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         }
 
         $where = new Where($where);
-        $query = 'delete from ' . static::getTableName(true) . ' ' . $where; // binds are filled on string conversion
+        $query = 'delete from ' . static::getTableName(true) . ' ' . $where; // параметры заполняет приведение к строке
 
         return !!DB::query($query, $where->getBinds());
     }
 
     /**
-     * Update many models at once
+     * Обновляет сразу много моделей
      *
-     * @param array $set Array of arrays with model data
-     * @param string|array|Where $where Where condition
-     * @param bool $viaModels Update models one by one
-     * @return bool True if all models were updated successfully
+     * @param array $set Массив массивов с данными моделей
+     * @param string|array|Where $where Условие
+     * @param bool $viaModels Обновлять модели по одной
+     * @return bool True, если все модели успешно обновлены
      * @throws Exception
      */
     public static function bulkUpdate(array $set, string|array|Where $where, bool $viaModels = false): bool
@@ -489,7 +489,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
             return $success;
         } else {
-            // named binds only: Where produces named ones and PDO can't mix them with positional
+            // только именованные параметры: Where создаёт именованные, а PDO не смешивает их с позиционными
             $bind = [];
             $assign = [];
             foreach (array_values($set) as $i => $value) {
@@ -499,16 +499,16 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
             $where = new Where($where);
             $query = 'update ' . static::getTableName(true) . ' set ' . implode(', ', $assign);
-            $query .= ' ' . $where; // binds are filled on string conversion
+            $query .= ' ' . $where; // параметры заполняет приведение к строке
 
             return !!DB::query($query, array_merge($bind, $where->getBinds()));
         }
     }
 
     /**
-     * Truncate table
+     * Очищает таблицу
      *
-     * @return bool True if success
+     * @return bool True при успехе
      */
     public static function truncate(): bool
     {
@@ -516,11 +516,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Run query
+     * Выполняет запрос
      *
-     * @param string $q Query
-     * @param array $params Prepared params
-     * @return bool True if success
+     * @param string $q Запрос
+     * @param array $params Параметры запроса
+     * @return bool True при успехе
      */
     protected function query(string $q, array $params = []): bool
     {
@@ -534,10 +534,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Set error
+     * Задаёт ошибку
      *
-     * @param string|array $text Error text or array with 'text' and 'code' keys
-     * @param int|null $code Error code
+     * @param string|array $text Текст ошибки или массив с ключами 'text' и 'code'
+     * @param int|null $code Код ошибки
      */
     protected function setError(
         #[ArrayShape(['text' => 'string', 'code' => 'int'])] string|array $text,
@@ -553,9 +553,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get last error
+     * Последняя ошибка
      *
-     * @return array Last error
+     * @return array Последняя ошибка
      */
     #[ArrayShape(['code' => 'int', 'text' => 'string'])]
     public function getLastError(): array
@@ -564,9 +564,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked before insert
+     * Вызывается перед вставкой
      *
-     * @return bool True if insert should be continued
+     * @return bool True, если вставку нужно продолжить
      */
     protected function beforeInsert(): bool
     {
@@ -574,9 +574,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked after insert
+     * Вызывается после вставки
      *
-     * @param bool $success Insert result
+     * @param bool $success Результат вставки
      */
     protected function afterInsert(bool $success): void
     {
@@ -586,9 +586,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked before update
+     * Вызывается перед обновлением
      *
-     * @return bool True if update should be continued
+     * @return bool True, если обновление нужно продолжить
      */
     protected function beforeUpdate(): bool
     {
@@ -597,9 +597,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked after update
+     * Вызывается после обновления
      *
-     * @param bool $success Update result
+     * @param bool $success Результат обновления
      */
     protected function afterUpdate(bool $success): void
     {
@@ -609,9 +609,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked before delete
+     * Вызывается перед удалением
      *
-     * @return bool True if delete should be continued
+     * @return bool True, если удаление нужно продолжить
      */
     protected function beforeDelete(): bool
     {
@@ -619,10 +619,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked after delete
+     * Вызывается после удаления
      *
-     * @param bool $success Delete result
-     * @param array $oldData Old model data
+     * @param bool $success Результат удаления
+     * @param array $oldData Прежние данные модели
      */
     protected function afterDelete(bool $success, array $oldData): void
     {
@@ -632,9 +632,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked before save
+     * Вызывается перед сохранением
      *
-     * @return bool True if save should be continued
+     * @return bool True, если сохранение нужно продолжить
      */
     protected function beforeSave(): bool
     {
@@ -642,9 +642,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Invoked after save
+     * Вызывается после сохранения
      *
-     * @param bool $success Save result
+     * @param bool $success Результат сохранения
      */
     protected function afterSave(bool $success): void
     {
@@ -682,7 +682,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 return $maybe;
             }
 
-            // if got the auto relation, load here!
+            // если это автоматическая связь, загружаем здесь
             if (isset($this->relations[$offset])) {
                 $rel = $this->relations[$offset];
                 $relClass = $rel['model'];

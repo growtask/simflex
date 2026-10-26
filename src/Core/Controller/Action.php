@@ -8,10 +8,11 @@ use Attribute;
 class Action
 {
     /**
-     * Controller action
+     * Действие контроллера
      *
-     * @param string $path Action. This will be used as a part of the URI path. Use :name within to extract strings from paths
-     * @param string $httpMethod Target HTTP method. Set to "all" if you want to allow any method
+     * @param string $path Действие. Используется как часть пути URI. :name внутри извлекает часть пути
+     *        в переменную
+     * @param string $httpMethod HTTP-метод. "all" - любой метод
      */
     public function __construct(
         public string $path,

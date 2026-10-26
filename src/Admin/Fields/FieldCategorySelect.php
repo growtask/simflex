@@ -5,8 +5,8 @@ namespace Simflex\Admin\Fields;
 use Simflex\Core\DB;
 
 /**
- * @todo Incomplete: there are no migrations for the shared_category table, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: для таблицы shared_category нет миграций, поэтому этот код падает на SQL
+ *       в реальном окружении. Будет вынесено в отдельный composer-пакет.
  */
 class FieldCategorySelect extends Field
 {

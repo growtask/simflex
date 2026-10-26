@@ -16,15 +16,15 @@ use Throwable;
 class Cron
 {
     /**
-     * @param string|null $jobKey Run only this job (key in provider/cron.php) right now, regardless of its
-     *                            schedule and activity. All the active jobs on schedule when null
+     * @param string|null $jobKey Запустить сейчас только это задание (ключ в provider/cron.php), независимо от
+     *                            расписания и активности. При null - все активные задания по расписанию
      */
     public function __construct(protected ?string $jobKey = null)
     {
     }
 
     /**
-     * Execute cron jobs
+     * Выполняет задания cron
      * @throws Exception
      */
     public function execute(): void
@@ -66,7 +66,7 @@ class Cron
     }
 
     /**
-     * Run a cron job
+     * Запускает задание cron
      * @throws DIException
      * @throws ReflectionException
      */
@@ -85,19 +85,19 @@ class Cron
     }
 
     /**
-     * Test if timing has passed
-     * @param string $timing Timing string
-     * @return bool True if timing has passed
+     * Проверяет, наступило ли время по расписанию
+     * @param string $timing Строка расписания
+     * @return bool true, если время наступило
      */
     protected function testTiming(string $timing): bool
     {
-        // parse timing
+        // разбираем расписание
         $time = explode(' ', $timing);
         if (count($time) != 5) {
             return false;
         }
 
-        // get current time
+        // получаем текущее время
         $now = getdate();
         $now = [
             $now['minutes'],
@@ -107,9 +107,9 @@ class Cron
             $now['wday'],
         ];
 
-        // check timing
+        // проверяем расписание
         foreach ($time as $i => $t) {
-            // replace * with current time
+            // заменяем * на текущее время
             if ($t == '*') {
                 $t = $now[$i];
             }
@@ -117,7 +117,7 @@ class Cron
             $delim = 0;
             $matches = false;
 
-            // check if timing has a delimiter
+            // проверяем, есть ли в расписании разделитель
             if (str_contains($t, '/')) {
                 $range = explode('/', $t);
                 $t = $range[0];
@@ -126,7 +126,7 @@ class Cron
 
             $vals = explode(',', $t);
             foreach ($vals as $val) {
-                // check if there is a range
+                // проверяем, есть ли диапазон
                 if (str_contains($val, '-')) {
                     $range = explode('-', $val);
                     if ($range[0] <= $now[$i] && $now[$i] <= $range[1]) {
@@ -134,7 +134,7 @@ class Cron
                     }
                 }
 
-                // check if timing matches
+                // проверяем совпадение расписания
                 if ($matches = (int)$val == (int)$now[$i] && (!$delim || !((int)$val % $delim))) {
                     break;
                 }
@@ -143,7 +143,7 @@ class Cron
             $time[$i] = $matches ? $now[$i] : '-';
         }
 
-        // check if converted timing matches current time
+        // проверяем, совпадает ли преобразованное расписание с текущим временем
         return implode(' ', $time) == implode(' ', $now);
     }
 }

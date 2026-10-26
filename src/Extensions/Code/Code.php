@@ -3,9 +3,8 @@
 namespace Simflex\Extensions\Code;
 
 use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Structure\Data\FieldDefinition;
-use Simflex\Admin\Structure\Data\FieldParams;
-use Simflex\Admin\Structure\Data\ParamGroup;
+use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Admin\Table\ParamGroup;
 use Simflex\Core\ModuleBase;
 
 /**
@@ -32,7 +31,7 @@ class Code extends ModuleBase
                         name: 'content',
                         class: FieldText::class,
                         label: 'Текст',
-                        params: ['main' => new FieldParams(editorFull: static::$editorFull)],
+                        editorFull: static::$editorFull,
                     ),
                 ],
             ),

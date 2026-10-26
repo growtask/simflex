@@ -5,9 +5,9 @@ namespace Simflex\Core\DB;
 use Simflex\Core\DB;
 
 /**
- * Class ExprTypeSet
- * Syntax sugar for work with MySQL datatype SET
- * @example We need to remove 'value1' from field `tags` which value is 'value1,value2,value3':
+ * Класс ExprTypeSet
+ * Синтаксический сахар для работы с типом MySQL SET
+ * @example Нужно убрать 'value1' из поля `tags` со значением 'value1,value2,value3':
  *          $model->update(['tags' => ExprTypeSet::remove('tags', 'value1')]);
  */
 class ExprTypeSet extends Expr
