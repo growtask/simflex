@@ -23,7 +23,7 @@ class PackageInstaller
 
         // проверяем, что это пакет Simflex
         $path = $event->getComposer()->getInstallationManager()->getInstallPath($package) . '/src';
-        if (!is_dir($path . '/provider/extension')) {
+        if (!is_dir($path . '/provider/extensions')) {
             echo "[!] Not a Simflex package, skipping.\n";
             return;
         }
@@ -31,8 +31,10 @@ class PackageInstaller
         $root = dirname($event->getComposer()->getConfig()->get('vendor-dir'));
 
         // копируем файлы
-        static::copyContents($path . '/database/migrations', $root . '/database/migrations', 'migration');
-        static::copyContents($path . '/provider/extension', $root . '/provider/extension', 'extension');
+        foreach (static::copyMigrations($path . '/database/migrations', $root . '/database/migrations') as $from => $to) {
+            echo "[*] Installing migration $from as $to...\n";
+        }
+        static::copyContents($path . '/provider/extensions', $root . '/provider/extensions', 'extension');
 
         // очищаем кэш
         if (is_file($root . '/cache/extensions.php')) {
@@ -44,6 +46,47 @@ class PackageInstaller
         }
 
         echo "[+] Package has been installed.\n";
+    }
+
+    /**
+     * Копирует миграции пакета в сайт следующими свободными номерами сайта: `01_catalog_category.php` пакета
+     * становится, например, `29_catalog_category.php`. Миграция, которая уже есть в сайте под любым номером
+     * (то же имя без номера), не копируется — повторная установка и обновление пакета её не дублируют.
+     *
+     * @return array<string, string> имя в пакете => имя в сайте, только скопированные
+     */
+    public static function copyMigrations(string $from, string $to): array
+    {
+        if (!is_dir($from) || !is_dir($to)) {
+            return [];
+        }
+
+        $installed = [];
+        $last = 0;
+        $width = 2;
+        foreach (scandir($to) as $file) {
+            if (preg_match('/^(\d+)_(.+\.php)$/', $file, $m)) {
+                $installed[$m[2]] = true;
+                $last = max($last, (int)$m[1]);
+                $width = max($width, strlen($m[1]));
+            }
+        }
+
+        $copied = [];
+        $files = array_filter(scandir($from), fn(string $file) => is_file("$from/$file") && str_ends_with($file, '.php'));
+        sort($files);
+        foreach ($files as $file) {
+            $name = preg_replace('/^\d+_/', '', $file);
+            if (isset($installed[$name])) {
+                continue;
+            }
+            $target = sprintf("%0{$width}d_%s", ++$last, $name);
+            copy("$from/$file", "$to/$target");
+            $installed[$name] = true;
+            $copied[$file] = $target;
+        }
+
+        return $copied;
     }
 
     protected static function copyContents(string $from, string $to, string $type): void

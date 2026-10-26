@@ -71,21 +71,28 @@ class ExtensionRegistry
     /**
      * @template T of ExtensionBase
      * @param class-string<T> $base
-     * @return list<class-string<T>> классы, перечисленные в provider/$name.php
+     * @return list<class-string<T>> классы расширений и перечисленные в provider/$name.php сайта
      */
     protected static function load(string $name, string $base): array
     {
+        $normalize = fn(array $classes) => array_map(fn($class) => ltrim((string)$class, '\\'), $classes);
+
         $file = SF_ROOT_PATH . "/provider/$name.php";
         $data = is_file($file) ? require $file : [];
+        $app = $normalize(is_array($data) ? $data : []);
 
-        $classes = [];
-        foreach (is_array($data) ? $data : [] as $class) {
-            $class = ltrim((string)$class, '\\');
-            if (is_subclass_of($class, $base)) {
-                $classes[] = $class;
-            }
+        // классы расширений (ExtensionConfig::getComponents()/getModules()); сайт может заменить их наследниками
+        $extension = [];
+        foreach (ExtensionConfig::getAll() as $config) {
+            $extension = array_merge(
+                $extension,
+                $normalize($name === 'components' ? $config->getComponents() : $config->getModules())
+            );
         }
 
-        return $classes;
+        return array_values(array_filter(
+            ExtensionConfig::mergeClasses($extension, $app),
+            fn(string $class) => is_subclass_of($class, $base)
+        ));
     }
 }

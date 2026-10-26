@@ -2,6 +2,7 @@
 
 namespace Simflex\Core\Cron;
 
+use Simflex\Core\ExtensionConfig;
 use Simflex\Core\Models\Cron as CronModel;
 
 /**
@@ -22,8 +23,15 @@ class CronRegistry
             $file = SF_ROOT_PATH . '/provider/cron.php';
             $data = is_file($file) ? require $file : [];
 
+            // задачи расширений, затем сайта: задача сайта с тем же ключом заменяет задачу расширения
+            $all = [];
+            foreach (ExtensionConfig::getAll() as $config) {
+                $all = array_merge($all, $config->getCronJobs());
+            }
+            $all = array_merge($all, is_array($data) ? $data : []);
+
             static::$jobs = [];
-            foreach (is_array($data) ? $data : [] as $key => $job) {
+            foreach ($all as $key => $job) {
                 if (is_string($key) && $job instanceof CronJob) {
                     static::$jobs[$key] = $job;
                 }
