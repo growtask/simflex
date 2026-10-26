@@ -32,6 +32,13 @@ class Privilege extends CodeRegistry
     {
         static::define(self::DEV, new PrivilegeParams('Привилегия разработчика: полный доступ', switchable: false));
         static::define(self::ADMIN, new PrivilegeParams('Привилегия администратора: доступ к админке'));
+
+        // привилегии расширений; сайт может переопределить их в своём наследнике после parent::init()
+        foreach (ExtensionConfig::getAll() as $config) {
+            foreach ($config->getPrivileges() as $name => $params) {
+                static::define($name, $params);
+            }
+        }
     }
 
     protected static function define(string $name, PrivilegeParams $params): void

@@ -47,8 +47,15 @@
   `@SITE_PATH`, `Core::ajax()/uri()/uri_r()/path()/getComponentAPI()/component*()`, `Profiler::start()/output()`,
   `Time::sub_time()`, `BaseMiddleware::setUserModelClass()` (→ `Factory::override()`), `AQ::selectColumn()`,
   `AQ::asScalar()` (→ `AQ::fetchColumn()`), `Admin\InstallBase`.
+- **Удалены методы, на которые могли опираться сайты и расширения:** `Alert::output()` админки и сайта
+  (→ `echo Alert::getHTML()`), `ComponentBase::__construct()` (наследнику больше не вызывать
+  `parent::__construct()` — это фатальная ошибка), `Admin\Plugins\UI\UI::treeView()`, `FieldImage::loadUI()`,
+  `UserRole::addPriv()`, `Chain::getUserModelClass()`, `ModelContent::aqModifyWithTemplate()` (шаблон страницы —
+  ключ в `content.template`, см. `ContentTemplates`).
 - **Корень веб-сервера — каталог `public/` сайта;** статика ядра публикуется в `public/cache/assets/<hash>/`
   (`\Simflex\Core\Assets`), исходники ядра и сайта снаружи недоступны.
+- **Настройки расширений** лежат в `provider/extensions/` сайта (было `provider/extension/`); в пакете —
+  `src/provider/extensions/`.
 - **Адрес админки** задаётся конфигом `adminPath` (по умолчанию `/admin`), ссылки меню — относительно него.
 - Лог по умолчанию пишется в `log/` (`ConfigBase::$logPath`), в файл — при `logToFile`.
 
@@ -63,6 +70,12 @@
 - Разделы без таблицы: «Привилегии» (список и переключатель), «Аккаунт», страница группы меню с виджетами
   (`Handlers\Group`).
 - Разделы «Привилегии ролей» и «Персональные привилегии» (только для разработчика).
+- **Расширения объявляют свои сущности:** `ExtensionConfig` — компоненты (`$components`), модули (`$modules`),
+  разделы админки (`$handlers`), задачи cron (`getCronJobs()`), привилегии (`getPrivileges()`), пункты меню админки
+  (`getAdminMenu()`); `ExtensionConfig::getAll()` — загруженные расширения в порядке `loadOrder`. Ядро объединяет их
+  с объявлениями сайта, сайт главнее: его наследник заменяет класс расширения, задача с тем же ключом — задачу.
+- Установщик пакетов копирует миграции пакета в сайт следующими свободными номерами сайта и не дублирует уже
+  скопированные (`PackageInstaller::copyMigrations()`).
 - `Menu::add(..., parent:, before:)`, `remove()`, `setHandler()` — свой обработчик пункта меню ядра;
   `AdminModules` с привязкой модулей к разделам (`sections`).
 - `\Simflex\Core\CodeRegistry` — общий базовый класс реестров в коде (`Privilege`, `Menu`, `AdminModules`).

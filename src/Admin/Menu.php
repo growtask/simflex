@@ -3,6 +3,7 @@
 namespace Simflex\Admin;
 
 use Simflex\Core\CodeRegistry;
+use Simflex\Core\ExtensionConfig;
 use Simflex\Core\Privilege;
 
 /**
@@ -56,6 +57,13 @@ class Menu extends CodeRegistry
         ]));
 
         static::add(new MenuItem('Редактор страниц', '/content', handler: Handlers\Content::class, icon: 'edit'));
+
+        // пункты расширений; сайт может переставить, заменить или убрать их в своём наследнике после parent::init()
+        foreach (ExtensionConfig::getAll() as $config) {
+            foreach ($config->getAdminMenu() as $item) {
+                static::add($item);
+            }
+        }
     }
 
     /**

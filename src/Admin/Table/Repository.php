@@ -3,6 +3,7 @@
 namespace Simflex\Admin\Table;
 
 use Simflex\Admin\Handler;
+use Simflex\Core\ExtensionConfig;
 use Simflex\Core\HasAdminParams;
 use Simflex\Extensions\Content\ContentTemplates;
 
@@ -127,18 +128,23 @@ class Repository
     }
 
     /**
-     * @return list<class-string<Handler>> обработчики ядра и приложения
+     * @return list<class-string<Handler>> обработчики ядра, расширений и сайта
      */
     public static function getHandlerClasses(): array
     {
-        $classes = require SF_CORE_ROOT_PATH . '/Admin/handlers.php';
+        $normalize = fn(array $classes) => array_map(fn(string $class) => ltrim($class, '\\'), $classes);
+        $core = $normalize(require SF_CORE_ROOT_PATH . '/Admin/handlers.php');
 
-        $appFile = SF_ROOT_PATH . '/Admin/handlers.php';
-        if (is_file($appFile)) {
-            $classes = array_merge($classes, require $appFile);
+        $extension = [];
+        foreach (ExtensionConfig::getAll() as $config) {
+            $extension = array_merge($extension, $normalize($config->getHandlers()));
         }
 
-        return array_values(array_unique(array_map(fn(string $class) => ltrim($class, '\\'), $classes)));
+        $appFile = SF_ROOT_PATH . '/Admin/handlers.php';
+        $app = is_file($appFile) ? $normalize(require $appFile) : [];
+
+        // раздел сайта-наследник заменяет раздел расширения
+        return array_values(array_unique(array_merge($core, ExtensionConfig::mergeClasses($extension, $app))));
     }
 
     /**
