@@ -7,7 +7,7 @@ use Simflex\Admin\MenuItem;
 use Simflex\Core\Cron\CronJob;
 
 /**
- * Настройки расширения (пакета `growtask/simflex-*`): файл `provider/extensions/<имя>.php` сайта возвращает
+ * Настройки расширения (composer-пакета Simflex): файл `provider/extensions/<имя>.php` сайта возвращает
  * объект-наследник. Установщик пакетов копирует этот файл из `src/provider/extensions` пакета.
  *
  * Расширение объявляет маршруты, события, сервисы, консольные команды, а также свои компоненты, модули, задачи cron,
