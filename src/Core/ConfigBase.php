@@ -132,24 +132,67 @@ abstract class ConfigBase
         return $this->extra[$name] ?? null;
     }
 
+    /**
+     * Маршруты расширений и сайта; маршрут сайта с тем же путём главнее
+     */
     public function getRoutes(): array
     {
-        return include $this->files['routes'];
+        $routes = [];
+        foreach (ExtensionConfig::getAll() as $config) {
+            $routes = array_merge($routes, $config->getRoutes());
+        }
+
+        return array_merge($routes, include $this->files['routes']);
     }
 
+    /**
+     * Подписчики событий расширений и сайта: событие => слушатели всех
+     */
     public function getEvents(): array
     {
-        return include $this->files['events'];
+        $lists = array_map(fn(ExtensionConfig $config) => $config->getEvents(), ExtensionConfig::getAll());
+        $lists[] = include $this->files['events'];
+
+        $events = [];
+        foreach ($lists as $list) {
+            foreach ($list as $event => $listeners) {
+                $events[$event] = array_merge($events[$event] ?? [], $listeners);
+            }
+        }
+
+        return $events;
     }
 
+    /**
+     * Сервисы расширений и сайта по окружениям (all, web, api, cli, dev); сервисы сайта загружаются последними
+     * и заменяют сервис расширения с тем же именем в контейнере
+     */
     public function getServices(): array
     {
-        return include $this->files['services'];
+        $lists = array_map(fn(ExtensionConfig $config) => $config->getServices(), ExtensionConfig::getAll());
+        $lists[] = include $this->files['services'];
+
+        $services = [];
+        foreach ($lists as $list) {
+            foreach ($list as $group => $classes) {
+                $services[$group] = array_values(array_unique(array_merge($services[$group] ?? [], $classes)));
+            }
+        }
+
+        return $services;
     }
 
+    /**
+     * Консольные команды расширений и сайта; провайдер сайта с тем же именем главнее
+     */
     public function getCommands(): array
     {
-        return include $this->files['commands'];
+        $commands = [];
+        foreach (ExtensionConfig::getAll() as $config) {
+            $commands = array_merge($commands, $config->getCommands());
+        }
+
+        return array_merge($commands, include $this->files['commands']);
     }
 
     /**

@@ -3832,6 +3832,36 @@ const initializeFileInput = function (id) {
         request.send(formData);
     }
 
+    // поля-таблицы (FieldTable, FieldVirtualTable): файл сохраняет действие раздела из data-upload
+    // (Table::uploadTableFile()), ответ — адрес файла, пустой — файл не принят
+    const postTableFile = () => {
+        const formData = new FormData();
+        formData.append('file', input.files[0]);
+
+        progrssbar.style.display = "flex";
+        head.style.display = "none";
+
+        const request = new XMLHttpRequest();
+        request.addEventListener('load', (e) => {
+            const url = e.target.status == 200 ? e.target.responseText : '';
+
+            head.style = null;
+            progrssbar.style.display = "none";
+
+            if (!url) {
+                title.innerHTML = 'Файл не принят';
+                return;
+            }
+            inputHidden.value = url;
+            img?.setAttribute('src', url);
+        });
+
+        request.open('POST', inputHidden.dataset.upload);
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.timeout = 45000;
+        request.send(formData);
+    }
+
     const handleDrop = (ev) => {
         ev.preventDefault();
 
@@ -3864,7 +3894,9 @@ const initializeFileInput = function (id) {
 
         reader.readAsDataURL(fileAdd[0]);
 
-        if (img) {
+        if (inputHidden.dataset.upload) {
+            postTableFile();
+        } else if (img) {
             postImgFile();
         } else {
             postFile();
@@ -3905,7 +3937,9 @@ const initializeFileInput = function (id) {
 
             reader.readAsDataURL(this.files[0]);
 
-            if (img) {
+            if (inputHidden.dataset.upload) {
+                postTableFile();
+            } else if (img) {
                 postImgFile();
             } else {
                 postFile();

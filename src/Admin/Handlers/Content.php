@@ -19,16 +19,16 @@ use Simflex\Admin\Table\Presets\NppField;
 use Simflex\Admin\Table\Presets\ParentField;
 use Simflex\Admin\Table\Repository;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Container;
 use Simflex\Core\DB;
 use Simflex\Extensions\Content\Model\ModelContent;
 
 /**
- * Страницы сайта. В форме — поля шаблона страницы (provider/templates.php), файлы загружаются через ajax
+ * Страницы сайта. В форме — поля шаблона страницы (provider/templates.php)
  */
 class Content extends Table
 {
     protected static string $model = ModelContent::class;
+    protected static string $uploadDir = 'content';
 
     public static function getFields(): array
     {
@@ -181,60 +181,6 @@ class Content extends Table
                 defaultValue: '0',
             ),
         ];
-    }
-
-    public function content(): string
-    {
-        if (!Container::getRequest()->isAjax() || !isset($_FILES['file'])) {
-            return parent::content();
-        }
-        return $this->ajaxUpload();
-    }
-
-    /**
-     * Сохраняет загруженный файл, возвращает его url
-     */
-    public function ajaxUpload(): string
-    {
-        if (!Container::getRequest()->isAjax()) {
-            return '';
-        }
-
-        if (!str_starts_with($_FILES['file']['type'], 'image') && !str_starts_with($_FILES['file']['type'], 'video')) {
-            $name = $_FILES['file']['name'];
-            copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/uf/files/content/' . $name);
-            return '/uf/files/content/' . $name;
-        }
-
-        $ext = '';
-        switch ($_FILES['file']['type']) {
-            case 'image/gif':
-                $ext = 'gif';
-                break;
-            case 'image/jpeg':
-                $ext = 'jpg';
-                break;
-            case 'image/pjpeg':
-                $ext = 'jpg';
-                break;
-            case 'image/webp':
-                $ext = 'webp';
-                break;
-            case 'image/png':
-                $ext = 'png';
-                break;
-            case 'video/mp4':
-                $ext = 'mp4';
-                break;
-            case 'video/webm':
-                $ext = 'webm';
-                break;
-        }
-
-        $name = md5(time()) . '.' . $ext;
-        copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/uf/images/content/source/' . $name);
-
-        return '/uf/images/content/source/' . $name;
     }
 
     protected function initTable(): void

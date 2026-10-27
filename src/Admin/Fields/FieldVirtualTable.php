@@ -4,10 +4,20 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Core\DB;
 
+/**
+ * Таблица записей другой таблицы в форме (например, фото отзыва): строки добавляются, меняются и удаляются ajax-
+ * действиями раздела vtAdd, vtEdit, vtDelete, страница строк — vtGet. Раздел задаёт запросы строк и их количества
+ * (обычно в initTable()) и колонки в формате FieldTable. Файлы колонок image/file загружаются действием
+ * upload_table_file раздела (Table::uploadTableFile())
+ */
 class FieldVirtualTable extends Field
 {
+    /** Запрос строк страницы, первая колонка __id — id строки */
     public string $query = '';
+    /** Запрос количества строк */
     public string $queryCount = '';
+    /** @var array<string|int, mixed> параметры запросов $query и $queryCount (одни на оба запроса) */
+    public array $binds = [];
     public array $cols = [];
     public string $button = '';
     public string $customjs = '';
@@ -33,21 +43,21 @@ class FieldVirtualTable extends Field
 
     public function getCount(): mixed
     {
-        return DB::result($this->queryCount, 0);
+        return DB::result($this->queryCount, 0, $this->binds);
     }
 
     public function getValue(): string|false
     {
         $vv = [];
-        $q = DB::query($this->query);
+        $q = DB::query($this->query, $this->binds);
         while ($r = DB::fetch($q)) {
             foreach ($r as $k => $v) {
+                $v = (string)$v;
                 if ($k == 'img_json') {
-                    $js = json_decode($v, true)['v'] ?? ['v' => ['npp' => 0, 'img' => asset('img/default-img.png')]];
-                    usort($js, function ($a, $b) {
-                        return $a['npp'] > $b['npp'];
-                    });
-                    $r['img'] = $js[0]['img'];
+                    // первое по порядку изображение из значения FieldTable, без них — картинка по умолчанию
+                    $js = json_decode($v, true)['v'] ?? [];
+                    usort($js, fn($a, $b) => (int)($a['npp'] ?? 0) <=> (int)($b['npp'] ?? 0));
+                    $r['img'] = $js[0]['img'] ?? asset('img/default-img.png');
                     unset($r['img_json']);
                     continue;
                 }

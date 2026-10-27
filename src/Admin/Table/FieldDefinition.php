@@ -17,6 +17,10 @@ readonly class FieldDefinition
      * @param bool $filter Фильтр по полю над списком
      * @param bool $isFk, $fkTable, $fkKey, $fkLabel, $fkIsPid Внешний ключ: таблица, её ключ, колонка, показываемая
      *        вместо ключа, родитель в той же таблице. Проще через пресеты ForeignKeyField, ParentField
+     * @param array<string, mixed> $params Параметры типа поля, которых нет среди аргументов: структура FieldTable
+     *        ('struct'), таблицы FieldMultiKey ('table_values', 'table_relations', 'key'...), формат FieldDouble
+     *        ('decimals'...), подзапрос FieldVirtual ('subquery') и т.п. Попадают в params['main'] поля, где их читает
+     *        класс поля; при совпадении имени заменяют значение аргумента
      */
     public function __construct(
         public string $name,
@@ -50,6 +54,7 @@ readonly class FieldDefinition
         public string $large = '',
         public bool $editorMini = false,
         public bool $editorFull = false,
+        public array $params = [],
     ) {
     }
 
@@ -61,7 +66,7 @@ readonly class FieldDefinition
             'class' => $this->class,
             'help' => $this->help,
             'placeholder' => $this->placeholder,
-            'params' => ['main' => [
+            'params' => ['main' => $this->params + [
                 'pk' => $this->pk,
                 'e2n' => $this->e2n,
                 'hidden' => $this->hidden,

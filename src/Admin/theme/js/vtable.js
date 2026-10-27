@@ -105,7 +105,7 @@ const VTableEditor = {
                                             <div class="form-control__file-area">
                                                 <input type="file" name="" accept="image/*"
                                                     class="form-control__file-input">
-                                                    <input type="hidden" data-path="/content/" name="${col.n}" value="${cv}" />
+                                                    <input type="hidden" data-upload="?action=upload_table_file" name="${col.n}" value="${cv}" />
                                                 <div class="form-control__file-progressbar progressbar">
                                                     <div class="progressbar__bg">
                                                         <div class="progressbar__progress"></div>
@@ -322,12 +322,17 @@ const VTableEditor = {
         let fd = new FormData();
         fd.append('file', i.files[0]);
         $.ajax({
-            url: window.location.href,
+            // файл сохраняет действие раздела Table::uploadTableFile(), ответ — адрес файла
+            url: '?action=upload_table_file',
             type: 'POST',
             data: fd,
             processData: false,
             contentType: false,
             success: function (r) {
+                if (!r) {
+                    document.querySelector(`#te-${n}-img`).innerHTML = '<b>Файл не принят</b>';
+                    return;
+                }
                 document.querySelector(`#te-${n}-img`).src = r;
                 i.dataset.val = r;
             }
@@ -343,14 +348,17 @@ const VTableEditor = {
         let fd = new FormData();
         fd.append('file', i.files[0]);
         $.ajax({
-            url: window.location.href,
+            // файл сохраняет действие раздела Table::uploadTableFile(), ответ — адрес файла
+            url: '?action=upload_table_file',
             type: 'POST',
             data: fd,
             processData: false,
             contentType: false,
             success: function (r) {
-                document.querySelector(`#te-${n}-file`).innerHTML = r;
-                i.dataset.val = r;
+                document.querySelector(`#te-${n}-file`).innerHTML = r || '<b>Файл не принят</b>';
+                if (r) {
+                    i.dataset.val = r;
+                }
             }
         });
     },

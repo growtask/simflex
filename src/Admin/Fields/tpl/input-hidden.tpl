@@ -1,1 +1,1 @@
-<input type="hidden" name="<?= $name ?>" value="<?= htmlspecialchars($value) ?>" />
+<input type="hidden" name="<?= $name ?>" value="<?= htmlspecialchars((string)$value) ?>" />

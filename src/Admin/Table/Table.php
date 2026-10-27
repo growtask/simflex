@@ -52,6 +52,22 @@ abstract class Table extends Handler
     /** Записей на странице списка. Дерево (таблица с родителем) показывается на одной странице до 200 записей */
     protected static int $perPage = 20;
 
+    /**
+     * Каталог файлов, загружаемых в колонки image/file полей-таблиц (FieldTable, FieldVirtualTable), см.
+     * uploadTableFile(): изображения — в /uf/images/<каталог>/, остальное — в /uf/files/<каталог>/.
+     * Пусто — имя таблицы раздела
+     */
+    protected static string $uploadDir = '';
+
+    /** @var string[] расширения изображений, которые можно загрузить в поле-таблицу */
+    protected static array $uploadImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'];
+
+    /** @var string[] расширения остальных файлов, которые можно загрузить в поле-таблицу */
+    protected static array $uploadFileExtensions = [
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'rtf', 'txt', 'csv', 'zip', 'rar', '7z',
+        'mp4', 'webm',
+    ];
+
     /** Имя таблицы, из модели */
     protected string $table {
         get => static::getTableName();
@@ -79,6 +95,7 @@ abstract class Table extends Handler
         'delete_field' => ['method' => 'deleteField'],
         'upload_img' => ['method' => 'uploadImg'],
         'upload_file' => ['method' => 'uploadFile'],
+        'upload_table_file' => ['method' => 'uploadTableFile'],
         'showDetail' => ['method' => 'showDetail'],
         'searchTags' => ['method' => 'searchTags'],
     ];
@@ -243,9 +260,18 @@ abstract class Table extends Handler
         return json_encode(['success' => !!$success]);
     }
 
+    /**
+     * Ajax: сохраняет изображение ($_FILES['img']) в /uf/images/<path>/, возвращает имя файла (пустое — не принято).
+     * Нужно право добавлять или менять записи; path — только буквы, цифры, «_», «-» и «/»
+     */
     public function uploadImg(): never
     {
-        $img = new Image($_REQUEST['path']);
+        $path = $this->getUploadPath((string)($_REQUEST['path'] ?? ''));
+        if (!($this->canAdd || $this->canEdit) || $path === null) {
+            die('');
+        }
+
+        $img = new Image($path);
         $img->loadPost('img');
         $name = $img->getName();
         $img->save();
@@ -253,14 +279,73 @@ abstract class Table extends Handler
         die($name);
     }
 
+    /**
+     * Ajax: сохраняет файл ($_FILES['file']) в /uf/files/, возвращает имя файла (пустое — не принято).
+     * Нужно право добавлять или менять записи; расширения — $uploadImageExtensions и $uploadFileExtensions
+     */
     public function uploadFile(): never
     {
+        $ext = strtolower(pathinfo((string)($_FILES['file']['name'] ?? ''), PATHINFO_EXTENSION));
+        $allowed = array_merge(static::$uploadImageExtensions, static::$uploadFileExtensions);
+        if (!($this->canAdd || $this->canEdit) || !in_array($ext, $allowed, true)) {
+            die('');
+        }
+
         $f = new File();
         $f->loadPost('file');
         $name = $f->getName();
         $f->save();
 
         die($name);
+    }
+
+    /**
+     * Подкаталог загрузки из запроса: null, если в нём есть «..» или недопустимые символы
+     */
+    protected function getUploadPath(string $path): ?string
+    {
+        $path = trim($path, '/');
+        if (str_contains($path, '..') || !preg_match('@^[A-Za-z0-9_/-]*$@', $path)) {
+            return null;
+        }
+
+        return $path === '' ? '' : $path . '/';
+    }
+
+    /**
+     * Ajax: сохраняет файл ($_FILES['file']), загруженный в колонку image/file поля-таблицы (FieldTable,
+     * FieldVirtualTable), возвращает его адрес. Принимаются файлы с расширениями из $uploadImageExtensions
+     * (в /uf/images/<$uploadDir>/) и $uploadFileExtensions (в /uf/files/<$uploadDir>/), имя файла — случайное.
+     * Пустая строка — файл не принят: нет прав на добавление и изменение записей, ошибка загрузки, другое расширение
+     */
+    public function uploadTableFile(): string
+    {
+        $file = $_FILES['file'] ?? null;
+        if (!($this->canAdd || $this->canEdit) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return '';
+        }
+
+        $ext = strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION));
+        if (in_array($ext, static::$uploadImageExtensions, true)) {
+            $type = 'images';
+        } elseif (in_array($ext, static::$uploadFileExtensions, true)) {
+            $type = 'files';
+        } else {
+            return '';
+        }
+
+        $dir = '/uf/' . $type . '/' . trim(static::$uploadDir ?: $this->table, '/') . '/';
+        $path = $_SERVER['DOCUMENT_ROOT'] . $dir;
+        if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
+            return '';
+        }
+
+        $name = bin2hex(random_bytes(8)) . '.' . $ext;
+        if (!move_uploaded_file($file['tmp_name'], $path . $name)) {
+            return '';
+        }
+
+        return $dir . $name;
     }
 
     public function searchTags(): never
@@ -550,10 +635,10 @@ abstract class Table extends Handler
                 $query->andWhere($this->wrapColumn($column) . " LIKE :$bind")->bind([$bind => Time::mysql($filter) . '%']);
             } elseif ($field instanceof FieldMultiKey) {
                 $relations = DB::wrapName($field->params['table_relations']);
-                $pk = DB::wrapName($this->pk->name);
                 $query->andWhere(
-                    "(SELECT COUNT(*) FROM $relations rls WHERE " . DB::wrapName($this->table) . ".$pk = rls.$pk"
-                    . ' AND rls.' . DB::wrapName($field->params['key']) . " = :$bind) > 0"
+                    "EXISTS (SELECT 1 FROM $relations rls WHERE " . $this->wrapColumn($this->table . '.' . $this->pk->name)
+                    . ' = rls.' . DB::wrapName($field->getRelationKey())
+                    . ' AND rls.' . DB::wrapName($field->params['key']) . " = :$bind)"
                 )->bind([$bind => $filter]);
             } elseif ($field instanceof FieldString) {
                 $query->andWhere($this->wrapColumn($column) . " LIKE :$bind")->bind([$bind => "%$filter%"]);
@@ -907,11 +992,11 @@ abstract class Table extends Handler
     }
 
     /**
-     * Вывод html-кода для ввода данных на форме
+     * Вывод html-кода для ввода данных на форме. Пустая (NULL) колонка и поле без колонки выводятся пустой строкой
      */
     protected function formFieldInput(Field $field, array $row): string
     {
-        return $field->input($field->value ?: @$row[$field->name]);
+        return $field->input($field->value ?: ($row[$field->name] ?? ''));
     }
 
     public function showActions(): string
@@ -924,43 +1009,43 @@ abstract class Table extends Handler
         return $this->render(__DIR__ . '/tpl/show.actions.row.tpl', ['row' => $row, 'i' => $i]);
     }
 
+    /**
+     * Ajax: поиск записей для выпадающего списка внешнего ключа (FieldInt с is_fk), JSON [{id, name}]
+     */
     public function searchInt(): array
     {
-        $text = trim(DB::escape($_REQUEST['text']));
-        $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
-        $field = $this->fields[$name];
-        if (!($field instanceof FieldInt) || !$field->params['is_fk']) {
+        $text = trim((string)($_REQUEST['text'] ?? ''));
+        $name = str_replace(['filter[', ']'], '', (string)($_REQUEST['name'] ?? ''));
+        $field = $this->fields[$name] ?? null;
+        if (!($field instanceof FieldInt) || empty($field->params['is_fk'])) {
             return [];
         }
 
-        $out = [];
-        $q = DB::query(
-            "select `{$field->params['fk_key']}` as id, `{$field->params['fk_label']}` as name from 
-                                      `{$field->params['fk_table']}` where {$field->params['fk_label']} like '%$text%' limit 50"
-        );
-        while ($r = DB::fetch($q)) {
-            $out[] = $r;
-        }
+        $label = DB::wrapName($field->params['fk_label']);
+        $out = (new AQ())->asArray()->from($field->params['fk_table'])
+            ->select([DB::wrapName($field->params['fk_key']) . ' AS id', "$label AS name"])
+            ->where("$label LIKE :text")
+            ->bind(['text' => '%' . $text . '%'])
+            ->limit(50)
+            ->all();
 
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
     }
 
+    /**
+     * Ajax: поиск записей для фильтра по полю FieldMultiKey, JSON [{id, name}]
+     */
     public function searchMultiKey(): array
     {
-        $text = DB::escape($_REQUEST['text']);
-        $name = str_replace(['filter[', ']'], '', $_REQUEST['name']);
-        $field = $this->fields[$name];
+        $name = str_replace(['filter[', ']'], '', (string)($_REQUEST['name'] ?? ''));
+        $field = $this->fields[$name] ?? null;
         if (!($field instanceof FieldMultiKey)) {
             return [];
         }
 
         $out = [];
-        $q = DB::query(
-            "select `{$field->params['key']}` as id, `{$field->params['key_alias']}` as name from 
-                                      `{$field->params['table_values']}` where {$field->params['key_alias']} like '%$text%' limit 50"
-        );
-        while ($r = DB::fetch($q)) {
-            $out[] = $r;
+        foreach ($field->getValues(search: (string)($_REQUEST['text'] ?? ''), limit: 50) as $id => $label) {
+            $out[] = ['id' => $id, 'name' => $label];
         }
 
         exit(json_encode($out, JSON_UNESCAPED_UNICODE));
@@ -1129,7 +1214,13 @@ abstract class Table extends Handler
                 $this->errors[] = DB::error() ?: 'Запись не найдена';
             } else {
                 if ($isInsert) {
-                    $_POST[$this->pk->name] = $model->getId();
+                    $_POST[$this->pk->name] = $_REQUEST[$this->pk->name] = $model->getId();
+                    // поля, которые пишут данные по id записи (связи), до вставки ничего не сохранили
+                    foreach ($this->fields as $field) {
+                        if ($field->isSavedById) {
+                            $field->getPOST();
+                        }
+                    }
                 }
                 $pkValue = $_POST[$this->pk->name];
 

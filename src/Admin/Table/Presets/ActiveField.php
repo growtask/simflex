@@ -6,7 +6,7 @@ use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Table\FieldDefinition;
 
 /**
- * "Активно" switch, on for the new rows
+ * Переключатель «Активно», у новых записей включён
  */
 readonly class ActiveField extends FieldDefinition
 {

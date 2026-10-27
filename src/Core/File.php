@@ -40,12 +40,22 @@ class File
         return substr($a[1], 2, 7) . substr($a[0], 2, 4);
     }
 
+    /** Расширения, которые нельзя сохранять в публичный каталог: сервер может их выполнить */
+    public const array FORBIDDEN_EXTENSIONS = [
+        'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phps', 'phar', 'inc',
+        'htaccess', 'htpasswd', 'ini', 'cgi', 'pl', 'py', 'sh', 'asp', 'aspx', 'jsp', 'shtml',
+    ];
+
+    /**
+     * Сохраняет загруженный файл $_FILES[$fileName]; файлы с расширениями FORBIDDEN_EXTENSIONS не принимаются
+     */
     public function loadPost(string $fileName)
     {
-        if (is_uploaded_file($_FILES[$fileName]['tmp_name'])) {
-            $mas = [];
-            $ext = explode('.', $_FILES[$fileName]['name']);
-            $ext = $ext[count($ext) - 1];
+        if (is_uploaded_file($_FILES[$fileName]['tmp_name'] ?? '')) {
+            $ext = strtolower(pathinfo((string)$_FILES[$fileName]['name'], PATHINFO_EXTENSION));
+            if ($ext === '' || in_array($ext, self::FORBIDDEN_EXTENSIONS, true)) {
+                return false;
+            }
             if (copy($_FILES[$fileName]['tmp_name'], $this->path . $this->name . '.' . $ext)) {
                 $this->type = $ext;
                 return true;
