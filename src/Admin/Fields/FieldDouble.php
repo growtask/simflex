@@ -9,12 +9,17 @@ class FieldDouble extends Field
         if ($showMode && !$value || $value === null) {
             return '';
         }
-        $decimals = $this->params['decimals'];
+        $decimals = $this->params['decimals'] ?? '';
         if (!$decimals) {
             $tmp = explode('.', (float)$value);
             $decimals = isset($tmp[1]) ? strlen($tmp[1]) : 0;
         }
-        return number_format((float)$value, $decimals, $this->params['dec_point'], $showMode ? $this->params['thousands_sep'] : '');
+        return number_format(
+            (float)$value,
+            (int)$decimals,
+            $this->params['dec_point'] ?? '.',
+            $showMode ? ($this->params['thousands_sep'] ?? ' ') : '',
+        );
     }
 
     public function input($value): string

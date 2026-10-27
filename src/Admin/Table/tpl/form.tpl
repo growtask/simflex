@@ -22,7 +22,7 @@ $artLeftArr = [];
             <?php
             foreach ($this->fields as $field) {
                 if ($field->hidden) {
-                    echo $field->inputHidden($row[$field->name]);
+                    echo $field->inputHidden($row[$field->name] ?? '');
                 }
             }
             ?>

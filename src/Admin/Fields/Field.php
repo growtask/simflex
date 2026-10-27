@@ -42,7 +42,14 @@ class Field
 
     protected bool $isNumeric = false;
 
-    public bool $isVirtual = false; //  FVirtual,  FMultiKey
+    /** Колонки у поля нет (FieldVirtual, FieldMultiKey и др.): значение не пишется в таблицу раздела */
+    public bool $isVirtual = false;
+
+    /**
+     * Поле пишет свои данные по id записи (таблицы связей FieldMultiKey, FieldRelation). У новой записи id ещё нет:
+     * Table::save() вызывает getPOST() таких полей ещё раз после вставки, а до неё они ничего не пишут
+     */
+    public bool $isSavedById = false;
 
     public function __construct($row)
     {

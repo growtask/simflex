@@ -6,7 +6,7 @@ use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Table\FieldDefinition;
 
 /**
- * Sort order of the rows ("№ п/п"), the rows are dragged in the list to change it
+ * Порядок записей («№ п/п»): меняется перетаскиванием строк в списке
  */
 readonly class NppField extends FieldDefinition
 {

@@ -2,7 +2,6 @@
 
 namespace Simflex\Admin\Fields;
 
-
 class FieldTable extends Field
 {
     /**
@@ -91,10 +90,13 @@ class FieldTable extends Field
 
     public function input($value): string
     {
+        $value = (string)$value;
+        $struct = (string)($this->params['struct'] ?? '');
+
         // значение по умолчанию = []
         $value = !json_decode($value, true) ? '[]' : $value;
-        if ($value == '[]' && $this->params['struct']) {
-            $s = json_decode($this->params['struct'], true);
+        if ($value == '[]' && $struct) {
+            $s = json_decode($struct, true);
             $v = json_decode($value, true);
 
             $v['s'] = $s['v'];
@@ -103,8 +105,8 @@ class FieldTable extends Field
         }
 
         $tmpVal = json_decode($value, true);
-        if ($this->params['struct'] && $tmpVal['s'] != $this->params['struct']) {
-            $s = json_decode($this->params['struct'], true);
+        if ($struct && $tmpVal['s'] != $struct) {
+            $s = json_decode($struct, true);
             $v = json_decode($value, true);
 
             $v['s'] = $s['v'];

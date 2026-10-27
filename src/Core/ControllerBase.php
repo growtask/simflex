@@ -22,7 +22,6 @@ class ControllerBase extends ComponentBase
 
     public function __construct(protected Request $request, protected Response $response)
     {
-        parent::__construct();
         $this->collectActions();
     }
 

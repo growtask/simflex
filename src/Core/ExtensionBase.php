@@ -4,11 +4,6 @@ namespace Simflex\Core;
 
 abstract class ExtensionBase implements HasAdminParams
 {
-    /**
-     * Путь до расширения в файловой системе
-     * @var string
-     */
-    protected string $rootDir;
     protected string $root = '';
 
     /**
@@ -25,10 +20,13 @@ abstract class ExtensionBase implements HasAdminParams
         return [];
     }
 
-    public function __construct()
+    /**
+     * Каталог класса расширения в файловой системе. Не зависит от конструктора: наследники объявляют свой
+     * конструктор без вызова родительского
+     */
+    protected function getRootDir(): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
-        $this->rootDir = dirname($reflector->getFileName());
+        return dirname((new \ReflectionClass($this))->getFileName());
     }
 
     protected function root(): string

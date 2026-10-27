@@ -3,6 +3,7 @@
 namespace Simflex\Core;
 
 use Simflex\Core\DB\Adapter;
+use Simflex\Core\DB\Where;
 
 /**
  * Класс DB
@@ -81,6 +82,25 @@ class DB
     public static function assoc(string $q, bool|string $field1 = false, bool|string $field2 = false, array $params = []): bool|array
     {
         return static::db()->assoc(static::query($q, $params), $field1, $field2);
+    }
+
+    /**
+     * Удаляет строки таблицы по условию, значения условия передаются параметрами запроса. Для таблиц без модели
+     * (таблицы связей, кэши); у модели — ModelBase::bulkDelete()
+     *
+     * @param string|array|Where $where Условие в виде, который принимает Where: ['колонка' => значение или список].
+     *        Пустое условие (в том числе пустой список значений) — исключение: оно удалило бы всю таблицу
+     */
+    public static function delete(string $table, string|array|Where $where): bool
+    {
+        $where = new Where($where);
+        // параметры заполняет приведение условия к строке
+        $condition = (string)$where;
+        if ($condition === '') {
+            throw new \InvalidArgumentException("DB::delete(): empty condition for table $table");
+        }
+
+        return (bool)static::query('DELETE FROM ' . static::wrapName($table) . ' ' . $condition, $where->getBinds());
     }
 
     public static function map(string $q, $field1, $field2, array $params = [], bool $list = false): array

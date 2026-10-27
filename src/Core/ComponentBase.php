@@ -9,7 +9,7 @@ abstract class ComponentBase extends ExtensionBase
      */
     protected function rootHref(): string
     {
-        return Path::dirToHref($this->rootDir);
+        return Path::dirToHref($this->getRootDir());
     }
 
     /**

@@ -36,15 +36,6 @@ class PackageInstaller
         }
         static::copyContents($path . '/provider/extensions', $root . '/provider/extensions', 'extension');
 
-        // очищаем кэш
-        if (is_file($root . '/cache/extensions.php')) {
-            unlink($root . '/cache/extensions.php');
-        }
-
-        if (is_file($root . '/cache/files.php')) {
-            unlink($root . '/cache/files.php');
-        }
-
         echo "[+] Package has been installed.\n";
     }
 

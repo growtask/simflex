@@ -4,52 +4,52 @@ namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Table\Table;
 use Simflex\Core\DB;
+use Simflex\Core\DB\AQ;
 
+/**
+ * Связи «многие ко многим»: записи другой таблицы, выбранные тегами. Колонки у поля нет, связи хранятся в таблице
+ * связей. Параметры типа поля (проще через пресет \Simflex\Admin\Table\Presets\MultiKeyField):
+ * - table_values — таблица выбираемых записей;
+ * - table_relations — таблица связей;
+ * - key — первичный ключ table_values, он же колонка таблицы связей с выбранной записью;
+ * - key_alias — колонка table_values, которая показывается вместо ключа;
+ * - relation_key — колонка таблицы связей с id записи раздела, по умолчанию — первичный ключ раздела;
+ * - parent_key — колонка родителя в table_values: запись подписывается «Имя (Родитель)».
+ * Связи пишутся по id записи, поэтому у новой записи сохраняются после её вставки (Table::save())
+ */
 class FieldMultiKey extends Field
 {
-    private static array $buffer;
+    /** @var array<int, string>|null подписи связей записей показываемого списка: id записи => «Имя, Имя» */
+    protected ?array $listLabels = null;
 
     public function __construct($row)
     {
         parent::__construct($row);
         $this->isVirtual = true;
+        $this->isSavedById = true;
+    }
+
+    /**
+     * Колонка таблицы связей с id записи раздела
+     */
+    public function getRelationKey(): string
+    {
+        return (string)($this->params['relation_key'] ?? '') ?: $this->tablePk;
     }
 
     public function input($value): string
     {
-        $fields = ['*'];
-
-        $value = (int)@$_GET[$this->tablePk];
-        if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
-            $this->tablePk = 'link_id';
+        // форма, показанная снова после ошибки сохранения, — с выбранными в ней записями
+        if (isset($_POST[$this->name])) {
+            $selected = $this->getPostedIds();
+        } else {
+            $id = (int)($_REQUEST[$this->tablePk] ?? 0);
+            $selected = $id ? $this->getSelectedIds($id) : [];
         }
-
-        if ($value) {
-            $fields[] = "(select count(*) from {$this->params['table_relations']} where $this->tablePk = $value and {$this->params['key']} = t.{$this->params['key']}) checked";
-        }
-
-        $q = 'SELECT ' . implode(', ', $fields) . " FROM {$this->params['table_values']} t order by {$this->params['key']}";
-        $rows = DB::assoc($q);
-
-        $valReal = [];
-        foreach ($rows as &$row) {
-            // этот костыль тоже убрать
-            if ($this->table == 'catalog_product' && $row['pid']) {
-                $par = DB::result('select name from catalog_category where category_id = ?', 0, [$row['pid']]);
-                if ($par) {
-                    $row['name'] .= ' (' . $par . ')';
-                }
-            }
-
-            if ($row['checked']) {
-                $valReal[] = $row[(string)$this->params['key']];
-            }
-        }
-        unset($row);
 
         $items = [];
-        foreach ($rows as $row) {
-            $items[] = [$row[(string)$this->params['key']], $row[(string)$this->params['key_alias']]];
+        foreach ($this->getValues() as $valueId => $label) {
+            $items[] = [$valueId, htmlspecialchars($label)];
         }
 
         return $this->render('tags', [
@@ -57,34 +57,27 @@ class FieldMultiKey extends Field
             'ajax' => false,
             'addNew' => false,
             'name' => $this->name,
-            'value' => implode(',', $valReal),
+            'value' => implode(',', $selected),
             'items' => $items,
         ]);
     }
 
+    /**
+     * Сохраняет связи записи. Без id записи (новая запись до вставки) и без значения в форме ничего не пишет
+     */
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $pkValue = (int)@$_REQUEST[$this->tablePk];
-        if ($this->tablePk == 'product_id' && $this->params['key'] == 'product_id') {
-            $this->tablePk = 'link_id';
-        }
-
-        if (!$pkValue) {
+        $id = (int)($_REQUEST[$this->tablePk] ?? 0);
+        if (!$id || !isset($_POST[$this->name])) {
             return '';
         }
 
-        $values = isset($_POST[$this->name]) ? explode(',', $_POST[$this->name]) : [];
-        $q = "DELETE FROM {$this->params['table_relations']} where $this->tablePk = $pkValue";
-        DB::query($q);
-
-        foreach ($values as $value) {
-            $value = (int)$value;
-            if (!$value) {
-                continue;
-            }
-
-            $q = "INSERT INTO {$this->params['table_relations']} set $this->tablePk = $pkValue, {$this->params['key']} = $value";
-            DB::query($q);
+        $relations = DB::wrapName((string)$this->params['table_relations']);
+        $relationKey = DB::wrapName($this->getRelationKey());
+        $key = DB::wrapName((string)$this->params['key']);
+        DB::query("DELETE FROM $relations WHERE $relationKey = ?", [$id]);
+        foreach ($this->getPostedIds() as $valueId) {
+            DB::query("INSERT INTO $relations ($relationKey, $key) VALUES (?, ?)", [$id, $valueId]);
         }
 
         return '';
@@ -92,69 +85,125 @@ class FieldMultiKey extends Field
 
     public function show($row): string
     {
-        $pkValue = (int)$row[$this->tablePk];
-        if (!isset(self::$buffer)) {
-            $q = "SELECT {$this->params['key']}, {$this->params['key_alias']} FROM {$this->params['table_values']}";
-            $values = DB::assoc($q, $this->params['key']);
-            // связи записей показываемого списка
-            $list = Table::$currentQuery ? (clone Table::$currentQuery)->select($this->table . '.' . $this->tablePk)->orderBy(null)->limit('') : null;
-            $listSql = $list ? $list->build() : "SELECT $this->tablePk FROM $this->table";
-            $q = "
-                SELECT $this->tablePk,
-                    (SELECT {$this->params['key_alias']} FROM {$this->params['table_values']} WHERE {$this->params['key']} = r.{$this->params['key']}) label
-                FROM {$this->params['table_relations']} r WHERE $this->tablePk IN ($listSql)
-            ";
-            $rels = DB::assoc($q, $this->tablePk, 'label', $list ? $list->getBinds() : []);
-            foreach ($rels as $key => $keyAliases) {
-                self::$buffer[$key] = implode(', ', array_keys($keyAliases));
-            }
-        }
+        $this->listLabels ??= $this->getListLabels();
 
-        return $this->cell((string)@self::$buffer[$pkValue]);
+        return $this->cell($this->listLabels[(int)$row[$this->tablePk]] ?? '');
     }
 
     public function filter($value): string
     {
-        $value = DB::escape($value);
-
-        if ($this->table == 'catalog_product') {
-            // опять костыль...
-            if (!$value) {
-                return '';
-            }
-
-            $q = DB::query(
-                "select {$this->params['key_alias']}, pid from {$this->params['table_values']} where {$this->params['key']} = $value"
-            );
-        } else {
-            $q = DB::query(
-                "select {$this->params['key_alias']} from {$this->params['table_values']} where {$this->params['key']} = $value"
-            );
-        }
-        $r = DB::fetch($q);
-
-        // ещё один костыль
-        if ($this->table == 'catalog_product') {
-            if ($r['pid']) {
-                $par = DB::result('select name from catalog_category where category_id = ?', 0, [$r['pid']]);
-                if ($par) {
-                    $r['name'] .= ' (' . $par . ')';
-                }
-            }
-        }
+        $value = (string)$value;
+        $label = $value !== '' ? ($this->getValues([(int)$value])[(int)$value] ?? '') : '—';
 
         return $this->dropdown([
             'name' => 'filter[' . $this->name . ']',
             'value' => $value,
             'action' => 'searchMultiKey',
             'search' => true,
-            'items' => [[$value, $r[$this->params['key_alias']]]],
+            'items' => [[$value, htmlspecialchars($label)]],
         ]);
-
     }
 
     public function selectQueryField(): string
     {
         return '';
+    }
+
+    /**
+     * Выбираемые записи: ключ => подпись (с родителем, если задан parent_key), по порядку ключа
+     *
+     * @param int[]|null $ids Только эти записи
+     * @param string $search Только записи, в подписи которых есть этот текст
+     * @param int $limit Не больше стольких записей, 0 — все
+     * @return array<int, string>
+     */
+    public function getValues(?array $ids = null, string $search = '', int $limit = 0): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $values = (string)$this->params['table_values'];
+        $key = (string)$this->params['key'];
+        $label = DB::wrapName((string)$this->params['key_alias']);
+        $parentKey = (string)($this->params['parent_key'] ?? '');
+
+        $select = ['t.' . DB::wrapName($key) . ' AS id', "t.$label AS name"];
+        $query = (new AQ())->asArray()->from($values, 't')->orderBy('t.' . DB::wrapName($key));
+        if ($parentKey !== '') {
+            $select[] = "p.$label AS parent";
+            $query->leftJoin($values, 't.' . $parentKey, 'p.' . $key, alias: 'p');
+        }
+        $query->select($select);
+        if ($ids !== null) {
+            $query->andWhere(['t.' . $key => array_map('intval', $ids)]);
+        }
+        if ($search !== '') {
+            $query->andWhere("t.$label LIKE :search")->bind(['search' => '%' . $search . '%']);
+        }
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+
+        $out = [];
+        foreach ($query->all() as $row) {
+            $out[(int)$row['id']] = $row['name'] . (($row['parent'] ?? '') !== '' ? ' (' . $row['parent'] . ')' : '');
+        }
+
+        return $out;
+    }
+
+    /**
+     * Ключи записей, связанных с записью раздела
+     *
+     * @return int[]
+     */
+    protected function getSelectedIds(int $id): array
+    {
+        return array_map('intval', (new AQ())->asArray()->from((string)$this->params['table_relations'])
+            ->select(DB::wrapName((string)$this->params['key']))
+            ->where([$this->getRelationKey() => $id])
+            ->fetchColumn());
+    }
+
+    /**
+     * Ключи записей, выбранных в форме: «1,2,3»
+     *
+     * @return int[]
+     */
+    protected function getPostedIds(): array
+    {
+        return array_values(array_unique(array_filter(array_map('intval', explode(',', (string)$_POST[$this->name])))));
+    }
+
+    /**
+     * Подписи связей записей показываемого списка (Table::$currentQuery, без него — всех записей):
+     * id записи => «Имя, Имя»
+     *
+     * @return array<int, string>
+     */
+    protected function getListLabels(): array
+    {
+        $relationKey = 'r.' . DB::wrapName($this->getRelationKey());
+        $query = (new AQ())->asArray()->from((string)$this->params['table_relations'], 'r')
+            ->select(["$relationKey AS record_id", 'r.' . DB::wrapName((string)$this->params['key']) . ' AS value_id']);
+        if (Table::$currentQuery) {
+            $list = (clone Table::$currentQuery)
+                ->select(DB::wrapName($this->table) . '.' . DB::wrapName($this->tablePk))
+                ->orderBy(null)
+                ->limit('');
+            $query->where("$relationKey IN (" . $list->build() . ')')->bind($list->getBinds());
+        }
+        $relations = $query->all();
+
+        $labels = $this->getValues(array_values(array_unique(array_map(fn($row) => (int)$row['value_id'], $relations))));
+        $out = [];
+        foreach ($relations as $row) {
+            if (isset($labels[(int)$row['value_id']])) {
+                $out[(int)$row['record_id']][] = $labels[(int)$row['value_id']];
+            }
+        }
+
+        return array_map(fn(array $items) => implode(', ', $items), $out);
     }
 }
