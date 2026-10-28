@@ -4,7 +4,7 @@ namespace Simflex\Auth\Auth;
 
 use Simflex\Auth\CookieTokenBag;
 use Simflex\Core\Container;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 use Simflex\Auth\Models\UserAuth;
 
 class CookieMiddleware extends BaseMiddleware

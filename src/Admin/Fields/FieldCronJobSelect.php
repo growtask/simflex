@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\Cron\CronRegistry;
+use Simflex\Cron\CronRegistry;
 
 /**
  * Ключ задачи cron из provider/cron.php, показывается по названию задачи

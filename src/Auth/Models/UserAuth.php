@@ -2,7 +2,7 @@
 
 namespace Simflex\Auth\Models;
 
-use Simflex\Core\DB\Expr;
+use Simflex\DB\Expr;
 use Simflex\Core\ModelBase;
 
 /**

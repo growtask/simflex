@@ -6,7 +6,7 @@ use Simflex\Auth\Auth\Chain;
 use Simflex\Auth\SignOut\CookieMiddleware;
 use Simflex\Auth\SignOut\SessionMiddleware;
 use Simflex\Core\Container;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 
 class Bootstrap
 {

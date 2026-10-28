@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Plugins\Log;
 
-use Simflex\Core\Models\Log as LogModel;
+use Simflex\Models\Log as LogModel;
 
 class Log
 {

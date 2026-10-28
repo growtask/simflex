@@ -133,7 +133,7 @@ class Alert
         $html = '';
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = '';
-            if (count(self::$s[$page][$section]) == 1) {
+            if (count(self::$s[$page][$section]) === 1) {
                 foreach (self::$s[$page][$section] as $txt) {
                     break;
                 }

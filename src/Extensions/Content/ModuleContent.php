@@ -2,7 +2,7 @@
 
 namespace Simflex\Extensions\Content;
 
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 use Simflex\Core\ModuleBase;
 
 /**

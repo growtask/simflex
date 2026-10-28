@@ -3,7 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Core\Time;
+use Simflex\Helpers\Time;
 
 class FieldTime extends Field
 {

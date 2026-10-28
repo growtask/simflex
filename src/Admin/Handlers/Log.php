@@ -8,7 +8,7 @@ use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\Log as LogModel;
+use Simflex\Models\Log as LogModel;
 
 class Log extends Table
 {

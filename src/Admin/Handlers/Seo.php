@@ -8,7 +8,7 @@ use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Presets\ParentField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\Seo as SeoModel;
+use Simflex\Models\Seo as SeoModel;
 
 class Seo extends Table
 {

@@ -10,7 +10,7 @@ use Simflex\Admin\Table\Presets\ActiveField;
 use Simflex\Admin\Table\Presets\ForeignKeyField;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\User as UserModel;
+use Simflex\Models\User as UserModel;
 
 class User extends Table
 {

@@ -9,11 +9,12 @@ use Simflex\Extensions\Form\Fields\FieldPassword;
 use Simflex\Extensions\Form\Fields\FieldSpamCode;
 use Simflex\Extensions\Form\Fields\FieldString;
 use Simflex\Extensions\Form\Fields\FieldText;
-use Simflex\Core\Models\ModelSettings;
+use Simflex\Models\ModelSettings;
 use Simflex\Core\Alert\Site\Alert;
 use Simflex\Core\Container;
-use Simflex\Core\Helpers\Str;
-use Simflex\Core\Mail;
+use Simflex\Helpers\Str;
+use Simflex\Logger\Log;
+use Simflex\Mail\Mailer;
 use Simflex\Core\ModuleBase;
 
 class ModuleForm extends ModuleBase
@@ -66,8 +67,14 @@ class ModuleForm extends ModuleBase
                 }
                 $rows[] = '';
                 $rows[] = '---';
-                $rows[] = 'Simplex Framework';
-                if (Mail::create($to, $subject, join("\r\n", $rows))->setAsPlain()->send()) {
+                $rows[] = 'Simflex CMS';
+                try {
+                    $sent = Mailer::get()->sendPlain($subject, $to, implode("\n", $rows));
+                } catch (\Throwable $e) {
+                    Log::error('Form mail: {error}', ['error' => $e->getMessage()]);
+                    $sent = false;
+                }
+                if ($sent) {
                     Alert::success('Ваше сообщение отправлено, Мы ответим Вам в ближайшее время');
                 } else {
                     Alert::warning('Сообщение не может быть отправлено по техническим причинам, попробуйте позднее');

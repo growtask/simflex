@@ -13,7 +13,7 @@ class SessionStorage
 
     protected static function getKey(): string
     {
-        $prefix = SF_LOCATION_SITE == SF_LOCATION ? 's' : 'a';
+        $prefix = SF_LOCATION_SITE === SF_LOCATION ? 's' : 'a';
         return $prefix . '_user_id';
     }
 

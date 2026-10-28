@@ -2,6 +2,8 @@
 
 namespace Simflex\Core;
 
+use Simflex\DB\DB;
+
 /**
  * Привилегии пользователей, объявленные в коде. Проверяются по имени: User::ican(Privilege::ADMIN).
  *

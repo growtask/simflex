@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 class FieldTags extends Field
 {

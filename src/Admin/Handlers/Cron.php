@@ -9,9 +9,9 @@ use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\ActiveField;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Cron\CronRegistry;
+use Simflex\Cron\CronRegistry;
 use Simflex\Core\Privilege;
-use Simflex\Core\Models\Cron as CronModel;
+use Simflex\Models\Cron as CronModel;
 
 /**
  * Задачи объявлены в provider/cron.php, в таблице хранятся только их активность и расписание

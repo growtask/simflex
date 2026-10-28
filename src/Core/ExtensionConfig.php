@@ -4,7 +4,7 @@ namespace Simflex\Core;
 
 use Simflex\Admin\Handler;
 use Simflex\Admin\MenuItem;
-use Simflex\Core\Cron\CronJob;
+use Simflex\Cron\CronJob;
 
 /**
  * Настройки расширения (composer-пакета Simflex): файл `provider/extensions/<имя>.php` сайта возвращает

@@ -4,7 +4,7 @@ namespace Simflex\Auth\Auth;
 
 use Simflex\Auth\SessionStorage;
 use Simflex\Core\Container;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 
 class SessionMiddleware extends BaseMiddleware
 {

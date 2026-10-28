@@ -2,8 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
-use Simflex\Core\Helpers\Str;
+use Simflex\DB\DB;
+use Simflex\Helpers\Str;
 
 class FieldAlias extends Field
 {

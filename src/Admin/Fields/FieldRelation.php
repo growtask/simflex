@@ -2,9 +2,9 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
-use Simflex\Core\DB\AQ;
-use Simflex\Core\DB\Where;
+use Simflex\DB\DB;
+use Simflex\DB\AQ;
+use Simflex\DB\Where;
 
 /**
  * Взаимные связи записей одной таблицы (например, «другие цвета» товара): выбранные записи связаны с записью формы

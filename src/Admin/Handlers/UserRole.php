@@ -8,7 +8,7 @@ use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\ActiveField;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\UserRole as UserRoleModel;
+use Simflex\Models\UserRole as UserRoleModel;
 
 class UserRole extends Table
 {

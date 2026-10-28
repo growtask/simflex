@@ -4,7 +4,7 @@ namespace Simflex\Admin\Table;
 
 use Simflex\Admin\Handler;
 use Simflex\Core\ExtensionConfig;
-use Simflex\Core\HasAdminParams;
+use Simflex\Admin\HasAdminParams;
 use Simflex\Extensions\Content\ContentTemplates;
 
 /**

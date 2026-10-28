@@ -10,8 +10,8 @@ use Simflex\Auth\Bootstrap;
 use Simflex\Auth\CookieTokenBag;
 use Simflex\Auth\Models\UserAuth;
 use Simflex\Auth\SessionStorage;
-use Simflex\Core\DB;
-use Simflex\Core\Models\User;
+use Simflex\DB\DB;
+use Simflex\Models\User;
 use Simflex\Core\Privilege;
 
 class Auth

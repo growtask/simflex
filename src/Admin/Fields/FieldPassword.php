@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\Helpers\Str;
+use Simflex\Helpers\Str;
 
 class FieldPassword extends Field
 {

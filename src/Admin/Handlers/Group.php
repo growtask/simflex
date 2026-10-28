@@ -5,7 +5,7 @@ namespace Simflex\Admin\Handlers;
 use Simflex\Admin\Core;
 use Simflex\Admin\Handler;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 /**
  * Страница группы меню со списком подпунктов; главная страница админки показывает ещё и виджеты.

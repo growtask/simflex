@@ -3,7 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Core\File;
+use Simflex\Media\File;
 
 class FieldFile extends Field
 {
@@ -15,8 +15,8 @@ class FieldFile extends Field
         if (!empty($this->params['path'])) {
             $path = $this->params['path'];
             if ($path) {
-                $path = substr($path, 0, 1) == '/' ? substr($path, 1) : $path;
-                $path = substr($path, -1) == '/' ? $path : $path . '/';
+                $path = substr($path, 0, 1) === '/' ? substr($path, 1) : $path;
+                $path = substr($path, -1) === '/' ? $path : $path . '/';
             }
             $this->path = $path;
         }

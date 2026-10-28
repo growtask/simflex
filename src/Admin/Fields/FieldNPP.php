@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 class FieldNPP extends Field
 {
@@ -20,7 +20,7 @@ class FieldNPP extends Field
     {
         if (!isset($_REQUEST[$this->tablePk])) {
             // TODO: сделать по-нормальному
-            if ($this->table == 'catalog_product') {
+            if ($this->table === 'catalog_product') {
                 $value = 1;
             } else {
                 $where = [];

@@ -95,7 +95,7 @@ class FieldTable extends Field
 
         // значение по умолчанию = []
         $value = !json_decode($value, true) ? '[]' : $value;
-        if ($value == '[]' && $struct) {
+        if ($value === '[]' && $struct) {
             $s = json_decode($struct, true);
             $v = json_decode($value, true);
 

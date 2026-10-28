@@ -2,6 +2,8 @@
 
 namespace Simflex\Core;
 
+use Simflex\Http\ComponentBase;
+
 /**
  * Компоненты и модули, объявленные в коде: списки классов в provider/components.php и provider/modules.php
  * приложения; их настройки - статические методы классов.
