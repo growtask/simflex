@@ -1,11 +1,12 @@
 <?php
 
-namespace Simflex\Admin\Table;
+namespace Simflex\Core\Admin\Table;
 
-use Simflex\Admin\Handler;
-use Simflex\Core\ExtensionConfig;
-use Simflex\Admin\HasAdminParams;
-use Simflex\Extensions\Content\ContentTemplates;
+use Simflex\Core\System\Container;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\System\ExtensionConfig;
+use Simflex\Core\Admin\HasAdminParams;
+use Simflex\Core\Extensions\Content\ContentTemplates;
 
 /**
  * Структура админки, объявленная в коде: реестр разделов (Admin/handlers.php ядра
@@ -60,7 +61,7 @@ class Repository
     }
 
     /**
-     * Поля шаблона страницы, объявленные в коде (\Simflex\Extensions\Content\ContentTemplate).
+     * Поля шаблона страницы, объявленные в коде (\Simflex\Core\Extensions\Content\ContentTemplate).
      * Они не вложены в свои блоки: значения хранятся в content.params по имени поля,
      * блок — это 'group_name', под которым их показывает форма.
      *
@@ -133,14 +134,14 @@ class Repository
     public static function getHandlerClasses(): array
     {
         $normalize = fn(array $classes) => array_map(fn(string $class) => ltrim($class, '\\'), $classes);
-        $core = $normalize(require SF_CORE_ROOT_PATH . '/Admin/handlers.php');
+        $core = $normalize(require Container::getPaths()->getCore('Admin/handlers.php'));
 
         $extension = [];
         foreach (ExtensionConfig::getAll() as $config) {
             $extension = array_merge($extension, $normalize($config->getHandlers()));
         }
 
-        $appFile = SF_ROOT_PATH . '/Admin/handlers.php';
+        $appFile = Container::getPaths()->getRoot('Admin/handlers.php');
         $app = is_file($appFile) ? $normalize(require $appFile) : [];
 
         // раздел сайта-наследник заменяет раздел расширения
@@ -204,7 +205,7 @@ class Repository
             return ltrim($type, '\\');
         }
 
-        return 'Simflex\\Admin\\Fields\\' . $type;
+        return 'Simflex\\Core\\Admin\\Fields\\' . $type;
     }
 
     protected static function stableId(string $value): int

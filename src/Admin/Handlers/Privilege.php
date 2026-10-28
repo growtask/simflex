@@ -1,13 +1,13 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Handler;
-use Simflex\Core\Privilege as PrivilegeRegistry;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\System\Privilege as PrivilegeRegistry;
+use Simflex\Core\System\Settings as SiteSettings;
 
 /**
- * Привилегии объявлены в коде (\Simflex\Core\Privilege и подкласс приложения): раздел выводит их список
+ * Привилегии объявлены в коде (\Simflex\Core\System\Privilege и подкласс приложения): раздел выводит их список
  * и переключает их активность, которая хранится в необязательной таблице user_privilege. Не табличный раздел:
  * только список и переключатель
  */
@@ -15,7 +15,7 @@ class Privilege extends Handler
 {
     public function content(): string
     {
-        return match ($_GET['action'] ?? '') {
+        return match ($this->request->get('action', '')) {
             '' => $this->show(),
             'switch' => $this->switchActive(),
             default => (string)SiteSettings::get('error404'),
@@ -42,8 +42,8 @@ class Privilege extends Handler
      */
     protected function switchActive(): string
     {
-        $name = (string)($_POST['name'] ?? '');
-        $ok = ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && PrivilegeRegistry::setActive($name, !empty($_POST['active']));
+        $name = (string)($this->request->post('name', ''));
+        $ok = $this->request->isPost() && PrivilegeRegistry::setActive($name, !empty($this->request->post('active')));
         if (!$ok) {
             http_response_code(400);
         }

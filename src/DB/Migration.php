@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
 interface Migration
 {

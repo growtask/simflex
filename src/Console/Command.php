@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Console;
+namespace Simflex\Core\Console;
 
 use Attribute;
 

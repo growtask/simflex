@@ -1,14 +1,14 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Table\Table;
-use Simflex\DB\DB;
-use Simflex\DB\AQ;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\AQ;
 
 /**
  * Связи «многие ко многим»: записи другой таблицы, выбранные тегами. Колонки у поля нет, связи хранятся в таблице
- * связей. Параметры типа поля (проще через пресет \Simflex\Admin\Table\Presets\MultiKeyField):
+ * связей. Параметры типа поля (проще через пресет \Simflex\Core\Admin\Table\Presets\MultiKeyField):
  * - table_values — таблица выбираемых записей;
  * - table_relations — таблица связей;
  * - key — первичный ключ table_values, он же колонка таблицы связей с выбранной записью;
@@ -40,10 +40,10 @@ class FieldMultiKey extends Field
     public function input($value): string
     {
         // форма, показанная снова после ошибки сохранения, — с выбранными в ней записями
-        if (isset($_POST[$this->name])) {
+        if ($this->getPosted() !== null) {
             $selected = $this->getPostedIds();
         } else {
-            $id = (int)($_REQUEST[$this->tablePk] ?? 0);
+            $id = $this->getRecordId();
             $selected = $id ? $this->getSelectedIds($id) : [];
         }
 
@@ -67,18 +67,18 @@ class FieldMultiKey extends Field
      */
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $id = (int)($_REQUEST[$this->tablePk] ?? 0);
-        if (!$id || !isset($_POST[$this->name])) {
+        $id = $this->getRecordId();
+        if (!$id || $this->getPosted() === null) {
             return '';
         }
 
-        $relations = DB::wrapName((string)$this->params['table_relations']);
-        $relationKey = DB::wrapName($this->getRelationKey());
-        $key = DB::wrapName((string)$this->params['key']);
-        DB::query("DELETE FROM $relations WHERE $relationKey = ?", [$id]);
-        foreach ($this->getPostedIds() as $valueId) {
-            DB::query("INSERT INTO $relations ($relationKey, $key) VALUES (?, ?)", [$id, $valueId]);
-        }
+        $relations = (string)$this->params['table_relations'];
+        $relationKey = $this->getRelationKey();
+        $key = (string)$this->params['key'];
+        DB::transaction(function () use ($relations, $relationKey, $key, $id) {
+            DB::delete($relations, [$relationKey => $id]);
+            DB::insert($relations, array_map(fn(int $valueId) => [$relationKey => $id, $key => $valueId], $this->getPostedIds()));
+        });
 
         return '';
     }
@@ -173,7 +173,7 @@ class FieldMultiKey extends Field
      */
     protected function getPostedIds(): array
     {
-        return array_values(array_unique(array_filter(array_map('intval', explode(',', (string)$_POST[$this->name])))));
+        return array_values(array_unique(array_filter(array_map('intval', explode(',', (string)$this->getPosted())))));
     }
 
     /**

@@ -1,10 +1,11 @@
 <?php
 
-namespace Simflex\Cron;
+namespace Simflex\Core\Cron;
 
-use Simflex\DB\DB;
-use Simflex\Core\ExtensionConfig;
-use Simflex\Models\Cron as CronModel;
+use Simflex\Core\System\Container;
+use Simflex\Core\DB\DB;
+use Simflex\Core\System\ExtensionConfig;
+use Simflex\Core\Models\Cron as CronModel;
 
 /**
  * Задания cron, объявленные в коде: provider/cron.php приложения возвращает ключ задания => CronJob.
@@ -21,7 +22,7 @@ class CronRegistry
     public static function jobs(): array
     {
         if (static::$jobs === null) {
-            $file = SF_ROOT_PATH . '/provider/cron.php';
+            $file = Container::getPaths()->getRoot('provider/cron.php');
             $data = is_file($file) ? require $file : [];
 
             // задачи расширений, затем сайта: задача сайта с тем же ключом заменяет задачу расширения

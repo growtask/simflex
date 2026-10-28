@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\ToggleSwitch;
+namespace Simflex\Core\Layout\Components\UI\Core\ToggleSwitch;
 
 enum TogglePosition: string
 {

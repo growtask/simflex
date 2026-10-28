@@ -1,6 +1,8 @@
 <?php
 
-namespace Simflex\Media;
+namespace Simflex\Core\Media;
+
+use Simflex\Core\System\Container;
 
 /**
  * Загруженное изображение: public/uf/images/<path>/<размер>/<имя>.<расширение>.
@@ -43,12 +45,12 @@ class Image extends File
     }
 
     /**
-     * Читает загруженное изображение $_FILES[$field]: JPEG, PNG, GIF, WebP, SVG (тип - по содержимому файла)
+     * Читает загруженное изображение запроса: JPEG, PNG, GIF, WebP, SVG (тип - по содержимому файла)
      * @return bool false - файла нет или это не изображение
      */
     public function loadPost(string $field): bool
     {
-        $tmp = (string)($_FILES[$field]['tmp_name'] ?? '');
+        $tmp = (string)(Container::getRequest()?->file($field)['tmp_name'] ?? '');
         if (!is_uploaded_file($tmp)) {
             return false;
         }

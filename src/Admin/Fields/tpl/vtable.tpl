@@ -1,4 +1,4 @@
-<input data-id="<?= $jsId ?>" type="hidden" value="<?= htmlspecialchars($value) ?>" data-total="<?=$total?>" data-pk="<?=$this->tablePk?>" data-pkid="<?=$_REQUEST[$this->tablePk]?>" data-path="<?=\Simflex\Core\Container::getRequest()->getPath()?>" />
+<input data-id="<?= $jsId ?>" type="hidden" value="<?= htmlspecialchars($value) ?>" data-total="<?=$total?>" data-pk="<?=$this->tablePk?>" data-pkid="<?= $this->getRecordId() ?>" data-path="<?=\Simflex\Core\System\Container::getRequest()->getPath()?>" />
 <div data-id="<?= $jsId ?>" data-field="<?= $this->name ?>" class="data-point v-table">
     <button type="button" class="BtnPrimarySm BtnIconLeft content__body-table-btn btn-modal-point" onclick="VTableEditor.onRowEdit('<?= $jsId ?>', null);return false;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"

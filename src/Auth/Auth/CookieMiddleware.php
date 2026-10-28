@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Auth\Auth;
+namespace Simflex\Core\Auth\Auth;
 
-use Simflex\Auth\CookieTokenBag;
-use Simflex\Core\Container;
-use Simflex\Models\User;
-use Simflex\Auth\Models\UserAuth;
+use Simflex\Core\Auth\CookieTokenBag;
+use Simflex\Core\System\Container;
+use Simflex\Core\Models\User;
+use Simflex\Core\Auth\Models\UserAuth;
 
 class CookieMiddleware extends BaseMiddleware
 {

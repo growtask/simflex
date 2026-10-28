@@ -1,6 +1,8 @@
 <?php
 
-namespace Simflex\Media;
+namespace Simflex\Core\Media;
+
+use Simflex\Core\System\Container;
 
 /**
  * Загруженный файл сайта: public/uf/<pathBase>/<path>/<имя>.<расширение>.
@@ -37,18 +39,18 @@ class File
     public function __construct(string $path = '')
     {
         $this->path = static::makeDir(
-            (static::$uploadRoot ?? SF_PUBLIC_PATH . '/uf') . '/' . $this->pathBase . '/' . trim($path, '/')
+            (static::$uploadRoot ?? Container::getPaths()->getPublic('uf')) . '/' . $this->pathBase . '/' . trim($path, '/')
         );
         $this->name = static::generateName();
     }
 
     /**
-     * Сохраняет загруженный файл $_FILES[$field]
+     * Сохраняет загруженный файл запроса
      * @return bool false - файла нет или его расширение запрещено
      */
     public function loadPost(string $field): bool
     {
-        $upload = $_FILES[$field] ?? [];
+        $upload = (array)(Container::getRequest()?->file($field) ?? []);
         if (!is_uploaded_file((string)($upload['tmp_name'] ?? ''))) {
             return false;
         }

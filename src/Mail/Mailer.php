@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Mail;
+namespace Simflex\Core\Mail;
 
-use Simflex\Core\Container;
-use Simflex\Core\DI\Service;
-use Simflex\Mail\Transports\PhpMailer;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\DI\Service;
+use Simflex\Core\Mail\Transports\PhpMailer;
 
 /**
  * Сервис отправки почты (имя в контейнере - mailer). Транспорт - класс из конфига mail.transport, по умолчанию

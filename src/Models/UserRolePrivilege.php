@@ -1,16 +1,16 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
 use Exception;
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Модель UserRolePrivilege
  *
  * @property int $id
  * @property int $role_id
- * @property string $privilege Имя привилегии, см. \Simflex\Core\Privilege
+ * @property string $privilege Имя привилегии, см. \Simflex\Core\System\Privilege
  */
 class UserRolePrivilege extends ModelBase
 {

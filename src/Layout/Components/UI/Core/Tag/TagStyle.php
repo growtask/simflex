@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Tag;
+namespace Simflex\Core\Layout\Components\UI\Core\Tag;
 
 enum TagStyle: string
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Http\Routing;
+namespace Simflex\Core\Http\Routing;
 
 class Route
 {

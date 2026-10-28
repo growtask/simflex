@@ -1,12 +1,12 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Core;
-use Simflex\Admin\Plugins\Alert\Alert;
-use Simflex\Admin\Handler;
-use Simflex\Core\Container;
-use Simflex\Models\User as UserModel;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\System\Container;
+use Simflex\Core\Models\User as UserModel;
 
 /**
  * Учётная запись текущего пользователя: имя, email и пароль. Не табличный раздел
@@ -20,16 +20,16 @@ class Account extends Handler
             return '';
         }
 
-        if (isset($_POST['email'], $_POST['name'])) {
-            $set = ['email' => (string)$_POST['email'], 'name' => (string)$_POST['name']];
-            if (!empty($_POST['password'])) {
-                $set['password'] = md5((string)$_POST['password']);
+        if ($this->request->post('email') !== null && $this->request->post('name') !== null) {
+            $set = ['email' => (string)$this->request->post('email'), 'name' => (string)$this->request->post('name')];
+            if (!empty($this->request->post('password'))) {
+                $set['password'] = md5((string)$this->request->post('password'));
             }
             $success = UserModel::bulkUpdate($set, ['user_id' => $user->getId()]);
             if ($success) {
-                Alert::success('Данные успешно обновлены', Core::path());
+                Alert::success('Данные успешно обновлены', Page::get()->getPath());
             } else {
-                Alert::error('Данные не обновлены', Core::path());
+                Alert::error('Данные не обновлены', Page::get()->getPath());
             }
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Http\Api;
+namespace Simflex\Core\Http\Api;
 
 class Json extends Base
 {

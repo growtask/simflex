@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
- * Настройки в админке задачи cron, объявленной в provider/cron.php, см. \Simflex\Cron\CronRegistry
+ * Настройки в админке задачи cron, объявленной в provider/cron.php, см. \Simflex\Core\Cron\CronRegistry
  * @property int id
  * @property string job Ключ задачи в provider/cron.php
  * @property bool active

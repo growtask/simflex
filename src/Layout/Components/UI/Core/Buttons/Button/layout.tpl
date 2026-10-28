@@ -60,7 +60,7 @@ $buttonClasses = [
 
         <?php if ($data['loader']): ?>
             <span class="btn__loader">
-                <?= Simflex\Layout\Components\UI\Other\LoaderIcon\Layout::draw() ?>
+                <?= Simflex\Core\Layout\Components\UI\Other\LoaderIcon\Layout::draw() ?>
             </span>
         <?php endif; ?>
     </button>

@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Extensions\Content;
+namespace Simflex\Core\Extensions\Content;
 
-use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\FieldDefinition;
 
 /**
  * Блок полей шаблона страницы в форме страницы. Блок только группирует их на экране:

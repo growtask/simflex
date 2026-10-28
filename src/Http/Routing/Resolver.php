@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Http\Routing;
+namespace Simflex\Core\Http\Routing;
 
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
 class Resolver
 {

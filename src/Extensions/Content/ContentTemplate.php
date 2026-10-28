@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Extensions\Content;
+namespace Simflex\Core\Extensions\Content;
 
 /**
  * Шаблон страницы, объявленный в provider/templates.php приложения, см. ContentTemplates

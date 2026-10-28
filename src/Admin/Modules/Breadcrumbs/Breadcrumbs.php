@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Modules\Breadcrumbs;
+namespace Simflex\Core\Admin\Modules\Breadcrumbs;
 
-use Simflex\Core\Container;
-use Simflex\Core\ModuleBase;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\System\ModuleBase;
 
 class Breadcrumbs extends ModuleBase
 {
@@ -11,7 +11,7 @@ class Breadcrumbs extends ModuleBase
 
     public function content(): string
     {
-        $crumbs = Container::getCore()::crumbs();
+        $crumbs = Page::get()->getCrumbs();
         return $this->render(__DIR__ . '/tpl/crumbs.tpl', ['crumbs' => $crumbs]);
     }
 }

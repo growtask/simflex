@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * @property int $log_id

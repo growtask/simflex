@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Http\Controller;
+namespace Simflex\Core\Http\Controller;
 
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
 /**
  * Связывает Action и имя метода.

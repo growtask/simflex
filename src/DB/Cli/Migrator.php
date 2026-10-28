@@ -1,17 +1,18 @@
 <?php
 
-namespace Simflex\DB\Cli;
+namespace Simflex\Core\DB\Cli;
 
+use Simflex\Core\System\Container;
 use Exception;
 use ReflectionClass;
-use Simflex\Console\Command;
-use Simflex\Console\Help;
-use Simflex\Console\ConsoleBase;
-use Simflex\DB\DB;
-use Simflex\DB\Migration as MigrationInterface;
-use Simflex\DB\Schema;
-use Simflex\Logger\Log;
-use Simflex\Models\Migration as Migration;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\Help;
+use Simflex\Core\Console\ConsoleBase;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Migration as MigrationInterface;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\Models\Migration as Migration;
 
 class Migrator extends ConsoleBase
 {
@@ -99,7 +100,7 @@ class Migrator extends ConsoleBase
     ): void {
         // ищем ещё не выполненные миграции
         // на пустой базе таблицы migration ещё нет: её создаст миграция 00_migration
-        $list = DB::result("SHOW TABLES LIKE 'migration'")
+        $list = DB::hasTable('migration')
             ? Migration::findAdv()->asArray()->all()
             : [];
 
@@ -236,7 +237,7 @@ class Migrator extends ConsoleBase
             $last = max($last, (int)$file['name']);
         }
         $fileName = sprintf('%02d', $last + 1) . '_' . $name . '.php';
-        copy(__DIR__ . '/../migration_template.php', SF_ROOT_PATH . '/database/migrations/' . $fileName);
+        copy(__DIR__ . '/../migration_template.php', Container::getPaths()->getRoot('database/migrations/' . $fileName));
 
         Log::notice('Created new migration {name}', ['name' => $fileName]);
     }

@@ -1,6 +1,8 @@
 <?php
 
-namespace Simflex\Extensions\Form\Fields;
+namespace Simflex\Core\Extensions\Form\Fields;
+
+use Simflex\Core\System\Session;
 
 class FieldSpamCode extends Field
 {
@@ -13,10 +15,9 @@ class FieldSpamCode extends Field
 
     public function &check(): array
     {
-        $formName = $this->form->getName();
         $err = [];
-        $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
-        if ($_POST[$formName][$this->name] === '' || $_POST[$formName][$this->name] !== ($_SESSION['spamcode'] ?? null)) {
+        $value = (string)($this->getPosted() ?? '');
+        if ($value === '' || $value !== Session::get('spamcode')) {
             $err[$this->name][] = 'спам-код введен неверно';
         }
         return $err;

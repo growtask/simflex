@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Models\Attrib;
+namespace Simflex\Core\Models\Attrib;
 
 use Attribute;
 

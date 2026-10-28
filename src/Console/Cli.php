@@ -1,15 +1,15 @@
 <?php
 
-namespace Simflex\Console;
+namespace Simflex\Core\Console;
 
 use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
-use Simflex\Core\Container;
-use Simflex\Core\DI\Injector;
-use Simflex\Logger\Log;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\DI\Injector;
+use Simflex\Core\Logger\Log;
 
 /**
  * Запуск консольных команд: ./sf provider/method [аргументы], ./sf help provider/method - справка.

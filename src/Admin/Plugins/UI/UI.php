@@ -1,9 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Plugins\UI;
+namespace Simflex\Core\Admin\Plugins\UI;
 
-use Simflex\Admin\Core;
-use Simflex\Core\Container;
+use Simflex\Core\Admin\Page;
 
 class UI
 {
@@ -35,11 +34,11 @@ class UI
 
     protected static function js(string $file, int $idx): void
     {
-        Container::getPage()::js(Core::webVendorPath() . $file, $idx);
+        Page::get()->js(Page::webVendorPath() . $file, $idx);
     }
 
     protected static function css(string $file, int $idx): void
     {
-        Container::getPage()::css(Core::webVendorPath() . $file, $idx);
+        Page::get()->css(Page::webVendorPath() . $file, $idx);
     }
 }

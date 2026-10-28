@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Media\Image;
+use Simflex\Core\Helpers\Str;
+use Simflex\Core\Media\Image;
 
 class FieldImage extends FieldFile
 {
@@ -27,22 +28,6 @@ class FieldImage extends FieldFile
         $defaultImg = asset('img/default-img.png');
         $imgPath = $value ? '/uf/images/' . $this->path . 'preview/' . $value : $defaultImg;
 
-        $imgFile = $_SERVER['DOCUMENT_ROOT'] . $imgPath;
-        $imgSize = $value && is_file($imgFile) ? filesize($imgFile) : 0;
-        $sizeDenom = 'б';
-        if ($imgSize > 1024) {
-            $imgSize /= 1024;
-            $sizeDenom = 'кб';
-        }
-        if ($imgSize > 1024) {
-            $imgSize /= 1024;
-            $sizeDenom = 'мб';
-        }
-        if ($imgSize > 1024) {
-            $imgSize /= 1024;
-            $sizeDenom = 'гб';
-        }
-
         return $this->render('image', [
             'imgPath' => $imgPath,
             'defaultImg' => $defaultImg,
@@ -52,13 +37,13 @@ class FieldImage extends FieldFile
             'activeClass' => $value ? 'form-control__file--active' : '',
             'activeText' => $value ?: 'Перетащите или загрузите файл',
             'activeDisplay' => $value ? 'display:block;' : '',
-            'size' => round($imgSize) . ' ' . $sizeDenom,
+            'size' => Str::sizeToStr($imgPath),
         ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $path = explode('/', $_POST[$this->name]);
+        $path = explode('/', (string)$this->getPosted());
         return end($path);
     }
 

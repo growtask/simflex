@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Helpers\Time;
+use Simflex\Core\Admin\Plugins\UI\UI;
+use Simflex\Core\Helpers\Time;
 
 class FieldTime extends Field
 {
@@ -43,7 +43,7 @@ class FieldTime extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
+        $value = (string)$this->getPosted();
         if ($simple) {
             return $value;
         }

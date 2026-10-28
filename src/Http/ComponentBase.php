@@ -1,9 +1,8 @@
 <?php
 
-namespace Simflex\Http;
+namespace Simflex\Core\Http;
 
-use Simflex\Core\ExtensionBase;
-use Simflex\Core\Assets;
+use Simflex\Core\System\ExtensionBase;
 
 abstract class ComponentBase extends ExtensionBase
 {

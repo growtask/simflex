@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Mail;
+namespace Simflex\Core\Mail;
 
 /**
  * Интерфейс почтового транспорта

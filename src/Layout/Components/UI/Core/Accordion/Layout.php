@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Accordion;
+namespace Simflex\Core\Layout\Components\UI\Core\Accordion;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

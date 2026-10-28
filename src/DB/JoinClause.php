@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 class JoinClause
 {

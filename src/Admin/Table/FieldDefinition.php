@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Table;
+namespace Simflex\Core\Admin\Table;
 
 /**
  * Поле таблицы админки, настроек модуля или шаблона страницы, объявленное в коде.
@@ -10,7 +10,7 @@ namespace Simflex\Admin\Table;
 readonly class FieldDefinition
 {
     /**
-     * @param string $class Тип поля: подкласс \Simflex\Admin\Fields\Field
+     * @param string $class Тип поля: подкласс \Simflex\Core\Admin\Fields\Field
      * @param int|string $width Ширина колонки в списке: пиксели, доля 0..1 или '1' — остаток ширины
      *        (одна такая колонка в таблице). 0 — не в списке, только в форме
      * @param bool $e2n Пустое значение сохраняется как NULL

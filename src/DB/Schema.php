@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
-use Simflex\Core\Container;
-use Simflex\Logger\Log;
-use Simflex\DB\Schema\Table;
+use Simflex\Core\System\Container;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\DB\Schema\Table;
 
 class Schema
 {

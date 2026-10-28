@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \Simflex\Extensions\Menu\Menu $this
+ * @var \Simflex\Core\Extensions\Menu\Menu $this
  * @var int $pid
  */
 ?>

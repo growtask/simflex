@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Extensions\Code;
+namespace Simflex\Core\Extensions\Code;
 
-use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\ParamGroup;
-use Simflex\Core\ModuleBase;
+use Simflex\Core\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\ParamGroup;
+use Simflex\Core\System\ModuleBase;
 
 /**
  * Выводит любой хранимый контент, используется для счётчиков,

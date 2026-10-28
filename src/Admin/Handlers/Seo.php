@@ -1,14 +1,14 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Presets\ParentField;
-use Simflex\Admin\Table\Table;
-use Simflex\Models\Seo as SeoModel;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Presets\ParentField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Models\Seo as SeoModel;
 
 class Seo extends Table
 {

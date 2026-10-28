@@ -1,24 +1,24 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldModuleSelect;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Fields\Helper;
-use Simflex\Admin\Page;
-use Simflex\Admin\Plugins\Editor\Editor;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\ParamDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\ForeignKeyField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Presets\NppField;
-use Simflex\Admin\Table\Repository;
-use Simflex\Admin\Table\Table;
-use Simflex\Core\ExtensionRegistry;
-use Simflex\Models\ModuleItem as ModuleItemModel;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldModuleSelect;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Fields\Helper;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Plugins\Editor\Editor;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\ParamDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\ForeignKeyField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Presets\NppField;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\System\ExtensionRegistry;
+use Simflex\Core\Models\ModuleItem as ModuleItemModel;
 
 /**
  * Модули, размещённые на страницах сайта. Настройки модуля (ExtensionBase::adminParams()) загружаются в форму
@@ -117,14 +117,14 @@ class ModuleItem extends Table
     public function __construct()
     {
         parent::__construct();
-        Page::coreJs('/Table/js/moduleitem.js');
+        Page::get()->coreJs('/Table/js/moduleitem.js');
         $this->actionHandlers['module_param'] = ['method' => 'moduleParam'];
     }
 
     protected function moduleParam(): string
     {
-        $moduleClass = (string)@$_GET['module'];
-        $itemId = (int)@$_GET['item_id'];
+        $moduleClass = (string)$this->request->get('module');
+        $itemId = (int)$this->request->get('item_id');
 
         $module = ExtensionRegistry::module($moduleClass);
         $moduleClass = $module ? ltrim($moduleClass, '\\') : '';
@@ -191,14 +191,14 @@ class ModuleItem extends Table
     protected function getPostedParams(): array
     {
         $params = parent::getPostedParams();
-        if (!empty($_POST['module'])) {
-            $class = ExtensionRegistry::module((string)$_POST['module']) ? ltrim((string)$_POST['module'], '\\') : '';
+        if (!empty($this->request->post('module'))) {
+            $class = ExtensionRegistry::module((string)$this->request->post('module')) ? ltrim((string)$this->request->post('module'), '\\') : '';
             // поля модуля загружаются в форму через ajax: неотправленные сохраняют прежние значения
-            $itemId = (int)($_REQUEST['item_id'] ?? 0);
+            $itemId = (int)($this->request->request('item_id', 0));
             $saved = $itemId ? (ModuleItemModel::findOne(['item_id' => $itemId])?->getParams() ?: []) : [];
             foreach (Repository::getExtensionFields($class, $this->table) as $row) {
                 $field = new $row['class']($row);
-                if (!array_key_exists($field->name, $_POST)) {
+                if (!array_key_exists($field->name, $this->request->post())) {
                     if (array_key_exists($field->name, $saved)) {
                         $params[$field->name] = $saved[$field->name];
                     }

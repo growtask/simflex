@@ -1,35 +1,36 @@
 <?php
 
-namespace Simflex\Admin\Table;
+namespace Simflex\Core\Admin\Table;
 
-use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\Fields\FieldAlias;
-use Simflex\Admin\Fields\FieldDateTime;
-use Simflex\Admin\Fields\FieldFile;
-use Simflex\Admin\Fields\FieldImage;
-use Simflex\Admin\Fields\FieldPassword;
-use Simflex\Admin\Fields\FieldPath;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldVirtual;
-use Simflex\Admin\Fields\Helper;
-use Simflex\Admin\Core;
-use Simflex\Admin\Handler;
-use Simflex\Admin\Plugins\Alert\Alert;
-use Simflex\Admin\Plugins\Pagination\Pagination;
-use Simflex\Core\Container;
-use Simflex\DB\DB;
-use Simflex\DB\AQ;
-use Simflex\DB\Expr;
-use Simflex\DB\ExprOr;
-use Simflex\Admin\Fields\Field;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Media\File;
-use Simflex\Media\Image;
-use Simflex\Core\ModelBase;
-use Simflex\Core\Privilege;
-use Simflex\Helpers\Tree;
-use Simflex\Helpers\Time;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\Admin\Fields\FieldMultiKey;
+use Simflex\Core\Admin\Fields\FieldAlias;
+use Simflex\Core\Admin\Fields\FieldDateTime;
+use Simflex\Core\Admin\Fields\FieldFile;
+use Simflex\Core\Admin\Fields\FieldImage;
+use Simflex\Core\Admin\Fields\FieldPassword;
+use Simflex\Core\Admin\Fields\FieldPath;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldVirtual;
+use Simflex\Core\Admin\Fields\Helper;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\Admin\Plugins\Pagination\Pagination;
+use Simflex\Core\System\Container;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\DB\Expr;
+use Simflex\Core\DB\ExprOr;
+use Simflex\Core\Admin\Fields\Field;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Media\File;
+use Simflex\Core\Media\Image;
+use Simflex\Core\System\ModelBase;
+use Simflex\Core\System\Privilege;
+use Simflex\Core\Helpers\Tree;
+use Simflex\Core\Helpers\Time;
+use Simflex\Core\System\Session;
+use Simflex\Core\System\Settings;
 
 /**
  * Табличный раздел: список и форма записей таблицы БД. Подкласс объявляет таблицу:
@@ -45,7 +46,7 @@ abstract class Table extends Handler
 
     protected static bool $defaultOrderDesc = false;
 
-    /** Имена привилегий (\Simflex\Core\Privilege) для добавления, изменения, удаления записей. Null — любой админ */
+    /** Имена привилегий (\Simflex\Core\System\Privilege) для добавления, изменения, удаления записей. Null — любой админ */
     protected static ?string $privilegeAdd = null;
     protected static ?string $privilegeEdit = null;
     protected static ?string $privilegeDelete = null;
@@ -132,9 +133,9 @@ abstract class Table extends Handler
     public function __construct()
     {
         parent::__construct();
-        $this->ids = $_GET['ids'] ?? '';
-        if (isset($_POST['group_ids'])) {
-            $this->ids = $_POST['group_ids'];
+        $this->ids = (string)$this->request->get('ids', '');
+        if ($this->request->post('group_ids') !== null) {
+            $this->ids = (string)$this->request->post('group_ids');
         }
 
         // фильтруем это
@@ -234,9 +235,9 @@ abstract class Table extends Handler
 
     protected function deleteField(): string
     {
-        $fieldName = (string)@$_GET['field_name'];
+        $fieldName = (string)$this->request->get('field_name');
         $keyName = $this->pk->name;
-        $keyValue = (int)$_REQUEST[$keyName];
+        $keyValue = (int)$this->request->request($keyName);
         $where = [$keyName => $keyValue];
         if (!isset($this->fields[$fieldName])) {
             // поле из параметров
@@ -262,12 +263,12 @@ abstract class Table extends Handler
     }
 
     /**
-     * Ajax: сохраняет изображение ($_FILES['img']) в /uf/images/<path>/, возвращает имя файла (пустое — не принято).
+     * Ajax: сохраняет изображение (файл img запроса) в /uf/images/<path>/, возвращает имя файла (пустое — не принято).
      * Нужно право добавлять или менять записи; path — только буквы, цифры, «_», «-» и «/»
      */
     public function uploadImg(): never
     {
-        $path = $this->getUploadPath((string)($_REQUEST['path'] ?? ''));
+        $path = $this->getUploadPath((string)($this->request->request('path', '')));
         if (!($this->canAdd || $this->canEdit) || $path === null) {
             die('');
         }
@@ -281,12 +282,12 @@ abstract class Table extends Handler
     }
 
     /**
-     * Ajax: сохраняет файл ($_FILES['file']) в /uf/files/, возвращает имя файла (пустое — не принято).
+     * Ajax: сохраняет файл (файл file запроса) в /uf/files/, возвращает имя файла (пустое — не принято).
      * Нужно право добавлять или менять записи; расширения — $uploadImageExtensions и $uploadFileExtensions
      */
     public function uploadFile(): never
     {
-        $ext = strtolower(pathinfo((string)($_FILES['file']['name'] ?? ''), PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo((string)($this->request->file('file')['name'] ?? ''), PATHINFO_EXTENSION));
         $allowed = array_merge(static::$uploadImageExtensions, static::$uploadFileExtensions);
         if (!($this->canAdd || $this->canEdit) || !in_array($ext, $allowed, true)) {
             die('');
@@ -314,14 +315,14 @@ abstract class Table extends Handler
     }
 
     /**
-     * Ajax: сохраняет файл ($_FILES['file']), загруженный в колонку image/file поля-таблицы (FieldTable,
+     * Ajax: сохраняет файл (файл file запроса), загруженный в колонку image/file поля-таблицы (FieldTable,
      * FieldVirtualTable), возвращает его адрес. Принимаются файлы с расширениями из $uploadImageExtensions
      * (в /uf/images/<$uploadDir>/) и $uploadFileExtensions (в /uf/files/<$uploadDir>/), имя файла — случайное.
      * Пустая строка — файл не принят: нет прав на добавление и изменение записей, ошибка загрузки, другое расширение
      */
     public function uploadTableFile(): string
     {
-        $file = $_FILES['file'] ?? null;
+        $file = $this->request->file('file');
         if (!($this->canAdd || $this->canEdit) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             return '';
         }
@@ -336,7 +337,7 @@ abstract class Table extends Handler
         }
 
         $dir = '/uf/' . $type . '/' . trim(static::$uploadDir ?: $this->table, '/') . '/';
-        $path = $_SERVER['DOCUMENT_ROOT'] . $dir;
+        $path = Container::getPaths()->getPublic($dir);
         if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
             return '';
         }
@@ -352,13 +353,13 @@ abstract class Table extends Handler
     public function searchTags(): never
     {
         /** @var Field $field */
-        $field = $this->fields[$_REQUEST['name']];
+        $field = $this->fields[$this->request->request('name')];
 
         $name = $field->params['name'];
         $rows = $this->getQuery()
             ->select([DB::wrapName($this->pk->name), DB::wrapName($name)])
             ->where(DB::wrapName($name) . ' LIKE :text')
-            ->bind(['text' => '%' . $_REQUEST['text'] . '%'])
+            ->bind(['text' => '%' . $this->request->request('text') . '%'])
             ->limit(50)
             ->all();
 
@@ -378,18 +379,18 @@ abstract class Table extends Handler
     {
         $this->initTable();
 
-        $action = $_GET['action'] ?? '';
+        $action = $this->request->get('action', '');
 
         if ($action === 'save') {
             // запись, её связи и то, что дописывают наследники в save(), сохраняются вместе или не сохраняются
             if ($keyValue = DB::transaction(fn() => $this->save())) {
-                if (isset($_REQUEST['submit_apply'])) {
-                    $href = Core::path() . '?action=form&' . $this->pk->name . '=' . $keyValue;
+                if ($this->request->request('submit_apply') !== null) {
+                    $href = Page::get()->getPath() . '?action=form&' . $this->pk->name . '=' . $keyValue;
                     header('location: ' . $href);
-                } elseif (isset($_REQUEST['submit_save_add'])) {
-                    header('location: ' . Core::path() . '?action=form');
+                } elseif ($this->request->request('submit_save_add') !== null) {
+                    header('location: ' . Page::get()->getPath() . '?action=form');
                 } else {
-                    header('location: ' . Core::path() . "?save_id=$keyValue");
+                    header('location: ' . Page::get()->getPath() . "?save_id=$keyValue");
                 }
                 exit();
             }
@@ -399,7 +400,7 @@ abstract class Table extends Handler
 
         $method = isset($this->actionHandlers[$action]) ? $this->actionHandlers[$action]['method'] : $action;
         if (!method_exists($this, $method)) {
-            return (string)SiteSettings::get('error404');
+            return (string)Settings::get('error404');
         }
         $out = $this->$method();
         return is_string($out) ? $out : '';
@@ -408,10 +409,10 @@ abstract class Table extends Handler
     protected function beforeChangeENUM(Field $field, $row, $newValue): mixed
     {
         if (!$this->canEdit) {
-            Alert::error('В этом разделе запрещено редактировать записи', Core::path());
+            Alert::error('В этом разделе запрещено редактировать записи', Page::get()->getPath());
         }
         if ($field->readonly) {
-            Alert::error("Поле <b>{$field->label}</b> только для чтения!", Core::path());
+            Alert::error("Поле <b>{$field->label}</b> только для чтения!", Page::get()->getPath());
         }
         return $newValue;
     }
@@ -422,14 +423,14 @@ abstract class Table extends Handler
 
     protected function changeENUM(bool $withRedirect = true): void
     {
-        $fieldName = $_REQUEST['field'];
-        $newValue = $_REQUEST['newstatus'];
+        $fieldName = $this->request->request('field');
+        $newValue = $this->request->request('newstatus');
         $field = $this->fields[$fieldName] ?? null;
         if (!$field) {
-            Alert::error('Некорректный запрос. Поле не найдено.', Core::path());
+            Alert::error('Некорректный запрос. Поле не найдено.', Page::get()->getPath());
         }
 
-        $where = [$this->pk->name => (int)$_REQUEST[$this->pk->name]];
+        $where = [$this->pk->name => (int)$this->request->request($this->pk->name)];
         $row = $this->getQuery()->where($where)->fetchOne();
 
         $newValue = $this->beforeChangeENUM($field, $row, $newValue);
@@ -445,27 +446,27 @@ abstract class Table extends Handler
 
     protected function changeNPP(): never
     {
-        $field = (string)$_REQUEST['field'];
+        $field = (string)$this->request->request('field');
         if (!isset($this->fields[$field])) {
-            Alert::error('Некорректный запрос. Поле не найдено.', Core::path());
+            Alert::error('Некорректный запрос. Поле не найдено.', Page::get()->getPath());
         }
 
         $fieldDB = static::getFieldRow($field);
         $fieldParams = $fieldDB['params'] ?? [];
         if (@$fieldParams['main']['readonly']) {
-            Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", Core::path());
+            Alert::error("Поле <b>{$fieldDB['label']}</b> только для чтения!", Page::get()->getPath());
         }
 
-        $where = [$this->pk->name => (int)$_REQUEST[$this->pk->name]];
-        if (isset($_GET['val'])) {
-            $value = (int)$_GET['val'];
+        $where = [$this->pk->name => (int)$this->request->request($this->pk->name)];
+        if ($this->request->get('val') !== null) {
+            $value = (int)$this->request->get('val');
         } else {
             $value = (int)$this->getQuery()->select(DB::wrapName($field))->where($where)->fetchScalar();
-            $value += isset($_GET['up']) ? -1 : 1;
+            $value += $this->request->get('up') !== null ? -1 : 1;
         }
         static::getModel()::bulkUpdate([$field => $value], $where);
 
-        header('location: ' . Core::path());
+        header('location: ' . Page::get()->getPath());
         exit;
     }
 
@@ -480,7 +481,7 @@ abstract class Table extends Handler
     /**
      * Записи, которые пользователь может видеть и менять: не разработчик — только записи своих привилегий
      * (колонка привилегии) и ролей этих привилегий (колонка роли).
-     * В виде, который принимает \\Simflex\\DB\\Where: для чтения и записи
+     * В виде, который принимает \\Simflex\\Core\\DB\\Where: для чтения и записи
      */
     protected function getScope(): array
     {
@@ -574,14 +575,15 @@ abstract class Table extends Handler
      */
     protected function changeSorting(): void
     {
-        $column = (string)($_REQUEST['o'] ?? '');
+        $column = (string)($this->request->request('o', ''));
         if (!isset($this->fields[$column])) {
             return;
         }
 
-        $sorting = &$_SESSION[$this->table];
-        $sorting['order_desc'] = ($sorting['order_by'] ?? '') === $column ? (int)!($sorting['order_desc'] ?? 0) : 0;
-        $sorting['order_by'] = $column;
+        $state = $this->getState();
+        $state['order_desc'] = ($state['order_by'] ?? '') === $column ? (int)!($state['order_desc'] ?? 0) : 0;
+        $state['order_by'] = $column;
+        $this->setState($state);
     }
 
     /**
@@ -589,15 +591,37 @@ abstract class Table extends Handler
      */
     public function getSortColumn(): string
     {
-        $column = (string)($_SESSION[$this->table]['order_by'] ?? '');
+        $column = (string)($this->getState()['order_by'] ?? '');
         return isset($this->fields[$column]) ? $column : (static::$defaultOrderBy ?? $this->pk->name);
     }
 
     public function isSortDesc(): bool
     {
-        return isset($this->fields[(string)($_SESSION[$this->table]['order_by'] ?? '')])
-            ? (bool)($_SESSION[$this->table]['order_desc'] ?? false)
+        $state = $this->getState();
+        return isset($this->fields[(string)($state['order_by'] ?? '')])
+            ? (bool)($state['order_desc'] ?? false)
             : static::$defaultOrderDesc;
+    }
+
+    /**
+     * Состояние списка раздела в сессии: сортировка (order_by, order_desc) и фильтры (filter: поле => значение)
+     */
+    public function getState(): array
+    {
+        return (array)(Session::get($this->table) ?? []);
+    }
+
+    protected function setState(array $state): void
+    {
+        Session::set($this->table, $state);
+    }
+
+    /**
+     * Значение фильтра списка, выбранное в сессии; '' - не выбрано
+     */
+    protected function getFilterValue(string $name): mixed
+    {
+        return $this->getState()['filter'][$name] ?? '';
     }
 
     protected function getListCount(AQ $query): int
@@ -607,8 +631,8 @@ abstract class Table extends Handler
 
     protected function filterReset(): never
     {
-        $_SESSION[$this->table] = [];
-        header('location: ' . Core::path());
+        $this->setState([]);
+        header('location: ' . Page::get()->getPath());
         exit;
     }
 
@@ -618,9 +642,17 @@ abstract class Table extends Handler
      */
     protected function applyFilters(AQ $query): void
     {
+        $state = $this->getState();
+        $posted = (array)($this->request->request('filter') ?? []);
         foreach ($this->fields as $field) {
-            $filter = &$_SESSION[$this->table]['filter'][$field->name];
-            $filter = $_REQUEST['filter'][$field->name] ?? $filter ?? '';
+            $state['filter'][$field->name] = $posted[$field->name] ?? $state['filter'][$field->name] ?? '';
+        }
+        if ($posted) {
+            $this->setState($state);
+        }
+
+        foreach ($this->fields as $field) {
+            $filter = $state['filter'][$field->name];
             if ($filter === '') {
                 continue;
             }
@@ -662,13 +694,13 @@ abstract class Table extends Handler
         $cnt = $this->getListCount($query);
         if ($cnt > 200 && $this->isHierarchy) {
             $this->isHierarchy = false;
-            if ($_SESSION[$this->table]['filter'][$this->pid->name] !== '') {
-                $query->andWhere([$this->table . '.' . $this->pid->name => $_SESSION[$this->table]['filter'][$this->pid->name]]);
+            if (($parentId = $this->getFilterValue($this->pid->name)) !== '') {
+                $query->andWhere([$this->table . '.' . $this->pid->name => $parentId]);
                 $cnt = $this->getListCount($query);
             }
         }
 
-        $pagination = new Pagination((int)($_GET['p'] ?? 0), $this->isHierarchy ? 200 : static::$perPage, $cnt);
+        $pagination = new Pagination((int)($this->request->get('p', 0)), $this->isHierarchy ? 200 : static::$perPage, $cnt);
         $query->orderBy($this->getListOrder());
         if (!$this->isHierarchy) {
             $query->limit($pagination->limit());
@@ -689,7 +721,7 @@ abstract class Table extends Handler
             foreach ($listRows as $row) {
                 $tree[(int)$row[$this->pid->name]][(int)$row[$this->pk->name]] = $row;
             }
-            $id_start = isset($_SESSION[$this->table]['filter'][$this->pid->name]) ? (int)$_SESSION[$this->table]['filter'][$this->pid->name] : 0;
+            $id_start = (int)$this->getFilterValue($this->pid->name);
             $list = Tree::toList($tree, $id_start);
             foreach ($list as $l) {
                 if ($l['tree_level']) {
@@ -701,7 +733,7 @@ abstract class Table extends Handler
             $rows = $listRows;
         }
 
-        $saveId = (int)@$_GET['save_id'];
+        $saveId = (int)$this->request->get('save_id');
 
         return $this->render(__DIR__ . '/tpl/show.tpl', get_defined_vars());
     }
@@ -780,7 +812,7 @@ abstract class Table extends Handler
 
     protected function filterField(Field $field): string
     {
-        return $field->filter($_REQUEST['filter'][$field->name] ?? '');
+        return $field->filter($this->request->request('filter')[$field->name] ?? '');
     }
 
     public function addField(Field $field): void
@@ -803,8 +835,8 @@ abstract class Table extends Handler
      */
     public function boolChange(): string
     {
-        $pk = (int)$_REQUEST['pk'];
-        $field = $_REQUEST['field'];
+        $pk = (int)$this->request->request('pk');
+        $field = $this->request->request('field');
         if ($pk && isset($this->fields[$field])) {
             $fieldDB = static::getFieldRow($field);
             $fieldParams = $fieldDB['params'] ?? [];
@@ -824,8 +856,8 @@ abstract class Table extends Handler
 
     public function form(): string
     {
-        if (isset($_GET['ids']) && count(explode(',', $_GET['ids'])) === 1) {
-            header("location: ?action=form&{$this->pk->name}={$_GET['ids']}");
+        if ($this->request->get('ids') !== null && count(explode(',', $this->request->get('ids'))) === 1) {
+            header("location: ?action=form&{$this->pk->name}={$this->request->get('ids')}");
             exit;
         }
 
@@ -833,15 +865,15 @@ abstract class Table extends Handler
 
         $title = 'Добавить запись';
 
-        $isGroup = !empty($_GET['ids']);
-        $isAdd = !$isGroup && empty($_REQUEST[$this->pk->name]);
+        $isGroup = !empty($this->request->get('ids'));
+        $isAdd = !$isGroup && empty($this->request->request($this->pk->name));
         $isEdit = !$isGroup && !$isAdd;
 
         if ($isAdd && !$this->canAdd) {
-            Alert::error('Ошибка! Недостаточно прав для добавления записей в данный раздел', Core::path());
+            Alert::error('Ошибка! Недостаточно прав для добавления записей в данный раздел', Page::get()->getPath());
         }
         if ($isEdit && !$this->canEdit) {
-            Alert::error('Ошибка! Недостаточно прав для редактирования записей в данном разделе', Core::path());
+            Alert::error('Ошибка! Недостаточно прав для редактирования записей в данном разделе', Page::get()->getPath());
         }
 
         $row = [];
@@ -857,19 +889,19 @@ abstract class Table extends Handler
         }
 
         foreach ($this->fks as $field) {
-            $fv = &$_SESSION[$this->table]['filter'][$field->name];
-            if (@$fv !== '' && @$fv !== null) {
-                $row[$field->name] = (int)@$fv;
+            $fv = $this->getFilterValue($field->name);
+            if ($fv !== '' && $fv !== null) {
+                $row[$field->name] = (int)$fv;
             }
         }
 
-        if (!empty($_POST)) {
-            $row = $_POST + $row;
+        if ($this->request->post()) {
+            $row = $this->request->post() + $row;
         }
 
         $pk = 0;
-        if (!empty($_REQUEST[$this->pk->name])) {
-            $pk = (int)$_REQUEST[$this->pk->name];
+        if (!empty($this->request->request($this->pk->name))) {
+            $pk = (int)$this->request->request($this->pk->name);
             $where[$this->pk->name] = $pk;
             if ($rrow = $this->getQuery()->where($where)->fetchOne()) {
                 $row = $rrow;
@@ -892,14 +924,15 @@ abstract class Table extends Handler
                     }
                 }
             } else {
-                Alert::error('Ошибка! Запись не найдена или недостаточно прав для редактирования.', Core::path());
+                Alert::error('Ошибка! Запись не найдена или недостаточно прав для редактирования.', Page::get()->getPath());
             }
         }
 
         if ($isGroup) {
             $title = 'Редактирование нескольких записей';
-            $ids = DB::escape($_GET['ids']);
-            $rows = $this->getQuery()->where([$this->pk->name => array_map('intval', explode(',', (string)$ids))])->all();
+            // шаблон формы передаёт выбранные записи дальше: group_ids
+            $ids = implode(',', array_map('intval', explode(',', (string)$this->request->get('ids'))));
+            $rows = $this->getQuery()->where([$this->pk->name => explode(',', $ids)])->all();
             foreach ($this->fields as $field) {
                 $vars = [];
                 foreach ($rows as $row0) {
@@ -971,9 +1004,9 @@ abstract class Table extends Handler
             }
         }
 
-        if (Core::$isAjax) {
-            if (!empty($_REQUEST['field']) && isset($this->fields[$_REQUEST['field']]) && $pk) {
-                $field = $this->fields[$_REQUEST['field']];
+        if (Page::get()->isAjax()) {
+            if (!empty($this->request->request('field')) && isset($this->fields[$this->request->request('field')]) && $pk) {
+                $field = $this->fields[$this->request->request('field')];
                 static::getModel()::bulkUpdate([$field->name => ''], $where);
                 $field->delete($row[$field->name]);
                 exit();
@@ -1016,8 +1049,8 @@ abstract class Table extends Handler
      */
     public function searchInt(): array
     {
-        $text = trim((string)($_REQUEST['text'] ?? ''));
-        $name = str_replace(['filter[', ']'], '', (string)($_REQUEST['name'] ?? ''));
+        $text = trim((string)($this->request->request('text', '')));
+        $name = str_replace(['filter[', ']'], '', (string)($this->request->request('name', '')));
         $field = $this->fields[$name] ?? null;
         if (!($field instanceof FieldInt) || empty($field->params['is_fk'])) {
             return [];
@@ -1039,14 +1072,14 @@ abstract class Table extends Handler
      */
     public function searchMultiKey(): array
     {
-        $name = str_replace(['filter[', ']'], '', (string)($_REQUEST['name'] ?? ''));
+        $name = str_replace(['filter[', ']'], '', (string)($this->request->request('name', '')));
         $field = $this->fields[$name] ?? null;
         if (!($field instanceof FieldMultiKey)) {
             return [];
         }
 
         $out = [];
-        foreach ($field->getValues(search: (string)($_REQUEST['text'] ?? ''), limit: 50) as $id => $label) {
+        foreach ($field->getValues(search: (string)($this->request->request('text', '')), limit: 50) as $id => $label) {
             $out[] = ['id' => $id, 'name' => $label];
         }
 
@@ -1075,7 +1108,7 @@ abstract class Table extends Handler
                 Alert::error(DB::error());
             }
         }
-        header('location: ' . Core::path());
+        header('location: ' . Page::get()->getPath());
         exit;
     }
 
@@ -1106,7 +1139,7 @@ abstract class Table extends Handler
     public function saveGroup(): string
     {
         $success = true;
-        $idList = array_values(array_unique(array_filter(array_map('intval', explode(',', (string)($_POST['group_ids'] ?? ''))))));
+        $idList = array_values(array_unique(array_filter(array_map('intval', explode(',', (string)($this->request->post('group_ids', '')))))));
         $ids = implode(',', $idList);
         if (!$idList) {
             Alert::error('Не выбраны записи для сохранения!');
@@ -1116,14 +1149,14 @@ abstract class Table extends Handler
 
         $set = [];
         foreach ($this->fields as $field) {
-            if (isset($_POST['set'][$field->name]) && !($field instanceof FieldVirtual)) {
+            if (isset($this->request->post('set')[$field->name]) && !($field instanceof FieldVirtual)) {
                 $set[$field->name] = $field->getPOST();
             }
         }
 
         $hasSetParams = false;
         foreach ($this->fields as $field) {
-            if ($field->name === 'params' && isset($_POST['set_param'])) {
+            if ($field->name === 'params' && $this->request->post('set_param') !== null) {
                 $hasSetParams = true;
                 break;
             }
@@ -1136,36 +1169,7 @@ abstract class Table extends Handler
                 if (!is_array($params)) {
                     $params = [];
                 }
-                $MY_POST = $_POST;
-                foreach ($this->params as $paramz) {
-                    foreach ($paramz as $group) {
-                        if (isset($group['fields'])) {
-                            foreach ($group['fields'] as $field) {
-                                if (isset($_POST['set_param'][$field->name]) && is_object($field)) {
-                                    if ($group['name']) {
-                                        $_POST = $MY_POST[$group['name']];
-                                        $value = $field->getPost(true);
-                                        $value = preg_replace("@^'(.+)'$@", '$1', $value);
-                                        $params[$group['name']][$field->name] = $value;
-                                    } else {
-                                        $_POST = $MY_POST;
-                                        $value = $field->getPost(true);
-                                        $value = preg_replace("@^'(.+)'$@", '\1', $value);
-                                        $params[$field->name] = $value;
-                                    }
-                                }
-                            }
-                        }
-                        if (isset($group['field'])) {
-                            $field = $group['field'];
-                            $_POST = $MY_POST;
-                            $value = $field->getPost(true);
-                            $value = preg_replace("@^'(.+)'$@", '\1', $value);
-                            $params[$field->name] = $value;
-                        }
-                    }
-                }
-                $_POST = $MY_POST;
+                $params = array_replace_recursive($params, $this->getPostedParamValues((array)$this->request->post('set_param')));
 
                 $success = static::getModel()::bulkUpdate(['params' => serialize($params)], [$pk => $row[$pk]]) && $success;
             }
@@ -1188,7 +1192,7 @@ abstract class Table extends Handler
      */
     public function save(): string|int|false
     {
-        if (!empty($_POST['group_ids'])) {
+        if (!empty($this->request->post('group_ids'))) {
             return $this->saveGroup();
         }
 
@@ -1200,14 +1204,14 @@ abstract class Table extends Handler
                 }
             }
 
-            $isInsert = empty($_POST[$this->pk->name]);
+            $isInsert = empty($this->request->post($this->pk->name));
             $isUpdate = !$isInsert;
             // через модель: срабатывают её хуки (beforeSave() и др.) и события
             if ($isInsert) {
                 $model = static::getModel()::insertStatic($this->getInsertData());
                 $saved = $model !== null;
             } else {
-                $model = static::getModel()::findOne([$this->pk->name => (int)$_POST[$this->pk->name]]);
+                $model = static::getModel()::findOne([$this->pk->name => (int)$this->request->post($this->pk->name)]);
                 $saved = $model && $model->update($this->getUpdateData());
             }
 
@@ -1215,16 +1219,16 @@ abstract class Table extends Handler
                 $this->errors[] = 'Введенные данные некорректны';
                 $this->errors[] = DB::error() ?: 'Запись не найдена';
             } else {
+                $pkValue = $model->getId();
                 if ($isInsert) {
-                    $_POST[$this->pk->name] = $_REQUEST[$this->pk->name] = $model->getId();
                     // поля, которые пишут данные по id записи (связи), до вставки ничего не сохранили
                     foreach ($this->fields as $field) {
                         if ($field->isSavedById) {
+                            $field->pkValue = $pkValue;
                             $field->getPOST();
                         }
                     }
                 }
-                $pkValue = $_POST[$this->pk->name];
 
                 $field_alias = false;
                 $field_path = false;
@@ -1239,7 +1243,7 @@ abstract class Table extends Handler
                 if ($field_path && $field_alias) {
                     $pk = $this->table . '.' . $this->pk->name;
                     $where = $this->getScope();
-                    $where[$pk] = (int)$_POST[$this->pk->name];
+                    $where[$pk] = (int)$pkValue;
                     if ($this->pid) {
                         // путь записи по пути родителя, затем пути её потомков
                         $pid = $this->table . '.' . $this->pid->name;
@@ -1273,7 +1277,7 @@ abstract class Table extends Handler
                             }
                         }
                     } else {
-                        static::getModel()::bulkUpdate([$field_path->name => '/' . $_POST[$field_alias->name] . '/'], $where);
+                        static::getModel()::bulkUpdate([$field_path->name => '/' . $this->request->post($field_alias->name) . '/'], $where);
                     }
                 }
             }
@@ -1351,39 +1355,46 @@ abstract class Table extends Handler
         return $data;
     }
 
+    /**
+     * Отправленные значения параметров (колонка params)
+     */
     protected function getPostedParams(): array
     {
+        return $this->getPostedParamValues();
+    }
+
+    /**
+     * Отправленные значения параметров: поля групп - из значений своей группы
+     * @param array|null $only Только параметры с этими именами (ключами), null - все
+     */
+    protected function getPostedParamValues(?array $only = null): array
+    {
         $params = [];
-        $MY_POST = $_POST;
+        $post = $this->request->post();
         foreach ($this->params as $paramz) {
             foreach ($paramz as $group) {
-                if (isset($group['fields'])) {
-                    foreach ($group['fields'] as $field) {
-                        if (is_object($field)) {
-                            if ($group['name']) {
-                                $_POST = $MY_POST[$group['name']];
-                                $value = $field->getPost(true);
-                                $value = preg_replace("@^'(.+)'$@", '$1', $value);
-                                $params[$group['name']][$field->name] = $value;
-                            } else {
-                                $_POST = $MY_POST;
-                                $value = $field->getPost(true);
-                                $value = preg_replace("@^'(.+)'$@", '\1', $value);
-                                $params[$field->name] = $value;
-                            }
-                        }
-                    }
-                }
+                $fields = array_filter($group['fields'] ?? [], 'is_object');
                 if (isset($group['field'])) {
-                    $field = $group['field'];
-                    $_POST = $MY_POST;
-                    $value = $field->getPost(true);
-                    $value = preg_replace("@^'(.+)'$@", '\1', $value);
-                    $params[$field->name] = $value;
+                    $fields[] = $group['field'];
+                    $groupName = null;
+                } else {
+                    $groupName = $group['name'] ?: null;
+                }
+                foreach ($fields as $field) {
+                    if ($only !== null && !isset($only[$field->name])) {
+                        continue;
+                    }
+                    $field->setPosted($groupName === null ? $post : (array)($post[$groupName] ?? []));
+                    $value = preg_replace("@^'(.+)'$@", '$1', (string)$field->getPOST(true));
+                    $field->setPosted(null);
+                    if ($groupName === null) {
+                        $params[$field->name] = $value;
+                    } else {
+                        $params[$groupName][$field->name] = $value;
+                    }
                 }
             }
         }
-        $_POST = $MY_POST;
         return $params;
     }
 
@@ -1405,10 +1416,10 @@ abstract class Table extends Handler
     public function delete(): never
     {
         if (!$this->canDelete) {
-            Alert::error('Ошибка! Недостаточно прав для удаления записей в данном разделе', Core::path());
+            Alert::error('Ошибка! Недостаточно прав для удаления записей в данном разделе', Page::get()->getPath());
         }
 
-        $ids_temp = (isset($_REQUEST['rows']) && is_array($_REQUEST['rows'])) ? $_REQUEST['rows'] : [];
+        $ids_temp = is_array($rows = $this->request->request('rows')) ? $rows : [];
         $ids = [];
         foreach ($ids_temp as $id) {
             if ((int)$id > 0) {
@@ -1424,12 +1435,12 @@ abstract class Table extends Handler
                 }
                 $rows = $ids ? $this->getQuery()->select(DB::wrapName($field->name))->where([$this->pk->name => $ids])->all() : [];
                 foreach ($rows as $row) {
-                    if ($row[$field->name] && is_file($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $row[$field->name])) {
-                        unlink($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $row[$field->name]);
+                    if ($row[$field->name] && is_file($file = Container::getPaths()->getPublic('uf/' . $dir . '/' . $field->path . $row[$field->name]))) {
+                        unlink($file);
                         if (isset($field->sizes)) {
                             foreach ($field->sizes as $size) {
-                                if (is_file($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name])) {
-                                    unlink($_SERVER['DOCUMENT_ROOT'] . '/uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name]);
+                                if (is_file($file = Container::getPaths()->getPublic('uf/' . $dir . '/' . $field->path . $size . '/' . $row[$field->name]))) {
+                                    unlink($file);
                                 }
                             }
                         }
@@ -1450,7 +1461,7 @@ abstract class Table extends Handler
                 Alert::success("#$id &mdash; Успех. Запись удалена");
             }
         }
-        header('location: ' . Core::path());
+        header('location: ' . Page::get()->getPath());
         exit;
     }
 
@@ -1466,7 +1477,7 @@ abstract class Table extends Handler
 
     public function showDetail(): string
     {
-        $id = (int)@$_GET['id'];
+        $id = (int)$this->request->get('id');
         return $this->render($this->showDetailGetTpl(), ['row' => $this->showDetailGetRow($id)]);
     }
 

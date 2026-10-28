@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
 /**
  * Модуль, размещённый на страницах админки, см. AdminModules::init()
@@ -8,8 +8,8 @@ namespace Simflex\Admin;
 readonly class AdminModule
 {
     /**
-     * @param class-string<\Simflex\Core\ModuleBase> $class
-     * @param string $position Позиция в макете админки: Page::position($position)
+     * @param class-string<\Simflex\Core\System\ModuleBase> $class
+     * @param string $position Позиция в макете админки: Page::getPosition($position)
      * @param string $name Заголовок модуля, показывается, если задан $params['is_title']
      * @param array $params Параметры модуля, как у модулей сайта в module_item.params
      * @param string[] $sections Ссылки пунктов меню (как они объявлены в Menu), на которых показывается модуль.

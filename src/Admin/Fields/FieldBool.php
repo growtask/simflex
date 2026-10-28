@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
 class FieldBool extends FieldInt
 {
@@ -18,7 +18,7 @@ class FieldBool extends FieldInt
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $postValue = $group === null ? @ $_POST[$this->name] : @ $_POST[$group][$this->name];
+        $postValue = $this->getPosted(group: $group);
         return $this->e2n && empty($postValue) ? 0 : (isset($postValue) ? 1 : 0);
     }
 

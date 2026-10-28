@@ -1,12 +1,12 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Класс Migration
- * @package Simflex\Core\Models
+ * @package Simflex\Core\System\Models
  *
  * @property int id
  * @property string file

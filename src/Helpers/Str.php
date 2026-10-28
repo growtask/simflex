@@ -1,6 +1,8 @@
 <?php
 
-namespace Simflex\Helpers;
+namespace Simflex\Core\Helpers;
+
+use Simflex\Core\System\Container;
 
 class Str
 {
@@ -27,24 +29,22 @@ class Str
         return trim(preg_replace('/[ -]+/', '-', $str), '-');
     }
 
+    /**
+     * Размер файла в публичной директории сайта строкой: «512 б», «12 кб», «3 мб»; нет файла - «0 б»
+     * @param string $path Путь от public/, например /uf/files/price.pdf
+     */
     public static function sizeToStr(string $path): string
     {
-        $fileSize = filesize($_SERVER['DOCUMENT_ROOT'] . $path);
-        $sizeDenom = 'б';
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'кб';
-        }
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'мб';
-        }
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'гб';
+        $file = Container::getPaths()->getPublic($path);
+        $size = is_file($file) ? (float)filesize($file) : 0.0;
+        $units = ['б', 'кб', 'мб', 'гб'];
+        $unit = 0;
+        while ($size > 1024 && $unit < count($units) - 1) {
+            $size /= 1024;
+            $unit++;
         }
 
-        return round($fileSize) . $sizeDenom;
+        return round($size) . ' ' . $units[$unit];
     }
 
     public static function toCamel(string $str, bool $firstIsLower = true): string

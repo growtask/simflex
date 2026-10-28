@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Http\Api;
+namespace Simflex\Core\Http\Api;
 
-use Simflex\Core\Errors\Error;
-use Simflex\Core\Errors\ErrorCodes;
-use Simflex\Http\Response;
+use Simflex\Core\System\Errors\Error;
+use Simflex\Core\System\Errors\ErrorCodes;
+use Simflex\Core\Http\Response;
 
 class JsonResponse extends Response
 {
@@ -20,7 +20,7 @@ class JsonResponse extends Response
 
     /**
      * @param mixed $mixed Скаляр, ассоциативный массив или Throwable
-     * @throws \Simflex\Core\Errors\Error
+     * @throws \Simflex\Core\System\Errors\Error
      */
     public function setData(mixed $mixed): static
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Plugins\Editor\Editor;
+use Simflex\Core\Admin\Plugins\Editor\Editor;
 
 class FieldText extends Field
 {

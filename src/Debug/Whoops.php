@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Debug;
+namespace Simflex\Core\Debug;
 
-use Simflex\Core\DI\Service;
+use Simflex\Core\System\DI\Service;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 

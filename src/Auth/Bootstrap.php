@@ -1,12 +1,12 @@
 <?php
 
-namespace Simflex\Auth;
+namespace Simflex\Core\Auth;
 
-use Simflex\Auth\Auth\Chain;
-use Simflex\Auth\SignOut\CookieMiddleware;
-use Simflex\Auth\SignOut\SessionMiddleware;
-use Simflex\Core\Container;
-use Simflex\Models\User;
+use Simflex\Core\Auth\Auth\Chain;
+use Simflex\Core\Auth\SignOut\CookieMiddleware;
+use Simflex\Core\Auth\SignOut\SessionMiddleware;
+use Simflex\Core\System\Container;
+use Simflex\Core\Models\User;
 
 class Bootstrap
 {
@@ -23,7 +23,7 @@ class Bootstrap
 
     public static function signOut(): void
     {
-        (new \Simflex\Core\Middleware\Chain([
+        (new \Simflex\Core\System\Middleware\Chain([
             new SessionMiddleware(),
             new CookieMiddleware(),
         ]))->process();

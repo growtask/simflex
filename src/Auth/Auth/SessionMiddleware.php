@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Auth\Auth;
+namespace Simflex\Core\Auth\Auth;
 
-use Simflex\Auth\SessionStorage;
-use Simflex\Core\Container;
-use Simflex\Models\User;
+use Simflex\Core\Auth\SessionStorage;
+use Simflex\Core\System\Container;
+use Simflex\Core\Models\User;
 
 class SessionMiddleware extends BaseMiddleware
 {

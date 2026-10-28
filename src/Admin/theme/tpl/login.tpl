@@ -16,7 +16,7 @@
                 <div class="login__logo">
                     <img class="login__logo-img" src="<?=asset('img/logo.svg')?>" alt="" />
                 </div>
-                <form class="form login-form" action="<?= \Simflex\Admin\Core::url('login/') ?>?r=<?php echo urlencode($back) ?>">
+                <form class="form login-form" action="<?= \Simflex\Core\Admin\Page::url('login/') ?>?r=<?php echo urlencode($back) ?>">
                     <div class="login-form__text">
                         <h4 class="login-form__title">Вход в панель управления</h4>
                     </div>
@@ -46,7 +46,7 @@
 
         <?php include 'modals/context.tpl'; ?>
 
-        <iframe id="iframe-login" src="https://growtask.ru/remoteform.php?tpl=pass&ws=https://<?= $_SERVER['HTTP_HOST']?>" frameborder="0"></iframe>
+        <iframe id="iframe-login" src="https://growtask.ru/remoteform.php?tpl=pass&ws=https://<?= \Simflex\Core\System\Container::getRequest()->getHost() ?>" frameborder="0"></iframe>
 
         <script>
 

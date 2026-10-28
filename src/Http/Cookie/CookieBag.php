@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Http\Cookie;
+namespace Simflex\Core\Http\Cookie;
 
 class CookieBag
 {

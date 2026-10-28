@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
-use Simflex\Core\Container;
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Класс AQ

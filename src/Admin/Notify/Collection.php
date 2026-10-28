@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Notify;
+namespace Simflex\Core\Admin\Notify;
 
-use Simflex\Core\View;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\View;
 
 /**
  * @incomplete Подсистема Notify пока не подключена к админке; она будет доработана и использована позже.
@@ -34,7 +35,7 @@ class Collection
 
     private function collect(): void
     {
-        $extRoot = SF_ROOT_PATH . '/ext';
+        $extRoot = Container::getPaths()->getRoot('ext');
         $exts = array_slice(scandir($extRoot), 2);
         foreach ($exts as $ext) {
             $class = 'AdminNotify' . ucfirst($ext);

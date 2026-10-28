@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\DB\Schema;
+namespace Simflex\Core\DB\Schema;
 
-use Simflex\DB\DB;
-use Simflex\DB\Schema\Params\ColumnParams;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Schema\Params\ColumnParams;
 
 class Column extends TableElementBase
 {

@@ -1,12 +1,10 @@
 {
   "name": "growtask/simflex-core",
-  "description": "Core for Simflex",
+  "description": "Core of Simflex CMS",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "keywords": [
     "php",
-    "simplex-core",
-    "simplex-cms",
     "simflex",
     "simflex-core",
     "simflex-cms"
@@ -31,11 +29,12 @@
     "ext-pdo": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
+    "ext-intl": "*",
     "psr/log": "*",
-    "maximebf/debugbar": "1.22.*",
-    "filp/whoops": "2.15.*",
-    "phpmailer/phpmailer": "v6.*",
-    "curl/curl": "2.*",
+    "maximebf/debugbar": "^1.22",
+    "filp/whoops": "^2.15",
+    "phpmailer/phpmailer": "^6.0",
+    "curl/curl": "^2.0",
     "scssphp/scssphp": "^1.11",
     "tubalmartin/cssmin": "^4.1",
     "vlucas/phpdotenv": "^5.4"
@@ -44,10 +43,9 @@
   "suggest": {},
   "autoload": {
     "psr-4": {
-      "Simflex\\": "src"
+      "Simflex\\Core\\": "src"
     },
     "files": [
-      "src/constants.php",
       "src/functions.php"
     ]
   },

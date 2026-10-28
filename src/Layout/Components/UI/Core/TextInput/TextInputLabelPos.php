@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\TextInput;
+namespace Simflex\Core\Layout\Components\UI\Core\TextInput;
 
 enum TextInputLabelPos: string
 {

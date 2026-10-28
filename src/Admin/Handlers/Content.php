@@ -1,26 +1,25 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldAlias;
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldContentTemplateSelect;
-use Simflex\Admin\Fields\FieldDate;
-use Simflex\Admin\Fields\FieldImage;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldPath;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\ParamDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Presets\NppField;
-use Simflex\Admin\Table\Presets\ParentField;
-use Simflex\Admin\Table\Repository;
-use Simflex\Admin\Table\Table;
-use Simflex\DB\DB;
-use Simflex\Extensions\Content\Models\ModelContent;
+use Simflex\Core\Admin\Fields\FieldAlias;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldContentTemplateSelect;
+use Simflex\Core\Admin\Fields\FieldDate;
+use Simflex\Core\Admin\Fields\FieldImage;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Fields\FieldPath;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\ParamDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Presets\NppField;
+use Simflex\Core\Admin\Table\Presets\ParentField;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Extensions\Content\Models\Content as ModelContent;
 
 /**
  * Страницы сайта. В форме — поля шаблона страницы (provider/templates.php)
@@ -186,14 +185,14 @@ class Content extends Table
     protected function initTable(): void
     {
         parent::initTable();
-        if (($_GET['action'] ?? '') === 'form') {
+        if (($this->request->get('action', '')) === 'form') {
             return;
         }
 
         $this->fields['pid']->filterDataProvider = function () {
             $rows = ModelContent::findAdv()
                 ->select(['content_id', 'title as label'])
-                ->where(new \Simflex\DB\Expr('EXISTS (SELECT 1 FROM content c WHERE c.pid=content.content_id)'))
+                ->where(new \Simflex\Core\DB\Expr('EXISTS (SELECT 1 FROM content c WHERE c.pid=content.content_id)'))
                 ->orderBy('label')
                 ->all('content_id');
             return [$rows];
@@ -202,11 +201,11 @@ class Content extends Table
 
     protected function tableParamsLoad(): array
     {
-        $contentId = (int)($_REQUEST[$this->pk->name] ?? 0);
+        $contentId = (int)($this->request->request($this->pk->name, 0));
         $params = parent::tableParamsLoad();
 
         // поля шаблона страницы, объявленные в коде (provider/templates.php)
-        $template = $contentId ? DB::result('SELECT template FROM content WHERE content_id = ?', 'template', [$contentId]) : null;
+        $template = $contentId ? ModelContent::findOne(['content_id' => $contentId])?->template : null;
         foreach (Repository::getTemplateParams((string)$template, $this->table) as $pid => $rows) {
             foreach ($rows as $id => $row) {
                 $params[(string)$pid][(string)$id] = $row;

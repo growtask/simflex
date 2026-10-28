@@ -1,6 +1,8 @@
 <?php
 
-namespace Simflex\Extensions\Content;
+namespace Simflex\Core\Extensions\Content;
+
+use Simflex\Core\System\Container;
 
 /**
  * Шаблоны страниц, объявленные в коде: provider/templates.php приложения возвращает ключ шаблона => ContentTemplate.
@@ -20,7 +22,7 @@ class ContentTemplates
     public static function all(): array
     {
         if (static::$templates === null) {
-            $file = SF_ROOT_PATH . '/provider/templates.php';
+            $file = Container::getPaths()->getRoot('provider/templates.php');
             $data = is_file($file) ? require $file : [];
 
             static::$templates = [];

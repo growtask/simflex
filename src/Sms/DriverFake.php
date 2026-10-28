@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Sms;
+namespace Simflex\Core\Sms;
 
 /**
  * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает

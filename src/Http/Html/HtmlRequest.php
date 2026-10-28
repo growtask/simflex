@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Http\Html;
+namespace Simflex\Core\Http\Html;
 
-use Simflex\Http\Request;
+use Simflex\Core\Http\Request;
 
 class HtmlRequest extends Request
 {

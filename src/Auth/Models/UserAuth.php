@@ -1,13 +1,14 @@
 <?php
 
-namespace Simflex\Auth\Models;
+namespace Simflex\Core\Auth\Models;
 
-use Simflex\DB\Expr;
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\DB\Expr;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Класс UserAuth
- * @package Simflex\Auth\Models
+ * @package Simflex\Core\Auth\Models
  * @property string $token
  */
 class UserAuth extends ModelBase
@@ -18,7 +19,7 @@ class UserAuth extends ModelBase
     public static function create(int|string|null $userId, string $validInterval = '1 WEEK'): ?static
     {
         $token = md5(microtime());
-        $useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $useragent = Container::getRequest()?->getUserAgent() ?? '';
         $model = new static();
         $success = $model->insert([
             'user_id' => $userId,
@@ -32,7 +33,7 @@ class UserAuth extends ModelBase
 
     protected static function getRemoteAddr(): string
     {
-        return @$_SERVER['HTTP_X_FORWARDED_FOR'] ?: (@$_SERVER['REMOTE_ADDR'] ?: '');
+        return Container::getRequest()?->getIp() ?? '';
     }
 
     public static function findByToken(string $token): ?static

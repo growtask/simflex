@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Extensions\Content\ContentTemplates;
+use Simflex\Core\Extensions\Content\ContentTemplates;
 
 /**
  * Ключ шаблона страницы из provider/templates.php, показывается по названию шаблона

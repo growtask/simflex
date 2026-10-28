@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Notify;
+namespace Simflex\Core\Admin\Notify;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\View;
 
 /**
  * @incomplete Подсистема Notify пока не подключена к админке; она будет доработана и использована позже.

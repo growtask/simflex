@@ -1,13 +1,13 @@
 <?php
 
-namespace Simflex\Mail\Transports;
+namespace Simflex\Core\Mail\Transports;
 
 use PHPMailer\PHPMailer\SMTP;
-use Simflex\Core\Container;
-use Simflex\Logger\Log;
-use Simflex\Mail\Mail;
-use Simflex\Mail\Transport;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\System\Container;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\Mail\Mail;
+use Simflex\Core\Mail\Transport;
+use Simflex\Core\System\Settings;
 
 /**
  * Отправка по SMTP через PHPMailer. Сервер и учётная запись - конфиг mail (host, port, security, username,
@@ -30,7 +30,7 @@ class PhpMailer implements Transport
         $mailer->Username = (string)$cfg->mail['username'];
         $mailer->Password = (string)$cfg->mail['password'];
         $mailer->Timeout = 10;
-        $mailer->FromName = (string)SiteSettings::get('site_name');
+        $mailer->FromName = (string)Settings::get('site_name');
         $mailer->From = str_contains((string)$cfg->mail['username'], '@')
             ? $cfg->mail['username']
             : 'noreply@' . (Container::getRequest()->getHost() ?: 'localhost');

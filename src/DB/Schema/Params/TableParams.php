@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\DB\Schema\Params;
+namespace Simflex\Core\DB\Schema\Params;
 
 class TableParams
 {

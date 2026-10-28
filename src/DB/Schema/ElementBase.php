@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\DB\Schema;
+namespace Simflex\Core\DB\Schema;
 
 abstract class ElementBase implements Element
 {

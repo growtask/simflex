@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\BadgeStock;
+namespace Simflex\Core\Layout\Components\UI\Core\BadgeStock;
 
 enum BadgeStockSize: string
 {

@@ -1,17 +1,17 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldComponentSelect;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Presets\NppField;
-use Simflex\Admin\Table\Presets\ParentField;
-use Simflex\Admin\Table\Table;
-use Simflex\Models\Menu as MenuModel;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldComponentSelect;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Presets\NppField;
+use Simflex\Core\Admin\Table\Presets\ParentField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Models\Menu as MenuModel;
 
 class Menu extends Table
 {

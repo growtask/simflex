@@ -1,16 +1,17 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
+use Simflex\Core\System\Location;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use PDO;
 use PDOStatement;
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
 /**
  * Класс MySQL
  *
- * @package Simflex\DB\DB
+ * @package Simflex\Core\DB\DB
  */
 class MySQL implements Adapter
 {
@@ -28,7 +29,7 @@ class MySQL implements Adapter
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE $collate",
         ]);
 
-        if (SF_LOCATION !== SF_LOCATION_CLI && $cfg->devMode) {
+        if (Container::getLocation() !== Location::Cli && $cfg->devMode) {
             $this->db = new TraceablePDO($this->db);
             Container::get('debugbar')->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->db));
         }

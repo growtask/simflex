@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Logger;
+namespace Simflex\Core\Logger;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
 class StdLogger extends AbstractLogger
 {

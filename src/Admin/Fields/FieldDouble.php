@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
 class FieldDouble extends Field
 {
@@ -34,10 +34,7 @@ class FieldDouble extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $ret = $_POST[$this->name];
-        if ($simple) {
-            $ret = $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
-        }
+        $ret = (string)$this->getPosted(group: $simple ? $group : null);
         $ret = str_replace(',', '.', $ret);
         $ret = preg_replace("@[^\d+\.]@", '', $ret);
         return $this->e2n && $ret === '' ? null : $ret;

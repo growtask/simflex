@@ -1,16 +1,16 @@
 <?php
 
-namespace Simflex\Extensions\Content;
+namespace Simflex\Core\Extensions\Content;
 
-use Simflex\Http\ComponentBase;
-use Simflex\Core\Container;
-use Simflex\Logger\Log;
-use Simflex\Core\DI\Factory;
-use Simflex\Debug\Profiler;
-use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
-use Simflex\DB\DB;
-use Simflex\Extensions\Content\Models\ModelContent;
-use Simflex\Core\PageSeo;
+use Simflex\Core\Http\ComponentBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\System\DI\Factory;
+use Simflex\Core\Debug\Profiler;
+use Simflex\Core\Extensions\Breadcrumbs\Breadcrumbs;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\Extensions\Content\Models\Content as ModelContent;
+use Simflex\Core\Http\PageSeo;
 
 /**
  * Класс ComContent
@@ -143,30 +143,32 @@ class Content extends ComponentBase
         return $children;
     }
 
+    /**
+     * Активные дочерние страницы раздела, новые первыми
+     * @param array $s Слова поиска по параметрам страницы: все должны встречаться
+     * @param int $ignore Страница, которую не показывать при поиске
+     */
     protected function getChildren(string $path, int $max = 10, array $s = [], int $ignore = 0): array
     {
         Profiler::traceStart(__CLASS__, __FUNCTION__);
-        $searchStr = [];
-        foreach ($s as $v) {
-            if (!trim($v)) {
-                continue;
+        $children = [];
+        if ($parent = ModelContent::findOne(['path' => $path, 'active' => 1])) {
+            $query = ModelContent::findAdv()
+                ->where(['active' => 1, 'pid' => $parent['content_id']])
+                ->orderBy('date DESC')
+                ->limit($max);
+            $search = array_filter($s, fn($word) => trim((string)$word) !== '');
+            foreach (array_values($search) as $i => $word) {
+                $query->andWhere("params LIKE :search_$i")->bind(["search_$i" => '%' . $word . '%']);
             }
-            $searchStr[] = 'params LIKE \'%' . DB::escape($v) . '%\'';
-        }
+            if ($search && $ignore) {
+                $query->andWhere('content_id <> :ignore')->bind(['ignore' => $ignore]);
+            }
 
-        if ($searchStr && $ignore) {
-            $searchStr[] = 'content_id != ' . $ignore;
-        }
-
-        $parent = ModelContent::findOne(['path' => $path, 'active' => 1])['content_id'];
-        $children = ModelContent::findAdv()->where([
-            'active' => 1,
-            'pid' => $parent,
-        ])->andWhere(implode(' AND ', $searchStr))->orderBy('date DESC LIMIT ' . $max)->all();
-
-        foreach ($children as $c) {
-            $c['params'] = unserialize($c['params']);
-            $children[] = $c;
+            foreach ($query->all() as $c) {
+                $c['params'] = unserialize((string)$c['params']);
+                $children[] = $c;
+            }
         }
 
         Profiler::traceEnd(__CLASS__, __FUNCTION__);
@@ -199,47 +201,36 @@ class Content extends ComponentBase
             $hasPrev = false;
             $hasNext = false;
             if (empty($content['params']['hide_children'])) {
-                $searchStr = [];
-                if (isset($_GET['search'])) {
-                    foreach (Container::getRequest()->get('search') as $v) {
-                        if (!trim($v)) {
-                            continue;
-                        }
-                        $searchStr[] = 'params LIKE \'%' . DB::escape($v) . '%\'';
+                $request = Container::getRequest();
+                $query = new AQ()
+                    ->asArray()
+                    ->from('content')
+                    ->select(['content_id', 'title', 'short', 'text', 'path', 'photo', 'date', 'params'])
+                    ->where(['active' => 1, 'pid' => (int)$content['content_id']]);
+                // поиск по параметрам: ?search[]=слово, все слова
+                foreach ((array)$request->get('search', []) as $i => $word) {
+                    if (trim((string)$word) !== '') {
+                        $query->andWhere("params LIKE :search_$i")->bind(["search_$i" => '%' . $word . '%']);
                     }
                 }
 
-                // считаем все значения
-                $cnt = DB::result(
-                    'SELECT COUNT(*) cnt FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                        ' AND ',
-                        $searchStr
-                    )) : ''),
-                    'cnt'
-                );
+                $cnt = (int)(clone $query)->select('COUNT(*)')->fetchScalar();
 
                 // костыль: исправить.
                 $pageCount = 15;
                 $pages = $cnt / $pageCount;
-                $page = (int)Container::getRequest()->get('page');
+                $page = (int)$request->get('page');
 
                 $hasPrev = $page > 0;
                 $hasNext = $page < $pages - 1;
 
-                $q = 'SELECT content_id, title, short, text, path, photo, date, params FROM content WHERE active=1 AND pid=' . (int)$content['content_id'] . ($searchStr ? (' AND ' . implode(
-                    ' AND ',
-                    $searchStr
-                )) : '');
-                if (isset($_GET['mob'])) {
-                    $q .= ' ORDER BY date DESC LIMIT ' . (($page + 1) * $pageCount);
-                } else {
-                    $q .= ' ORDER BY date DESC LIMIT ' . ($page * $pageCount) . ', ' . $pageCount;
-                }
-                $q = DB::query($q);
+                // мобильная версия (?mob) - все страницы до текущей
+                $query->orderBy('date DESC')->limit($request->get('mob') !== null
+                    ? (string)(($page + 1) * $pageCount)
+                    : ($page * $pageCount) . ', ' . $pageCount);
                 $children = [];
-                while ($c = DB::fetch($q)) {
-                    $child = $c;
-                    $child['params'] = unserialize($c['params']);
+                foreach ($query->all() as $child) {
+                    $child['params'] = unserialize((string)$child['params']);
                     $children[] = $child;
                 }
             }
@@ -268,9 +259,9 @@ class Content extends ComponentBase
         Breadcrumbs::add($content['title'], $content['path']);
         $id = (int)$content['pid'];
         while ($id) {
-            $q = "SELECT pid, title, path FROM content WHERE content_id=$id";
+            $content = new AQ()->asArray()->from('content')->select(['pid', 'title', 'path'])->where(['content_id' => $id])->fetchOne();
             $id = 0;
-            if ($content = DB::result($q)) {
+            if ($content) {
                 Breadcrumbs::add($content['title'], $content['path']);
                 $id = (int)$content['pid'];
             }
@@ -279,7 +270,7 @@ class Content extends ComponentBase
 
     protected static function findTemplateFile(string $name): string
     {
-        if (is_file($path = SF_ROOT_PATH . '/Extensions/Content/tpl/' . $name)) {
+        if (is_file($path = Container::getPaths()->getRoot('Extensions/Content/tpl/' . $name))) {
             return $path;
         }
         if (is_file($path = __DIR__ . '/tpl/' . $name)) {

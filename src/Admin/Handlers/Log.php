@@ -1,14 +1,14 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldDateTime;
-use Simflex\Admin\Fields\FieldEnum;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Table;
-use Simflex\Models\Log as LogModel;
+use Simflex\Core\Admin\Fields\FieldDateTime;
+use Simflex\Core\Admin\Fields\FieldEnum;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Models\Log as LogModel;
 
 class Log extends Table
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Http;
+namespace Simflex\Core\Http;
 
-abstract class Response implements \Simflex\Core\DI\Service
+abstract class Response implements \Simflex\Core\System\DI\Service
 {
     protected int $statusCode = 200;
     protected array $cookies = [];

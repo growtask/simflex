@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Modules\Menu;
+namespace Simflex\Core\Admin\Modules\Menu;
 
-use Simflex\Core\Container;
-use Simflex\Core\ModuleBase;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\System\ModuleBase;
 
 class Menu extends ModuleBase
 {
@@ -11,7 +11,7 @@ class Menu extends ModuleBase
 
     public function content(): string
     {
-        $menu = Container::getCore()::menu();
+        $menu = Page::get()->getMenu();
         return $this->render(__DIR__ . '/tpl/menu.tpl', ['menu' => $menu]);
     }
 }

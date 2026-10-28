@@ -1,9 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\AQ;
-use Simflex\DB\DB;
+use Simflex\Core\DB\AQ;
 
 /**
  * Таблица записей другой таблицы в форме (например, фото отзыва): строки добавляются, меняются и удаляются ajax-
@@ -14,14 +13,10 @@ use Simflex\DB\DB;
 class FieldVirtualTable extends Field
 {
     /**
-     * Запрос строк страницы, первая колонка __id — id строки: запрос AQ (количество строк считается по нему же,
-     * без ORDER BY и LIMIT) или SQL с параметрами $binds
+     * Запрос строк страницы, первая колонка __id — id строки; количество строк считается по нему же,
+     * без ORDER BY и LIMIT
      */
-    public string|AQ $query = '';
-    /** Запрос количества строк, если $query — SQL */
-    public string $queryCount = '';
-    /** @var array<string|int, mixed> параметры SQL-запросов $query и $queryCount (одни на оба запроса) */
-    public array $binds = [];
+    public ?AQ $query = null;
     public array $cols = [];
     public string $button = '';
     public string $customjs = '';
@@ -34,7 +29,7 @@ class FieldVirtualTable extends Field
 
     public function input($value): string
     {
-        if (!($_REQUEST[$this->tablePk] ?? 0)) {
+        if (!$this->getRecordId()) {
             return $this->render('vtable-notice');
         }
 
@@ -45,13 +40,9 @@ class FieldVirtualTable extends Field
         return $this->render('vtable', compact('value', 'jsId', 'total')) . $this->customjs;
     }
 
-    public function getCount(): mixed
+    public function getCount(): int
     {
-        if ($this->query instanceof AQ) {
-            return (clone $this->query)->select('COUNT(*)')->orderBy(null)->limit('')->fetchScalar();
-        }
-
-        return DB::result($this->queryCount, 0, $this->binds);
+        return $this->query ? (int)(clone $this->query)->select('COUNT(*)')->orderBy(null)->limit('')->fetchScalar() : 0;
     }
 
     /**
@@ -61,11 +52,7 @@ class FieldVirtualTable extends Field
      */
     protected function getRows(): array
     {
-        if ($this->query instanceof AQ) {
-            return (clone $this->query)->asArray()->all();
-        }
-
-        return DB::assoc($this->query, false, false, $this->binds) ?: [];
+        return $this->query ? (clone $this->query)->asArray()->all() : [];
     }
 
     public function getValue(): string|false

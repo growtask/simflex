@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\DB\Schema;
+namespace Simflex\Core\DB\Schema;
 
-use Simflex\DB\DB;
-use Simflex\DB\Schema\Params\TableParams;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Schema\Params\TableParams;
 
 class Table extends ElementBase
 {
@@ -11,10 +11,10 @@ class Table extends ElementBase
 
     protected TableParams $oldParams;
 
-    /** @var \Simflex\DB\Schema\Element[] */
+    /** @var \Simflex\Core\DB\Schema\Element[] */
     protected array $elements = [];
 
-    /** @var \Simflex\DB\Schema\Element[] */
+    /** @var \Simflex\Core\DB\Schema\Element[] */
     protected array $oldElements = [];
 
     protected bool $isExisting;
@@ -254,10 +254,10 @@ class Table extends ElementBase
             $firstCmd = false;
         }
 
-        /** @var \Simflex\DB\Schema\Element[] $toMod */
+        /** @var \Simflex\Core\DB\Schema\Element[] $toMod */
         $toMod = [];
 
-        /** @var \Simflex\DB\Schema\Element[] $toMod */
+        /** @var \Simflex\Core\DB\Schema\Element[] $toMod */
         $toAdd = [];
 
         foreach ($this->elements as $p) {

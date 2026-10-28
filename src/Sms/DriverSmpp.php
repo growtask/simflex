@@ -1,12 +1,12 @@
 <?php
 
-namespace Simflex\Sms;
+namespace Simflex\Core\Sms;
 
 use PhpSmpp\Service\Sender as SmppSender;
 use PhpSmpp\SMPP\SMPP;
 use PhpSmpp\SMPP\Unit\Sm;
-use Simflex\Helpers\Phone;
-use Simflex\Logger\Log;
+use Simflex\Core\Helpers\Phone;
+use Simflex\Core\Logger\Log;
 
 /**
  * Класс DriverSmpp

@@ -1,11 +1,13 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
+use Simflex\Core\DB\DB;
 
 class FieldEnum extends FieldString
 {
+    /** @var array<string, array<string, array<string, string>>> таблица => колонка => значение => подпись */
+    protected static array $values = [];
     protected string $changeURL = '';
 
     public function input($value): string
@@ -29,11 +31,11 @@ class FieldEnum extends FieldString
 
     protected function fetchValues(): array
     {
-        $buffer = &$_ENV['enum_values'][$this->table][$this->name];
+        $buffer = &static::$values[$this->table][$this->name];
 
         if (!isset($buffer)) {
-            $q = "SHOW FULL COLUMNS FROM `$this->table` LIKE '$this->name'";
-            $row = DB::result($q);
+            // описание колонки: значения ENUM и их подписи в комментарии (через ;;)
+            $row = DB::columnInfo($this->table, $this->name);
             $enumArray = [];
             preg_match_all("/'(.*?)'/", $row['Type'], $enumArray);
             $enumFields = $enumArray[1];

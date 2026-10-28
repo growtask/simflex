@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Marker;
+namespace Simflex\Core\Layout\Components\UI\Core\Marker;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

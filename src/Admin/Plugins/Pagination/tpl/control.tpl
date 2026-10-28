@@ -1,13 +1,13 @@
 <?php
 
-$req = \Simflex\Core\Container::getRequest(); ?>
+$req = \Simflex\Core\System\Container::getRequest(); ?>
 <div class="table__pagination">
     <div class="table__pagination-text">Показаны записи: с <?= $this->p * $this->pOn + 1 ?> по <?= min($this->count, $this->p * $this->pOn + $this->pOn) ?> из <?= $this->count ?></div>
     <div class="table__pagination-text-mobile">с <?= $this->p * $this->pOn + 1 ?> по <?= min($this->count, $this->p * $this->pOn + $this->pOn) ?> из <?= $this->count ?></div>
     <div class="table__pagination-btns">
         <?php
         if ($this->p !== 0): ?>
-            <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $this->p - 1]) ?>"
+            <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $this->p - 1]) ?>"
                class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
                 <svg viewBox="0 0 24 24">
                     <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#chevron-mini"></use>
@@ -24,7 +24,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
                 <button class="BtnSecondaryMonoXs">1</button>
             <?php
             else: ?>
-                <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => 0]) ?>" class="BtnOutlineMonoXs">1</a>
+                <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => 0]) ?>" class="BtnOutlineMonoXs">1</a>
             <?php
             endif; ?>
 
@@ -43,7 +43,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
                     <button class="BtnSecondaryMonoXs"><?= $i + 1 ?></button>
                 <?php
                 else: ?>
-                    <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
+                    <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
                 <?php
                 endif; ?>
             <?php
@@ -64,7 +64,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
                 <button class="BtnSecondaryMonoXs"><?= $i + 1 ?></button>
             <?php
             else: ?>
-                <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
+                <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
             <?php
             endif; ?>
         <?php
@@ -76,7 +76,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
                     <button class="BtnSecondaryMonoXs"><?= $i + 1 ?></button>
                 <?php
                 else: ?>
-                    <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
+                    <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $i]) ?>" class="BtnOutlineMonoXs"><?= $i + 1 ?></a>
                 <?php
                 endif; ?>
             <?php
@@ -85,7 +85,7 @@ $req = \Simflex\Core\Container::getRequest(); ?>
         endif; ?>
         <?php
         if ($this->p < $this->pCount - 1) : ?>
-            <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $this->p + 1]) ?>"
+            <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $this->p + 1]) ?>"
                class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
                 <svg viewBox="0 0 24 24">
                     <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#chevron-mini"></use>
@@ -96,14 +96,14 @@ $req = \Simflex\Core\Container::getRequest(); ?>
 
     </div>
     <div class="table__pagination-btns-mobile">
-        <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $this->p - 1]) ?>"
+        <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $this->p - 1]) ?>"
            class="BtnIconOutlineMonoXs table__pagination-btns-mobile-prev">
             <svg viewBox="0 0 24 24">
                 <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#chevron-mini"></use>
             </svg>
         </a>
         <span class="table__pagination-btns-mobile-text"><?= $this->p + 1 ?></span>
-        <a href="<?= \Simflex\Admin\Core::path() ?>?<?= $req->buildQuery(['p' => $this->p + 1]) ?>"
+        <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>?<?= $req->buildQuery(['p' => $this->p + 1]) ?>"
            class="BtnIconOutlineMonoXs table__pagination-btns-mobile-next">
             <svg viewBox="0 0 24 24">
                 <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#chevron-mini"></use>

@@ -1,19 +1,21 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
-use Simflex\Core\Container;
-use Simflex\Debug\Profiler;
+use Simflex\Core\System\Container;
+use Simflex\Core\Debug\Profiler;
 
 /**
  * Класс DB
- * @package Simflex\Core
+ * @package Simflex\Core\System
  * @see Adapter
  */
 class DB
 {
     protected static Adapter $db;
     protected static string $lastQuery = '';
+    /** @var array<string, array<string, array<string, string>>> значения ENUM: таблица => колонка => значение => подпись */
+    protected static array $enumValues = [];
 
     protected static function db(): Adapter
     {
@@ -101,6 +103,33 @@ class DB
         }
 
         return (bool)static::query('DELETE FROM ' . static::wrapName($table) . ' ' . $condition, $where->getBinds());
+    }
+
+    /**
+     * Вставляет строки в таблицу одним запросом, значения передаются параметрами запроса. Для таблиц без модели
+     * (таблицы связей, кэши); у модели — ModelBase::bulkInsert()
+     *
+     * @param list<array<string, mixed>> $rows Строки: колонка => значение; колонки — как у первой строки
+     */
+    public static function insert(string $table, array $rows): bool
+    {
+        if (!$rows) {
+            return true;
+        }
+
+        $columns = array_keys(reset($rows));
+        $values = [];
+        $binds = [];
+        foreach (array_values($rows) as $row) {
+            $values[] = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+            foreach ($columns as $column) {
+                $binds[] = $row[$column] ?? null;
+            }
+        }
+        $q = 'INSERT INTO ' . static::wrapName($table)
+            . ' (' . implode(', ', array_map(static::wrapName(...), $columns)) . ') VALUES ' . implode(', ', $values);
+
+        return (bool)static::query($q, $binds);
     }
 
     public static function map(string $q, $field1, $field2, array $params = [], bool $list = false): array
@@ -200,10 +229,10 @@ class DB
      */
     public static function enumValues(string $table, string $field): array
     {
-        $buffer = &$_ENV['enum_values'][$table][$field];
+        $buffer = &static::$enumValues[$table][$field];
 
         if (!isset($buffer)) {
-            $row = DB::result("SHOW FULL COLUMNS FROM `$table` LIKE '$field'");
+            $row = static::columnInfo($table, $field);
             $names = explode(';;', $row['Comment']);
 
             $enumArray = [];
@@ -229,6 +258,14 @@ class DB
     }
 
     /**
+     * Есть ли таблица в базе
+     */
+    public static function hasTable(string $table): bool
+    {
+        return (bool)DB::result('SHOW TABLES LIKE ?', '', [$table]);
+    }
+
+    /**
      * Возвращает сведения о столбце
      *
      * @param string $table Имя таблицы
@@ -236,7 +273,7 @@ class DB
      */
     public static function columnInfo(string $table, string $field): mixed
     {
-        return DB::result("SHOW FULL COLUMNS FROM `$table` LIKE '$field'");
+        return DB::result('SHOW FULL COLUMNS FROM ' . static::wrapName($table) . ' LIKE ?', '', [$field]);
     }
 
     /**

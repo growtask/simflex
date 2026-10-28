@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Badge;
+namespace Simflex\Core\Layout\Components\UI\Core\Badge;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

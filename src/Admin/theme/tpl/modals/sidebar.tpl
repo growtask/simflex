@@ -13,7 +13,7 @@
         </div>
         <div class="sidebar-modal__menu menu">
             <?php
-            $menu = \Simflex\Core\Container::getCore()::menu();
+            $menu = $page->getMenu();
 
             foreach ($menu[''] ?? [] as $id => $item): ?><?php
                 if ($item['hidden']) {

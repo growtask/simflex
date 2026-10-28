@@ -1,10 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Plugins\UI\UI;
-use Simflex\DB\DB;
-use Simflex\Helpers\Time;
+use Simflex\Core\Admin\Plugins\UI\UI;
+use Simflex\Core\Helpers\Time;
 
 class FieldDate extends Field
 {
@@ -37,14 +36,14 @@ class FieldDate extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $value = $_POST[$this->name] ?? '';
+        $value = (string)$this->getPosted();
         if ($simple) {
             return $value;
         }
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4}$@', $value)) {
             $value = substr($value, -4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2);
         }
-        return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
+        return $this->e2n && $value === '' ? null : $value;
     }
 
     public function show($row): string

@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Console;
+namespace Simflex\Core\Console;
 
-use Simflex\Http\Request;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Request;
 
 class CliRequest extends Request
 {
@@ -13,29 +14,25 @@ class CliRequest extends Request
         // задаем параметры CLI-запроса
         $_SERVER['REQUEST_URI'] = '/';
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $_SERVER['DOCUMENT_ROOT'] = SF_PUBLIC_PATH;
+        $_SERVER['DOCUMENT_ROOT'] = Container::getPaths()->getPublic();
         $_SERVER['HTTP_HOST'] = 'localhost';
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        // разбираем параметры командной строки
-        global $argv;
-        $_REQUEST = [];
+        parent::__construct();
 
-        $args = array_slice($argv, 1);
-        foreach ($args as $i => $arg) {
+        // параметры командной строки: позиционные - по номеру, --key=value - по имени; доступны и как GET, POST,
+        // REQUEST запроса
+        global $argv;
+        $args = [];
+        foreach (array_slice($argv ?? [], 1) as $i => $arg) {
             if (!str_starts_with($arg, '--')) {
-                $_REQUEST[$i] = $arg;
+                $args[$i] = $arg;
             } else {
-                $data = explode('=', $arg);
-                $_REQUEST[trim($data[0], '-')] = $data[1];
+                $data = explode('=', $arg, 2);
+                $args[trim($data[0], '-')] = $data[1] ?? '';
             }
         }
-
-        // наследие: заполняем GET, POST, REQUEST для совместимости
-        $_GET = $_POST = $_REQUEST;
-        $this->argv = $_REQUEST;
-
-        parent::__construct();
+        $this->argv = $this->getParams = $this->postParams = $this->reqParams = $args;
     }
 
     /**

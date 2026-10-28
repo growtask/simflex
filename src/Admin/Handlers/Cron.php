@@ -1,17 +1,17 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldCronJobSelect;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Plugins\Alert\Alert;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Table;
-use Simflex\Cron\CronRegistry;
-use Simflex\Core\Privilege;
-use Simflex\Models\Cron as CronModel;
+use Simflex\Core\Admin\Fields\FieldCronJobSelect;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Cron\CronRegistry;
+use Simflex\Core\System\Privilege;
+use Simflex\Core\Models\Cron as CronModel;
 
 /**
  * Задачи объявлены в provider/cron.php, в таблице хранятся только их активность и расписание
@@ -55,8 +55,8 @@ class Cron extends Table
 
     public function save(): string|int|false
     {
-        if (empty($_POST['group_ids']) && empty($_POST['id'])) {
-            Alert::error('Задачи cron объявляются в коде: provider/cron.php', \Simflex\Admin\Core::path());
+        if (empty($this->request->post('group_ids')) && empty($this->request->post('id'))) {
+            Alert::error('Задачи cron объявляются в коде: provider/cron.php', \Simflex\Core\Admin\Page::get()->getPath());
         }
 
         return parent::save();

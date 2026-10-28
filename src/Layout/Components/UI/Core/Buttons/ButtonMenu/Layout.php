@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Buttons\ButtonMenu;
+namespace Simflex\Core\Layout\Components\UI\Core\Buttons\ButtonMenu;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

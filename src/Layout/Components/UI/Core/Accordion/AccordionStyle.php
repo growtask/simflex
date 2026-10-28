@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Accordion;
+namespace Simflex\Core\Layout\Components\UI\Core\Accordion;
 
 enum AccordionStyle: string
 {

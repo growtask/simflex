@@ -1,13 +1,14 @@
 <?php
 
-namespace Simflex\Layout;
+namespace Simflex\Core\Layout;
 
+use Simflex\Core\System\Location;
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
-use Simflex\Core\Assets;
-use Simflex\Core\Container;
-use Simflex\Core\PageAssets;
-use Simflex\Debug\Profiler;
+use Simflex\Core\Http\Assets;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\PageAssets;
+use Simflex\Core\Debug\Profiler;
 use tubalmartin\CssMin\Minifier;
 
 /**
@@ -80,7 +81,7 @@ class LayoutManager
     public static function init(): string
     {
         // у админки свои стили и скрипты
-        if (SF_LOCATION === SF_LOCATION_ADMIN) {
+        if (Container::getLocation() === Location::Admin) {
             return '';
         }
 
@@ -114,7 +115,7 @@ class LayoutManager
 
         // проверяем, есть ли файл кэша.
         $compiler = new Compiler();
-        if ($config->devMode || !is_file(SF_PUBLIC_PATH . $cachePath)) {
+        if ($config->devMode || !is_file(Container::getPaths()->getPublic() . $cachePath)) {
             // неявно добавляем корневой стиль.
             $implicit = '';
             foreach ($imports as $dir) {
@@ -158,10 +159,10 @@ class LayoutManager
             }
 
             // записываем новый стиль.
-            if (!is_dir(dirname(SF_PUBLIC_PATH . $cachePath))) {
-                mkdir(dirname(SF_PUBLIC_PATH . $cachePath), 0777, true);
+            if (!is_dir(dirname(Container::getPaths()->getPublic() . $cachePath))) {
+                mkdir(dirname(Container::getPaths()->getPublic() . $cachePath), 0777, true);
             }
-            file_put_contents(SF_PUBLIC_PATH . $cachePath, $styleString);
+            file_put_contents(Container::getPaths()->getPublic() . $cachePath, $styleString);
         }
 
         // используем стиль из кэша.
@@ -176,8 +177,8 @@ class LayoutManager
     protected static function globalDirs(): array
     {
         $dirs = [__DIR__ . '/assetsGlobal'];
-        if (is_dir(SF_ROOT_PATH . '/Layout/assetsGlobal')) {
-            $dirs[] = SF_ROOT_PATH . '/Layout/assetsGlobal';
+        if (is_dir(Container::getPaths()->getRoot('Layout/assetsGlobal'))) {
+            $dirs[] = Container::getPaths()->getRoot('Layout/assetsGlobal');
         }
 
         return $dirs;

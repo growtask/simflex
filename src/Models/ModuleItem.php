@@ -1,12 +1,12 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * @property int item_id
- * @property string module Класс модуля, см. \Simflex\Core\ExtensionRegistry
+ * @property string module Класс модуля, см. \Simflex\Core\System\ExtensionRegistry
  * @property int menu_id
  * @property string posname
  * @property boolean active

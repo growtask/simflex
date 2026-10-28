@@ -1,53 +1,209 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Admin\Notify\Collection;
-use Simflex\Admin\Handlers\Group;
-use Simflex\Core\Container;
-use Simflex\DB\DB;
-use Simflex\Core\Privilege;
-use Simflex\Http\Request;
+use Simflex\Core\Models\AdminWidget;
+use Simflex\Core\Admin\Notify\Collection;
+use Simflex\Core\Admin\Handlers\Group;
+use Simflex\Core\Http\Assets;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\Http\Html\HtmlResponse;
+use Simflex\Core\System\Privilege;
 
+/**
+ * Страница админки: обработка запроса к админке.
+ *
+ * init() - запрос и ответ в контейнере, вход и выход, меню разделов, доступных пользователю, содержимое раздела
+ * (Handler пункта меню) и модули админки; execute() - вывод макета админки (theme/tpl/index.tpl), формы входа
+ * или отказа в доступе. Объект страницы - в контейнере (Container::getPage(), в коде админки - Page::get()).
+ *
+ * Адреса админки строятся статическими методами root(), url(), они не зависят от запроса
+ */
 class Page
 {
-    protected static string $menu = '';
-    protected static string $content = '';
-    protected static array $positions = [];
-    protected static array $modules = [];
-    protected static array $css = [];
-    protected static array $cssCheck = [];
-    protected static array $js = [];
-    protected static array $jsCheck = [];
+    /** Ajax-запрос: в ответе только содержимое раздела, без макета админки */
+    protected bool $ajax = false;
+    /** @var list<string> сегменты пути относительно корня админки */
+    protected array $uri = [];
+    protected string $path = '';
+    /** @var array<string, array<string, array>> id родителя => id => пункт меню */
+    protected array $menuTree = [];
+    /** @var array<string, array> id => пункт меню */
+    protected array $menuById = [];
+    protected array|false $menuCur = false;
+    /** @var list<array{link: string, name: string}> */
+    protected array $crumbs = [];
 
-    protected static Handler|false $handler = false;
+    protected string $content = '';
+    /** @var array<string, list<string>> позиция => HTML модулей */
+    protected array $positions = [];
+    /** @var array<string, string> */
+    protected array $modules = [];
+    protected array $css = [];
+    protected array $cssCheck = [];
+    protected array $js = [];
+    protected array $jsCheck = [];
 
-    public static function init(): void
+    /**
+     * Страница админки из контейнера; если её там нет (консоль, тесты) - новая, она же кладётся в контейнер
+     */
+    public static function get(): static
     {
+        $page = Container::getPage();
+        if (!$page instanceof static) {
+            $page = new static();
+            Container::set('page', $page);
+        }
 
-        if (!Container::getUser()?->ican(Privilege::ADMIN)) {
+        return $page;
+    }
+
+    /**
+     * Корень админки без завершающего слеша, задаётся в конфиге (adminPath)
+     * @return string например /admin
+     */
+    public static function root(): string
+    {
+        $path = trim(Container::getConfig()->adminPath, '/');
+        if ($path === '') {
+            throw new \LogicException('Config adminPath must not be empty');
+        }
+
+        return '/' . $path;
+    }
+
+    /**
+     * Адрес внутри админки
+     * @param string $path Путь относительно корня админки, например 'content/'
+     * @return string например /admin/content (без завершающего слеша)
+     */
+    public static function url(string $path = ''): string
+    {
+        $url = static::root() . '/' . ltrim($path, '/');
+        $query = strpos($url, '?');
+        $base = $query === false ? $url : substr($url, 0, $query);
+
+        return rtrim($base, '/') . ($query === false ? '' : substr($url, $query));
+    }
+
+    /**
+     * Относится ли путь запроса к админке
+     */
+    public static function isAdminPath(string $path): bool
+    {
+        return $path === static::root() || str_starts_with($path, static::root() . '/');
+    }
+
+    /**
+     * Url опубликованной статики админки ядра (см. Assets::publish)
+     * @return string например /cache/assets/1a2b3c4d5e6f7a8b/Admin
+     */
+    public static function webVendorPath(): string
+    {
+        return Assets::publish(Container::getPaths()->getCore()) . '/Admin';
+    }
+
+    public static function vendorPath(): string
+    {
+        return __DIR__;
+    }
+
+    public function init(): void
+    {
+        if (!Container::isSet('request')) {
+            Container::set('request', new HtmlRequest());
+        }
+        if (!Container::isSet('response')) {
+            Container::set('response', new HtmlResponse());
+        }
+
+        $request = Container::getRequest();
+        $this->path = $request->getPath();
+        if (strlen($this->path) > 1 && str_ends_with($this->path, '/') && $request->getRequestMethod() === 'GET') {
+            // адреса админки без завершающего слеша: /admin/content/ => /admin/content
+            $query = (string)parse_url($request->getUri(), PHP_URL_QUERY);
+            $query = $query === '' ? '' : '?' . $query;
+            header('Location: ' . rtrim($this->path, '/') . $query, true, 301);
+            exit;
+        }
+        $this->path = rtrim($this->path, '/');
+        // сегменты пути относительно корня админки: /admin/content/ => ['content', '']
+        $this->uri = explode('/', ltrim(substr($this->path, strlen(static::root())), '/'));
+
+        if ($request->isAjax() || !empty($request->get('ajax'))) {
+            $this->ajax = true;
+        }
+
+        if ($this->getUri(0) === 'login') {
+            $login = (array)$request->request('login', []);
+            Auth::login(
+                $login['login'] ?? null,
+                $login['password'] ?? null,
+                isset($login['remember']),
+                $request->request('r') ?? static::url()
+            );
+        } elseif ($this->getUri(0) === 'logout') {
+            Auth::logout();
+        }
+
+        $user = Container::getUser();
+        if (!$user || !$user->ican(Privilege::ADMIN)) {
             return;
         }
 
-        if ($widgetId = (int)@$_GET['sfwidget']) {
-            $q = "SELECT * FROM admin_widget WHERE active = 1 AND widget_id = $widgetId";
-            $row = DB::result($q);
+        $this->initMenu();
+        $this->initContent();
+    }
+
+    /**
+     * Пункты меню, доступные пользователю, текущий пункт и хлебные крошки
+     */
+    public function initMenu(): void
+    {
+        $user = Container::getUser();
+        foreach (Menu::getItems() as $key => $item) {
+            if (!$user?->ican($item->privilege)) {
+                continue;
+            }
+            $row = [
+                'id' => $key,
+                'pid' => Menu::getParent($key),
+                // ссылки объявлены относительно корня админки
+                'link' => str_starts_with($item->link, '/') ? static::url($item->link) : rtrim($item->link, '/'),
+                'name' => $item->name,
+                'handler' => $item->handler,
+                'icon' => $item->icon,
+                'hidden' => $item->hidden,
+            ];
+            $this->menuTree[$row['pid']][$key] = $row;
+            $this->menuById[$key] = $row;
+            if ($row['link'] === $this->path) {
+                $this->menuCur = $row;
+            }
+        }
+
+        if (!$this->ajax && $this->menuCur) {
+            $this->setCrumbs($this->menuCur);
+        }
+    }
+
+    /**
+     * Содержимое: виджет (?sfwidget=id) или раздел текущего пункта меню и модули админки
+     */
+    protected function initContent(): void
+    {
+        if ($widgetId = (int)Container::getRequest()->get('sfwidget', 0)) {
+            $row = AdminWidget::findAdv()->asArray()->where(['active' => 1, 'widget_id' => $widgetId])->fetchOne();
             $class = $row['class'];
-            $widget = new $class($row);
-            self::$content = $widget->execute();
+            $this->content = new $class($row)->execute();
             return;
         }
 
-        if (!Container::getRequest()) {
-            Container::set('request', new Request());
-        }
+        $this->content = $this->getHandler((string)$this->getCurrentMenuItem('handler'))->content();
 
-        self::$handler = static::handler((string)Core::menuCurItem('handler'));
-
-        self::$content = self::$handler->content();
-
-        if (!Core::$isAjax) {
-            foreach (AdminModules::getForSection((string)Core::menuCurItem('id')) as $module) {
+        if (!$this->ajax) {
+            foreach (AdminModules::getForSection((string)$this->getCurrentMenuItem('id')) as $module) {
                 $mod = new ($module->class)([
                     'item_id' => 0,
                     'class' => $module->class,
@@ -55,7 +211,7 @@ class Page
                     'posname' => $module->position,
                     'params' => serialize($module->params),
                 ]);
-                self::$positions[$module->position][] = $mod->execute();
+                $this->positions[$module->position][] = $mod->execute();
             }
         }
     }
@@ -64,79 +220,170 @@ class Page
      * Обработчик текущего раздела: указанный в его пункте меню, по умолчанию страница группы
      * (подпункты, виджеты)
      */
-    protected static function handler(string $handler): Handler
+    protected function getHandler(string $handler): Handler
     {
         return is_subclass_of($handler, Handler::class) ? new $handler() : new Group();
     }
 
-    public static function content(): string
+    public function isAjax(): bool
     {
-        return self::$content;
+        return $this->ajax;
     }
 
-    public static function position(string $posname): string
+    /**
+     * Сегмент пути относительно корня админки: для /admin/content/ getUri(0) = 'content'
+     */
+    public function getUri(int $i = 0): string
     {
-        if (!$posname || empty(self::$positions[$posname])) {
+        return $this->uri[$i] ?? '';
+    }
+
+    /**
+     * Путь текущего раздела без завершающего слеша, например /admin/content
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * Пункты меню, доступные пользователю: id родителя ('' для корня) => id => запись
+     * (id, pid, link, name, handler, icon, hidden).
+     * id — ссылка пункта, как она объявлена в Menu
+     */
+    public function getMenu(): array
+    {
+        return $this->menuTree;
+    }
+
+    /**
+     * Текущий пункт меню (false - не найден) или его поле (null - пункт не найден)
+     */
+    public function getCurrentMenuItem(?string $field = null): mixed
+    {
+        if ($field === null) {
+            return $this->menuCur;
+        }
+
+        return $this->menuCur ? ($this->menuCur[$field] ?? null) : null;
+    }
+
+    /**
+     * @return list<array{link: string, name: string}>
+     */
+    public function getCrumbs(): array
+    {
+        return $this->crumbs;
+    }
+
+    protected function setCrumbs(array $item): void
+    {
+        if (isset($this->menuById[$item['pid']])) {
+            $this->setCrumbs($this->menuById[$item['pid']]);
+        }
+        $this->crumbs[] = ['link' => $item['link'], 'name' => $item['name']];
+    }
+
+    /**
+     * Выводит макет админки с содержимым раздела, форму входа или отказ в доступе.
+     * В шаблонах макета страница - переменная $page
+     */
+    public function execute(): void
+    {
+        $page = $this;
+        $user = Container::getUser();
+        if ($user && !$user->ican(Privilege::ADMIN)) {
+            http_response_code(403);
+            include __DIR__ . '/theme/tpl/denied.tpl';
+        } elseif ($user) {
+            if ($this->ajax) {
+                echo $this->getContent();
+            } else {
+                include __DIR__ . '/theme/tpl/index.tpl';
+            }
+        } else {
+            $back = Container::getRequest()->getUri();
+            if (str_contains($back, 'logout')) {
+                $back = static::url();
+            }
+            include __DIR__ . '/theme/tpl/login.tpl';
+        }
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function getPosition(string $posname): string
+    {
+        if (!$posname || empty($this->positions[$posname])) {
             return '';
         }
-        return implode('<hr class="module-separator" />', array_filter(self::$positions[$posname], 'strlen'));
+        return implode('<hr class="module-separator" />', array_filter($this->positions[$posname], 'strlen'));
     }
 
-    public static function module(string $modname): string
+    public function getModule(string $modname): string
     {
-        return $modname ? (self::$modules[$modname] ?? '') : '';
+        return $modname ? ($this->modules[$modname] ?? '') : '';
     }
 
-    public static function css(string $file, int $idx = 100): void
+    public function css(string $file, int $idx = 100): void
     {
-        $idx = (int)$idx;
-        if (empty(self::$css[$idx][md5($file)])) {
-            if (isset(self::$cssCheck[md5($file)])) {
-                unset(self::$css[self::$cssCheck[md5($file)]][md5($file)]);
-                unset(self::$cssCheck[md5($file)]);
+        $key = md5($file);
+        if (empty($this->css[$idx][$key])) {
+            if (isset($this->cssCheck[$key])) {
+                unset($this->css[$this->cssCheck[$key]][$key]);
+                unset($this->cssCheck[$key]);
             }
-            self::$cssCheck[md5($file)] = $idx;
-            self::$css[$idx][md5($file)] = $file;
+            $this->cssCheck[$key] = $idx;
+            $this->css[$idx][$key] = $file;
         }
     }
 
-    public static function js(string $file, int $idx = 100): void
+    public function js(string $file, int $idx = 100): void
     {
-        $idx = (int)$idx;
-        if (empty(self::$js[$idx][md5($file)])) {
-            if (isset(self::$jsCheck[md5($file)])) {
-                unset(self::$js[self::$jsCheck[md5($file)]][md5($file)]);
-                unset(self::$jsCheck[md5($file)]);
+        $key = md5($file);
+        if (empty($this->js[$idx][$key])) {
+            if (isset($this->jsCheck[$key])) {
+                unset($this->js[$this->jsCheck[$key]][$key]);
+                unset($this->jsCheck[$key]);
             }
-            self::$jsCheck[md5($file)] = $idx;
-            self::$js[$idx][md5($file)] = $file;
+            $this->jsCheck[$key] = $idx;
+            $this->js[$idx][$key] = $file;
         }
     }
 
-    public static function coreCss(string $file, int $idx = 100): void
+    /**
+     * Стиль из статики админки ядра
+     * @param string $file Путь относительно src/Admin ядра, например '/theme/css/table.css'
+     */
+    public function coreCss(string $file, int $idx = 100): void
     {
-        $file = Core::webVendorPath() . $file;
-        static::css($file, $idx);
+        $this->css(static::webVendorPath() . $file, $idx);
     }
 
-    public static function coreJs(string $file, int $idx = 100): void
+    /**
+     * Скрипт из статики админки ядра
+     * @param string $file Путь относительно src/Admin ядра, например '/theme/js/table.js'
+     */
+    public function coreJs(string $file, int $idx = 100): void
     {
-        $file = Core::webVendorPath() . $file;
-        static::js($file, $idx);
+        $this->js(static::webVendorPath() . $file, $idx);
     }
 
-    public static function meta(): string
+    public function getMeta(): string
     {
         $html = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\r\n";
 
-        ksort(self::$css);
-        foreach (self::$css as $css_arr) {
+        ksort($this->css);
+        foreach ($this->css as $css_arr) {
             foreach ($css_arr as $css) {
                 $html .= '<link type="text/css" rel="stylesheet" href="' . $css . '" />' . "\r\n";
             }
         }
-        ksort(self::$js);
-        foreach (self::$js as $js_arr) {
+        ksort($this->js);
+        foreach ($this->js as $js_arr) {
             foreach ($js_arr as $js) {
                 $html .= '<script type="text/javascript" src="' . $js . '"></script>' . "\r\n";
             }
@@ -151,7 +398,7 @@ class Page
     /**
      * @incomplete Подсистема Notify пока не подключена к админке; она будет доработана и использована позже.
      */
-    public static function notifications(): string
+    public function getNotifications(): string
     {
         return Collection::getInstance()->content();
     }

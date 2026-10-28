@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Debug;
+namespace Simflex\Core\Debug;
 
 use DebugBar\DataCollector\TimeDataCollector;
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
 class Profiler
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Helpers;
+namespace Simflex\Core\Helpers;
 
 use DateInterval;
 

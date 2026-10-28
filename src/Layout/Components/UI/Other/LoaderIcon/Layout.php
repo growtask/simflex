@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Other\LoaderIcon;
+namespace Simflex\Core\Layout\Components\UI\Other\LoaderIcon;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Table;
+namespace Simflex\Core\Admin\Table;
 
 class ParamDefinition
 {

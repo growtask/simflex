@@ -18,22 +18,22 @@
   `struct_param`, `struct_data`, их модели и разделы «Структура» удалены. Раздел админки описывается классом
   (см. «Разделы админки» ниже).
 - **Компоненты, модули, параметры модулей** объявляются в коде: списки классов в `provider/components.php`
-  и `provider/modules.php` приложения (`\Simflex\Core\ExtensionRegistry`), настройки — статическими методами класса
+  и `provider/modules.php` приложения (`\Simflex\Core\System\ExtensionRegistry`), настройки — статическими методами класса
   (`extensionTitle()`, `modulePostexec()`, `adminParams()`). Таблицы `component`, `component_param`, `module`,
   `module_param` и их модели удалены; `menu.component` и `module_item.module` хранят имя класса.
-- **Привилегии в коде:** `\Simflex\Core\Privilege` с константами `DEV`, `ADMIN`; приложение расширяет реестр наследником
+- **Привилегии в коде:** `\Simflex\Core\System\Privilege` с константами `DEV`, `ADMIN`; приложение расширяет реестр наследником
   (конфиг `privilegeClass`). Роли, пользователи, меню и виджеты ссылаются на привилегию по имени (колонка `privilege`),
   а не по id. Привилегии `admin` и `simplex_admin` объединены в `Privilege::ADMIN`; `dev` имеет все привилегии
   и не выключается. Таблица `user_privilege` необязательна — хранит только переключённую в админке активность.
   Нейминг `priv` заменён на `privilege` (модели `UserRolePrivilege`, `UserPrivilegePersonal`).
-- **Меню админки в коде:** `\Simflex\Admin\Menu` (пункты `MenuItem`), приложение расширяет наследником
+- **Меню админки в коде:** `\Simflex\Core\Admin\Menu` (пункты `MenuItem`), приложение расширяет наследником
   (конфиг `adminMenuClass`). Таблица `admin_menu`, модель `AdminMenu` и раздел «Меню» в «Управлении» удалены.
-- **Модули админки** (боковое меню, хлебные крошки) — `\Simflex\Admin\AdminModules` (конфиг `adminModulesClass`),
+- **Модули админки** (боковое меню, хлебные крошки) — `\Simflex\Core\Admin\AdminModules` (конфиг `adminModulesClass`),
   в `module_item` хранятся только модули сайта; `ModuleType` и `moduleType()` удалены.
 - **Шаблоны страниц в коде:** `provider/templates.php` приложения (`ContentTemplate`, `ContentTemplateBlock`,
   `ContentTemplates`); страница хранит ключ шаблона (`content.template`). Таблицы `content_template`,
   `content_template_param` и их модели удалены.
-- **Задачи cron в коде:** `provider/cron.php` (`\Simflex\Cron\CronRegistry`, `CronJob`); таблица `cron` хранит
+- **Задачи cron в коде:** `provider/cron.php` (`\Simflex\Core\Cron\CronRegistry`, `CronJob`); таблица `cron` хранит
   только активность и расписание.
 - **Сидеров больше нет:** начальные данные пишет миграция, создающая таблицу (`$s->seed(callable)`). Удалены
   `Seeder`, `Cli\Seeder` (`./sf seed/run`), модель и таблица `seeder`, атрибут `Manual`.
@@ -56,7 +56,7 @@
   `UserRole::addPriv()`, `Chain::getUserModelClass()`, `ModelContent::aqModifyWithTemplate()` (шаблон страницы —
   ключ в `content.template`, см. `ContentTemplates`).
 - **Корень веб-сервера — каталог `public/` сайта;** статика ядра публикуется в `public/cache/assets/<hash>/`
-  (`\Simflex\Core\Assets`), исходники ядра и сайта снаружи недоступны.
+  (`\Simflex\Core\Http\Assets`), исходники ядра и сайта снаружи недоступны.
 - **Настройки расширений** лежат в `provider/extensions/` сайта (было `provider/extension/`); в пакете —
   `src/provider/extensions/`.
 - **Адрес админки** задаётся конфигом `adminPath` (по умолчанию `/admin`), ссылки меню — относительно него.
@@ -73,41 +73,70 @@
   файлы — в `upload_file` (в поле — только имя), а файлы `FieldVirtualTable` — на адрес формы, где их принимал
   `Handlers\Content::ajaxUpload()` (удалён вместе с переопределением `content()`).
 
-- **Структура ядра:** из `Simflex\Core` вынесены HTTP-слой и самостоятельные подсистемы.
+- **Namespace ядра — `Simflex\Core\`** (было `Simflex\`), каталог `src/Core` — `src/System`, HTTP-слой и
+  самостоятельные подсистемы вынесены из него. Имена 3.6 → 4.0 (все — от `Simflex\`):
 
     | Было | Стало |
     |---|---|
-    | `Core\Api\*`, `Core\Cookie\*`, `Core\Html\*` | `Http\Api\*`, `Http\Cookie\*`, `Http\Html\*` |
-    | `Core\Request`, `Core\Response` | `Http\Request`, `Http\Response` |
-    | `Core\ComponentBase`, `Core\ControllerBase`, `Core\Controller\*`, `Core\Routing\*` | `Http\ComponentBase`, `Http\ControllerBase`, `Http\Controller\*`, `Http\Routing\*` |
-    | `Core\Console\*`, `Core\ConsoleBase` | `Console\*`, `Console\ConsoleBase` |
-    | `Core\Cron\*` | `Cron\*` |
-    | `Core\DB\*`, `Core\DB` | `DB\*`, `DB\DB` |
-    | `Core\Helpers\*`, `Core\Time`, `Core\TimeDiff` | `Helpers\*`, `Helpers\Time`, `Helpers\TimeDiff` |
-    | `Core\Logger\*`, `Core\Log` | `Logger\*`, `Logger\Log` |
-    | `Core\Mail\*` | `Mail\*` |
-    | `Core\Models\*` | `Models\*` |
-    | `Core\Sms\*`, `Core\Sms` | `Sms\*`, `Sms\Sms` |
-    | `Core\Telegram\*` | `Telegram\*` |
-    | `Core\Wrapper\*` (DebugBar, Whoops), `Core\Profiler` | `Debug\*`, `Debug\Profiler` |
-    | `Core\HasAdminParams` | `Admin\HasAdminParams` |
-    | `Core\Factory` | `Core\DI\Factory` |
-    | `Core\File`, `Core\Image` | `Media\File`, `Media\Image` |
+    | `Core\Container`, `EventManager`, `ConfigBase`, `Privilege`, `CodeRegistry`, `ExtensionRegistry`, `ModelBase`, `ModuleBase`, `Buffer`, `Cache`, `Session`, `Core\DI\*`, `Core\Events\*`, `Core\Errors\*`, `Core\Middleware\*` | `Core\System\…` |
+    | `Core\Core` (ядро сайта), `Core\Page` | `Core\Http\Page`; загрузка сайта — `Core\Kernel` |
+    | `Admin\Core`, `Admin\Page` | `Core\Admin\Page` |
+    | `Core\View`, `Core\Assets`, `Core\SitemapBase` | `Core\Http\View`, `Core\Http\Assets`, `Core\Http\SitemapBase` |
+    | `Core\Api\*`, `Core\Cookie\*`, `Core\Html\*`, `Core\Request`, `Core\Response` | `Core\Http\Api\*`, `Core\Http\Cookie\*`, `Core\Http\Html\*`, `Core\Http\Request`, `Core\Http\Response` |
+    | `Core\ComponentBase`, `Core\ControllerBase`, `Core\Controller\*`, `Core\Routing\*` | `Core\Http\ComponentBase`, `Core\Http\ControllerBase`, `Core\Http\Controller\*`, `Core\Http\Routing\*` |
+    | `Core\Alert\Site\Alert` | `Core\Extensions\Alert\Alert` |
+    | `Core\Console\*`, `Core\ConsoleBase` | `Core\Console\*`, `Core\Console\ConsoleBase` |
+    | `Core\Cron\*`, `Core\Mail\*`, `Core\Models\*`, `Core\Telegram\*` | `Core\Cron\*`, `Core\Mail\*`, `Core\Models\*`, `Core\Telegram\*` |
+    | `Core\DB\*`, `Core\DB` | `Core\DB\*`, `Core\DB\DB` |
+    | `Core\Helpers\*`, `Core\Time`, `Core\TimeDiff` | `Core\Helpers\*`, `Core\Helpers\Time`, `Core\Helpers\TimeDiff` |
+    | `Core\Logger\*`, `Core\Log` | `Core\Logger\*`, `Core\Logger\Log` |
+    | `Core\Sms\*`, `Core\Sms` | `Core\Sms\*`, `Core\Sms\Sms` |
+    | `Core\Wrapper\*` (DebugBar, Whoops), `Core\Profiler` | `Core\Debug\*`, `Core\Debug\Profiler` |
+    | `Core\HasAdminParams` | `Core\Admin\HasAdminParams` |
+    | `Core\Factory` | `Core\System\DI\Factory` |
+    | `Core\File`, `Core\Image` | `Core\Media\File`, `Core\Media\Image` |
+    | `Models\ModelSettings`, `Extensions\Content\Models\ModelContent` | `Core\Models\Settings`, `Core\Extensions\Content\Models\Content` |
+    | `Admin\*`, `Auth\*`, `Extensions\*`, `Layout\*` | `Core\Admin\*`, `Core\Auth\*`, `Core\Extensions\*`, `Core\Layout\*` |
 
-    Все имена — в namespace `Simflex\`. Замена в коде сайта и расширений — по таблице, относительные имена вида
-    `DB\AQ` (при `use Simflex\Core\DB`) — на `use Simflex\DB\AQ`.
-- **`Core` и `Page` разделены:**
+    Autoload пакета: `"Simflex\\Core\\": "src"`. Замена в коде сайта и расширений — по таблице.
+- **Загрузка сайта — `Simflex\Core\Kernel`** (в 3.6 — `console.php`, `cron.php` и загрузчик в `index.php` сайта):
+  точки входа создают ядро с корнем сайта — `new Kernel(dirname(__DIR__))->runHttp()`,
+  `new Kernel(__DIR__)->runConsole()`. События `PreCoreInit`/`PostCoreInit` → `PrePageInit`/`PostPageInit`.
+- **Глобальных констант `SF_*` нет:** `SF_ROOT_PATH`, `SF_PUBLIC_PATH`, `SF_CORE_ROOT_PATH` →
+  `Container::getPaths()->getRoot()`, `getPublic()`, `getCore()` (`System\Paths`, принимают путь от корня);
+  `SF_LOCATION`, `SF_LOCATION_*` → `Container::getLocation()`, перечисление `System\Location` (`Site`, `Admin`, `Api`,
+  `Cli`). `src/constants.php` и `ide-stubs.php` удалены; `constants.php` сайту не нужен. В конфиге `$logPath`
+  по умолчанию пустой (лог — `log/` сайта, `getLogPath()`), `$files` — только переопределённые файлы `provider/`.
+- **Страница — объект в контейнере** (`Container::getPage()`), ядра в контейнере нет (`getCore()` удалён):
 
     | Было | Стало |
     |---|---|
-    | `Core::siteParam($key, ...)`, `Core::siteParam()`, `Admin\Core::siteParam($key)` | `SiteSettings::get($key, ...)`, `SiteSettings::getAll()` |
-    | `Core::menu()`, `Core::menu('by_id')`, `Core::menu('by_link')`, `Core::menuCurItem()` | `SiteMenu::getTree()`, `getById()`, `getByLink()` (ключ — ссылка), `getCurrent()` |
-    | `Page::css()`, `js()`, `jsInline()`, `addAsset()`, `metaCSS()` | `PageAssets::css()`, `js()`, `jsInline()`, `add()`, `getCssHtml()` |
-    | `Page::seo()`, `addMetaRaw()`, `title()`, `Page::$override`, `Page::$seoTitle` | `PageSeo::seo(..., exactTitle:)`, `addMetaRaw()`, `getFullTitle()`, `getTitle()`, `getDescription()`, `getKeywords()` |
+    | `Core::init()`, `Core::getComponent()`, `Core::execute()`, `Page::init()` | `$page->init()`, `initRequest()`, `getComponent()`, `execute()` (`Http\Page`) |
+    | `Page::content()`, `position()`, `meta()`, `metaJS()`, `moduleById()` | `$page->getContent()`, `getPosition()`, `getMeta()`, `getMetaJs()`, `getModuleById()`; в теме — переменная `$page` |
+    | `Core::siteParam($key, ...)`, `Core::siteParam()`, `Admin\Core::siteParam($key)` | `System\Settings::get($key, ...)`, `Settings::getAll()` |
+    | `Core::menu()`, `Core::menu('by_id')`, `Core::menu('by_link')`, `Core::menuCurItem()` | `Http\Menu::getTree()`, `getById()`, `getByLink()` (ключ — ссылка), `getCurrent()` |
+    | `Page::css()`, `js()`, `jsInline()`, `addAsset()`, `metaCSS()` | `Http\PageAssets::css()`, `js()`, `jsInline()`, `add()`, `getCssHtml()` |
+    | `Page::seo()`, `addMetaRaw()`, `title()`, `Page::$override`, `Page::$seoTitle` | `Http\PageSeo::seo(..., exactTitle:)`, `addMetaRaw()`, `getFullTitle()`, `getTitle()`, `getDescription()`, `getKeywords()` |
+    | `Admin\Core::url()`, `root()`, `isAdminPath()`, `webVendorPath()` | `Admin\Page::url()`, `root()`, `isAdminPath()`, `webVendorPath()` (статические) |
+    | `Admin\Core::path()`, `uri()`, `menu()`, `menuCurItem()`, `crumbs()`, `ajax()`, `$isAjax` | `Admin\Page::get()->getPath()`, `getUri()`, `getMenu()`, `getCurrentMenuItem()`, `getCrumbs()`, `isAjax()` |
+    | `Admin\Page::css()`, `js()`, `coreCss()`, `coreJs()`, `meta()`, `content()`, `position()` | `Admin\Page::get()->css()`, `js()`, `coreCss()`, `coreJs()`, `getMeta()`, `getContent()`, `getPosition()` |
 
-    Классы — в `Simflex\Core`. Удалены `Core::error404()`, `isHttps()`, `httpProtocol()`, `webVendorPath()`,
-    `vendorPath()`, `getExtensions()`, `Page::module()`, `Page::$showAside`, `ExtensionBase::root()`, `link()`.
-    `Page::meta()` выводит и description, keywords; `Resolver::setMenuByLink()` → `setMenu()` (ключ — ссылка пункта).
+    Удалены `Core::error404()`, `isHttps()`, `httpProtocol()`, `getExtensions()`, `Page::module()`,
+    `Page::$showAside`, `ExtensionBase::root()`, `link()`. `getMeta()` выводит и description, keywords;
+    `Resolver::setMenuByLink()` → `setMenu()` (ключ — ссылка пункта).
+- **Запрос только через `Request`:** ядро не читает `$_GET`, `$_POST`, `$_REQUEST`, `$_FILES`, `$_SERVER`, сессия —
+  `System\Session`. `Request::get()`, `post()`, `request()`, `cookie()`, `file()` с ключом `0` возвращают параметр,
+  а не все параметры. Раздел админки получает запрос в `$this->request` (`Admin\Handler`), поле админки читает
+  отправленное значение через `getPosted()`, id записи — `getRecordId()`; подмена `$_POST` для групп параметров
+  заменена на `Field::setPosted()`. `CliRequest` больше не заполняет `$_GET`/`$_POST`/`$_REQUEST`. Нормализовать
+  данные перед сохранением — в `getInsertData()` / `getUpdateData()` раздела, а не правкой `$_POST`.
+- **`FieldVirtualTable::$query`** — только `AQ` (`$queryCount`, `$binds` и SQL-строки удалены); `getPOST()` полей
+  `FieldDate`, `FieldDateTime`, `FieldAlias` возвращают значение без экранирования (оно передаётся параметром запроса).
+- **Сообщения — один класс `Extensions\Alert\Alert`** для сайта и админки (`Admin\Plugins\Alert\Alert` удалён,
+  `Core\Alert\Site\Alert` перенесён): вёрстка и ключ сессии выбираются по окружению (`Container::getLocation()`),
+  вывод сообщений админки — `Admin/theme/tpl/alert.tpl`. Раздел ошибок в админке — `error` (был `danger`), `has()`
+  возвращает `bool`, `getHTML()` удаляет только выведенные сообщения.
+- **Удалено поле `FieldCategorySelect`** (таблица `shared_category` не создавалась ни одной миграцией).
 - **`Helpers\Time`:** методы в camelCase — `what_format()` → `detectFormat()`, `userfull()` → `userFull()`,
   `sub_times()` → `subTimes()`, `form_dates()` → `formDates()`; удалены `startTimer()`, `getExecTime()`, `getMonths()`,
   `$daysInMonth`. `unix()` возвращает `int`, форматирующие методы — `string`.
@@ -116,7 +145,7 @@
   раздела админки (с переопределениями `save()` наследников), удаление записи раздела (`deleteItem()`)
   и `CronRegistry::sync()` выполняются в транзакции.
 - **Одна почта:** старый `Simflex\Core\Mail` (`Mail::create()->send()`, windows-1251, журнал `mail_log` без миграции)
-  удалён, письма отправляет `Simflex\Mail\Mailer` (`Mailer::get()->sendText()`, `sendPlain()`, `sendTemplate()`).
+  удалён, письма отправляет `Simflex\Core\Mail\Mailer` (`Mailer::get()->sendText()`, `sendPlain()`, `sendTemplate()`).
 - Удалены `Simflex\Core\Path` (вместо `Path::dirToHref()` — `Assets::publish()`), заглушки
   `Core\Component\Stub\*`, умолчания `src/routes.php`, `src/events.php`, `src/services.php`: `ConfigBase::$files`
   по умолчанию указывает на `provider/*.php` сайта, отсутствующий файл — пустой список.
@@ -125,8 +154,16 @@
 
 - `AQ::groupBy()`, `having()`, `unionAll()`, `union()` — группировка и объединение запросов построителем;
   `AQ::insertInto($table, $columns)` — `INSERT INTO ... SELECT` выборкой построителя.
-- `FieldVirtualTable::$query` принимает запрос `AQ`: количество строк считается по нему же (`$queryCount` не нужен).
-- **Разделы админки в коде.** `\Simflex\Admin\Handler` — раздел (`content()`), `\Simflex\Admin\Table\Table` —
+- `FieldVirtualTable::$query` — запрос `AQ`: количество строк считается по нему же.
+- `System\Paths` и `System\Location` — пути на диске и окружение (`Container::getPaths()`, `getLocation()`).
+- `Request::create()` — запрос из данных (тесты, внутренние запросы); `Request::server()`, `getUri()`, `getIp()`,
+  `getUserAgent()`.
+- `ModelBase::upsert($data, $update)` — `INSERT ... ON DUPLICATE KEY UPDATE` одним запросом (переключатель привилегий).
+- `DB::insert($table, $rows)` — вставка строк в таблицу без модели одним запросом (пара к `DB::delete()`),
+  `DB::hasTable()`; `ModelBase::bulkUpdate()` принимает выражения `Expr` (`NOW()` и т.п.).
+- Модели `Models\SmsLog`, `SmsDriver`, `AdminWidget`, `UserPrivilege`: `Sms`, виджеты админки и переключатель
+  привилегий работают через ORM.
+- **Разделы админки в коде.** `\Simflex\Core\Admin\Handler` — раздел (`content()`), `\Simflex\Core\Admin\Table\Table` —
   табличный раздел. Таблица объявляется в самом классе: `protected static string $model` (обязательно),
   `getFields()`, `getParams()`, `$defaultOrderBy`, `$defaultOrderDesc`, `$privilegeAdd/Edit/Delete`, `$perPage`;
   поведение — методы того же класса. Реестр разделов — `Admin/handlers.php` ядра и приложения.
@@ -148,11 +185,11 @@
   скопированные (`PackageInstaller::copyMigrations()`).
 - `Menu::add(..., parent:, before:)`, `remove()`, `setHandler()` — свой обработчик пункта меню ядра;
   `AdminModules` с привязкой модулей к разделам (`sections`).
-- `\Simflex\Core\CodeRegistry` — общий базовый класс реестров в коде (`Privilege`, `Menu`, `AdminModules`).
+- `\Simflex\Core\System\CodeRegistry` — общий базовый класс реестров в коде (`Privilege`, `Menu`, `AdminModules`).
 - Поля выбора из реестров (привилегия, компонент, модуль, задача cron, шаблон страницы) — выпадающий список с поиском,
   как у внешнего ключа.
-- `\Simflex\Core\View` — вывод шаблона в строку; HTML полей админки вынесен в `Admin/Fields/tpl/*.tpl`.
-- `\Simflex\Core\Assets` — публикация статики ядра; `asset()` добавляет к адресу версию файла (`?v=mtime`).
+- `\Simflex\Core\Http\View` — вывод шаблона в строку; HTML полей админки вынесен в `Admin/Fields/tpl/*.tpl`.
+- `\Simflex\Core\Http\Assets` — публикация статики ядра; `asset()` добавляет к адресу версию файла (`?v=mtime`).
 - `env()`, `asset()`, `getSimflexVersion()` — в `src/functions.php` ядра (composer `autoload.files`).
 - ORM: `AQ::fetchColumn()`, `AQ::getBinds()`, псевдоним таблицы в `join()`/`leftJoin()` (`alias:`),
   `ModelSettings::values()`, модели `Log`, `Seo`, `UserPrivilegePersonal`.
@@ -173,6 +210,11 @@
 
 ### Изменено
 
+- `Str::sizeToStr()` — размер с пробелом («12 кб»), для отсутствующего файла — «0 б»; поля `FieldFile`,
+  `FieldImage` показывают размер через него.
+- Запросы к базе в ядре — через модели и `AQ` (страница сайта, меню, SEO, модули, виджеты и вход в админку,
+  поля-связи, привилегии пользователя, `Sms`, списки страниц `Content`); прямой SQL остался только в слое ORM
+  (`DB`, `AQ`, `Where`, `ModelBase`, `Schema`).
 - `ConsoleBase::toBackground()` запускает команду через `sf` сайта.
 - Список раздела, количество и карточка записи собираются через `AQ`: значения фильтров передаются параметрами
   запроса, внешние ключи присоединяются `JOIN` с псевдонимом, ограничения по привилегиям — `Table::getScope()`.
@@ -199,6 +241,10 @@
 
 ### Исправлено
 
+- `Content::getChildren()` возвращал каждую страницу дважды; поиск по параметрам (`?search[]=`) и порядковый номер
+  новой записи (`FieldNPP` с фильтрами раздела) подставляли значения в SQL — теперь параметрами запроса.
+- Поля `FieldDate`, `FieldDateTime`, `FieldAlias` экранировали значение, которое затем ещё раз передавалось
+  параметром: кавычка сохранялась с обратной косой чертой.
 - Description и keywords страницы не выводились: тема читала `Page::$override` (всегда пустой), а заголовок из
   блока «Мета» страницы (`meta_title`) не применялся.
 - Ajax-запрос модуля (`sf_module_id`) не возвращал HTML модуля.
@@ -236,15 +282,20 @@
 ### Переход с 3.6
 
 1. PHP 8.4, расширение `mbstring`; корень веб-сервера — `public/`.
-2. Описания таблиц из `struct_*` — в классы разделов `App\Admin\Handlers\*` (`extends \Simflex\Admin\Table\Table`,
+2. Описания таблиц из `struct_*` — в классы разделов `App\Admin\Handlers\*` (`extends \Simflex\Core\Admin\Table\Table`,
    `$model`, `getFields()`), классы — в `Admin/handlers.php` сайта.
 3. Пункты `admin_menu` — в `App\Admin\Menu` (`static::add(new MenuItem(...))`), конфиг `adminMenuClass`.
 4. Компоненты и модули — в `provider/components.php` и `provider/modules.php`; параметры модулей — `adminParams()`.
-5. Привилегии проекта — в наследнике `\Simflex\Core\Privilege` (конфиг `privilegeClass`); в ролях и меню —
+5. Привилегии проекта — в наследнике `\Simflex\Core\System\Privilege` (конфиг `privilegeClass`); в ролях и меню —
    имя привилегии вместо id.
 6. Шаблоны страниц — в `provider/templates.php`, задачи cron — в `provider/cron.php`.
 7. Начальные данные сидеров — в `$s->seed()` миграций.
 8. Вывод компонентов, модулей и полей — `return $this->render(...)` вместо `echo`/`include`.
+9. Имена классов ядра — `Simflex\Core\…` по таблице «Namespace ядра»; точки входа — `new Kernel(<корень>)->runHttp()`
+   и `->runConsole()`, без `constants.php`; `SF_*` — `Container::getPaths()`, `Container::getLocation()`.
+10. Тема: `Page::meta()`, `content()`, `metaJS()` → `$page->getMeta()`, `getContent()`, `getMetaJs()`.
+11. `$_GET`, `$_POST`, `$_REQUEST`, `$_SERVER`, `$_FILES` → `Request` (`Container::getRequest()`, в разделах админки —
+    `$this->request`), `$_SESSION` → `System\Session`; прямой SQL — модели и `AQ`.
 
-Подробнее — документация (`simflex-docs`): «Создание таблиц», «Навигация», «Привилегии», «Модели и запросы (ORM)»,
-«Новый раздел в админке», «Подмена обработчика раздела ядра».
+Подробнее — документация (`simflex-docs`): «Как устроен сайт», «Создание таблиц», «Навигация», «Привилегии»,
+«Модели и запросы (ORM)», «Новый раздел в админке», «Подмена обработчика раздела ядра».

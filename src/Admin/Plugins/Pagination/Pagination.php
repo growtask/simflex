@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Plugins\Pagination;
+namespace Simflex\Core\Admin\Plugins\Pagination;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\View;
 
 /**
  * Страницы списка: ссылки на страницы и LIMIT текущей

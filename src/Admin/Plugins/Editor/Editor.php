@@ -1,9 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Plugins\Editor;
+namespace Simflex\Core\Admin\Plugins\Editor;
 
-use Simflex\Admin\Core;
-use Simflex\Core\Container;
+use Simflex\Core\Admin\Page;
 
 /**
  * Класс Editor
@@ -20,8 +19,8 @@ class Editor
      */
     public static function tinymce(string $type, string $css_class = ''): string
     {
-        $tinyMcePath = Core::webVendorPath() . '/Plugins/Editor/tinymce/tinymce.min.js';
-        Container::getPage()::js($tinyMcePath . '" referrerpolicy="origin', 10);
+        $tinyMcePath = Page::webVendorPath() . '/Plugins/Editor/tinymce/tinymce.min.js';
+        Page::get()->js($tinyMcePath . '" referrerpolicy="origin', 10);
 
         if (!empty(self::$inited[$type])) {
             return '';

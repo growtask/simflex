@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Extensions\Install;
+namespace Simflex\Core\Extensions\Install;
 
 use Composer\Installer\PackageEvent;
 

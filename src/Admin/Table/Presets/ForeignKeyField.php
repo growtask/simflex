@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Table\Presets;
+namespace Simflex\Core\Admin\Table\Presets;
 
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Table\FieldDefinition;
 
 /**
  * Ссылка на запись другой таблицы, выбирается из списка её записей.

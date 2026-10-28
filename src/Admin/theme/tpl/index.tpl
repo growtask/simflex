@@ -1,12 +1,11 @@
 <?php
 
-use Simflex\Admin\Page;
-use Simflex\Core\Container;
+use Simflex\Core\System\Container;
 
-\Simflex\Admin\Plugins\Alert\Alert::init();
+\Simflex\Core\Extensions\Alert\Alert::init();
 
-Page::coreJs('/theme/js/table.js');
-Page::coreJs('/theme/js/vtable.js');
+$page->coreJs('/theme/js/table.js');
+$page->coreJs('/theme/js/vtable.js');
 
 ?>
 
@@ -21,10 +20,10 @@ Page::coreJs('/theme/js/vtable.js');
     <link rel="stylesheet" href="<?= asset('fonts/inter.css') ?>"/>
     <link rel="shortcut icon" href="<?= asset('img/favicon-admin.ico') ?>" type="image/x-icon">
 
-    <?php $fmAssets = \Simflex\Core\Assets::publish(SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/assets'); ?>
+    <?php $fmAssets = \Simflex\Core\Http\Assets::publish(\Simflex\Core\System\Container::getPaths()->getRoot('vendor/growtask/simflex-file-manager/src/assets')); ?>
     <link rel="stylesheet" href="<?= $fmAssets ?>/css/styles.css"/>
     <script src="https://cdn.sn9.ru/js/jquery/3.7.1/jquery.min.js"></script>
-    <script>window.sfAdminUrl = '<?= \Simflex\Admin\Core::webVendorPath() ?>';</script>
+    <script>window.sfAdminUrl = '<?= \Simflex\Core\Admin\Page::webVendorPath() ?>';</script>
 
     <noscript>
         <style>
@@ -47,10 +46,10 @@ Page::coreJs('/theme/js/vtable.js');
 
     <title>
         <?php
-        echo \Simflex\Admin\Core::menuCurItem('name') ? \Simflex\Admin\Core::menuCurItem('name') . ' |' : '' ?>
+        echo \Simflex\Core\Admin\Page::get()->getCurrentMenuItem('name') ? \Simflex\Core\Admin\Page::get()->getCurrentMenuItem('name') . ' |' : '' ?>
         Simflex Admin </title>
 
-    <?= Page::meta() ?>
+    <?= $page->getMeta() ?>
 </head>
 
 <body>
@@ -61,7 +60,7 @@ Page::coreJs('/theme/js/vtable.js');
         <?php
         include 'partial/sidebar.tpl'; ?>
         <div class="layout__content">
-            <?= Page::content() ?>
+            <?= $page->getContent() ?>
         </div>
     </div>
     <?php
@@ -85,10 +84,10 @@ include 'modals/point.tpl'; ?>
 
 <div class="f-manager-mgr">
     <?php
-    include SF_ROOT_PATH . '/vendor/growtask/simflex-file-manager/src/tpl/index.tpl'; ?>
+    include \Simflex\Core\System\Container::getPaths()->getRoot('vendor/growtask/simflex-file-manager/src/tpl/index.tpl'); ?>
 </div>
 
-<iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= $_SERVER['HTTP_HOST'] ?>"
+<iframe id="iframe-help" src="https://growtask.ru/remoteform.php?tpl=help&ws=https://<?= \Simflex\Core\System\Container::getRequest()->getHost() ?>"
         frameborder="0"></iframe>
 
 <script>
@@ -126,7 +125,7 @@ include 'modals/point.tpl'; ?>
 <script>
     fileManager.assetsDir = '<?= $fmAssets ?>';
     fileManager.rootDir = '/uf';
-    fileManager.apiBase = '<?= \Simflex\Admin\Core::url('fm') ?>';
+    fileManager.apiBase = '<?= \Simflex\Core\Admin\Page::url('fm') ?>';
 </script>
 
 <?= Container::getConfig()->devMode ? Container::get('debugbar')->render() : '' ?>

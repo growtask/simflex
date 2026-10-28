@@ -1,15 +1,15 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Привилегия, выданная пользователю лично
  *
  * @property int $id
  * @property int $user_id
- * @property string $privilege Имя привилегии, см. \Simflex\Core\Privilege
+ * @property string $privilege Имя привилегии, см. \Simflex\Core\System\Privilege
  */
 class UserPrivilegePersonal extends ModelBase
 {

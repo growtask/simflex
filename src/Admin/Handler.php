@@ -1,8 +1,10 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\Request;
+use Simflex\Core\Http\View;
+use Simflex\Core\System\Container;
 
 /**
  * Раздел админки, указанный в пункте меню (MenuItem::$handler). Табличный раздел наследует Table,
@@ -13,9 +15,13 @@ abstract class Handler
     /** Заголовок раздела: название его пункта меню */
     public string $title = '';
 
+    /** Запрос: параметры читаются только через него, а не из $_GET, $_POST, $_REQUEST */
+    protected Request $request;
+
     public function __construct()
     {
-        $this->title = (string)(Core::menuCurItem('name') ?? '');
+        $this->request = Container::getRequest() ?? new Request();
+        $this->title = (string)(Page::get()->getCurrentMenuItem('name') ?? '');
     }
 
     /**

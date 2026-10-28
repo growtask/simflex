@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Table\Presets;
+namespace Simflex\Core\Admin\Table\Presets;
 
-use Simflex\Admin\Fields\FieldNPP;
-use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Fields\FieldNPP;
+use Simflex\Core\Admin\Table\FieldDefinition;
 
 /**
  * Порядок записей («№ п/п»): меняется перетаскиванием строк в списке

@@ -1,13 +1,13 @@
 <?php
 
-namespace Simflex\Extensions\Menu;
+namespace Simflex\Core\Extensions\Menu;
 
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Core\Container;
-use Simflex\Core\ModuleBase;
-use Simflex\Core\SiteMenu;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\ModuleBase;
+use Simflex\Core\Http\Menu as SiteMenu;
 
 /**
  * Модуль «Меню»: выводит меню сайта (таблица menu) списком ul/li.

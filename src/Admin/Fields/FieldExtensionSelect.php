@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
 /**
  * Основа полей выбора значения из реестра в коде (классы, привилегии, таблицы...),
- * см. \Simflex\Core\ExtensionRegistry. Выводится тем же выпадающим списком, что и внешний ключ
+ * см. \Simflex\Core\System\ExtensionRegistry. Выводится тем же выпадающим списком, что и внешний ключ
  */
 abstract class FieldExtensionSelect extends Field
 {
@@ -66,7 +66,7 @@ abstract class FieldExtensionSelect extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $value = $simple && $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
+        $value = $this->getPosted(group: $simple ? $group : null);
         return $value === '' && !$simple && $this->e2n ? null : $value;
     }
 }

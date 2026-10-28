@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Buttons\ButtonMenu;
+namespace Simflex\Core\Layout\Components\UI\Core\Buttons\ButtonMenu;
 
 enum ButtonMenuTheme: string
 {

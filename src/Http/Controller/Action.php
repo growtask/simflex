@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Http\Controller;
+namespace Simflex\Core\Http\Controller;
 
 use Attribute;
 

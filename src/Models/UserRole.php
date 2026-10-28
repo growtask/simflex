@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
 use Exception;
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * Класс UserRole
@@ -31,7 +31,7 @@ class UserRole extends ModelBase
     }
 
     /**
-     * @param string $privilege Имя привилегии, см. \Simflex\Core\Privilege
+     * @param string $privilege Имя привилегии, см. \Simflex\Core\System\Privilege
      * @throws Exception
      */
     public function addPrivilege(string $privilege): void

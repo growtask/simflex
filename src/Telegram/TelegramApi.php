@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Telegram;
+namespace Simflex\Core\Telegram;
 
 use Curl\Curl;
-use Simflex\Core\Container;
-use Simflex\Core\DI\Service;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\DI\Service;
 
 /**
  * Сервис Telegram API

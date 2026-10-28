@@ -1,8 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\Request;
+use Simflex\Core\Http\View;
+use Simflex\Core\System\Container;
 
 class Field
 {
@@ -50,6 +52,9 @@ class Field
      * Table::save() вызывает getPOST() таких полей ещё раз после вставки, а до неё они ничего не пишут
      */
     public bool $isSavedById = false;
+
+    /** @var array|null Отправленные значения формы, если не POST запроса (группа параметров, см. setPosted()) */
+    protected ?array $posted = null;
 
     public function __construct($row)
     {
@@ -218,18 +223,56 @@ class Field
         return $this->render('input-hidden', ['name' => $this->inputName(), 'value' => $value]);
     }
 
+    /**
+     * Значения формы, из которых поле берёт своё значение (getPosted()): по умолчанию - POST запроса,
+     * для полей группы параметров раздел передаёт значения группы. null - снова POST запроса
+     */
+    public function setPosted(?array $posted): void
+    {
+        $this->posted = $posted;
+    }
+
+    /**
+     * Отправленное значение формы
+     * @param string|null $name Имя значения, по умолчанию - имя поля
+     * @param string|int|null $group Группа: значение $posted[$group][$name]
+     */
+    protected function getPosted(?string $name = null, string|int|null $group = null): mixed
+    {
+        $posted = $this->posted ?? $this->getRequest()->post();
+        if ($group !== null) {
+            $posted = $posted[$group] ?? [];
+        }
+
+        return $posted[$name ?? $this->name] ?? null;
+    }
+
+    /**
+     * Id записи раздела: pkValue (после вставки новой записи его задаёт раздел) или параметр запроса
+     */
+    protected function getRecordId(): int
+    {
+        return (int)($this->pkValue ?: $this->getRequest()->request($this->tablePk, 0));
+    }
+
+    protected function getRequest(): Request
+    {
+        return Container::getRequest() ?? new Request();
+    }
+
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
         if ($simple) {
-            return $group !== null ? $_POST[$group][$this->name] : $_POST[$this->name];
+            return $this->getPosted(group: $group);
         }
-        return $this->e2n && $_POST[$this->name] === '' ? null : $_POST[$this->name];
+        $value = $this->getPosted();
+        return $this->e2n && $value === '' ? null : $value;
     }
 
     public function check(): array
     {
         $errors = [];
-        if ($this->required && (!isset($_POST[$this->name]) || $_POST[$this->name] === '')) {
+        if ($this->required && in_array($this->getPosted(), [null, ''], true)) {
             $errors[] = 'Обязательно для заполнения';
         }
         return $errors;

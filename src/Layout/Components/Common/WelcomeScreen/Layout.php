@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Layout\Components\Common\WelcomeScreen;
+namespace Simflex\Core\Layout\Components\Common\WelcomeScreen;
 
-use Simflex\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutBase;
 
 class Layout extends LayoutBase
 {

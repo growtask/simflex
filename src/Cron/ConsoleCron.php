@@ -1,11 +1,12 @@
 <?php
 
-namespace Simflex\Cron;
+namespace Simflex\Core\Cron;
 
-use Simflex\Console\Command;
-use Simflex\Console\Help;
-use Simflex\Console\ConsoleBase;
-use Simflex\Logger\Log;
+use Simflex\Core\System\Container;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\Help;
+use Simflex\Core\Console\ConsoleBase;
+use Simflex\Core\Logger\Log;
 
 /**
  * Команды cron: ./sf cron/<команда>.
@@ -56,8 +57,8 @@ class ConsoleCron extends ConsoleBase
      */
     public static function getLine(): string
     {
-        $root = escapeshellarg(SF_ROOT_PATH);
-        return "* * * * * cd $root && " . PHP_BINARY . ' sf cron/run > /dev/null 2>&1 ' . static::MARK . SF_ROOT_PATH;
+        $root = escapeshellarg(Container::getPaths()->getRoot());
+        return "* * * * * cd $root && " . PHP_BINARY . ' sf cron/run > /dev/null 2>&1 ' . static::MARK . Container::getPaths()->getRoot();
     }
 
     /**
@@ -68,7 +69,7 @@ class ConsoleCron extends ConsoleBase
         exec('crontab -l 2>/dev/null', $lines);
         return array_values(array_filter(
             $lines,
-            fn(string $line) => !str_ends_with($line, static::MARK . SF_ROOT_PATH)
+            fn(string $line) => !str_ends_with($line, static::MARK . Container::getPaths()->getRoot())
         ));
     }
 

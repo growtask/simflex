@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\DB\DB;
 
 class FieldTags extends Field
 {
@@ -12,18 +13,13 @@ class FieldTags extends Field
     {
         if (!$this->values) {
             // загрузка данных
-            $q = DB::query('SELECT DISTINCT ' . $this->name . ' FROM ' . $this->table);
-            while ($r = DB::fetch($q)) {
-                if (!$r[$this->name]) {
-                    continue;
+            $query = new AQ()->select('DISTINCT ' . DB::wrapName($this->name))->from($this->table);
+            foreach ($query->fetchColumn() as $tags) {
+                if ($tags) {
+                    array_push($this->values, ...explode(',', (string)$tags));
                 }
-
-                foreach (explode(',', $r[$this->name]) as $i) {
-                    $this->values[] = $i;
-                }
-
-                $this->values = array_unique($this->values);
             }
+            $this->values = array_values(array_unique($this->values));
         }
 
         return $this->render('tags', [

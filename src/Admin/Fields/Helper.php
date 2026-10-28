@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
 class Helper
 {
@@ -8,7 +8,7 @@ class Helper
     {
         $class = $row['class'];
         if (strpos($class, '\\') === false) {
-            $class = "Simflex\Admin\Fields\\$class";
+            $class = "Simflex\Core\Admin\Fields\\$class";
         }
         return new $class($row);
     }

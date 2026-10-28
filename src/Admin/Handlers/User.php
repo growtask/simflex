@@ -1,16 +1,16 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldPassword;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\ForeignKeyField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Table;
-use Simflex\Models\User as UserModel;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldPassword;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\ForeignKeyField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Models\User as UserModel;
 
 class User extends Table
 {

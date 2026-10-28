@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Badge;
+namespace Simflex\Core\Layout\Components\UI\Core\Badge;
 
 enum BadgeStyle: string
 {

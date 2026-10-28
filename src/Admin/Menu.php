@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Core\CodeRegistry;
-use Simflex\Core\ExtensionConfig;
-use Simflex\Core\Privilege;
+use Simflex\Core\System\CodeRegistry;
+use Simflex\Core\System\ExtensionConfig;
+use Simflex\Core\System\Privilege;
 
 /**
  * Меню админки, объявленное в коде. Пункт определяется своей ссылкой.

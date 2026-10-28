@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Http\Html;
+namespace Simflex\Core\Http\Html;
 
-use Simflex\Http\Response;
-use Simflex\Core\View;
+use Simflex\Core\Http\Response;
+use Simflex\Core\Http\View;
 
 class HtmlResponse extends Response
 {

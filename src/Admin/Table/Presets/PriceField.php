@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Table\Presets;
+namespace Simflex\Core\Admin\Table\Presets;
 
-use Simflex\Admin\Fields\FieldDouble;
-use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Fields\FieldDouble;
+use Simflex\Core\Admin\Table\FieldDefinition;
 
 /**
  * Цена (FieldDouble): в списке с пробелами между разрядами, дробная часть — сколько знаков в значении.

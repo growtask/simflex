@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Buttons\Button;
+namespace Simflex\Core\Layout\Components\UI\Core\Buttons\Button;
 
 enum ButtonStyle: string
 {

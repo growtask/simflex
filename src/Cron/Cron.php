@@ -1,16 +1,16 @@
 <?php
 
-namespace Simflex\Cron;
+namespace Simflex\Core\Cron;
 
 use Exception;
 use ReflectionException;
 use ReflectionMethod;
-use Simflex\Core\DI\DIException;
-use Simflex\Core\DI\Injector;
-use Simflex\Logger\Log;
-use Simflex\Models\Cron as CronModel;
-use Simflex\Models\CronLog;
-use Simflex\Helpers\Time;
+use Simflex\Core\System\DI\DIException;
+use Simflex\Core\System\DI\Injector;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\Models\Cron as CronModel;
+use Simflex\Core\Models\CronLog;
+use Simflex\Core\Helpers\Time;
 use Throwable;
 
 class Cron

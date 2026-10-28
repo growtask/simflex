@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Separator;
+namespace Simflex\Core\Layout\Components\UI\Core\Separator;
 
 enum SeparatorOrientation: string
 {

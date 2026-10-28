@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Plugins\Log;
+namespace Simflex\Core\Admin\Plugins\Log;
 
-use Simflex\Models\Log as LogModel;
+use Simflex\Core\System\Container;
+use Simflex\Core\Models\Log as LogModel;
 
 class Log
 {
@@ -10,8 +11,8 @@ class Log
     {
         LogModel::insertStatic([
             'action' => $action,
-            'ip' => (string)($_SERVER['REMOTE_ADDR'] ?? ''),
-            'browser' => (string)($_SERVER['HTTP_USER_AGENT'] ?? ''),
+            'ip' => (string)Container::getRequest()?->server('REMOTE_ADDR', ''),
+            'browser' => (string)Container::getRequest()?->getUserAgent(),
             'data' => $data,
         ]);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Tab;
+namespace Simflex\Core\Layout\Components\UI\Core\Tab;
 
 enum TabSize: string
 {

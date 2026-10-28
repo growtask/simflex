@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Debug;
+namespace Simflex\Core\Debug;
 
 use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\DataCollector\MemoryCollector;
@@ -8,8 +8,8 @@ use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\JavascriptRenderer;
-use Simflex\Core\Assets;
-use Simflex\Core\DI\Service;
+use Simflex\Core\Http\Assets;
+use Simflex\Core\System\DI\Service;
 
 class DebugBar implements Service
 {
@@ -45,7 +45,7 @@ class DebugBar implements Service
     }
 
     /**
-     * Ресурсы DebugBar лежат в vendor и публикуются в SF_PUBLIC_PATH
+     * Ресурсы DebugBar лежат в vendor и публикуются в public/
      */
     protected function renderer(): JavascriptRenderer
     {

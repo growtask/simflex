@@ -2,12 +2,12 @@
 
 /**
  * Реестр обработчиков разделов админки ядра (классы Handler, обработчики пунктов Admin\Menu).
- * По нему \Simflex\Admin\Table\Repository находит табличные разделы по именам их таблиц (их моделей):
+ * По нему \Simflex\Core\Admin\Table\Repository находит табличные разделы по именам их таблиц (их моделей):
  * внешние ключи ссылаются на таблицы по имени. Обработчики проекта указываются в собственном
  * Admin/handlers.php приложения.
  */
 
-use Simflex\Admin\Handlers;
+use Simflex\Core\Admin\Handlers;
 
 return [
     // разделы без таблицы

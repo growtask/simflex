@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Table\Presets;
+namespace Simflex\Core\Admin\Table\Presets;
 
-use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Fields\FieldMultiKey;
+use Simflex\Core\Admin\Table\FieldDefinition;
 
 /**
  * Связи «многие ко многим» (FieldMultiKey): записи другой таблицы, выбранные тегами. Колонки нет, связи хранятся

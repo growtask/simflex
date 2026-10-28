@@ -5,17 +5,22 @@
 
 ## Устройство
 
-- `src/` — код, namespace `Simflex\` (PSR-4); `src/functions.php` — функции ядра (`env()`, `asset()`,
-  `getSimflexVersion()`), подключаются composer (`autoload.files`).
+- `src/` — код, namespace `Simflex\Core\` (PSR-4); `src/Kernel.php` — загрузка и запуск сайта (`Simflex\Core\Kernel`,
+  его вызывают точки входа сайта); `src/functions.php` — функции ядра (`env()`, `asset()`, `getSimflexVersion()`),
+  подключаются composer (`autoload.files`).
 - `src/Admin` — админка: `Handler` (раздел) и разделы ядра `Handlers/`, реестр разделов `handlers.php`,
   табличные разделы `Table/` (`Table`, `FieldDefinition`, пресеты полей, `Repository`, шаблоны), поля `Fields/`,
   меню `Menu`/`MenuItem`, модули админки `AdminModules`, тема `theme/`.
-- `src/Core` — ядро: ORM (`ModelBase`, `DB`, `DB\AQ`, `DB\Where`), миграции (`DB\Schema`, `DB\Cli\Migrator`),
-  реестры в коде (`CodeRegistry`, `Privilege`, `ExtensionRegistry`, `Cron\CronRegistry`), вывод (`View`, `Assets`),
-  почта, sms, консоль.
+- `src/System` — основа: контейнер (`Container`), события, конфиг (`ConfigBase`), настройки сайта (`Settings`),
+  реестры в коде (`CodeRegistry`, `Privilege`, `ExtensionRegistry`), базовые классы модели и модуля (`ModelBase`,
+  `ModuleBase`), кэш, сессия.
+- `src/Http` — запрос и ответ, маршруты, страница сайта (`Page`), её SEO и статика (`PageSeo`, `PageAssets`,
+  `Assets`), меню сайта (`Menu`), шаблоны (`View`), компоненты и контроллеры.
+- `src/DB` — ORM (`DB`, `AQ`, `Where`), миграции (`Schema`, `Cli\Migrator`); `src/Models` — модели таблиц ядра;
+  `src/Console`, `src/Cron`, `src/Mail`, `src/Sms`, `src/Logger`, `src/Layout` — подсистемы.
 - `src/Extensions` — расширения ядра (страницы `Content`, формы, хлебные крошки, модули «Код» и «Текстовый блок»),
   `Extensions/Install/PackageInstaller` — установщик пакетов-расширений.
-- `CHANGELOG.md` — журнал изменений ядра.
+- `README.md` — краткое описание пакета (версии, устройство), `CHANGELOG.md` — журнал изменений ядра.
 
 ## Правила
 

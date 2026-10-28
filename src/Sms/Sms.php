@@ -1,12 +1,13 @@
 <?php
 
-namespace Simflex\Sms;
+namespace Simflex\Core\Sms;
 
-use Simflex\Helpers\Phone;
-use Simflex\Core\Core;
-use Simflex\DB\DB;
-use Simflex\Logger\Log;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\DB\Expr;
+use Simflex\Core\Helpers\Phone;
+use Simflex\Core\Models\SmsDriver;
+use Simflex\Core\Models\SmsLog;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\System\Settings;
 
 /**
  * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает
@@ -25,7 +26,7 @@ class Sms
     public static function send($phone, string $text, string $from = '', $extra = '', int $lastSendTimeout = 0): string|bool
     {
         if (!$from) {
-            $from = SiteSettings::get('sms_sender');
+            $from = Settings::get('sms_sender');
         }
 
         $phone = Phone::extract($phone);
@@ -34,29 +35,28 @@ class Sms
         }
 
         if ($lastSendTimeout) {
-            $q = "
-                SELECT * FROM sms_log WHERE phone = $phone 
-                AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(time_create)) < $lastSendTimeout LIMIT 1
-            ";
-            $exist = DB::result($q);
+            $exist = SmsLog::findAdv()
+                ->where(['phone' => $phone])
+                ->andWhere('UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(time_create) < :timeout')
+                ->bind(['timeout' => $lastSendTimeout])
+                ->fetchOne();
             if ($exist) {
                 return 'Last send too recently';
             }
         }
 
-        $q = "
-            INSERT INTO sms_log
-            SET phone = $phone, text = '" . DB::escape($text) . "', sender = '" . DB::escape($from) . "', 
-            extra = '" . DB::escape($extra) . "', time_create = now()
-        ";
-        $success = DB::query($q);
-        if (!$success) {
+        $sms = SmsLog::insertStatic([
+            'phone' => $phone,
+            'text' => $text,
+            'sender' => $from,
+            'extra' => (string)$extra,
+            'time_create' => new Expr('NOW()'),
+        ]);
+        if (!$sms) {
             return 'Server error';
         }
-        $smsId = DB::insertId();
 
-        $result = self::sendById($smsId, $phone, $text, $from);
-        return $result;
+        return self::sendById($sms->getId(), $phone, $text, $from);
     }
 
     /**
@@ -69,15 +69,17 @@ class Sms
             return 'no sms id';
         }
         if ($phone === false) {
-            $q = "SELECT * FROM sms_log WHERE sms_id = $smsId";
-            $row = DB::result($q);
+            $row = SmsLog::findOne(['sms_id' => $smsId]);
+            if (!$row) {
+                return 'no sms';
+            }
             $phone = $row['phone'];
             $text = $row['text'];
             $from = $row['sender'];
         }
 
         $driverId = null;
-        if (empty(SiteSettings::get('send_deny_sms'))) {
+        if (empty(Settings::get('send_deny_sms'))) {
             $driverInstance = self::getDriver();
             if (empty($driverInstance)) {
                 return false;
@@ -88,25 +90,26 @@ class Sms
             $sendResult = ['success' => true, 'driver_sms_id' => '999', 'price' => 1, 'error_text' => '', 'error_code' => 0];
         }
 
-        $set = ["time_send = now(), state = '" . ($sendResult['success'] ? 'send' : 'error') . "'"];
-        $set[] = 'driver_id = ' . ($driverId ?? 'NULL');
+        $set = [
+            'time_send' => new Expr('NOW()'),
+            'state' => $sendResult['success'] ? 'send' : 'error',
+            'driver_id' => $driverId,
+        ];
         if (!empty($sendResult['error_text'])) {
-            $set[] = "error_text = '" . DB::escape($sendResult['error_text']) . "'";
-            $set[] = 'error_code = ' . (int)$sendResult['error_code'];
+            $set['error_text'] = $sendResult['error_text'];
+            $set['error_code'] = (int)$sendResult['error_code'];
         } else {
-            $set[] = "driver_sms_id = '{$sendResult['driver_sms_id']}', price = {$sendResult['price']}";
+            $set['driver_sms_id'] = (string)$sendResult['driver_sms_id'];
+            $set['price'] = $sendResult['price'];
         }
-        $q = 'UPDATE sms_log set ' . implode(', ', $set) . " WHERE sms_id = $smsId";
-        DB::query($q);
+        SmsLog::bulkUpdate($set, ['sms_id' => $smsId]);
         return !empty($sendResult['error_text']) ? $sendResult['error_text'] : true;
     }
 
     public static function getDriver(): ?DriverBase
     {
         if (empty(static::$driver)) {
-            $q = 'SELECT * FROM sms_driver WHERE active = 1 LIMIT 1';
-            $driverInfo = DB::result($q);
-            static::setDriverByInfo($driverInfo);
+            static::setDriverByInfo(SmsDriver::findOne(['active' => 1])?->toArray() ?? []);
         }
         return static::$driver;
     }
@@ -127,8 +130,8 @@ class Sms
         if (!isset($driverInfo['driver_id'])) {
             return null;
         }
-        // драйверы лежат в Core/Sms/: alias "smpp" => Simflex\Sms\DriverSmpp
-        $driverClass = 'Simflex\\Sms\\Driver' . ucfirst((string)$driverInfo['alias']);
+        // драйверы лежат в Core/Sms/: alias "smpp" => Simflex\Core\Sms\DriverSmpp
+        $driverClass = 'Simflex\\Core\\Sms\\Driver' . ucfirst((string)$driverInfo['alias']);
         if (!class_exists($driverClass) || !is_subclass_of($driverClass, DriverBase::class)) {
             Log::error('Sms: driver class {class} not found for alias "{alias}"', [
                 'class' => $driverClass,
@@ -141,10 +144,7 @@ class Sms
 
     public static function setDriver(string $driverAlias): void
     {
-        $driverAlias = DB::escape($driverAlias);
-        $q = "SELECT * FROM sms_driver WHERE alias = '$driverAlias' LIMIT 1";
-        $driverInfo = DB::result($q);
-        static::setDriverByInfo($driverInfo);
+        static::setDriverByInfo(SmsDriver::findOne(['alias' => $driverAlias])?->toArray() ?? []);
     }
 
     public static function resend($smsId): string|bool
@@ -155,20 +155,23 @@ class Sms
 
     public static function renewStates(): void
     {
-        $q = "SELECT * FROM sms_log WHERE state = 'send' AND driver_id IS NOT NULL AND driver_sms_id IS NOT NULL LIMIT 100";
-        $rows = DB::assoc($q) ?: [];
-        $q = 'SELECT * FROM sms_driver WHERE active = 1';
-        $drivers = DB::assoc($q, 'driver_id') ?: [];
+        $rows = SmsLog::findAdv()
+            ->asArray()
+            ->where(['state' => 'send'])
+            ->andWhere('driver_id IS NOT NULL AND driver_sms_id IS NOT NULL')
+            ->limit(100)
+            ->all();
+        $drivers = SmsDriver::findAdv()->asArray()->where(['active' => 1])->all('driver_id');
         foreach ($rows as $row) {
             if ($driver = $drivers[$row['driver_id']] ?? null) {
                 self::renewState($row, $driver);
             } else {
-                $set = ["state = '" . DriverBase::STATE_ERROR . "'"];
-                $set[] = 'time_delivery = NOW()';
-                $set[] = "error_text = 'Driver disabled'";
-                $set[] = 'error_code = 403';
-                $q = 'UPDATE sms_log SET ' . implode(', ', $set) . " WHERE sms_id = {$row['sms_id']}";
-                DB::query($q);
+                SmsLog::bulkUpdate([
+                    'state' => DriverBase::STATE_ERROR,
+                    'time_delivery' => new Expr('NOW()'),
+                    'error_text' => 'Driver disabled',
+                    'error_code' => 403,
+                ], ['sms_id' => $row['sms_id']]);
             }
         }
         foreach ($drivers as $driver) {
@@ -195,15 +198,14 @@ class Sms
         } catch (\BadMethodCallException $e) {
             return;
         }
-        $set = ["state = '{$result['state']}'"];
+        $set = ['state' => $result['state']];
         if (DriverBase::STATE_DELIVERY === $result['state']) {
-            $set[] = "time_delivery = '{$result['time']}'";
+            $set['time_delivery'] = $result['time'];
         }
         if (DriverBase::STATE_ERROR === $result['state']) {
-            $set[] = "error_text = '{$result['error_text']}'";
+            $set['error_text'] = $result['error_text'];
         }
-        $q = 'UPDATE sms_log SET ' . implode(', ', $set) . " WHERE sms_id = {$sms['sms_id']}";
-        DB::query($q);
+        SmsLog::bulkUpdate($set, ['sms_id' => $sms['sms_id']]);
     }
 
     /**
@@ -211,8 +213,7 @@ class Sms
      */
     public static function checkBalance(): bool
     {
-        $q = 'SELECT error_code FROM sms_log ORDER BY sms_id DESC LIMIT 1';
-        $lastErrorCode = (int)DB::result($q, 0);
+        $lastErrorCode = (int)SmsLog::findAdv()->select('error_code')->orderBy('sms_id DESC')->limit(1)->fetchScalar();
         return DriverBase::ERROR_NO_MONEY === $lastErrorCode;
     }
 }

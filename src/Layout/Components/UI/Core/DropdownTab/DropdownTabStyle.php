@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\DropdownTab;
+namespace Simflex\Core\Layout\Components\UI\Core\DropdownTab;
 
 enum DropdownTabStyle: string
 {

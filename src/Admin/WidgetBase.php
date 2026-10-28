@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\View;
 
 abstract class WidgetBase
 {
@@ -31,7 +31,7 @@ abstract class WidgetBase
     final public function execute(): string
     {
         $content = $this->content();
-        if (Core::ajax() || $content === '') {
+        if (Page::get()->isAjax() || $content === '') {
             return $content;
         }
 

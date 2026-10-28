@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Core\ExtensionRegistry;
+use Simflex\Core\System\ExtensionRegistry;
 
 class FieldModuleSelect extends FieldExtensionSelect
 {

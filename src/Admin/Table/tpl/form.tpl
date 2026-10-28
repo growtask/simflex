@@ -13,11 +13,11 @@ $artLeftArr = [];
     <div class="content">
         <div class="content__inner">
             <input id="sf-form-submit" type="hidden" name="submit_save" value=""/>
-            <input type="hidden" name="request_uri" value="<?= $_SERVER['REQUEST_URI'] ?>"/>
+            <input type="hidden" name="request_uri" value="<?= htmlspecialchars($this->request->getUri()) ?>"/>
             <input type="hidden" id="info-table" value="<?= $this->table ?>"/>
             <input type="hidden" id="info-key-name" value="<?= @$this->pk->name ?>"/>
             <input type="hidden" id="info-key-value" value="<?= (int)@$row[$this->pk->name] ?>"/>
-            <input type="hidden" id="group-ids" name="group_ids" value="<?= @$ids ?>"/>
+            <input type="hidden" id="group-ids" name="group_ids" value="<?= htmlspecialchars($ids ?? '') ?>"/>
 
             <?php
             foreach ($this->fields as $field) {
@@ -66,7 +66,7 @@ $artLeftArr = [];
 
                                 Сохранить и выйти
                             </button>
-                            <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                            <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -103,7 +103,7 @@ $artLeftArr = [];
             </div>
 
             <div class="content__body" data-simplebar>
-                <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
+                <?= \Simflex\Core\Extensions\Alert\Alert::getHTML() ?>
                 <?php
                 if (count($this->errors)): ?>
                     <div class="content__notification notification notification--active notification--error">
@@ -210,7 +210,7 @@ $artLeftArr = [];
                                                 <?php
                                                 $field = $param['field'] ?>
                                                 <?php
-                                                \Simflex\Admin\Fields\Field::setFieldValue(
+                                                \Simflex\Core\Admin\Fields\Field::setFieldValue(
                                                     $field,
                                                     false,
                                                     $params,
@@ -263,7 +263,7 @@ $artLeftArr = [];
                                         <?php
                                         foreach ($group['fields'] as $field): ?>
                                             <?php
-                                            \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
+                                            \Simflex\Core\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
                                             <?php
                                             include 'form.field.tpl' ?>
                                         <?php
@@ -299,7 +299,7 @@ $artLeftArr = [];
                     </svg>
                     Сохранить и выйти
                 </button>
-                <a href="<?= \Simflex\Admin\Core::path() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
+                <a href="<?= \Simflex\Core\Admin\Page::get()->getPath() ?>" class="content__btn-cancel BtnOutlineMonoSm BtnIconLeftOutline">
                     <svg stroke="none" fill="#343434" viewBox="0 0 24 24">
                         <use xlink:href="<?= asset('img/icons/svg-defs.svg') ?>#close"></use>
                     </svg>
@@ -389,7 +389,7 @@ $artLeftArr = [];
                                             <?php
                                             $field = $param['field'] ?>
                                             <?php
-                                            @\Simflex\Admin\Fields\Field::setFieldValue(
+                                            @\Simflex\Core\Admin\Fields\Field::setFieldValue(
                                                 $field,
                                                 $group,
                                                 $params,
@@ -417,7 +417,7 @@ $artLeftArr = [];
                                         <?php
                                         foreach ($group['fields'] as $field): ?>
                                             <?php
-                                            \Simflex\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
+                                            \Simflex\Core\Admin\Fields\Field::setFieldValue($field, $group, $params, $row) ?>
                                             <?php
                                             include 'form.field.tpl' ?>
                                         <?php

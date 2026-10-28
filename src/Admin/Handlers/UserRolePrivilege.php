@@ -1,14 +1,14 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Fields\FieldPrivilegeSelect;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\ForeignKeyField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Table;
-use Simflex\Core\Privilege;
-use Simflex\Models\UserRolePrivilege as UserRolePrivilegeModel;
+use Simflex\Core\Admin\Fields\FieldPrivilegeSelect;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\ForeignKeyField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\System\Privilege;
+use Simflex\Core\Models\UserRolePrivilege as UserRolePrivilegeModel;
 
 /**
  * Привилегии ролей. Только для разработчиков: здесь можно выдать любую привилегию, в том числе dev

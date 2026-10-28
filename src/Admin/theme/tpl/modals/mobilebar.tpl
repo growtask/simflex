@@ -6,7 +6,7 @@
                     <use xlink:href="<?= asset('img/icons/svg-defs.svg#user')?>"></use>
                 </svg>
             </button>
-            <a href="<?= \Simflex\Admin\Core::url('') ?>" class="mobilebar__btn BtnMobileBar">
+            <a href="<?= \Simflex\Core\Admin\Page::url('') ?>" class="mobilebar__btn BtnMobileBar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <use xlink:href="<?= asset('img/icons/svg-defs.svg#home')?>"></use>
                 </svg>

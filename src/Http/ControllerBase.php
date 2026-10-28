@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Http;
+namespace Simflex\Core\Http;
 
 use ReflectionClass;
-use Simflex\Http\Controller\Action;
-use Simflex\Http\Controller\ActionMatcher;
+use Simflex\Core\Http\Controller\Action;
+use Simflex\Core\Http\Controller\ActionMatcher;
 
 /**
  * Автоматический контроллер

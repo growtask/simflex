@@ -1,21 +1,21 @@
 <?php
 
-namespace Simflex\Extensions\Form;
+namespace Simflex\Core\Extensions\Form;
 
-use Simflex\Extensions\Form\Fields\Field;
-use Simflex\Extensions\Form\Fields\FieldCheckbox;
-use Simflex\Extensions\Form\Fields\FieldEmail;
-use Simflex\Extensions\Form\Fields\FieldPassword;
-use Simflex\Extensions\Form\Fields\FieldSpamCode;
-use Simflex\Extensions\Form\Fields\FieldString;
-use Simflex\Extensions\Form\Fields\FieldText;
-use Simflex\Models\ModelSettings;
-use Simflex\Core\Alert\Site\Alert;
-use Simflex\Core\Container;
-use Simflex\Helpers\Str;
-use Simflex\Logger\Log;
-use Simflex\Mail\Mailer;
-use Simflex\Core\ModuleBase;
+use Simflex\Core\Extensions\Form\Fields\Field;
+use Simflex\Core\Extensions\Form\Fields\FieldCheckbox;
+use Simflex\Core\Extensions\Form\Fields\FieldEmail;
+use Simflex\Core\Extensions\Form\Fields\FieldPassword;
+use Simflex\Core\Extensions\Form\Fields\FieldSpamCode;
+use Simflex\Core\Extensions\Form\Fields\FieldString;
+use Simflex\Core\Extensions\Form\Fields\FieldText;
+use Simflex\Core\Models\Settings;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\System\Container;
+use Simflex\Core\Helpers\Str;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\Mail\Mailer;
+use Simflex\Core\System\ModuleBase;
 
 class ModuleForm extends ModuleBase
 {
@@ -52,7 +52,7 @@ class ModuleForm extends ModuleBase
     {
         if ($this->submitted()) {
             if ($this->validate()) {
-                $to = ModelSettings::get('form_email');
+                $to = Settings::get('form_email');
                 if (empty($to)) {
                     Alert::warning('Сообщение не может быть отправлено по техническим причинам, попробуйте позднее [0xfe]');
                     return;
@@ -98,7 +98,7 @@ class ModuleForm extends ModuleBase
 
     protected function submitted(): bool
     {
-        return isset($_POST[$this->name]['submit']);
+        return isset(Container::getRequest()->post($this->name)['submit']);
     }
 
     public function validate(): bool
@@ -139,7 +139,7 @@ class ModuleForm extends ModuleBase
 
     protected static function findTemplateFile(string $name): string
     {
-        if (is_file($path = SF_ROOT_PATH . '/Extensions/Form/tpl/' . $name)) {
+        if (is_file($path = Container::getPaths()->getRoot('Extensions/Form/tpl/' . $name))) {
             return $path;
         }
         if (is_file($path = __DIR__ . '/tpl/' . $name)) {

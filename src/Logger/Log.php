@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Logger;
+namespace Simflex\Core\Logger;
 
 use Psr\Log\LoggerInterface;
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Media\File;
+use Simflex\Core\Helpers\Str;
+use Simflex\Core\Admin\Plugins\UI\UI;
+use Simflex\Core\Media\File;
 
 class FieldFile extends Field
 {
@@ -56,22 +57,6 @@ class FieldFile extends Field
 
     public function input($value): string
     {
-        $filePath = '/uf/files/' . $value;
-        $fileSize = filesize($_SERVER['DOCUMENT_ROOT'] . $filePath);
-        $sizeDenom = 'б';
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'кб';
-        }
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'мб';
-        }
-        if ($fileSize > 1024) {
-            $fileSize /= 1024;
-            $sizeDenom = 'гб';
-        }
-
         if ($this->readonly) {
             return '';
         }
@@ -82,13 +67,13 @@ class FieldFile extends Field
             'activeClass' => $value ? 'form-control__file--active' : '',
             'activeText' => $value ? $value : 'Перетащите или загрузите файл',
             'activeDisplay' => $value ? 'display: block' : '',
-            'size' => round($fileSize) . ' ' . $sizeDenom,
+            'size' => Str::sizeToStr('/uf/files/' . $value),
         ]);
     }
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $path = explode('/', $_POST[$this->name]);
+        $path = explode('/', (string)$this->getPosted());
         return end($path);
     }
 
@@ -105,15 +90,8 @@ class FieldFile extends Field
     public function check(): array
     {
         $errors = [];
-        $aCore = class_exists('AdminCore') ? 'AdminCore' : null;
-        if ($aCore && $aCore::ajax()) {
-            if ($this->required && empty($_REQUEST[$this->name]) && empty($_REQUEST[$this->name . '_old'])) {
-                $errors[] = 'Обязательно для заполнения';
-            }
-        } else {
-            if ($this->required && (empty($_REQUEST[$this->name . '_old']) && !is_uploaded_file($_FILES[$this->name]['tmp_name']))) {
-                $errors[] = 'Обязательно для заполнения';
-            }
+        if ($this->required && empty($this->getRequest()->request($this->name . '_old')) && !is_uploaded_file((string)($this->getRequest()->file($this->name)['tmp_name'] ?? ''))) {
+            $errors[] = 'Обязательно для заполнения';
         }
         return $errors;
     }

@@ -1,9 +1,10 @@
 <?php
 
-namespace Simflex\Extensions\Form\Fields;
+namespace Simflex\Core\Extensions\Form\Fields;
 
-use Simflex\Extensions\Form\ModuleForm;
-use Simflex\DB\DB;
+use Simflex\Core\Extensions\Form\ModuleForm;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\System\Container;
 
 abstract class Field
 {
@@ -32,10 +33,19 @@ abstract class Field
         $this->required = $required;
     }
 
+    /**
+     * Отправленное значение поля формы ($_POST[<форма>][<поле>] запроса)
+     * @param string|null $name Поле формы, по умолчанию - это
+     */
+    protected function getPosted(?string $name = null): mixed
+    {
+        return (Container::getRequest()?->post($this->form->getName()) ?? [])[$name ?? $this->name] ?? null;
+    }
+
     public function html(): string
     {
         $formName = $this->form->getName();
-        $val = $_POST[$formName][$this->name] ?? $this->defval;
+        $val = $this->getPosted() ?? $this->defval;
         $inputParams = ['class' => 'edit', 'type' => 'text', 'name' => "{$formName}[$this->name]"];
         $inputParams['value'] = htmlspecialchars($val);
         $this->placeholder && $inputParams['placeholder'] = $this->placeholder;
@@ -53,19 +63,18 @@ abstract class Field
 
     public function &check(): array
     {
-        $formName = $this->form->getName();
         $err = [];
-        $_POST[$formName][$this->name] = $_POST[$formName][$this->name] ?? '';
+        $value = (string)($this->getPosted() ?? '');
 
         /* ОБЯЗАТЕЛЬНОСТЬ */
         $this->vRequired = is_array($this->vRequired) ? $this->vRequired : [];
-        if (!empty($this->vRequired['is']) && $_POST[$formName][$this->name] === '') {
+        if (!empty($this->vRequired['is']) && $value === '') {
             $err[$this->name][] = empty($this->vRequired['comment']) ? 'обязательно для заполнения' : $this->vRequired['comment'];
         }
 
         if (empty($err[$this->name])) {
             /* ДЛИНА */
-            $len = mb_strlen($_POST[$formName][$this->name]);
+            $len = mb_strlen($value);
             $this->vLength = is_array($this->vLength) ? $this->vLength : [];
             $this->vLength['min'] = isset($this->vLength['min']) ? (int)$this->vLength['min'] : 0;
             $this->vLength['max'] = isset($this->vLength['max']) ? (int)$this->vLength['max'] : 0;
@@ -77,17 +86,16 @@ abstract class Field
             $this->vEqual = is_array($this->vEqual) ? $this->vEqual : [];
             $this->vEqual['field'] = isset($this->vEqual['field']) ? (string)$this->vEqual['field'] : '';
             if ($this->vEqual['field']) {
-                $_POST[$formName][$this->vEqual['field']] = $_POST[$formName][$this->vEqual['field']] ?? '';
-                if ($_POST[$formName][$this->name] !== $_POST[$formName][$this->vEqual['field']]) {
+                if ($value !== (string)($this->getPosted($this->vEqual['field']) ?? '')) {
                     $err[$this->name][] = empty($this->vEqual['comment']) ? 'неверное значение' : $this->vEqual['comment'];
                 }
             }
 
             /* МАСКА */
-            if ($_POST[$formName][$this->name] !== '') {
+            if ($value !== '') {
                 $this->vMask = is_array($this->vMask) ? $this->vMask : [];
                 $this->vMask['pattern'] = isset($this->vMask['pattern']) ? (string)$this->vMask['pattern'] : '';
-                if ($this->vMask['pattern'] && !preg_match($this->vMask['pattern'], $_POST[$formName][$this->name])) {
+                if ($this->vMask['pattern'] && !preg_match($this->vMask['pattern'], $value)) {
                     $err[$this->name][] = empty($this->vMask['comment']) ? 'некорректное значение' : $this->vMask['comment'];
                 }
             }
@@ -96,8 +104,7 @@ abstract class Field
             $this->vUnique = is_array($this->vUnique) ? $this->vUnique : [];
             $this->vUnique['key'] = isset($this->vUnique['key']) ? (string)$this->vUnique['key'] : '';
             if ($this->vUnique['key'] && preg_match('@([a-z0-9\_]+)\.([a-z0-9\_]+)@', $this->vUnique['key'], $key)) {
-                $q = 'SELECT COUNT(*) cnt FROM ' . DB::wrapName($key[1]) . ' WHERE ' . DB::wrapName($key[2]) . ' = ?';
-                if ((int)DB::result($q, 'cnt', [$_POST[$formName][$this->name]]) > 0) {
+                if ((int)new AQ()->select('COUNT(*)')->from($key[1])->where([$key[2] => $value])->fetchScalar() > 0) {
                     $err[$this->name][] = empty($this->vUnique['comment']) ? 'занято' : $this->vUnique['comment'];
                 }
             }
@@ -108,8 +115,7 @@ abstract class Field
 
     public function getPOST(): mixed
     {
-        $formName = $this->form->getName();
-        return $_POST[$formName][$this->name] ?? '';
+        return $this->getPosted() ?? '';
     }
 
     public function defval(string $value): void

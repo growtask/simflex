@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
-use Simflex\DB\AQ;
-use Simflex\Admin\Table\Repository;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\Admin\Table\Repository;
 
 class FieldInt extends Field
 {
@@ -54,18 +54,17 @@ class FieldInt extends Field
         $tree = [];
         $fkPID = $this->fkPidColumn($this->fk->table);
 
-        $query = (new AQ())
+        $query = new AQ()
             ->select("{$this->fk->key} id, $fkPID pid, {$this->fk->label} label")
             ->from($this->fk->table)
             ->orderBy($this->fk->key);
-        if (isset($_REQUEST[$this->fk->key])) {
-            $query->andWhere("{$this->fk->key} <> " . $this->bigint($_REQUEST[$this->fk->key]));
+        if (($exclude = $this->getRequest()->request($this->fk->key)) !== null) {
+            $query->andWhere("{$this->fk->key} <> " . $this->bigint($exclude));
         }
         if ($this->filterAndWhere) {
             $query->andWhere($this->filterAndWhere);
         }
-        $r = DB::query($query);
-        while ($row = DB::fetch($r)) {
+        foreach ($query->asArray()->all() as $row) {
             $tree[$this->bigint($row['pid'])][$this->bigint($row['id'])] = $row;
         }
         return $tree;
@@ -77,18 +76,9 @@ class FieldInt extends Field
             return $this->render('input', ['value' => $value] + $this->inputVars());
         }
 
-        if ($this->params['fk_is_pid']) {
-            $pidColumn = $this->fkPidColumn($this->params['fk_table']);
-            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from `{$this->params['fk_table']}` limit 20");
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name, $pidColumn as pid from
-                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-        } else {
-            $items = DB::assoc("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from `{$this->params['fk_table']}` limit 20");
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from 
-                                  `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-        }
-
-        $sel = DB::fetch($sel) ?: [];
+        $withPid = (bool)$this->params['fk_is_pid'];
+        $items = $this->getFkQuery($withPid)->limit(20)->all();
+        $sel = $this->getFkRow($value, $withPid);
 
         $listItems = [];
         $hasId = false;
@@ -97,8 +87,8 @@ class FieldInt extends Field
                 $hasId = true;
             }
 
-            if ($this->params['fk_is_pid']) {
-                $pidName = DB::result('select title from content where content_id = ?', 0, [$r['pid']]);
+            if ($withPid) {
+                $pidName = $this->getContentTitle($r['pid']);
                 if ($pidName) {
                     $r['name'] = $pidName . ' -> ' . $r['name'];
                 }
@@ -107,8 +97,8 @@ class FieldInt extends Field
         }
 
         if (!$hasId && $sel) {
-            if ($this->params['fk_is_pid']) {
-                $pidName = DB::result('select title from content where content_id = ?', 0, [$sel['pid']]);
+            if ($withPid) {
+                $pidName = $this->getContentTitle($sel['pid']);
                 if ($pidName) {
                     $sel['name'] = $pidName . ' -> ' . $sel['name'];
                 }
@@ -129,9 +119,43 @@ class FieldInt extends Field
         ]);
     }
 
+    /**
+     * Записи связанной таблицы: id, name (подпись) и, если $withPid, pid (родитель)
+     */
+    protected function getFkQuery(bool $withPid = false): AQ
+    {
+        $fields = [
+            DB::wrapName($this->params['fk_key']) . ' AS id',
+            DB::wrapName($this->params['fk_label']) . ' AS name',
+        ];
+        if ($withPid) {
+            $fields[] = $this->fkPidColumn($this->params['fk_table']) . ' AS pid';
+        }
+
+        return new AQ()->asArray()->select($fields)->from($this->params['fk_table']);
+    }
+
+    /**
+     * Запись связанной таблицы по id, пустой массив - не найдена
+     */
+    protected function getFkRow(mixed $id, bool $withPid = false): array
+    {
+        return $this->getFkQuery($withPid)->where([$this->params['fk_key'] => $id])->fetchOne() ?? [];
+    }
+
+    /**
+     * Заголовок страницы раздела «Страницы» (подпись родителя)
+     */
+    protected function getContentTitle(mixed $id): ?string
+    {
+        $title = new AQ()->select('title')->from('content')->where(['content_id' => (int)$id])->fetchScalar();
+        return $title === null ? null : (string)$title;
+    }
+
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
+        $value = $this->getPosted();
+        return $this->e2n && $value === '' ? null : (int)$value;
     }
 
     public function filter($value): string
@@ -140,9 +164,7 @@ class FieldInt extends Field
             return '';
         }
         if ($this->fk) {
-            $sel = DB::query("select `{$this->params['fk_key']}` as id, `{$this->params['fk_label']}` as name from
-                                      `{$this->params['fk_table']}` where {$this->params['fk_key']} = ?", [$value]);
-            $sel = DB::fetch($sel) ?: [];
+            $sel = $this->getFkRow($value);
 
             return $this->dropdown([
                 'name' => 'filter[' . $this->name . ']',

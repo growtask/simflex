@@ -1,18 +1,18 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Admin\Plugins\Log\Log;
+use Simflex\Core\System\Container;
+use Simflex\Core\Admin\Plugins\Log\Log;
 
 ;
 
-use Simflex\Auth\Bootstrap;
-use Simflex\Auth\CookieTokenBag;
-use Simflex\Auth\Models\UserAuth;
-use Simflex\Auth\SessionStorage;
-use Simflex\DB\DB;
-use Simflex\Models\User;
-use Simflex\Core\Privilege;
+use Simflex\Core\Auth\Bootstrap;
+use Simflex\Core\Auth\CookieTokenBag;
+use Simflex\Core\Auth\Models\UserAuth;
+use Simflex\Core\Auth\SessionStorage;
+use Simflex\Core\Models\User;
+use Simflex\Core\System\Privilege;
 
 class Auth
 {
@@ -29,13 +29,13 @@ class Auth
             $redirect = '/';
         }
         if (preg_match('@^[0-9a-z\@\-\.]+$@i', $login)) {
-            $q = 'SELECT u.*
-                    FROM user u
-                    JOIN user_role r ON r.role_id=u.role_id
-                    WHERE login=:login
-                      AND u.active=1
-                      AND r.active=1';
-            $row = DB::result($q, '', ['login' => strtolower($login)]);
+            // активный пользователь активной роли
+            $row = User::findAdv()
+                ->asArray()
+                ->select('user.*')
+                ->join('user_role', 'user.role_id', '.role_id', alias: 'r')
+                ->where(['user.login' => strtolower($login), 'user.active' => 1, 'r.active' => 1])
+                ->fetchOne();
             if ($row && md5($password) === $row['password']) {
                 $user = (new User())->fill($row);
                 if ($user->ican(Privilege::ADMIN)) {
@@ -62,7 +62,7 @@ class Auth
 
     public static function logout(): never
     {
-        $redirect = $_REQUEST['r'] ?? Core::url();
+        $redirect = Container::getRequest()->request('r') ?? Page::url();
         if (strpos($redirect, '//') !== false) {
             $redirect = '/';
         }

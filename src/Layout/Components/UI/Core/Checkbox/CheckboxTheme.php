@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Layout\Components\UI\Core\Checkbox;
+namespace Simflex\Core\Layout\Components\UI\Core\Checkbox;
 
 enum CheckboxTheme: string
 {

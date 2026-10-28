@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Admin\Handlers;
+namespace Simflex\Core\Admin\Handlers;
 
-use Simflex\Admin\Core;
-use Simflex\Admin\Handler;
-use Simflex\Core\Container;
-use Simflex\DB\DB;
+use Simflex\Core\Models\AdminWidget;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\System\Container;
 
 /**
  * Страница группы меню со списком подпунктов; главная страница админки показывает ещё и виджеты.
@@ -20,8 +20,8 @@ class Group extends Handler
 
     protected function subitems(): string
     {
-        $cur_id = Core::menuCurItem('id') ?? '';
-        $menu = Core::menu();
+        $cur_id = Page::get()->getCurrentMenuItem('id') ?? '';
+        $menu = Page::get()->getMenu();
         if (!isset($menu[$cur_id])) {
             return '';
         }
@@ -30,8 +30,7 @@ class Group extends Handler
 
     protected function widgets(): string
     {
-        $q = 'SELECT * FROM admin_widget WHERE active = 1 ORDER BY npp, widget_id';
-        $rows = DB::assoc($q) ?: [];
+        $rows = AdminWidget::findAdv()->asArray()->where(['active' => 1])->orderBy('npp, widget_id')->all();
         $html = '';
         foreach ($rows as $row) {
             if (!$row['privilege'] || Container::getUser()?->ican($row['privilege'])) {

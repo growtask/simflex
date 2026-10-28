@@ -1,12 +1,11 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
 use Exception;
-use Simflex\Core\Buffer;
-use Simflex\DB\DB;
-use Simflex\Core\ModelBase;
-use Simflex\Core\Privilege;
+use Simflex\Core\System\Buffer;
+use Simflex\Core\System\ModelBase;
+use Simflex\Core\System\Privilege;
 
 /**
  * Модель пользователя
@@ -34,7 +33,7 @@ class User extends ModelBase
     }
 
     /**
-     * @param string $privilege Имя привилегии, см. \Simflex\Core\Privilege
+     * @param string $privilege Имя привилегии, см. \Simflex\Core\System\Privilege
      */
     public function ican(string $privilege): bool
     {
@@ -49,10 +48,12 @@ class User extends ModelBase
     public function getPrivileges(): array
     {
         return Buffer::getOrSet('user-privilege-' . $this->id, function () {
-            $q = '
-                SELECT privilege FROM user_role_privilege WHERE role_id' . ($this->role_id ? '=' . (int)$this->role_id : ' IS NULL') . '
-                UNION SELECT privilege FROM user_privilege_personal WHERE user_id=' . (int)$this->id;
-            $names = Privilege::granted(array_column(DB::assoc($q) ?: [], 'privilege'));
+            $names = UserRolePrivilege::findAdv()
+                ->select('privilege')
+                ->where(['role_id' => $this->role_id ? (int)$this->role_id : null])
+                ->union(UserPrivilegePersonal::findAdv()->select('privilege')->where(['user_id' => (int)$this->id]))
+                ->fetchColumn();
+            $names = Privilege::granted(array_map('strval', $names));
             return array_combine($names, $names);
         });
     }
@@ -62,20 +63,29 @@ class User extends ModelBase
      *
      * @example User::findAdv()->modify('hasPrivileges', ['privilege_name'])->all()
      */
-    public static function aqModifyHasPrivileges(\Simflex\DB\AQ $AQ, array $privileges): void
+    public static function aqModifyHasPrivileges(\Simflex\Core\DB\AQ $AQ, array $privileges): void
     {
         if (empty($privileges)) {
             return;
         }
         // у разработчиков есть все привилегии
-        $privileges = [...Privilege::filterActive($privileges), Privilege::DEV];
-        $in = "'" . implode("','", DB::escape($privileges)) . "'";
+        $privileges = array_values([...Privilege::filterActive($privileges), Privilege::DEV]);
+        // привилегии - параметрами запроса: отдельный набор на каждый подзапрос
+        $binds = [];
+        $in = [];
+        foreach (['personal', 'role'] as $set) {
+            foreach ($privileges as $i => $privilege) {
+                $binds["has_{$set}_$i"] = $privilege;
+            }
+            $in[$set] = ':has_' . $set . '_' . implode(", :has_{$set}_", array_keys($privileges));
+        }
         $table = static::$table;
         $AQ->where("(
-            $table.user_id IN(SELECT user_id FROM user_privilege_personal WHERE privilege IN($in))
+            $table.user_id IN(SELECT user_id FROM user_privilege_personal WHERE privilege IN({$in['personal']}))
             OR $table.role_id IN(
-                SELECT role_id FROM user_role_privilege JOIN user_role USING(role_id) WHERE user_role.active = 1 AND privilege IN($in)
+                SELECT role_id FROM user_role_privilege JOIN user_role USING(role_id)
+                WHERE user_role.active = 1 AND privilege IN({$in['role']})
             )
-        )");
+        )")->bind($binds);
     }
 }

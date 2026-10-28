@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Auth\SignOut;
+namespace Simflex\Core\Auth\SignOut;
 
-use Simflex\Auth\SessionStorage;
-use Simflex\Core\Middleware\Handler;
+use Simflex\Core\Auth\SessionStorage;
+use Simflex\Core\System\Middleware\Handler;
 
 class SessionMiddleware implements Handler
 {

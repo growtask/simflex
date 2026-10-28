@@ -1,10 +1,9 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
-use Simflex\DB\AQ;
-use Simflex\DB\Where;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\AQ;
 
 /**
  * Взаимные связи записей одной таблицы (например, «другие цвета» товара): выбранные записи связаны с записью формы
@@ -25,7 +24,7 @@ class FieldRelation extends Field
 
     public function input($value): string
     {
-        $id = (int)($_REQUEST[$this->tablePk] ?? 0);
+        $id = $this->getRecordId();
         $rows = $id ? $this->getRelated($id) : [];
 
         $items = [];
@@ -49,36 +48,29 @@ class FieldRelation extends Field
      */
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $id = (int)($_REQUEST[$this->tablePk] ?? 0);
-        if (!$id || !isset($_POST[$this->name])) {
+        $id = $this->getRecordId();
+        if (!$id || $this->getPosted() === null) {
             return '';
         }
 
-        $posted = array_map('intval', explode(',', (string)$_POST[$this->name]));
+        $posted = array_map('intval', explode(',', (string)$this->getPosted()));
         $posted = array_values(array_diff(array_unique(array_filter($posted)), [$id]));
         $old = array_merge([$id], array_keys($this->getRelated($id)));
         $new = array_merge([$id], $posted);
 
-        $this->deletePairs($old);
-        $this->deletePairs($new);
-
+        $left = (string)$this->params['left'];
+        $right = (string)$this->params['right'];
         $pairs = [];
-        $binds = [];
         for ($i = 0; $i < count($new) - 1; $i++) {
             for ($k = $i + 1; $k < count($new); $k++) {
-                $pairs[] = '(?, ?)';
-                $binds[] = $new[$i];
-                $binds[] = $new[$k];
+                $pairs[] = [$left => $new[$i], $right => $new[$k]];
             }
         }
-        if ($pairs) {
-            DB::query(
-                'INSERT INTO ' . DB::wrapName((string)$this->params['relation'])
-                . ' (' . DB::wrapName((string)$this->params['left']) . ', ' . DB::wrapName((string)$this->params['right']) . ')'
-                . ' VALUES ' . implode(', ', $pairs),
-                $binds,
-            );
-        }
+        DB::transaction(function () use ($old, $new, $pairs) {
+            $this->deletePairs($old);
+            $this->deletePairs($new);
+            DB::insert((string)$this->params['relation'], $pairs);
+        });
 
         return '';
     }
@@ -122,7 +114,6 @@ class FieldRelation extends Field
             return;
         }
 
-        $where = new Where([(string)$this->params['left'] => $ids, (string)$this->params['right'] => $ids]);
-        DB::query('DELETE FROM ' . DB::wrapName((string)$this->params['relation']) . ' ' . $where, $where->getBinds());
+        DB::delete((string)$this->params['relation'], [(string)$this->params['left'] => $ids, (string)$this->params['right'] => $ids]);
     }
 }

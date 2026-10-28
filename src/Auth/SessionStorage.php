@@ -1,31 +1,26 @@
 <?php
 
-namespace Simflex\Auth;
+namespace Simflex\Core\Auth;
+
+use Simflex\Core\System\Container;
+use Simflex\Core\System\Location;
+use Simflex\Core\System\Session;
 
 class SessionStorage
 {
-    protected static function ensureStarted(): void
-    {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-    }
-
     protected static function getKey(): string
     {
-        $prefix = SF_LOCATION_SITE === SF_LOCATION ? 's' : 'a';
+        $prefix = Container::getLocation() === Location::Site ? 's' : 'a';
         return $prefix . '_user_id';
     }
 
     public static function get(): mixed
     {
-        static::ensureStarted();
-        return $_SESSION[static::getKey()] ?? null;
+        return Session::get(static::getKey());
     }
 
     public static function set($userId): void
     {
-        static::ensureStarted();
-        $_SESSION[static::getKey()] = $userId;
+        Session::set(static::getKey(), $userId);
     }
 }

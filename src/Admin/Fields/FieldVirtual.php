@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
 class FieldVirtual extends Field
 {

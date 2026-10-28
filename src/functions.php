@@ -5,7 +5,7 @@
  */
 
 use Composer\InstalledVersions;
-use Simflex\Core\Buffer;
+use Simflex\Core\System\Buffer;
 
 /**
  * Значение переменной окружения
@@ -24,12 +24,12 @@ function env(string $name, mixed $defaultValue = null): mixed
  */
 function asset(string $path, bool $siteOnly = false): string
 {
-    if (!$siteOnly && SF_LOCATION === SF_LOCATION_ADMIN) {
-        $url = \Simflex\Admin\Core::webVendorPath() . '/theme/' . $path;
-        $file = \Simflex\Admin\Core::vendorPath() . '/theme/' . $path;
+    if (!$siteOnly && \Simflex\Core\System\Container::getLocation() === \Simflex\Core\System\Location::Admin) {
+        $url = \Simflex\Core\Admin\Page::webVendorPath() . '/theme/' . $path;
+        $file = \Simflex\Core\Admin\Page::vendorPath() . '/theme/' . $path;
     } else {
         $url = '/assets/' . $path;
-        $file = SF_PUBLIC_PATH . '/assets/' . $path;
+        $file = \Simflex\Core\System\Container::getPaths()->getPublic('assets/' . $path);
     }
 
     $mtime = is_file($file) ? filemtime($file) : false;
@@ -60,7 +60,8 @@ function getSimflexVersion(): string
 function url(string $path, array $get = []): string
 {
     $q = http_build_query($get);
-    return ('http' . (!empty($_SERVER['HTTPS']) ? 's' : '')) . '://' . $_SERVER['HTTP_HOST'] . $path . ($q ? ('?' . $q) : '');
+    $request = \Simflex\Core\System\Container::getRequest();
+    return ($request?->isHttps() ? 'https' : 'http') . '://' . $request?->getHost() . $path . ($q ? ('?' . $q) : '');
 }
 
 /**

@@ -1,8 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\System\Session;
+use Simflex\Core\DB\DB;
 
 class FieldNPP extends Field
 {
@@ -18,25 +20,19 @@ class FieldNPP extends Field
 
     public function input($value): string
     {
-        if (!isset($_REQUEST[$this->tablePk])) {
+        if ($this->getRequest()->request($this->tablePk) === null) {
             // TODO: сделать по-нормальному
             if ($this->table === 'catalog_product') {
                 $value = 1;
             } else {
-                $where = [];
-                if ($filter = @$_SESSION[$this->table]['filter']) {
-                    foreach ($filter as $fname => $fval) {
-                        if ($fval) {
-                            $where[] = "$fname = '$fval'";
-                        }
+                // новая запись - в конец списка с выбранными фильтрами раздела
+                $query = new AQ()->select('MAX(' . DB::wrapName($this->name) . ')')->from($this->table);
+                foreach ((array)(Session::get($this->table)['filter'] ?? []) as $name => $filterValue) {
+                    if ($filterValue) {
+                        $query->andWhere([$name => $filterValue]);
                     }
                 }
-                $q = "SELECT MAX($this->name) FROM $this->table" . (count($where) ? ' WHERE ' . implode(
-                    ' AND ',
-                    $where
-                ) : '');
-                $max = DB::result($q, 0);
-                $value = $max + 1;
+                $value = (int)$query->fetchScalar() + 1;
             }
         }
 
@@ -45,6 +41,7 @@ class FieldNPP extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        return $this->e2n && $_POST[$this->name] === '' ? null : (int)$_POST[$this->name];
+        $value = $this->getPosted();
+        return $this->e2n && $value === '' ? null : (int)$value;
     }
 }

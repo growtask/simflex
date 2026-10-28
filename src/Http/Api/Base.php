@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Http\Api;
+namespace Simflex\Core\Http\Api;
 
-use Simflex\Core\Container;
-use Simflex\Core\Errors\Error;
-use Simflex\Core\Errors\ErrorCodes;
-use Simflex\Models\User;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\Errors\Error;
+use Simflex\Core\System\Errors\ErrorCodes;
+use Simflex\Core\Models\User;
 
 abstract class Base
 {
@@ -24,7 +24,7 @@ abstract class Base
     /**
      * Возвращает имя метода для выполнения
      *
-     * @throws \Simflex\Core\Errors\Error
+     * @throws \Simflex\Core\System\Errors\Error
      */
     protected function getMethodName(): string
     {

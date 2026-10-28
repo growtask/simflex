@@ -1,9 +1,11 @@
 <?php
 
-namespace Simflex\Auth;
+namespace Simflex\Core\Auth;
 
-use Simflex\Http\Cookie\CookieBag;
-use Simflex\Http\Cookie\CookieItem;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\Location;
+use Simflex\Core\Http\Cookie\CookieBag;
+use Simflex\Core\Http\Cookie\CookieItem;
 
 class CookieTokenBag extends CookieBag
 {
@@ -11,7 +13,7 @@ class CookieTokenBag extends CookieBag
 
     public static function defaultPrefix(): string
     {
-        return SF_LOCATION_SITE === SF_LOCATION ? 's' : 'a';
+        return Container::getLocation() === Location::Site ? 's' : 'a';
     }
 
     public function __construct(string $prefix)

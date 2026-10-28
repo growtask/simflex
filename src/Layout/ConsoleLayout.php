@@ -1,15 +1,15 @@
 <?php
 
-namespace Simflex\Layout;
+namespace Simflex\Core\Layout;
 
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Console\Command;
-use Simflex\Console\Help;
-use Simflex\Console\ConsoleBase;
-use Simflex\Core\Container;
-use Simflex\Core\Core;
-use Simflex\Http\Html\HtmlRequest;
-use Simflex\Logger\Log;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\Help;
+use Simflex\Core\Console\ConsoleBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Page;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\Logger\Log;
 
 /**
  * Команды Layout: ./sf layout/<команда>
@@ -24,17 +24,16 @@ class ConsoleLayout extends ConsoleBase
     public function generate(#[Help('Page path')] string $path): void
     {
         // подставляем фиктивные данные.
-        $_SERVER['REQUEST_URI'] = $path;
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        Container::set('request', new HtmlRequest());
+        Container::set('request', HtmlRequest::create($path));
 
         LayoutManager::$shouldGenerateFields = true;
         LayoutManager::$generatedFields = [];
 
         try {
             // компонент страницы выбирается так же, как при запросе из браузера
-            Core::init();
-            Core::getComponent()->execute();
+            $page = new Page();
+            $page->initRequest();
+            $page->getComponent()->execute();
         } catch (\Throwable $ex) {
             Log::error($ex->getMessage());
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\Extensions\Form\Fields;
+namespace Simflex\Core\Extensions\Form\Fields;
 
 class FieldText extends Field
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Helpers\Str;
+use Simflex\Core\Helpers\Str;
 
 class FieldPassword extends Field
 {
@@ -21,12 +21,12 @@ class FieldPassword extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $pw = $_REQUEST[$this->name];
+        $pw = $this->getRequest()->request($this->name);
         if (!$pw) {
             return $pw;
         }
 
-        if ($_REQUEST[$this->tablePk] > 2) {
+        if ($this->getRecordId() > 2) {
             $pw = crypt($pw, '$6$' . Str::random(16) . '$');
         } else {
             $pw = md5($pw);

@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Mail;
+namespace Simflex\Core\Mail;
 
-use Simflex\Core\View;
+use Simflex\Core\Http\View;
 
 /**
  * Письмо.

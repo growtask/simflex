@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Auth\Auth;
+namespace Simflex\Core\Auth\Auth;
 
-use Simflex\Core\Middleware\Handler;
-use Simflex\Models\User;
+use Simflex\Core\System\Middleware\Handler;
+use Simflex\Core\Models\User;
 
 /**
  * Класс модели пользователя — User, переопределяется через

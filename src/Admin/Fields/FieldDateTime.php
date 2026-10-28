@@ -1,9 +1,8 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Admin\Plugins\UI\UI;
-use Simflex\DB\DB;
+use Simflex\Core\Admin\Plugins\UI\UI;
 
 class FieldDateTime extends Field
 {
@@ -23,7 +22,7 @@ class FieldDateTime extends Field
 
     public function input($value): string
     {
-        $value = \Simflex\Helpers\Time::normal($value, true, false);
+        $value = \Simflex\Core\Helpers\Time::normal($value, true, false);
         return $this->render('datetime', [
             'value' => date('Y-m-d H:i:s', strtotime($value)),
             'name' => $this->inputName(),
@@ -33,19 +32,19 @@ class FieldDateTime extends Field
 
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $value = isset($_POST[$this->name]) ? $_POST[$this->name] : '';
+        $value = (string)$this->getPosted();
         if ($simple) {
             return $value;
         }
         if (preg_match('@^[0-9]{2}.[0-9]{2}.[0-9]{4} [0-9]{2}.[0-9]{2}$@', $value)) {
             $value = substr($value, 6, 4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2) . ' ' . substr($value, 11, 2) . ':' . substr($value, 14, 2) . ':00';
         }
-        return $this->e2n && $value === '' ? null : '' . DB::escape($value) . '';
+        return $this->e2n && $value === '' ? null : $value;
     }
 
     public function show($row): string
     {
-        $value = $row[$this->name] ? \Simflex\Helpers\Time::normal($row[$this->name]) : '';
+        $value = $row[$this->name] ? \Simflex\Core\Helpers\Time::normal($row[$this->name]) : '';
         return $this->cell(str_replace(' ', '<br/>', $value));
     }
 }

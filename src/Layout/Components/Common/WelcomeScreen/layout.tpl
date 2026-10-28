@@ -40,12 +40,12 @@
                 <p class="welcome-screen__card-desc">
                     Подробные руководства и API-документация помогут вам создавать потрясающие приложения.
                 </p>
-                <?= Simflex\Layout\Components\UI\Core\Buttons\Button\Layout::drawButton(
+                <?= Simflex\Core\Layout\Components\UI\Core\Buttons\Button\Layout::drawButton(
                     text: 'Читать',
                     link: 'http://sf.master.et9.ru:10580/home.html',
                     icon: 'arrow-right',
-                    size: \Simflex\Layout\Components\UI\Core\Buttons\Button\ButtonSize::Small,
-                    iconPos: \Simflex\Layout\Components\UI\Core\Buttons\Button\ButtonIconPos::Right,
+                    size: \Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonSize::Small,
+                    iconPos: \Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonIconPos::Right,
                     attributes: [
                         'target' => '_blank'
                     ]

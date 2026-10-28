@@ -1,13 +1,13 @@
 <?php
 
-namespace Simflex\Models;
+namespace Simflex\Core\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * @property int $menu_id
  * @property int $menu_pid
- * @property string $component Класс компонента, см. \Simflex\Core\ExtensionRegistry
+ * @property string $component Класс компонента, см. \Simflex\Core\System\ExtensionRegistry
  * @property bool $active
  * @property bool $hidden
  * @property int $npp

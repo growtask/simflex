@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Auth\SignOut;
+namespace Simflex\Core\Auth\SignOut;
 
-use Simflex\Auth\CookieTokenBag;
-use Simflex\Core\Middleware\Handler;
+use Simflex\Core\Auth\CookieTokenBag;
+use Simflex\Core\System\Middleware\Handler;
 
 class CookieMiddleware implements Handler
 {

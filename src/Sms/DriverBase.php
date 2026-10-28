@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Sms;
+namespace Simflex\Core\Sms;
 
-use Simflex\DB\DB;
-use Simflex\Helpers\Time;
+use Simflex\Core\Models\SmsLog;
+use Simflex\Core\Helpers\Time;
 
 /**
  * @todo Incomplete: нет миграций для таблиц sms_log, sms_driver, поэтому в реальном окружении код падает
@@ -63,20 +63,14 @@ abstract class DriverBase
      */
     protected function updateState($driverSmsId, array $result): void
     {
-        $set = ["state = '{$result['state']}'"];
+        $set = ['state' => $result['state']];
         if (self::STATE_DELIVERY === $result['state']) {
-            $time = Time::mysql($result['time']);
-            $set[] = "time_delivery = '$time'";
+            $set['time_delivery'] = Time::mysql($result['time']);
         }
         if (self::STATE_ERROR === $result['state']) {
-            $set[] = 'error_code = ' . (int)$result['error_code'];
-            $set[] = "error_text = '{$result['error_text']}'";
+            $set['error_code'] = (int)$result['error_code'];
+            $set['error_text'] = $result['error_text'];
         }
-        $q = '
-            UPDATE sms_log SET ' . implode(', ', $set) . " 
-            WHERE driver_sms_id = '$driverSmsId'
-            AND driver_id = {$this->config['driver_id']}
-        ";
-        DB::query($q);
+        SmsLog::bulkUpdate($set, ['driver_sms_id' => (string)$driverSmsId, 'driver_id' => (int)$this->config['driver_id']]);
     }
 }

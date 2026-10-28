@@ -1,8 +1,9 @@
 <?php
 
-namespace Simflex\Console;
+namespace Simflex\Core\Console;
 
-use Simflex\Logger\Log;
+use Simflex\Core\System\Container;
+use Simflex\Core\Logger\Log;
 
 class ConsoleBase
 {
@@ -31,7 +32,7 @@ class ConsoleBase
             $tmp[] = '--' . $key . '="' . $value . '"';
         }
         $paramsStr = implode(' ', $tmp);
-        $command = PHP_BINARY . ' ' . SF_ROOT_PATH . "/sf $job $paramsStr > /dev/null 2>&1 &";
+        $command = PHP_BINARY . ' ' . Container::getPaths()->getRoot('sf') . " $job $paramsStr > /dev/null 2>&1 &";
         if ($applyTimeout) {
             $command = "timeout -s 9 {$timeout}s $command";
         }

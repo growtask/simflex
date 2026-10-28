@@ -1,8 +1,8 @@
 <?php
 
-namespace Simflex\Http\Api;
+namespace Simflex\Core\Http\Api;
 
-use Simflex\Http\Request;
+use Simflex\Core\Http\Request;
 
 class JsonRequest extends Request
 {

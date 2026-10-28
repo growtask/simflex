@@ -10,7 +10,7 @@ $dropdownTabClasses = [
 ];
 
 $menuTheme = $data['menuTheme'] === 'light' ? '' : 'dropdown-tab__menu_dark';
-$menuTabTheme = $data['menuTheme'] === 'light' ? Simflex\Layout\Components\UI\Core\Tab\TabTheme::Light : Simflex\Layout\Components\UI\Core\Tab\TabTheme::Dark;
+$menuTabTheme = $data['menuTheme'] === 'light' ? Simflex\Core\Layout\Components\UI\Core\Tab\TabTheme::Light : Simflex\Core\Layout\Components\UI\Core\Tab\TabTheme::Dark;
 ?>
 
 <div class="<?= implode(' ', $dropdownTabClasses) ?>" data-options='' <?= buildAttrs($data['attributes'] ?? []) ?>>
@@ -47,14 +47,14 @@ $menuTabTheme = $data['menuTheme'] === 'light' ? Simflex\Layout\Components\UI\Co
     <ul class="dropdown-tab__menu <?= $menuTheme ?>" role="menu" data-pointer="center">
         <?php foreach ($data['options'] as $option): ?>
             <li class="dropdown-tab__option" role="menuitem" data-value="<?= $option['value'] ?>">
-                <?= Simflex\Layout\Components\UI\Core\Tab\Layout::drawTab(
+                <?= Simflex\Core\Layout\Components\UI\Core\Tab\Layout::drawTab(
                     className: 'dropdown-tab__link',
                     text: $option['text'],
                     link: $option['link'] ?? '',
                     iconLeft: $option['icon'] ?? '',
                     badge: $option['badge'] ?? '',
-                    style: \Simflex\Layout\Components\UI\Core\Tab\TabStyle::Secondary,
-                    size: \Simflex\Layout\Components\UI\Core\Tab\TabSize::Small,
+                    style: \Simflex\Core\Layout\Components\UI\Core\Tab\TabStyle::Secondary,
+                    size: \Simflex\Core\Layout\Components\UI\Core\Tab\TabSize::Small,
                     theme: $menuTabTheme,
                 ) ?>
             </li>

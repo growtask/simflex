@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Admin\Modules\Breadcrumbs\Breadcrumbs;
-use Simflex\Admin\Modules\Menu\Menu as MenuModule;
-use Simflex\Core\CodeRegistry;
+use Simflex\Core\Admin\Modules\Breadcrumbs\Breadcrumbs;
+use Simflex\Core\Admin\Modules\Menu\Menu as MenuModule;
+use Simflex\Core\System\CodeRegistry;
 
 /**
  * Модули макета админки, объявленные в коде. Модули сайта размещаются в таблице module_item.

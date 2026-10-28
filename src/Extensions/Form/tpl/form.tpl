@@ -1,8 +1,8 @@
 <?php
 
-/** @var \Simflex\Extensions\Form\ModuleForm $this */
+/** @var \Simflex\Core\Extensions\Form\ModuleForm $this */
 ?>
-<?= \Simflex\Core\Alert\Site\Alert::getHTML() ?>
+<?= \Simflex\Core\Extensions\Alert\Alert::getHTML() ?>
 <?php
 if (!$this->submitted() || $this->submitted() && $this->errors) : ?>
     <?= $this->params['text_before'] ?? '' ?>

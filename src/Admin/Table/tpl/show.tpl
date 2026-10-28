@@ -24,7 +24,7 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
         </div>
     </div>
     <div class="content__body">
-        <?= \Simflex\Admin\Plugins\Alert\Alert::getHTML() ?>
+        <?= \Simflex\Core\Extensions\Alert\Alert::getHTML() ?>
         <div class="tables">
             <form class="table-top-form" >
                 <table class="table">

@@ -1,10 +1,10 @@
 <?php
 
-namespace Simflex\Admin\Table;
+namespace Simflex\Core\Admin\Table;
 
 /**
  * Группа настроек модуля или компонента, выводится отдельным блоком в форме админки.
- * См. \Simflex\Core\ExtensionBase::adminParams()
+ * См. \Simflex\Core\System\ExtensionBase::adminParams()
  */
 readonly class ParamGroup
 {

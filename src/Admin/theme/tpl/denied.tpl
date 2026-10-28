@@ -21,7 +21,7 @@
                         <h4 class="login-form__title">Недостаточно прав для входа в панель управления</h4>
                     </div>
                     <div class="login-form__btns">
-                        <a class="BtnPrimarySm" href="<?= \Simflex\Admin\Core::url('logout/') ?>">Выйти</a>
+                        <a class="BtnPrimarySm" href="<?= \Simflex\Core\Admin\Page::url('logout/') ?>">Выйти</a>
                         <a class="BtnOutlineMonoSm" href="/">На сайт</a>
                     </div>
                 </div>

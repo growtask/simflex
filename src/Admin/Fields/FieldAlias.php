@@ -1,20 +1,18 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\DB\DB;
-use Simflex\Helpers\Str;
+use Simflex\Core\Helpers\Str;
 
 class FieldAlias extends Field
 {
     public function getPOST(bool $simple = false, string|int|null $group = null): mixed
     {
-        $val = $_POST[$this->name];
+        $val = (string)$this->getPosted();
         if (empty($val) && !empty($this->params['source'])) {
-            $val = isset($_POST[$this->params['source']]) ? Str::translite($_POST[$this->params['source']]) : '';
+            $val = Str::translite((string)$this->getPosted($this->params['source']));
         }
-        $ret = $this->e2n && $val === '' ? null : '' . DB::escape($val) . '';
-        return $ret;
+        return $this->e2n && $val === '' ? null : $val;
     }
 
     public function defval(): string

@@ -1,11 +1,11 @@
 <?php
 
-namespace Simflex\Admin\Fields;
+namespace Simflex\Core\Admin\Fields;
 
-use Simflex\Core\Privilege;
+use Simflex\Core\System\Privilege;
 
 /**
- * Имя привилегии из кода, см. \Simflex\Core\Privilege
+ * Имя привилегии из кода, см. \Simflex\Core\System\Privilege
  */
 class FieldPrivilegeSelect extends FieldExtensionSelect
 {

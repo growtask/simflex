@@ -1,15 +1,15 @@
 <?php
 
-namespace Simflex\Layout;
+namespace Simflex\Core\Layout;
 
-use Simflex\Core\Assets;
-use Simflex\Core\Buffer;
-use Simflex\Core\PageAssets;
-use Simflex\Core\View;
+use Simflex\Core\Http\Assets;
+use Simflex\Core\System\Buffer;
+use Simflex\Core\Http\PageAssets;
+use Simflex\Core\Http\View;
 
 /**
  * Компонент вёрстки: класс Layout, шаблон layout.tpl и необязательные style.scss / style.css, script.js в одной
- * директории. Компоненты ядра - Simflex\Layout\Components, сайта - App\Layout (директория Layout/ сайта)
+ * директории. Компоненты ядра - Simflex\Core\Layout\Components, сайта - App\Layout (директория Layout/ сайта)
  */
 abstract class LayoutBase
 {
@@ -121,6 +121,6 @@ abstract class LayoutBase
             return ltrim($type, '\\');
         }
 
-        return 'Simflex\\Admin\\Fields\\Field' . ucfirst($type);
+        return 'Simflex\\Core\\Admin\\Fields\\Field' . ucfirst($type);
     }
 }

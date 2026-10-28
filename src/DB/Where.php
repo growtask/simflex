@@ -1,6 +1,6 @@
 <?php
 
-namespace Simflex\DB;
+namespace Simflex\Core\DB;
 
 use ArrayAccess;
 use Exception;
@@ -146,7 +146,7 @@ class Where implements ArrayAccess
     /**
      * Добавляет условия WHERE
      *
-     * @param string|array|Where|\Simflex\DB\Expr $where Условия фильтра
+     * @param string|array|Where|\Simflex\Core\DB\Expr $where Условия фильтра
      * @throws Exception
      */
     public function add(string|array|Where|Expr $where): void

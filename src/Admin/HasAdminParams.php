@@ -1,9 +1,9 @@
 <?php
 
-namespace Simflex\Admin;
+namespace Simflex\Core\Admin;
 
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\ParamGroup;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\ParamGroup;
 
 /**
  * Модуль с настройками, которые редактируются в админке.
