@@ -40,10 +40,8 @@
     "tubalmartin/cssmin": "^4.1",
     "vlucas/phpdotenv": "^5.4"
   },
-  "require-dev": {
-  },
-  "suggest": {
-  },
+  "require-dev": {},
+  "suggest": {},
   "autoload": {
     "psr-4": {
       "Simflex\\": "src"
@@ -52,5 +50,10 @@
       "src/constants.php",
       "src/functions.php"
     ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "4.0.x-dev"
+    }
   }
 }
