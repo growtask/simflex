@@ -35,7 +35,10 @@
     "maximebf/debugbar": "1.22.*",
     "filp/whoops": "2.15.*",
     "phpmailer/phpmailer": "v6.*",
-    "curl/curl": "2.*"
+    "curl/curl": "2.*",
+    "scssphp/scssphp": "^1.11",
+    "tubalmartin/cssmin": "^4.1",
+    "vlucas/phpdotenv": "^5.4"
   },
   "require-dev": {
   },
@@ -46,6 +49,7 @@
       "Simflex\\": "src"
     },
     "files": [
+      "src/constants.php",
       "src/functions.php"
     ]
   }

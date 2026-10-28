@@ -24,8 +24,7 @@ function env(string $name, mixed $defaultValue = null): mixed
  */
 function asset(string $path, bool $siteOnly = false): string
 {
-    // SF_LOCATION объявляет точка входа (public/index.php, console.php)
-    if (!$siteOnly && defined('SF_LOCATION') && SF_LOCATION == SF_LOCATION_ADMIN) {
+    if (!$siteOnly && SF_LOCATION === SF_LOCATION_ADMIN) {
         $url = \Simflex\Admin\Core::webVendorPath() . '/theme/' . $path;
         $file = \Simflex\Admin\Core::vendorPath() . '/theme/' . $path;
     } else {
@@ -50,4 +49,52 @@ function getSimflexVersion(): string
 
         return InstalledVersions::getPrettyVersion('growtask/simflex');
     });
+}
+
+/**
+ * Полный URL
+ * @param string $path Путь к ресурсу
+ * @param array $get GET-параметры
+ * @return string Полный URL
+ */
+function url(string $path, array $get = []): string
+{
+    $q = http_build_query($get);
+    return ('http' . (!empty($_SERVER['HTTPS']) ? 's' : '')) . '://' . $_SERVER['HTTP_HOST'] . $path . ($q ? ('?' . $q) : '');
+}
+
+/**
+ * Выводит SVG-иконку из спрайта сайта public/assets/icons/icons.svg (символ icon-<имя>)
+ * @param string $iconName Имя иконки
+ * @param string $className Дополнительные CSS-классы
+ * @return string HTML SVG со ссылкой на спрайт
+ */
+function renderIcon(string $iconName, string $className = ''): string
+{
+    return sprintf(
+        '<svg class="%s" aria-hidden="true"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
+        htmlspecialchars($className),
+        htmlspecialchars($iconName)
+    );
+}
+
+/**
+ * Собирает строку HTML-атрибутов из массива ключ => значение
+ * @param array<string,mixed> $attributes HTML-атрибуты: ключ => значение
+ * @return string Строка HTML-атрибутов с экранированными значениями
+ */
+function buildAttrs(array $attributes = []): string
+{
+    if (empty($attributes)) {
+        return '';
+    }
+
+    return implode(
+        ' ',
+        array_map(
+            fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+            array_keys($attributes),
+            $attributes
+        )
+    );
 }
