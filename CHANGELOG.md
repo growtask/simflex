@@ -1,6 +1,6 @@
 # Журнал изменений
 
-Все заметные изменения ядра Simflex CMS (`growtask/simflex`). Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
+Все заметные изменения ядра Simflex CMS (`growtask/simflex-core`). Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/). Журнал ведётся с версии 4.0; изменения шаблона сайта — в `CHANGELOG.md`
 репозитория `simflex-template`.
 
@@ -11,6 +11,8 @@
 
 ### Несовместимые изменения
 
+- **Пакет ядра переименован:** `growtask/simflex` → `growtask/simflex-core` (репозиторий `simflex-core`). Пакет
+  `growtask/simflex` остаётся для сайтов на 3.x; сайт 4.0 требует `growtask/simflex-core`.
 - **PHP 8.4** (`"php": "^8.4"`), обязательно расширение `mbstring`.
 - **Структура админки в коде.** Таблицы `struct_table`, `struct_table_right`, `struct_field`, `struct_field_param`,
   `struct_param`, `struct_data`, их модели и разделы «Структура» удалены. Раздел админки описывается классом

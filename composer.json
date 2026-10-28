@@ -1,5 +1,5 @@
 {
-  "name": "growtask/simflex",
+  "name": "growtask/simflex-core",
   "description": "Core for Simflex",
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -11,7 +11,7 @@
     "simflex-core",
     "simflex-cms"
   ],
-  "homepage": "https://github.com/growtask/simflex",
+  "homepage": "https://github.com/growtask/simflex-core",
   "type": "library",
   "license": "MIT",
   "authors": [
