@@ -43,11 +43,11 @@ function asset(string $path, bool $siteOnly = false): string
 function getSimflexVersion(): string
 {
     return Buffer::getOrSet('version', function () {
-        if (!InstalledVersions::isInstalled('growtask/simflex')) {
+        if (!InstalledVersions::isInstalled('growtask/simflex-core')) {
             return 'N/A';
         }
 
-        return InstalledVersions::getPrettyVersion('growtask/simflex');
+        return InstalledVersions::getPrettyVersion('growtask/simflex-core');
     });
 }
 
