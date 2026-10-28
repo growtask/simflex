@@ -31,7 +31,7 @@
 - **Шаблоны страниц в коде:** `provider/templates.php` приложения (`ContentTemplate`, `ContentTemplateBlock`,
   `ContentTemplates`); страница хранит ключ шаблона (`content.template`). Таблицы `content_template`,
   `content_template_param` и их модели удалены.
-- **Задачи cron в коде:** `provider/cron.php` (`\Simflex\Core\Cron\CronRegistry`, `CronJob`); таблица `cron` хранит
+- **Задачи cron в коде:** `provider/cron.php` (`\Simflex\Cron\CronRegistry`, `CronJob`); таблица `cron` хранит
   только активность и расписание.
 - **Сидеров больше нет:** начальные данные пишет миграция, создающая таблицу (`$s->seed(callable)`). Удалены
   `Seeder`, `Cli\Seeder` (`./sf seed/run`), модель и таблица `seeder`, атрибут `Manual`.
@@ -71,8 +71,59 @@
   файлы — в `upload_file` (в поле — только имя), а файлы `FieldVirtualTable` — на адрес формы, где их принимал
   `Handlers\Content::ajaxUpload()` (удалён вместе с переопределением `content()`).
 
+- **Структура ядра:** из `Simflex\Core` вынесены HTTP-слой и самостоятельные подсистемы.
+
+    | Было | Стало |
+    |---|---|
+    | `Core\Api\*`, `Core\Cookie\*`, `Core\Html\*` | `Http\Api\*`, `Http\Cookie\*`, `Http\Html\*` |
+    | `Core\Request`, `Core\Response` | `Http\Request`, `Http\Response` |
+    | `Core\ComponentBase`, `Core\ControllerBase`, `Core\Controller\*`, `Core\Routing\*` | `Http\ComponentBase`, `Http\ControllerBase`, `Http\Controller\*`, `Http\Routing\*` |
+    | `Core\Console\*`, `Core\ConsoleBase` | `Console\*`, `Console\ConsoleBase` |
+    | `Core\Cron\*` | `Cron\*` |
+    | `Core\DB\*`, `Core\DB` | `DB\*`, `DB\DB` |
+    | `Core\Helpers\*`, `Core\Time`, `Core\TimeDiff` | `Helpers\*`, `Helpers\Time`, `Helpers\TimeDiff` |
+    | `Core\Logger\*`, `Core\Log` | `Logger\*`, `Logger\Log` |
+    | `Core\Mail\*` | `Mail\*` |
+    | `Core\Models\*` | `Models\*` |
+    | `Core\Sms\*`, `Core\Sms` | `Sms\*`, `Sms\Sms` |
+    | `Core\Telegram\*` | `Telegram\*` |
+    | `Core\Wrapper\*` (DebugBar, Whoops), `Core\Profiler` | `Debug\*`, `Debug\Profiler` |
+    | `Core\HasAdminParams` | `Admin\HasAdminParams` |
+    | `Core\Factory` | `Core\DI\Factory` |
+    | `Core\File`, `Core\Image` | `Media\File`, `Media\Image` |
+
+    Все имена — в namespace `Simflex\`. Замена в коде сайта и расширений — по таблице, относительные имена вида
+    `DB\AQ` (при `use Simflex\Core\DB`) — на `use Simflex\DB\AQ`.
+- **`Core` и `Page` разделены:**
+
+    | Было | Стало |
+    |---|---|
+    | `Core::siteParam($key, ...)`, `Core::siteParam()`, `Admin\Core::siteParam($key)` | `SiteSettings::get($key, ...)`, `SiteSettings::getAll()` |
+    | `Core::menu()`, `Core::menu('by_id')`, `Core::menu('by_link')`, `Core::menuCurItem()` | `SiteMenu::getTree()`, `getById()`, `getByLink()` (ключ — ссылка), `getCurrent()` |
+    | `Page::css()`, `js()`, `jsInline()`, `addAsset()`, `metaCSS()` | `PageAssets::css()`, `js()`, `jsInline()`, `add()`, `getCssHtml()` |
+    | `Page::seo()`, `addMetaRaw()`, `title()`, `Page::$override`, `Page::$seoTitle` | `PageSeo::seo(..., exactTitle:)`, `addMetaRaw()`, `getFullTitle()`, `getTitle()`, `getDescription()`, `getKeywords()` |
+
+    Классы — в `Simflex\Core`. Удалены `Core::error404()`, `isHttps()`, `httpProtocol()`, `webVendorPath()`,
+    `vendorPath()`, `getExtensions()`, `Page::module()`, `Page::$showAside`, `ExtensionBase::root()`, `link()`.
+    `Page::meta()` выводит и description, keywords; `Resolver::setMenuByLink()` → `setMenu()` (ключ — ссылка пункта).
+- **`Helpers\Time`:** методы в camelCase — `what_format()` → `detectFormat()`, `userfull()` → `userFull()`,
+  `sub_times()` → `subTimes()`, `form_dates()` → `formDates()`; удалены `startTimer()`, `getExecTime()`, `getMonths()`,
+  `$daysInMonth`. `unix()` возвращает `int`, форматирующие методы — `string`.
+- **Транзакции:** `DB::transaction(callable)` вместо `transactionStart()`, `transactionCommit()`,
+  `transactionRollback()`, `transactionEnd()`; адаптер реализует `Adapter::inTransaction()`. Сохранение записи
+  раздела админки (с переопределениями `save()` наследников), удаление записи раздела (`deleteItem()`)
+  и `CronRegistry::sync()` выполняются в транзакции.
+- **Одна почта:** старый `Simflex\Core\Mail` (`Mail::create()->send()`, windows-1251, журнал `mail_log` без миграции)
+  удалён, письма отправляет `Simflex\Mail\Mailer` (`Mailer::get()->sendText()`, `sendPlain()`, `sendTemplate()`).
+- Удалены `Simflex\Core\Path` (вместо `Path::dirToHref()` — `Assets::publish()`), заглушки
+  `Core\Component\Stub\*`, умолчания `src/routes.php`, `src/events.php`, `src/services.php`: `ConfigBase::$files`
+  по умолчанию указывает на `provider/*.php` сайта, отсутствующий файл — пустой список.
+
 ### Добавлено
 
+- `AQ::groupBy()`, `having()`, `unionAll()`, `union()` — группировка и объединение запросов построителем;
+  `AQ::insertInto($table, $columns)` — `INSERT INTO ... SELECT` выборкой построителя.
+- `FieldVirtualTable::$query` принимает запрос `AQ`: количество строк считается по нему же (`$queryCount` не нужен).
 - **Разделы админки в коде.** `\Simflex\Admin\Handler` — раздел (`content()`), `\Simflex\Admin\Table\Table` —
   табличный раздел. Таблица объявляется в самом классе: `protected static string $model` (обязательно),
   `getFields()`, `getParams()`, `$defaultOrderBy`, `$defaultOrderDesc`, `$privilegeAdd/Edit/Delete`, `$perPage`;
@@ -120,6 +171,7 @@
 
 ### Изменено
 
+- `ConsoleBase::toBackground()` запускает команду через `sf` сайта.
 - Список раздела, количество и карточка записи собираются через `AQ`: значения фильтров передаются параметрами
   запроса, внешние ключи присоединяются `JOIN` с псевдонимом, ограничения по привилегиям — `Table::getScope()`.
 - Запись раздела сохраняется через модель (`insertStatic()`, `update()`, `bulkUpdate()`): срабатывают хуки
@@ -145,6 +197,18 @@
 
 ### Исправлено
 
+- Description и keywords страницы не выводились: тема читала `Page::$override` (всегда пустой), а заголовок из
+  блока «Мета» страницы (`meta_title`) не применялся.
+- Ajax-запрос модуля (`sf_module_id`) не возвращал HTML модуля.
+- Маршрут по меню сайта: базовым путём компонента считался весь путь запроса, а не ссылка пункта меню; путь
+  без пункта с компонентом падал с `TypeError` вместо маршрута по умолчанию.
+- `Mail::setBodyFromTemplate()`: текстовая версия письма не очищалась от тегов (регулярные выражения без
+  разделителей).
+- Транспорт `PhpMailer`: порт из конфига `mail.port` не применялся; без `mail.username` отправка шла с авторизацией
+  и пустым отправителем.
+- `ActionMatcher`: действия контроллера с HTTP-методом (`#[Action('/x', 'post')]`) не срабатывали (метод запроса
+  в верхнем регистре); у контроллера на маршруте `/` путь действия терял первый символ; переменные пути
+  неудачного сопоставления оставались в следующем.
 - Загрузка файлов админки: `upload_file` принимала любые файлы (в том числе `.php`), `upload_img` брала путь
   из запроса без проверки, обе — без проверки прав. Теперь нужно право добавлять или менять записи раздела,
   путь — без `..`, расширения `upload_file` — белый список раздела; `File::loadPost()` не сохраняет исполняемые

@@ -1,0 +1,25 @@
+<?php
+
+namespace Simflex\Layout\Components\UI\Core\Marker;
+
+use Simflex\Layout\LayoutBase;
+
+class Layout extends LayoutBase
+{
+    public static function drawMarker(
+        string     $className = '',
+        string     $icon = 'true',
+        MarkerSize $size = MarkerSize::Medium,
+        array      $attributes = []
+    ): string {
+        return static::draw(
+            compact(
+                'className',
+                'icon',
+                'attributes'
+            ) + [
+                'size' => $size->value,
+            ]
+        );
+    }
+}

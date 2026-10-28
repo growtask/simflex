@@ -1,0 +1,33 @@
+<?php
+
+namespace Simflex\Layout\Components\UI\Core\Checkbox;
+
+use Simflex\Layout\LayoutBase;
+
+class Layout extends LayoutBase
+{
+    public static function drawCheckbox(
+        string           $className = '',
+        string           $text = '',
+        bool             $policy = false,
+        CheckboxStyle    $style = CheckboxStyle::Solid,
+        CheckboxSize     $size = CheckboxSize::Small,
+        CheckboxTheme    $theme = CheckboxTheme::Light,
+        CheckboxPosition $position = CheckboxPosition::Left,
+        array            $attributes = []
+    ): string {
+        return static::draw(
+            compact(
+                'className',
+                'text',
+                'policy',
+                'attributes'
+            ) + [
+                'style' => $style->value,
+                'size' => $size->value,
+                'theme' => $theme->value,
+                'position' => $position->value,
+            ]
+        );
+    }
+}

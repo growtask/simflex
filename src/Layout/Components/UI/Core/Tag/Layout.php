@@ -1,0 +1,29 @@
+<?php
+
+namespace Simflex\Layout\Components\UI\Core\Tag;
+
+use Simflex\Layout\LayoutBase;
+
+class Layout extends LayoutBase
+{
+    public static function drawTag(
+        string      $className = '',
+        string      $text = '',
+        TagStyle    $style = TagStyle::Primary,
+        TagSize  $size = TagSize::Small,
+        TagTheme $theme = TagTheme::Light,
+        array       $attributes = []
+    ): string {
+        return static::draw(
+            compact(
+                'className',
+                'text',
+                'attributes'
+            ) + [
+                'style' => $style->value,
+                'size' => $size->value,
+                'theme' => $theme->value,
+            ]
+        );
+    }
+}
