@@ -11,7 +11,7 @@ use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Presets\NppField;
 use Simflex\Admin\Table\Presets\ParentField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\Menu as MenuModel;
+use Simflex\Models\Menu as MenuModel;
 
 class Menu extends Table
 {

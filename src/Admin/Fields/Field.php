@@ -128,7 +128,7 @@ class Field
      */
     public function setWidth($width): void
     {
-        $this->width = (empty($width) || (int)$width == 0) ? 0 : (float)$width;
+        $this->width = (empty($width) || (int)$width === 0) ? 0 : (float)$width;
         $this->isVisible = $this->width > 0;
         $this->styleCol['width'] = $this->width > 1
             ? 'width: ' . $this->width . 'px'
@@ -240,7 +240,7 @@ class Field
         $value = $this->value ?: $row[$this->name . ($this->fk ? '_label' : '')];
         $value = strip_tags((string)$value, ['br', 'strong', 'b', 'em', 'i', 'span']);
 
-        if ($this->name == 'name') {
+        if ($this->name === 'name') {
             return $this->render('link', [
                 'href' => '?action=form&' . $this->tablePk . '=' . $this->pkValue,
                 'class' => 'table__row-' . $this->name,
@@ -275,7 +275,7 @@ class Field
     public function filter($value): string
     {
         if ($this->filter) {
-            $inExtra = $this->width == 0;
+            $inExtra = $this->width === 0.0;
             return $this->render('filter', [
                 'name' => $this->name,
                 'placeholder' => $inExtra ? $this->label : '',

@@ -2,9 +2,9 @@
 
 namespace Simflex\Admin\Handlers;
 
-use Simflex\Admin\Core;
 use Simflex\Admin\Handler;
 use Simflex\Core\Privilege as PrivilegeRegistry;
+use Simflex\Core\SiteSettings;
 
 /**
  * Привилегии объявлены в коде (\Simflex\Core\Privilege и подкласс приложения): раздел выводит их список
@@ -18,7 +18,7 @@ class Privilege extends Handler
         return match ($_GET['action'] ?? '') {
             '' => $this->show(),
             'switch' => $this->switchActive(),
-            default => (string)Core::siteParam('error404'),
+            default => (string)SiteSettings::get('error404'),
         };
     }
 

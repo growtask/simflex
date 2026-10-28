@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 class FieldEnum extends FieldString
 {
@@ -38,7 +38,7 @@ class FieldEnum extends FieldString
             preg_match_all("/'(.*?)'/", $row['Type'], $enumArray);
             $enumFields = $enumArray[1];
             $names = explode(';;', $row['Comment']);
-            if (count($names) == count($enumFields)) {
+            if (count($names) === count($enumFields)) {
                 $ret = [];
                 foreach ($names as $index => $name) {
                     $ret[$enumFields[$index]] = trim($name);

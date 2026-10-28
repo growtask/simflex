@@ -18,7 +18,7 @@ use Simflex\Admin\Table\Presets\NppField;
 use Simflex\Admin\Table\Repository;
 use Simflex\Admin\Table\Table;
 use Simflex\Core\ExtensionRegistry;
-use Simflex\Core\Models\ModuleItem as ModuleItemModel;
+use Simflex\Models\ModuleItem as ModuleItemModel;
 
 /**
  * Модули, размещённые на страницах сайта. Настройки модуля (ExtensionBase::adminParams()) загружаются в форму

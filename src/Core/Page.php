@@ -2,97 +2,73 @@
 
 namespace Simflex\Core;
 
+use Simflex\DB\DB;
+
+/**
+ * Страница сайта: содержимое компонента и модули по позициям. Выполняется при загрузке (init()), тема выводит
+ * результат: content(), position(), meta() (заголовок, мета-теги, стили), metaJS() (скрипты).
+ *
+ * Заголовок и мета-теги - PageSeo, стили и скрипты - PageAssets
+ */
 class Page
 {
-    protected static string $menu = '';
     protected static string $content = '';
+    /** @var array<string, list<string>> позиция => HTML модулей */
     protected static array $positions = [];
-    protected static array $modules = [];
-    protected static array $css = [];
-    protected static array $cssCheck = [];
-    protected static array $js = [];
-    protected static array $jsCheck = [];
-    public static string $seoTitle = '';
-    protected static string $seoDescription = '';
-    protected static string $seoKeywords = '';
-    protected static string $seoMetatags = '';
-    protected static bool $seoIs = false;
-    protected static string $metaRaw = '';
-    public static bool $showAside = false;
 
-    public static array $override = [
-        'description' => '',
-        'keywords' => '',
-        'title' => '',
-        'uses_meta' => false,
-    ];
-
+    /**
+     * Выполняет модули и компонент страницы. Модули с modulePostexec() выполняются после компонента,
+     * остальные - до; {position_<имя>} в HTML компонента заменяется модулями позиции
+     */
     public static function init(): void
     {
-        $com = Core::getComponent();
+        $component = Core::getComponent();
 
-        $q = '
-            SELECT item_id, module, menu_id, posname, name, params
-            FROM module_item
-            WHERE active=1
-            ORDER BY npp, item_id
-        ';
-        $rows = static::moduleRows(DB::assoc($q));
-        $curmenu = Core::menuCurItem();
-        foreach ($rows as $row) {
-            if (!$row['postexec'] && (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id'])) {
-                $module = new $row['class']($row);
-                self::$positions[$row['posname']][] = $module->execute();
+        $rows = static::moduleRows(DB::assoc(
+            'SELECT item_id, module, menu_id, posname, name, params FROM module_item WHERE active = 1 ORDER BY npp, item_id'
+        ));
+        $menuId = (int)(SiteMenu::getCurrent()['menu_id'] ?? 0);
+        $rows = array_filter($rows, fn(array $row) => empty($row['menu_id']) || (int)$row['menu_id'] === $menuId);
+
+        static::executeModules(array_filter($rows, fn(array $row) => !$row['postexec']));
+
+        static::$content = $component->execute();
+        if (str_contains(static::$content, '{position_')) {
+            foreach (static::$positions as $name => $html) {
+                static::$content = str_replace('{position_' . $name . '}', implode("\n", $html), static::$content);
             }
         }
 
-        self::$content = $com->execute();
-        if (strpos(self::$content, '{') !== false) {
-            foreach (self::$positions as $posname => $mcontent) {
-                self::$content = str_replace('{position_' . $posname . '}', implode("\n", $mcontent), self::$content);
-            }
-        }
-
-        foreach ($rows as $row) {
-            if ($row['postexec'] && (empty($row['menu_id']) || (int)$row['menu_id'] == $curmenu['menu_id'])) {
-                $module = new $row['class']($row);
-                self::$positions[$row['posname']][] = $module->execute();
-            }
-        }
+        static::executeModules(array_filter($rows, fn(array $row) => $row['postexec']));
     }
 
     public static function content(): string
     {
-        return self::$content;
+        return static::$content;
     }
 
     /**
-     * @param string $delimiter (по умолчанию '') разделитель, например: '<hr/>'
+     * HTML модулей позиции
+     * @param string $delimiter Разделитель модулей, например '<hr/>'
      */
-    public static function position(string $posname, string $delimiter = ''): string
+    public static function position(string $name, string $delimiter = ''): string
     {
-        if (!$posname || empty(self::$positions[$posname])) {
-            return '';
-        }
-        return implode($delimiter, self::$positions[$posname]);
+        return implode($delimiter, static::$positions[$name] ?? []);
     }
 
-    public static function module($modname): false
+    /**
+     * HTML активного модуля по id экземпляра (module_item.item_id), для ajax-запросов
+     */
+    public static function moduleById(int $id): string
     {
-        return false;
-    }
+        $rows = static::moduleRows(DB::assoc(
+            'SELECT item_id, module, menu_id, posname, name, params FROM module_item WHERE active = 1 AND item_id = ?',
+            false,
+            false,
+            [$id]
+        ));
 
-    public static function moduleById(int $module_id): string
-    {
-        $q = 'SELECT item_id, module, menu_id, posname, name, params
-        FROM module_item
-        WHERE active=1 AND item_id=' . $module_id;
-        $rows = static::moduleRows(DB::assoc($q));
-        if ($rows) {
-            $module = new $rows[0]['class']($rows[0]);
-            return $module->execute();
-        }
-        return '';
+        return $rows ? (new $rows[0]['class']($rows[0]))->execute() : '';
     }
 
     /**
@@ -115,187 +91,35 @@ class Page
     }
 
     /**
-     * @param string $file Веб-путь к файлу статики
-     * @param int $idx Приоритет от высшего 0 до низшего 100
-     * @param string|null $type css/js - необязательно, явно задает тип файла
-     * @throws \Exception
+     * Заголовок, мета-теги и стили страницы для head темы
      */
-    public static function addAsset(string $file, int $idx = 100, ?string $type = null): void
-    {
-        if ('css' === $type || strpos($file, '.css')) {
-            static::css($file, $idx);
-            return;
-        }
-        if ('js' === $type || strpos($file, '.js')) {
-            static::js($file, $idx);
-            return;
-        }
-        throw new \Exception("Unknown asset type (css or js?) for $file");
-    }
-
-    public static function css(string $file, int $idx = 100): void
-    {
-        if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            \Simflex\Admin\Page::css($file, $idx);
-            return;
-        }
-        if (empty(self::$css[$idx][md5($file)])) {
-            if (isset(self::$cssCheck[md5($file)])) {
-                unset(self::$css[self::$cssCheck[md5($file)]][md5($file)]);
-                unset(self::$cssCheck[md5($file)]);
-            }
-            self::$cssCheck[md5($file)] = $idx;
-            self::$css[$idx][md5($file)] = $file;
-        }
-    }
-
-    /**
-     * @param string $file Путь к подключаемому скрипту
-     * @param int $idx [по умолчанию 100] Приоритет, 0 - самый высокий, 100 - самый низкий
-     */
-    public static function js(string $file, int $idx = 100): void
-    {
-        if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            \Simflex\Admin\Page::js($file, $idx);
-            return;
-        }
-        if (empty(self::$js[$idx][md5($file)])) {
-            if (isset(self::$jsCheck[md5($file)])) {
-                unset(self::$js[self::$jsCheck[md5($file)]][md5($file)]);
-                unset(self::$jsCheck[md5($file)]);
-            }
-            self::$jsCheck[md5($file)] = $idx;
-            self::$js[$idx][md5($file)] = $file;
-        }
-    }
-
-    /**
-     * Добавляет JS код в блок подключения скриптов
-     * @param string $js встроенный js-код
-     */
-    public static function jsInline(string $js, int $idx = 100): bool
-    {
-        if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return false;
-        }
-        self::$js[$idx][md5($js)] = ['type' => 'inline', 'value' => $js];
-        return true;
-    }
-
-    public static function addMetaRaw(string $str): void
-    {
-        self::$metaRaw .= "$str\n";
-    }
-
-    public static function title(): string
-    {
-        return str_replace(
-            '<br/>',
-            '',
-            htmlspecialchars(self::$seoTitle)
-        ) . (self::$seoTitle ? ' | ' : '') . Core::siteParam('site_name');
-    }
-
     public static function meta(): string
     {
-        $title = self::$override['title'] ?: self::$seoTitle;
-        $sname = (!self::$override['uses_meta'] ? ' | ' : '') . (!self::$override['uses_meta'] ? Core::siteParam(
-            'site_name'
-        ) : '');
-        $html = '<title>' . str_replace('<br/>', '', htmlspecialchars($title)) . $sname . '</title>' . "\r\n";
-        $html .= self::$seoMetatags ? self::$seoMetatags . "\r\n" : '';
-        $html .= self::metaCSS();
-        $html .= self::$metaRaw;
-        $html .= '<meta charset="utf-8">' . "\r\n";
-
+        $html = PageSeo::getHeadHtml() . PageAssets::getCssHtml();
         if (Container::getConfig()->devMode) {
             $html .= Container::get('debugbar')->renderHead();
         }
+
         return $html;
     }
 
-    public static function metaCSS(): string
-    {
-        $std = Core::siteParam('static_domain');
-        $sub = Core::siteParam('static_domain_sub') ? 'css.' : '';
-        $v = (int)Core::siteParam('static_version');
-        $hasCache = (bool)Core::siteParam('static_cache');
-        if ($hasCache && $cacheStr = Core::siteParam('static_cache_css')) {
-            $cache = array_filter(array_map('trim', explode("\n", $cacheStr)));
-            if ($hasCache = (bool)count($cache)) {
-                $cache = array_flip($cache);
-                self::$css[1][] = "/cache/css/$v.min.css";
-            }
-        }
-        $html = '';
-        ksort(self::$css);
-        foreach (self::$css as $css_arr) {
-            foreach ($css_arr as $css) {
-                if ($hasCache && isset($cache[trim($css)])) {
-                    continue;
-                }
-                if ($std && strpos($css, 'http') === false) {
-                    $css = "http://$sub$std$css";
-                }
-                $href = $css . ($v ? '?v=' . $v : '');
-                $html .= '<link type="text/css" rel="preload" as="style" href="' . $href . '" />' . "\r\n";
-                $html .= '<link type="text/css" rel="stylesheet" href="' . $href . '" />' . "\r\n";
-            }
-        }
-        return $html;
-    }
-
+    /**
+     * Скрипты страницы, выводятся в конце body темы
+     */
     public static function metaJS(): string
     {
-        $std = Core::siteParam('static_domain');
-        $sub = Core::siteParam('static_domain_sub') ? 'js.' : '';
-        $v = env('JS_VER');
-        $hasCache = (bool)Core::siteParam('static_cache');
-        if ($hasCache && $cacheStr = Core::siteParam('static_cache_js')) {
-            $cache = array_filter(array_map('trim', explode("\n", $cacheStr)));
-            if ($hasCache = (bool)count($cache)) {
-                $cache = array_flip($cache);
-                self::$js[1][] = "/cache/js/$v.min.js";
-            }
-        }
-        $html = '';
-        ksort(self::$js);
-        foreach (self::$js as $js_arr) {
-            foreach ($js_arr as $js) {
-                if (is_array($js) && 'inline' === (string)@$js['type']) {
-                    $html .= '<script type="text/javascript" defer>' . $js['value'] . '</script>' . "\r\n";
-                    continue;
-                }
-                if ($hasCache && isset($cache[trim($js)])) {
-                    continue;
-                }
-                if ($std && strpos($js, 'http') === false) {
-                    $js = "http://$sub$std$js";
-                }
-                $src = $js . ($v && strpos($js, 'http') === false ? '?v=' . $v : '');
-                $html .= '<script type="text/javascript" defer src="' . $src . '"></script>' . "\r\n";
-            }
-        }
-
+        $html = PageAssets::getJsHtml();
         if (Container::getConfig()->devMode) {
             $html .= Container::get('debugbar')->render();
         }
+
         return $html;
     }
 
-    public static function seo(
-        string $title,
-        ?string $description = '',
-        ?string $keywords = '',
-        bool $final = false,
-        ?string $metatags = ''
-    ): void {
-        if (!self::$seoIs) {
-            self::$seoTitle = $title;
-            self::$seoDescription = $description ?: self::$seoDescription;
-            self::$seoKeywords = $keywords ?: self::$seoKeywords;
-            self::$seoMetatags = $metatags ?: self::$seoMetatags;
-            self::$seoIs = $final;
+    protected static function executeModules(array $rows): void
+    {
+        foreach ($rows as $row) {
+            static::$positions[$row['posname']][] = (new $row['class']($row))->execute();
         }
     }
 }

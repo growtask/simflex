@@ -3,8 +3,8 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Table\Table;
-use Simflex\Core\DB;
-use Simflex\Core\DB\AQ;
+use Simflex\DB\DB;
+use Simflex\DB\AQ;
 
 /**
  * Связи «многие ко многим»: записи другой таблицы, выбранные тегами. Колонки у поля нет, связи хранятся в таблице

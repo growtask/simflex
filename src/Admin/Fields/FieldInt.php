@@ -2,8 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
-use Simflex\Core\DB\AQ;
+use Simflex\DB\DB;
+use Simflex\DB\AQ;
 use Simflex\Admin\Table\Repository;
 
 class FieldInt extends Field
@@ -38,7 +38,7 @@ class FieldInt extends Field
         $fkClass = Repository::getTableClass($table);
         $fkTableFields = $fkClass ? $fkClass::getFieldRows() : [];
         foreach ($fkTableFields as $fkTableField) {
-            if ($fkTableField['class'] == 'FieldInt' || str_ends_with($fkTableField['class'], '\\FieldInt')) {
+            if ($fkTableField['class'] === 'FieldInt' || str_ends_with($fkTableField['class'], '\\FieldInt')) {
                 $fkParams = $fkTableField['params'];
                 if (!empty($fkParams['main']['fk_is_pid'])) {
                     return DB::wrapName($fkTableField['name']);

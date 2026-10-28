@@ -3,7 +3,7 @@
 namespace Simflex\Auth\Auth;
 
 use Simflex\Core\Middleware\Handler;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 
 /**
  * Класс модели пользователя — User, переопределяется через

@@ -9,7 +9,7 @@ use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Presets\NppField;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\Models\ModelSettings;
+use Simflex\Models\ModelSettings;
 
 class Settings extends Table
 {

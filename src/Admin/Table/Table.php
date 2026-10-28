@@ -17,18 +17,19 @@ use Simflex\Admin\Handler;
 use Simflex\Admin\Plugins\Alert\Alert;
 use Simflex\Admin\Plugins\Pagination\Pagination;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
-use Simflex\Core\DB\AQ;
-use Simflex\Core\DB\Expr;
-use Simflex\Core\DB\ExprOr;
+use Simflex\DB\DB;
+use Simflex\DB\AQ;
+use Simflex\DB\Expr;
+use Simflex\DB\ExprOr;
 use Simflex\Admin\Fields\Field;
 use Simflex\Admin\Fields\FieldInt;
-use Simflex\Core\File;
-use Simflex\Core\Image;
+use Simflex\Media\File;
+use Simflex\Media\Image;
 use Simflex\Core\ModelBase;
 use Simflex\Core\Privilege;
-use Simflex\Core\Helpers\Tree;
-use Simflex\Core\Time;
+use Simflex\Helpers\Tree;
+use Simflex\Helpers\Time;
+use Simflex\Core\SiteSettings;
 
 /**
  * Табличный раздел: список и форма записей таблицы БД. Подкласс объявляет таблицу:
@@ -379,8 +380,9 @@ abstract class Table extends Handler
 
         $action = $_GET['action'] ?? '';
 
-        if ($action == 'save') {
-            if ($keyValue = $this->save()) {
+        if ($action === 'save') {
+            // запись, её связи и то, что дописывают наследники в save(), сохраняются вместе или не сохраняются
+            if ($keyValue = DB::transaction(fn() => $this->save())) {
                 if (isset($_REQUEST['submit_apply'])) {
                     $href = Core::path() . '?action=form&' . $this->pk->name . '=' . $keyValue;
                     header('location: ' . $href);
@@ -397,7 +399,7 @@ abstract class Table extends Handler
 
         $method = isset($this->actionHandlers[$action]) ? $this->actionHandlers[$action]['method'] : $action;
         if (!method_exists($this, $method)) {
-            return (string)Core::siteParam('error404');
+            return (string)SiteSettings::get('error404');
         }
         $out = $this->$method();
         return is_string($out) ? $out : '';
@@ -478,7 +480,7 @@ abstract class Table extends Handler
     /**
      * Записи, которые пользователь может видеть и менять: не разработчик — только записи своих привилегий
      * (колонка привилегии) и ролей этих привилегий (колонка роли).
-     * В виде, который принимает \\Simflex\\Core\\DB\\Where: для чтения и записи
+     * В виде, который принимает \\Simflex\\DB\\Where: для чтения и записи
      */
     protected function getScope(): array
     {
@@ -515,7 +517,7 @@ abstract class Table extends Handler
         $columns = [];
         foreach ($this->fks as $field) {
             $label = $field->fk->table . $field->name . '.' . $field->fk->label . ' ' . $field->name . '_label';
-            if ($field->fk->table == $this->table) {
+            if ($field->fk->table === $this->table) {
                 $label = '(SELECT ' . $field->fk->label . ' FROM `' . $field->fk->table . '` t_' . $this->table
                     . ' WHERE ' . $this->pk->name . ' = ' . $this->table . '.' . $field->name . ') ' . $field->name . '_label';
             }
@@ -539,7 +541,7 @@ abstract class Table extends Handler
     {
         $query = new AQ()->asArray()->from($this->table)->select($this->selectAll ? '*' : $this->getListColumns());
         foreach ($this->fks as $field) {
-            if ($field->fk->table != $this->table) {
+            if ($field->fk->table !== $this->table) {
                 // алиас: на одну таблицу могут ссылаться несколько полей
                 $alias = $field->fk->table . $field->name;
                 $query->join(
@@ -789,7 +791,7 @@ abstract class Table extends Handler
         }
         if ($field->fk) {
             $this->fks[$field->name] = $field;
-            if ($field->fk->table == $this->table) {
+            if ($field->fk->table === $this->table) {
                 $this->pid = $field;
                 $this->isHierarchy = true;
             }
@@ -822,7 +824,7 @@ abstract class Table extends Handler
 
     public function form(): string
     {
-        if (isset($_GET['ids']) && count(explode(',', $_GET['ids'])) == 1) {
+        if (isset($_GET['ids']) && count(explode(',', $_GET['ids'])) === 1) {
             header("location: ?action=form&{$this->pk->name}={$_GET['ids']}");
             exit;
         }
@@ -903,7 +905,7 @@ abstract class Table extends Handler
                 foreach ($rows as $row0) {
                     $vars[$row0[$field->name]] = true;
                 }
-                if (count($vars) == 1) {
+                if (count($vars) === 1) {
                     foreach ($vars as $var => $useless) {
                         $row[$field->name] = $var;
                     }
@@ -912,7 +914,7 @@ abstract class Table extends Handler
 
             $hasSetParams = false;
             foreach ($this->fields as $field) {
-                if ($field->name == 'params') {
+                if ($field->name === 'params') {
                     $hasSetParams = true;
                     break;
                 }
@@ -931,7 +933,7 @@ abstract class Table extends Handler
                                             $rowParams = unserialize($row0['params']);
                                             @$vars[$rowParams[$group['name']][$field->name]] = true;
                                         }
-                                        if (count($vars) == 1) {
+                                        if (count($vars) === 1) {
                                             foreach ($vars as $var => $useless) {
                                                 $params[$group['name']][$field->name] = $var;
                                             }
@@ -942,7 +944,7 @@ abstract class Table extends Handler
                                             $rowParams = unserialize($row0['params']);
                                             $vars[$rowParams[$field->name]] = true;
                                         }
-                                        if (count($vars) == 1) {
+                                        if (count($vars) === 1) {
                                             foreach ($vars as $var => $useless) {
                                                 $params[$field->name] = $var;
                                             }
@@ -957,7 +959,7 @@ abstract class Table extends Handler
                                 $rowParams = unserialize($row0['params']);
                                 $vars[$rowParams[$field->name]] = true;
                             }
-                            if (count($vars) == 1) {
+                            if (count($vars) === 1) {
                                 foreach ($vars as $var => $useless) {
                                     $params[$field->name] = $var;
                                 }
@@ -1059,7 +1061,7 @@ abstract class Table extends Handler
         foreach ($rows as $row) {
             $set = [];
             foreach ($row as $key => $value) {
-                if ($key == $this->pk->name || $value === null) {
+                if ($key === $this->pk->name || $value === null) {
                     continue;
                 }
                 $set[$key] = in_array($key, $fieldNames) ? "Копия $value" : $value;
@@ -1121,7 +1123,7 @@ abstract class Table extends Handler
 
         $hasSetParams = false;
         foreach ($this->fields as $field) {
-            if ($field->name == 'params' && isset($_POST['set_param'])) {
+            if ($field->name === 'params' && isset($_POST['set_param'])) {
                 $hasSetParams = true;
                 break;
             }
@@ -1260,7 +1262,7 @@ abstract class Table extends Handler
                                 ->all();
                             foreach ($children as $child) {
                                 $path = $cur[$field_path->name] . $child[$field_alias->name] . '/';
-                                if ($child[$field_path->name] != $path) {
+                                if ($child[$field_path->name] !== $path) {
                                     static::getModel()::bulkUpdate(
                                         [$field_path->name => $path],
                                         array_merge($this->getScope(), [$pk => $child[$this->pk->name]])
@@ -1299,11 +1301,11 @@ abstract class Table extends Handler
             }
             $add = !$field->isVirtual && !$field->readonly || $field instanceof FieldPath;
             $post = $field->getPOST();
-            if ($add && (empty($post) || $post == 'NULL' || $post == "''")) {
+            if ($add && (empty($post) || $post === 'NULL' || $post === "''")) {
                 $add = empty(DB::columnInfo($this->table, $field->name)['Default']);
             }
             if ($add) {
-                $data[$field->name] = $field->name == 'params' ? serialize($this->getPostedParams()) : $post;
+                $data[$field->name] = $field->name === 'params' ? serialize($this->getPostedParams()) : $post;
             }
         }
 
@@ -1321,7 +1323,7 @@ abstract class Table extends Handler
             if ($field->isVirtual) {
                 $field->getPOST();
             } elseif (!$field->readonly) {
-                if ($field->name == 'params') {
+                if ($field->name === 'params') {
                     $data[$field->name] = serialize($this->getPostedParams());
                 } elseif ($field instanceof FieldPassword) {
                     if ($value = $field->getPOST()) {
@@ -1438,7 +1440,8 @@ abstract class Table extends Handler
 
         $deleted = [];
         foreach ($ids as $id) {
-            $n = $this->deleteItem($id);
+            // запись удаляется вместе со связанными данными, которые удаляет deleteItem() раздела
+            $n = DB::transaction(fn() => $this->deleteItem($id));
             if ($n) {
                 Alert::error("#$id &mdash; Ошибка. Удаление записи не возможно");
                 Alert::error("#$id &mdash; $n");
@@ -1493,7 +1496,7 @@ abstract class Table extends Handler
         if (is_string($value) && mb_strlen($value) > 1500) {
             $value = mb_substr($value, 0, 1500) . '...';
         }
-        if ($key == 'params' && is_string($value) && substr($value, 0, 2) == 'a:') {
+        if ($key === 'params' && is_string($value) && substr($value, 0, 2) === 'a:') {
             $value = '<pre>' . print_r(unserialize($value), true) . '</pre>';
         } else {
             $value = $field->showDetail($row);

@@ -3,7 +3,7 @@
 namespace Simflex\Extensions\Form\Fields;
 
 use Simflex\Extensions\Form\ModuleForm;
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 abstract class Field
 {

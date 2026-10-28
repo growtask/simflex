@@ -8,7 +8,7 @@ use Simflex\Admin\Table\Presets\ForeignKeyField;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
 use Simflex\Core\Privilege;
-use Simflex\Core\Models\UserRolePrivilege as UserRolePrivilegeModel;
+use Simflex\Models\UserRolePrivilege as UserRolePrivilegeModel;
 
 /**
  * Привилегии ролей. Только для разработчиков: здесь можно выдать любую привилегию, в том числе dev

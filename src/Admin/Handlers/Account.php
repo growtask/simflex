@@ -6,7 +6,7 @@ use Simflex\Admin\Core;
 use Simflex\Admin\Plugins\Alert\Alert;
 use Simflex\Admin\Handler;
 use Simflex\Core\Container;
-use Simflex\Core\Models\User as UserModel;
+use Simflex\Models\User as UserModel;
 
 /**
  * Учётная запись текущего пользователя: имя, email и пароль. Не табличный раздел

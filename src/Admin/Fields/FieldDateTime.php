@@ -3,7 +3,7 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 class FieldDateTime extends Field
 {
@@ -23,7 +23,7 @@ class FieldDateTime extends Field
 
     public function input($value): string
     {
-        $value = \Simflex\Core\Time::normal($value, true, false);
+        $value = \Simflex\Helpers\Time::normal($value, true, false);
         return $this->render('datetime', [
             'value' => date('Y-m-d H:i:s', strtotime($value)),
             'name' => $this->inputName(),
@@ -45,7 +45,7 @@ class FieldDateTime extends Field
 
     public function show($row): string
     {
-        $value = $row[$this->name] ? \Simflex\Core\Time::normal($row[$this->name]) : '';
+        $value = $row[$this->name] ? \Simflex\Helpers\Time::normal($row[$this->name]) : '';
         return $this->cell(str_replace(' ', '<br/>', $value));
     }
 }

@@ -8,7 +8,7 @@ use Simflex\Admin\Table\Presets\ForeignKeyField;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Table;
 use Simflex\Core\Privilege;
-use Simflex\Core\Models\UserPrivilegePersonal as UserPrivilegePersonalModel;
+use Simflex\Models\UserPrivilegePersonal as UserPrivilegePersonalModel;
 
 /**
  * Привилегии, выданные пользователю лично, помимо привилегий его роли.

@@ -2,10 +2,10 @@
 
 namespace Simflex\Admin;
 
+use Simflex\Core\Assets;
 use Simflex\Core\Container;
-use Simflex\Core\Html\HtmlRequest;
-use Simflex\Core\Html\HtmlResponse;
-use Simflex\Core\Models\ModelSettings;
+use Simflex\Http\Html\HtmlRequest;
+use Simflex\Http\Html\HtmlResponse;
 use Simflex\Core\Privilege;
 
 class Core
@@ -18,7 +18,6 @@ class Core
     private static array $menuById = [];
     private static array|false $menuCur = false;
     private static array $crumbs = [];
-    private static array $siteParams = [];
 
     private function __construct()
     {
@@ -67,7 +66,7 @@ class Core
      */
     public static function webVendorPath(): string
     {
-        return \Simflex\Core\Core::webVendorPath() . '/Admin';
+        return Assets::publish(SF_CORE_ROOT_PATH) . '/Admin';
     }
 
     public static function vendorPath(): string
@@ -104,14 +103,14 @@ class Core
             self::$isAjax = true;
         }
 
-        if (static::uri(0) == 'login') {
+        if (static::uri(0) === 'login') {
             Auth::login(
                 $_REQUEST['login']['login'] ?? null,
                 $_REQUEST['login']['password'] ?? null,
                 isset($_REQUEST['login']['remember']),
                 $_REQUEST['r'] ?? static::url()
             );
-        } elseif (static::uri(0) == 'logout') {
+        } elseif (static::uri(0) === 'logout') {
             Auth::logout();
         }
 
@@ -136,7 +135,7 @@ class Core
             ];
             self::$menuTree[$row['pid']][$key] = $row;
             self::$menuById[$key] = $row;
-            if ($row['link'] == self::$path) {
+            if ($row['link'] === self::$path) {
                 self::$menuCur = $row;
             }
         }
@@ -147,7 +146,6 @@ class Core
             }
         }
 
-        self::$siteParams = ModelSettings::values();
     }
 
     public static function ajax(): bool
@@ -215,10 +213,5 @@ class Core
             }
             include 'theme/tpl/login.tpl';
         }
-    }
-
-    public static function siteParam($key): mixed
-    {
-        return self::$siteParams[$key] ?? '';
     }
 }

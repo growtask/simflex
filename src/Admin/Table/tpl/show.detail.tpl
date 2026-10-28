@@ -4,7 +4,7 @@
     try {
         $value = $this->showDetailPrepareValue($row, $key);
     } catch (Exception $e) {
-        if ($e->getCode() == 999) {
+        if ($e->getCode() === 999) {
             continue;
         }
         throw $e;

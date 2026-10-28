@@ -3,7 +3,7 @@
 namespace Simflex\Core\Errors;
 
 use RuntimeException;
-use Simflex\Core\Log;
+use Simflex\Logger\Log;
 use Throwable;
 
 /**

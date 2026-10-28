@@ -9,8 +9,8 @@ namespace Simflex\Core;
  * @method static ConfigBase getConfig
  * @method static Page getPage
  * @method static Core getCore
- * @method static \Simflex\Core\Request getRequest
- * @method static \Simflex\Core\Response getResponse
+ * @method static \Simflex\Http\Request getRequest
+ * @method static \Simflex\Http\Response getResponse
  * @method static User getUserLegacy
  * @method static Factory getFactory
  * @method static EventManager getEvents
@@ -48,7 +48,7 @@ class Container
         static::$registry['authHandler'] = $closure;
     }
 
-    public static function getUser(): ?\Simflex\Core\Models\User
+    public static function getUser(): ?\Simflex\Models\User
     {
         if (
             !($called = & static::$registry['authHandlerCalled'])

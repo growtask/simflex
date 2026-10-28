@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\Image;
+use Simflex\Media\Image;
 
 class FieldImage extends FieldFile
 {

@@ -2,7 +2,7 @@
 
 namespace Simflex\Core;
 
-use Simflex\Core\DB\MySQL;
+use Simflex\DB\MySQL;
 
 /**
  * Базовый класс конфигурации
@@ -110,13 +110,14 @@ abstract class ConfigBase
     public string $logPath = SF_ROOT_PATH . '/log';
 
     /**
-     * @var array{routes: string, events: string, services: string} Провайдеры данных для автозагрузки
+     * @var array{routes: string, events: string, services: string, commands: string} Файлы объявлений сайта;
+     *      отсутствующий файл - пустой список
      */
     public array $files = [
-        'routes' => SF_CORE_ROOT_PATH . '/routes.php',
-        'events' => SF_CORE_ROOT_PATH . '/events.php',
-        'services' => SF_CORE_ROOT_PATH . '/services.php',
-        'commands' => SF_CORE_ROOT_PATH . '/commands.php',
+        'routes' => SF_ROOT_PATH . '/provider/routes.php',
+        'events' => SF_ROOT_PATH . '/provider/events.php',
+        'services' => SF_ROOT_PATH . '/provider/services.php',
+        'commands' => SF_ROOT_PATH . '/provider/commands.php',
     ];
 
     /**
@@ -142,7 +143,7 @@ abstract class ConfigBase
             $routes = array_merge($routes, $config->getRoutes());
         }
 
-        return array_merge($routes, include $this->files['routes']);
+        return array_merge($routes, $this->includeFile('routes'));
     }
 
     /**
@@ -151,7 +152,7 @@ abstract class ConfigBase
     public function getEvents(): array
     {
         $lists = array_map(fn(ExtensionConfig $config) => $config->getEvents(), ExtensionConfig::getAll());
-        $lists[] = include $this->files['events'];
+        $lists[] = $this->includeFile('events');
 
         $events = [];
         foreach ($lists as $list) {
@@ -170,7 +171,7 @@ abstract class ConfigBase
     public function getServices(): array
     {
         $lists = array_map(fn(ExtensionConfig $config) => $config->getServices(), ExtensionConfig::getAll());
-        $lists[] = include $this->files['services'];
+        $lists[] = $this->includeFile('services');
 
         $services = [];
         foreach ($lists as $list) {
@@ -183,16 +184,28 @@ abstract class ConfigBase
     }
 
     /**
-     * Консольные команды расширений и сайта; провайдер сайта с тем же именем главнее
+     * Консольные команды ядра, расширений и сайта; провайдер сайта с тем же именем главнее
      */
     public function getCommands(): array
     {
-        $commands = [];
+        $commands = [
+            'migrate' => \Simflex\DB\Cli\Migrator::class,
+            'layout' => \Simflex\Layout\ConsoleLayout::class,
+            'cron' => \Simflex\Cron\ConsoleCron::class,
+        ];
         foreach (ExtensionConfig::getAll() as $config) {
             $commands = array_merge($commands, $config->getCommands());
         }
 
-        return array_merge($commands, include $this->files['commands']);
+        return array_merge($commands, $this->includeFile('commands'));
+    }
+
+    /**
+     * Список из файла объявлений сайта ($files), пустой, если файла нет
+     */
+    protected function includeFile(string $name): array
+    {
+        return is_file($this->files[$name]) ? (array)include $this->files[$name] : [];
     }
 
     /**

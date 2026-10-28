@@ -25,10 +25,10 @@ class FieldText extends Field
             if ($this->readonly) {
                 $html .= Editor::tinymce('readonly', 'sf-editor-readonly');
             }
-            if ('mini' == $this->editor) {
+            if ('mini' === $this->editor) {
                 $html .= Editor::tinymce('mini', 'sf-editor-mini');
             }
-            if ('full' == $this->editor) {
+            if ('full' === $this->editor) {
                 $html .= Editor::tinymce('full', 'sf-editor-full');
             }
         }

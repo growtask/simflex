@@ -4,18 +4,18 @@ namespace Simflex\Core;
 
 use ArrayAccess;
 use Exception;
-use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 use ReflectionClass;
-use Simflex\Core\DB\AQ;
-use Simflex\Core\DB\Expr;
-use Simflex\Core\DB\Where;
+use Simflex\DB\AQ;
+use Simflex\DB\Expr;
+use Simflex\DB\Where;
 use Simflex\Core\Events\Event;
 use Simflex\Core\Events\Events;
-use Simflex\Core\Helpers\Str;
-use Simflex\Core\Models\Attrib\FieldMany;
-use Simflex\Core\Models\Attrib\FieldOne;
-use Simflex\Core\Models\Enums\Relation;
+use Simflex\Helpers\Str;
+use Simflex\Models\Attrib\FieldMany;
+use Simflex\Models\Attrib\FieldOne;
+use Simflex\Models\Enums\Relation;
+use Simflex\DB\DB;
 
 /**
  * Класс ModelBase
@@ -68,9 +68,8 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     protected static string $primaryKeyName;
 
     /**
-     * @var array Последняя ошибка
+     * @var array{code: int, text: string} Последняя ошибка
      */
-    #[ArrayShape(['code' => 'int', 'text' => 'string'])]
     protected array $lastError = ['code' => 0, 'text' => ''];
 
     /**
@@ -120,11 +119,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     {
         $class = new ReflectionClass($this);
         foreach ($class->getAttributes() as $attribute) {
-            if ($attribute->getName() == FieldOne::class) {
+            if ($attribute->getName() === FieldOne::class) {
                 /** @var FieldOne $attrib */
                 $attrib = $attribute->newInstance();
                 $this->relations[$attrib->name] = ['type' => Relation::One, 'model' => $attrib->model];
-            } elseif ($attribute->getName() == FieldMany::class) {
+            } elseif ($attribute->getName() === FieldMany::class) {
                 /** @var FieldMany $attrib */
                 $attrib = $attribute->newInstance();
                 $this->relations[$attrib->name] = ['type' => Relation::Many, 'model' => $attrib->model];
@@ -540,7 +539,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * @param int|null $code Код ошибки
      */
     protected function setError(
-        #[ArrayShape(['text' => 'string', 'code' => 'int'])] string|array $text,
+        string|array $text,
         ?int $code = null
     ): void {
         if (is_array($text)) {
@@ -555,9 +554,8 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     /**
      * Последняя ошибка
      *
-     * @return array Последняя ошибка
+     * @return array{code: int, text: string} Последняя ошибка
      */
-    #[ArrayShape(['code' => 'int', 'text' => 'string'])]
     public function getLastError(): array
     {
         return $this->lastError;
@@ -656,7 +654,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
             $this->data[] = $value;
         } else {
             $this->data[$offset] = $value;
-            if ($offset == static::$primaryKeyName) {
+            if ($offset === static::$primaryKeyName) {
                 $this->id = (int)$value;
             }
         }
@@ -670,7 +668,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public function offsetUnset(mixed $offset): void
     {
         unset($this->data[$offset]);
-        if ($offset == static::$primaryKeyName) {
+        if ($offset === static::$primaryKeyName) {
             $this->id = null;
         }
     }
@@ -688,7 +686,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 $relClass = $rel['model'];
                 $relKey = $relClass::$primaryKeyName;
 
-                $this->data[$offset] = $relClass::{$rel['type'] == Relation::One ? 'findOne' : 'find'}(
+                $this->data[$offset] = $relClass::{$rel['type'] === Relation::One ? 'findOne' : 'find'}(
                     [$relKey => $this->{$relKey}]
                 );
             }

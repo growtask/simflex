@@ -49,10 +49,10 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
                                         <span class="table__head-help" title="<?= htmlspecialchars(strip_tags($f->help)) ?>">?</span>
                                         <?php endif ?>
                                         <div class="form-control__sort-btns">
-                                            <div class="form-control__sort-up <?=($f->name == $this->getSortColumn() && !$this->isSortDesc()) ? 'form-control__sort-up--active' : ''?>">
+                                            <div class="form-control__sort-up <?=($f->name === $this->getSortColumn() && !$this->isSortDesc()) ? 'form-control__sort-up--active' : ''?>">
                                                 <a class="form-control__sort-link" href="?o=<?=$f->name?>"></a>
                                             </div>
-                                            <div class="form-control__sort-down <?=($f->name == $this->getSortColumn() && $this->isSortDesc()) ? 'form-control__sort-down--active' : ''?>" >
+                                            <div class="form-control__sort-down <?=($f->name === $this->getSortColumn() && $this->isSortDesc()) ? 'form-control__sort-down--active' : ''?>" >
                                                 <a class="form-control__sort-link" href="?o=<?=$f->name?>"></a>
                                             </div>
                                         </div>
@@ -138,7 +138,7 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
     @media screen and (max-width: 991px) {
         .table-data-<?=$f->name?> {
             width: <?=(double)$f->width/768.0*100?>vw !important;
-            <?php if ($f->widthMob == 0): ?>
+            <?php if ($f->widthMob === 0.0): ?>
                 display: none;
             <?php endif; ?>
         }
@@ -146,12 +146,12 @@ $colRowActionsWidth = 14 + 32 * $this->rowActionsCnt;
 
     <?php endif; ?>
 
-    <?php if ($f->isVisible && ($f->widthMob > 1 || $f->widthMob == 0)): ?>
+    <?php if ($f->isVisible && ($f->widthMob > 1 || $f->widthMob === 0.0)): ?>
     @media screen and (max-width: 576px) {
         .table-data-<?=$f->name?> {
         <?php if ($f->widthMob > 1): ?>
             width: <?=(double)$f->widthMob/375.0*100?>vw !important;
-        <?php elseif ($f->widthMob == 0): ?>
+        <?php elseif ($f->widthMob === 0.0): ?>
             display: none;
         <?php endif; ?>
         }

@@ -19,8 +19,8 @@ use Simflex\Admin\Table\Presets\NppField;
 use Simflex\Admin\Table\Presets\ParentField;
 use Simflex\Admin\Table\Repository;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\DB;
-use Simflex\Extensions\Content\Model\ModelContent;
+use Simflex\DB\DB;
+use Simflex\Extensions\Content\Models\ModelContent;
 
 /**
  * Страницы сайта. В форме — поля шаблона страницы (provider/templates.php)
@@ -186,14 +186,14 @@ class Content extends Table
     protected function initTable(): void
     {
         parent::initTable();
-        if (($_GET['action'] ?? '') == 'form') {
+        if (($_GET['action'] ?? '') === 'form') {
             return;
         }
 
         $this->fields['pid']->filterDataProvider = function () {
             $rows = ModelContent::findAdv()
                 ->select(['content_id', 'title as label'])
-                ->where(new \Simflex\Core\DB\Expr('EXISTS (SELECT 1 FROM content c WHERE c.pid=content.content_id)'))
+                ->where(new \Simflex\DB\Expr('EXISTS (SELECT 1 FROM content c WHERE c.pid=content.content_id)'))
                 ->orderBy('label')
                 ->all('content_id');
             return [$rows];

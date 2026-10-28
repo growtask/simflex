@@ -2,9 +2,9 @@
 
 namespace Simflex\Core\Alert\Site;
 
-use Simflex\Core\Core;
-use Simflex\Core\Page;
 use Simflex\Core\View;
+use Simflex\Core\PageAssets;
+use Simflex\Core\Assets;
 
 class Alert
 {
@@ -19,7 +19,7 @@ class Alert
     public static function init(): void
     {
         if (!self::$isInited) {
-            Page::css(Core::webVendorPath() . '/Core/Alert/Site/alert.css');
+            PageAssets::css(Assets::publish(__DIR__ . '/alert.css'));
             $_SESSION['plug_alert'] ??= [];
             self::$s = &$_SESSION['plug_alert'];
             self::$isInited = true;
@@ -156,7 +156,7 @@ class Alert
         $html = '';
         if (isset(self::$s[$page][$section]) && count(self::$s[$page][$section])) {
             $txt = '';
-            if (count(self::$s[$page][$section]) == 1) {
+            if (count(self::$s[$page][$section]) === 1) {
                 foreach (self::$s[$page][$section] as $txt) {
                     break;
                 }
@@ -164,7 +164,7 @@ class Alert
                 $txt = '<ul><li>' . implode('</li><li>', self::$s[$page][$section]) . '</li></ul>';
             }
             if ($txt) {
-                $html = $section == 'text'
+                $html = $section === 'text'
                     ? $txt
                     : View::render(__DIR__ . '/alert.tpl', ['section' => $section, 'txt' => $txt]);
                 self::$s[$page][$section] = [];

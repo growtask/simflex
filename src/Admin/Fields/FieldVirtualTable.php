@@ -2,7 +2,8 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
+use Simflex\DB\AQ;
+use Simflex\DB\DB;
 
 /**
  * Таблица записей другой таблицы в форме (например, фото отзыва): строки добавляются, меняются и удаляются ajax-
@@ -12,11 +13,14 @@ use Simflex\Core\DB;
  */
 class FieldVirtualTable extends Field
 {
-    /** Запрос строк страницы, первая колонка __id — id строки */
-    public string $query = '';
-    /** Запрос количества строк */
+    /**
+     * Запрос строк страницы, первая колонка __id — id строки: запрос AQ (количество строк считается по нему же,
+     * без ORDER BY и LIMIT) или SQL с параметрами $binds
+     */
+    public string|AQ $query = '';
+    /** Запрос количества строк, если $query — SQL */
     public string $queryCount = '';
-    /** @var array<string|int, mixed> параметры запросов $query и $queryCount (одни на оба запроса) */
+    /** @var array<string|int, mixed> параметры SQL-запросов $query и $queryCount (одни на оба запроса) */
     public array $binds = [];
     public array $cols = [];
     public string $button = '';
@@ -43,17 +47,34 @@ class FieldVirtualTable extends Field
 
     public function getCount(): mixed
     {
+        if ($this->query instanceof AQ) {
+            return (clone $this->query)->select('COUNT(*)')->orderBy(null)->limit('')->fetchScalar();
+        }
+
         return DB::result($this->queryCount, 0, $this->binds);
+    }
+
+    /**
+     * Строки страницы
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function getRows(): array
+    {
+        if ($this->query instanceof AQ) {
+            return (clone $this->query)->asArray()->all();
+        }
+
+        return DB::assoc($this->query, false, false, $this->binds) ?: [];
     }
 
     public function getValue(): string|false
     {
         $vv = [];
-        $q = DB::query($this->query, $this->binds);
-        while ($r = DB::fetch($q)) {
+        foreach ($this->getRows() as $r) {
             foreach ($r as $k => $v) {
                 $v = (string)$v;
-                if ($k == 'img_json') {
+                if ($k === 'img_json') {
                     // первое по порядку изображение из значения FieldTable, без них — картинка по умолчанию
                     $js = json_decode($v, true)['v'] ?? [];
                     usort($js, fn($a, $b) => (int)($a['npp'] ?? 0) <=> (int)($b['npp'] ?? 0));

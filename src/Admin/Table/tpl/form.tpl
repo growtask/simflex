@@ -141,18 +141,18 @@ $artLeftArr = [];
                 <?php
                 foreach ($this->fields as $field): ?>
                     <?php
-                    $showRightCol = ($field->params['pos'] == 'right') || $showRightCol;
-                    $artificial = ($field->params['pos'] == 'right') || $artificial;
-                    if ($field->params['pos'] == 'right' && !$field->hidden) {
+                    $showRightCol = ($field->params['pos'] === 'right') || $showRightCol;
+                    $artificial = ($field->params['pos'] === 'right') || $artificial;
+                    if ($field->params['pos'] === 'right' && !$field->hidden) {
                         $artificialGroups[$field->params['pos_group']][] = $field;
                     }
-                    $artLeft = (($field->params['pos'] ?: 'left') == 'left' && $field->params['pos_group']) || $artLeft;
-                    if (($field->params['pos'] ?: 'left') == 'left' && !$field->hidden && $field->params['pos_group']) {
+                    $artLeft = (($field->params['pos'] ?: 'left') === 'left' && $field->params['pos_group']) || $artLeft;
+                    if (($field->params['pos'] ?: 'left') === 'left' && !$field->hidden && $field->params['pos_group']) {
                         $artLeftArr[$field->params['pos_group']][] = $field;
                     }
                     ?>
                     <?php
-                    if (!$field->hidden && $field->params['pos'] != 'right' && !$field->params['pos_group']): ?>
+                    if (!$field->hidden && $field->params['pos'] !== 'right' && !$field->params['pos_group']): ?>
 
                         <div for="" class="data-point <?= $isGroup ? 'data-point--copy' : '' ?>">
                             <div class="data-point__title">

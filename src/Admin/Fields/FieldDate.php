@@ -3,8 +3,8 @@
 namespace Simflex\Admin\Fields;
 
 use Simflex\Admin\Plugins\UI\UI;
-use Simflex\Core\DB;
-use Simflex\Core\Time;
+use Simflex\DB\DB;
+use Simflex\Helpers\Time;
 
 class FieldDate extends Field
 {
@@ -49,6 +49,6 @@ class FieldDate extends Field
 
     public function show($row): string
     {
-        return $this->cell($row[$this->name] ? Time::userfull($row[$this->name]) : '');
+        return $this->cell($row[$this->name] ? Time::userFull($row[$this->name]) : '');
     }
 }

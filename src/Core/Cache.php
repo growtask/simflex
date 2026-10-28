@@ -76,22 +76,22 @@ class Cache
         }
         $value = & $contents[2];
 
-        if ('numeric' == $type) {
+        if ('numeric' === $type) {
             return (float)$value;
         }
-        if ('string' == $type) {
+        if ('string' === $type) {
             return $value;
         }
-        if ('array' == $type) {
+        if ('array' === $type) {
             return json_decode($value, true);
         }
-        if ('object' == $type) {
+        if ('object' === $type) {
             return unserialize($value);
         }
-        if ('null' == $type) {
+        if ('null' === $type) {
             return null;
         }
-        if ('bool' == $type) {
+        if ('bool' === $type) {
             return (bool)$value;
         }
     }

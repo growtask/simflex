@@ -2,15 +2,15 @@
 
 namespace Simflex\Extensions\Content;
 
-use Simflex\Core\ComponentBase;
+use Simflex\Http\ComponentBase;
 use Simflex\Core\Container;
-use Simflex\Core\Log;
-use Simflex\Core\Factory;
-use Simflex\Core\Profiler;
+use Simflex\Logger\Log;
+use Simflex\Core\DI\Factory;
+use Simflex\Debug\Profiler;
 use Simflex\Extensions\Breadcrumbs\Breadcrumbs;
-use Simflex\Core\DB;
-use Simflex\Core\Page;
-use Simflex\Extensions\Content\Model\ModelContent;
+use Simflex\DB\DB;
+use Simflex\Extensions\Content\Models\ModelContent;
+use Simflex\Core\PageSeo;
 
 /**
  * Класс ComContent
@@ -185,7 +185,13 @@ class Content extends ComponentBase
                 $this->breadcrumbs($content);
             }
 
-            Page::seo($content['title']);
+            $meta = $content['params'] ?? [];
+            PageSeo::seo(
+                ($meta['meta_title'] ?? '') ?: $content['title'],
+                $meta['meta_de'] ?? '',
+                $meta['meta_kw'] ?? '',
+                exactTitle: ($meta['meta_title'] ?? '') !== '',
+            );
 
             $children = [];
             $page = 0;
@@ -240,7 +246,7 @@ class Content extends ComponentBase
 
             $html = $this->render(static::findTemplateFile(ContentTemplates::file($content->template)), get_defined_vars());
         } else {
-            if ($link == '/404') {
+            if ($link === '/404') {
                 http_response_code(404);
             } else {
                 Profiler::traceEnd($this, __FUNCTION__);

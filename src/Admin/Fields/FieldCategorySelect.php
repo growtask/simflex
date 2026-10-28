@@ -2,7 +2,7 @@
 
 namespace Simflex\Admin\Fields;
 
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 
 /**
  * @todo Incomplete: для таблицы shared_category нет миграций, поэтому этот код падает на SQL

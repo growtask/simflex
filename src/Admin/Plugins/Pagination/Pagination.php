@@ -45,12 +45,12 @@ class Pagination
         }
         if ($this->pCount > $this->pCountMax) {
             $pMaxCount = $this->pCountMax - 5;
-            $min = $this->p - floor($pMaxCount / 2);
-            $max = $this->p + ceil($pMaxCount / 2);
+            $min = $this->p - (int)floor($pMaxCount / 2);
+            $max = $this->p + (int)ceil($pMaxCount / 2);
             $since = max([1, $min]);
             $till = min([$this->pCount - 2, $max]);
-            $since = $since == 2 ? $since - 1 : $since;
-            $till = $till == $this->pCount - 3 ? $till + 1 : $till;
+            $since = $since === 2 ? $since - 1 : $since;
+            $till = $till === $this->pCount - 3 ? $till + 1 : $till;
             if ($min < 2) {
                 $till = $this->pCountMax - 3;
             }

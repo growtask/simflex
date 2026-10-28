@@ -5,9 +5,9 @@ namespace Simflex\Admin;
 use Simflex\Admin\Notify\Collection;
 use Simflex\Admin\Handlers\Group;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
+use Simflex\DB\DB;
 use Simflex\Core\Privilege;
-use Simflex\Core\Request;
+use Simflex\Http\Request;
 
 class Page
 {

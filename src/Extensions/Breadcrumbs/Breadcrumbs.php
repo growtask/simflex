@@ -2,8 +2,8 @@
 
 namespace Simflex\Extensions\Breadcrumbs;
 
-use Simflex\Core\Core;
 use Simflex\Core\ModuleBase;
+use Simflex\Core\SiteMenu;
 
 class Breadcrumbs extends ModuleBase
 {
@@ -14,12 +14,12 @@ class Breadcrumbs extends ModuleBase
     protected function content(): string
     {
         $arr = [];
-        $menu = Core::menu('by_id');
-        $id = Core::menuCurItem()['menu_id'] ?? 0;
+        $menu = SiteMenu::getById();
+        $id = SiteMenu::getCurrent()['menu_id'] ?? 0;
         $is_main = false;
         while (isset($menu[$id])) {
             $arr[md5($menu[$id]['link'])] = ['name' => $menu[$id]['name'], 'link' => $menu[$id]['link']];
-            if ($menu[$id]['link'] == '/') {
+            if ($menu[$id]['link'] === '/') {
                 $is_main = true;
             }
             $id = $menu[$id]['menu_pid'];
