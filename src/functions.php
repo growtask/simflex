@@ -28,8 +28,9 @@ function asset(string $path, bool $siteOnly = false): string
         $url = \Simflex\Core\Admin\Page::webVendorPath() . '/theme/' . $path;
         $file = \Simflex\Core\Admin\Page::vendorPath() . '/theme/' . $path;
     } else {
-        $url = '/assets/' . $path;
-        $file = \Simflex\Core\System\Container::getPaths()->getPublic('assets/' . $path);
+        $theme = \Simflex\Core\System\Container::getConfig()->theme;
+        $url = '/assets/' . $theme . '/' . $path;
+        $file = \Simflex\Core\System\Container::getPaths()->getPublic('assets/' . $theme . '/' . $path);
     }
 
     $mtime = is_file($file) ? filemtime($file) : false;
@@ -65,7 +66,7 @@ function url(string $path, array $get = []): string
 }
 
 /**
- * Выводит SVG-иконку из спрайта сайта public/assets/icons/icons.svg (символ icon-<имя>)
+ * Выводит SVG-иконку из спрайта сайта public/assets/<тема>/icons/icons.svg (символ icon-<имя>)
  * @param string $iconName Имя иконки
  * @param string $className Дополнительные CSS-классы
  * @return string HTML SVG со ссылкой на спрайт
@@ -73,8 +74,9 @@ function url(string $path, array $get = []): string
 function renderIcon(string $iconName, string $className = ''): string
 {
     return sprintf(
-        '<svg class="%s" aria-hidden="true"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
+        '<svg class="%s" aria-hidden="true"><use href="/assets/%s/icons/icons.svg#icon-%s"></use></svg>',
         htmlspecialchars($className),
+        htmlspecialchars(\Simflex\Core\System\Container::getConfig()->theme),
         htmlspecialchars($iconName)
     );
 }

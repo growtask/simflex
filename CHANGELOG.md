@@ -57,6 +57,8 @@
   ключ в `content.template`, см. `ContentTemplates`).
 - **Корень веб-сервера — каталог `public/` сайта;** статика ядра публикуется в `public/cache/assets/<hash>/`
   (`\Simflex\Core\Http\Assets`), исходники ядра и сайта снаружи недоступны.
+- **Статика сайта — `public/assets/<тема>/`** (название темы, как в `theme/`): `asset()` и `renderIcon()` берут
+  тему из `config->theme` (было `public/assets/`).
 - **Настройки расширений** лежат в `provider/extensions/` сайта (было `provider/extension/`); в пакете —
   `src/provider/extensions/`.
 - **Адрес админки** задаётся конфигом `adminPath` (по умолчанию `/admin`), ссылки меню — относительно него.
