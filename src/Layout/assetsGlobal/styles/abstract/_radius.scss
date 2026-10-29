@@ -1,0 +1,47 @@
+/*----------CORNER RADIUS (Figma: коллекция corner radius, режим m по умолчанию)-----------*/
+:root,
+[data-radius="m"] {
+    --radius-ui-xsmall: 4px;
+    --radius-ui-small: 8px;
+    --radius-ui-medium: 12px;
+    --radius-ui-large: 16px;
+    --radius-ui-xlarge: 24px;
+    --radius-blocks: 32px;
+}
+
+[data-radius="none"] {
+    --radius-ui-xsmall: 0;
+    --radius-ui-small: 0;
+    --radius-ui-medium: 0;
+    --radius-ui-large: 0;
+    --radius-ui-xlarge: 0;
+    --radius-blocks: 0;
+}
+
+[data-radius="s"] {
+    --radius-ui-xsmall: 2px;
+    --radius-ui-small: 4px;
+    --radius-ui-medium: 8px;
+    --radius-ui-large: 12px;
+    --radius-ui-xlarge: 20px;
+    --radius-blocks: 28px;
+}
+
+[data-radius="l"] {
+    --radius-ui-xsmall: 6px;
+    --radius-ui-small: 12px;
+    --radius-ui-medium: 16px;
+    --radius-ui-large: 20px;
+    --radius-ui-xlarge: 28px;
+    --radius-blocks: 36px;
+}
+
+/* full: pill только до ui/medium; у large, xlarge и blocks потолок */
+[data-radius="full"] {
+    --radius-ui-xsmall: 9999px;
+    --radius-ui-small: 9999px;
+    --radius-ui-medium: 9999px;
+    --radius-ui-large: 24px;
+    --radius-ui-xlarge: 32px;
+    --radius-blocks: 40px;
+}

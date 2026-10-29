@@ -19,7 +19,6 @@ use Simflex\Core\Logger\FileLogger;
 use Simflex\Core\Logger\StdLogger;
 use Simflex\Core\Http\Html\HtmlRequest;
 use Simflex\Core\Http\Page;
-use Simflex\Core\Layout\LayoutManager;
 use Simflex\Core\System\Location;
 use Simflex\Core\System\Paths;
 use Simflex\Core\System\Settings;
@@ -125,7 +124,6 @@ class Kernel
 
         if ($location->isWeb()) {
             Container::getPage()->init();
-            LayoutManager::init();
         }
 
         $ev->dispatch(new Event(Events::PostInit, static::class));

@@ -11,42 +11,46 @@ $dropdownTabClasses = [
 
 $menuTheme = $data['menuTheme'] === 'light' ? '' : 'dropdown-tab__menu_dark';
 $menuTabTheme = $data['menuTheme'] === 'light' ? Simflex\Core\Layout\Components\UI\Core\Tab\TabTheme::Light : Simflex\Core\Layout\Components\UI\Core\Tab\TabTheme::Dark;
+
+$isLink = (bool)$data['link'];
+$triggerClasses = trim('dropdown-tab__trigger' . ($data['active'] ? ' active' : ''));
+$triggerAttrs = ['aria-expanded' => 'false', 'aria-controls' => $data['id'] . '-menu'];
+if ($data['active'] && $isLink) {
+    $triggerAttrs['aria-current'] = 'page';
+}
+if ($data['disabled']) {
+    $triggerAttrs['aria-disabled'] = 'true';
+    if ($isLink) {
+        $triggerAttrs['tabindex'] = '-1';
+    }
+}
+$tag = $isLink ? 'a' : 'button';
 ?>
 
-<div class="<?= implode(' ', $dropdownTabClasses) ?>" data-options='' <?= buildAttrs($data['attributes'] ?? []) ?>>
-    <?php if ($data['link']): ?>
-        <a href="<?= $data['link'] ?>" class="dropdown-tab__trigger">
-            <?php if ($data['icon']): ?>
-                <?= renderIcon($data['icon'], 'dropdown-tab__icon') ?>
-            <?php endif; ?>
+<div class="<?= implode(' ', $dropdownTabClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
+    <<?= $tag ?> class="<?= $triggerClasses ?>"
+        <?php if ($isLink): ?>
+            <?php if (!$data['disabled']): ?>href="<?= htmlspecialchars($data['link'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
+        <?php else: ?>
+            type="button"<?= $data['disabled'] ? ' disabled' : '' ?>
+        <?php endif; ?>
+        <?= buildAttrs($triggerAttrs) ?>>
+        <?php if ($data['icon']): ?>
+            <?= renderIcon($data['icon'], 'dropdown-tab__icon') ?>
+        <?php endif; ?>
 
-            <span class="dropdown-tab__text"><?= $data['text'] ?></span>
+        <span class="dropdown-tab__text"><?= $data['text'] ?></span>
 
-            <?php if ($data['badge']): ?>
-                <span class="tab__badge"><?= $data['badge'] ?></span>
-            <?php endif; ?>
+        <?php if ($data['badge']): ?>
+            <span class="tab__badge"><?= $data['badge'] ?></span>
+        <?php endif; ?>
 
-            <?= renderIcon('chevron-down-sm', 'dropdown-tab__chevron') ?>
-        </a>
-    <?php else: ?>
-        <button class="dropdown-tab__trigger">
-            <?php if ($data['icon']): ?>
-                <?= renderIcon($data['icon'], 'dropdown-tab__icon') ?>
-            <?php endif; ?>
+        <?= renderIcon('chevron-down-sm', 'dropdown-tab__chevron') ?>
+    </<?= $tag ?>>
 
-            <span class="dropdown-tab__text"><?= $data['text'] ?></span>
-
-            <?php if ($data['badge']): ?>
-                <span class="tab__badge"><?= $data['badge'] ?></span>
-            <?php endif; ?>
-
-            <?= renderIcon('chevron-down-sm', 'dropdown-tab__chevron') ?>
-        </button>
-    <?php endif; ?>
-
-    <ul class="dropdown-tab__menu <?= $menuTheme ?>" role="menu" data-pointer="center">
+    <ul class="dropdown-tab__menu <?= $menuTheme ?>" id="<?= htmlspecialchars($data['id'], ENT_QUOTES, 'UTF-8') ?>-menu" data-pointer="center">
         <?php foreach ($data['options'] as $option): ?>
-            <li class="dropdown-tab__option" role="menuitem" data-value="<?= $option['value'] ?>">
+            <li class="dropdown-tab__option" data-value="<?= htmlspecialchars((string)($option['value'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                 <?= Simflex\Core\Layout\Components\UI\Core\Tab\Layout::drawTab(
                     className: 'dropdown-tab__link',
                     text: $option['text'],
@@ -56,6 +60,7 @@ $menuTabTheme = $data['menuTheme'] === 'light' ? Simflex\Core\Layout\Components\
                     style: \Simflex\Core\Layout\Components\UI\Core\Tab\TabStyle::Secondary,
                     size: \Simflex\Core\Layout\Components\UI\Core\Tab\TabSize::Small,
                     theme: $menuTabTheme,
+                    active: !empty($option['active']),
                 ) ?>
             </li>
         <?php endforeach; ?>

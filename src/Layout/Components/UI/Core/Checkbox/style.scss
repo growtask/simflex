@@ -43,7 +43,8 @@
         width: 0;
         height: 0;
 
-        &:checked ~ .checkbox__custom::after {
+        &:checked ~ .checkbox__custom::after,
+&:indeterminate ~ .checkbox__custom::after {
             transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
         }
     }
@@ -116,7 +117,8 @@
                     transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
                 }
 
-                .checkbox__input:checked ~ .checkbox__custom {
+                .checkbox__input:checked ~ .checkbox__custom,
+.checkbox__input:indeterminate ~ .checkbox__custom {
                     background: var(--color1-light);
                     border-color: var(--color1-light);
                 }
@@ -124,7 +126,8 @@
         }
 
         .checkbox__input {
-            &:checked ~ .checkbox__custom {
+            &:checked ~ .checkbox__custom,
+&:indeterminate ~ .checkbox__custom {
                 background: var(--color1-main);
                 border-color: var(--color1-main);
             }
@@ -146,19 +149,22 @@
                     transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
                 }
 
-                .checkbox__input:checked ~ .checkbox__custom {
+                .checkbox__input:checked ~ .checkbox__custom,
+.checkbox__input:indeterminate ~ .checkbox__custom {
                     background: transparent;
                     border-color: var(--color1-dark);
                 }
 
-                .checkbox__input:checked ~ .checkbox__custom::after {
+                .checkbox__input:checked ~ .checkbox__custom::after,
+.checkbox__input:indeterminate ~ .checkbox__custom::after {
                     border-color: var(--color1-dark);
                 }
             }
         }
 
         .checkbox__input {
-            &:checked ~ .checkbox__custom {
+            &:checked ~ .checkbox__custom,
+&:indeterminate ~ .checkbox__custom {
                 background: transparent;
                 border-color: var(--color1-main);
             }
@@ -187,6 +193,13 @@
         }
     }
 
+    &-size_l {
+        .checkbox__custom {
+            @include border-r(8px);
+            @include icon(36px);
+        }
+    }
+
     /*----------THEME-----------*/
     &-theme_light {
         .checkbox__text {
@@ -198,5 +211,75 @@
         .checkbox__text {
             color: var(--gray-lighter);
         }
+    }
+}
+
+/*----------PARTIAL (indeterminate)-----------*/
+/* Выбрана часть вложенных: чёрточка вместо галочки */
+.checkbox .checkbox__input:indeterminate ~ .checkbox__custom::after {
+    top: 50%;
+    width: 50%;
+    height: 0;
+    border-right: 0 !important;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/*----------FOCUS-----------*/
+/* Кольцо фокуса вокруг самого бокса: 2 px цвета бренда, зазор 2 px */
+.checkbox__input:focus-visible ~ .checkbox__custom {
+    outline: 2px solid var(--color-main-color1-main, var(--color1-main));
+    outline-offset: 2px;
+}
+
+/*----------STATES-----------*/
+.checkbox_error .checkbox__custom {
+    border-color: var(--error-dark);
+}
+
+.checkbox_disabled {
+    cursor: not-allowed;
+
+    .checkbox__text,
+    .checkbox__policy {
+        color: var(--gray-medium);
+    }
+}
+
+.checkbox__input:disabled ~ .checkbox__custom {
+    border-color: var(--disable-medium);
+}
+
+.checkbox-solid .checkbox__input:disabled:checked ~ .checkbox__custom,
+.checkbox-solid .checkbox__input:disabled:indeterminate ~ .checkbox__custom {
+    background: var(--disable-medium);
+    border-color: var(--disable-medium);
+}
+
+.checkbox-line .checkbox__input:disabled:checked ~ .checkbox__custom,
+.checkbox-line .checkbox__input:disabled:indeterminate ~ .checkbox__custom {
+    background: transparent;
+    border-color: var(--disable-medium);
+}
+
+.checkbox-line .checkbox__input:disabled:checked ~ .checkbox__custom::after {
+    border-color: var(--disable-medium);
+}
+
+.checkbox-theme_dark {
+    .checkbox__input:disabled ~ .checkbox__custom,
+    &.checkbox-solid .checkbox__input:disabled:checked ~ .checkbox__custom {
+        border-color: var(--disable-dark);
+    }
+
+    &.checkbox-solid .checkbox__input:disabled:checked ~ .checkbox__custom {
+        background: var(--disable-dark);
+    }
+
+    &.checkbox_error .checkbox__custom {
+        border-color: var(--error-medium);
+    }
+
+    .checkbox__policy a {
+        color: var(--color1-light);
     }
 }

@@ -15,7 +15,7 @@
     @return #{stripUnit($px) / stripUnit($media) * 100}vw;
 }
 
-@function vwm($px, $media: 375) {
+@function vwm($px, $media: 414) {
     @return #{stripUnit($px) / stripUnit($media) * 100}vw;
 }
 

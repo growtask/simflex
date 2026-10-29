@@ -662,3 +662,162 @@
     pointer-events: auto;
     opacity: 1;
 }
+
+/*----------COUNTER-----------*/
+.text-input__counter {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    color: var(--gray-medium);
+    @include t4;
+}
+
+/* Отступ счётчика от края поля = отступ кнопки очистки; с кнопкой счётчик стоит левее неё */
+$text-input-edges: (l: 16px, m: 12px, s: 10px, xs: 8px);
+$text-input-paddings: (l: 16px, m: 16px, s: 12px, xs: 12px);
+$text-input-counter-room: 40px;
+
+@each $size, $edge in $text-input-edges {
+    .text-input-size_#{$size} {
+        .text-input__counter {
+            right: vw($edge);
+        }
+
+        .text-input__input-container:has(.text-input__reset) .text-input__counter {
+            right: vw($edge + 28px);
+        }
+
+        .text-input__input-container:has(.text-input__counter) .text-input__field {
+            padding-right: vw(map-get($text-input-paddings, $size) + $text-input-counter-room);
+        }
+
+        .text-input__input-container:has(.text-input__counter):has(.text-input__reset) .text-input__field {
+            padding-right: vw($edge + 28px + $text-input-counter-room);
+        }
+
+        @include HD {
+            .text-input__counter {
+                right: vwh($edge);
+            }
+
+            .text-input__input-container:has(.text-input__reset) .text-input__counter {
+                right: vwh($edge + 28px);
+            }
+
+            .text-input__input-container:has(.text-input__counter) .text-input__field {
+                padding-right: vwh(map-get($text-input-paddings, $size) + $text-input-counter-room);
+            }
+
+            .text-input__input-container:has(.text-input__counter):has(.text-input__reset) .text-input__field {
+                padding-right: vwh($edge + 28px + $text-input-counter-room);
+            }
+        }
+
+        @include Tablet {
+            .text-input__counter {
+                right: vwt($edge);
+            }
+
+            .text-input__input-container:has(.text-input__reset) .text-input__counter {
+                right: vwt($edge + 28px);
+            }
+
+            .text-input__input-container:has(.text-input__counter) .text-input__field {
+                padding-right: vwt(map-get($text-input-paddings, $size) + $text-input-counter-room);
+            }
+
+            .text-input__input-container:has(.text-input__counter):has(.text-input__reset) .text-input__field {
+                padding-right: vwt($edge + 28px + $text-input-counter-room);
+            }
+        }
+
+        @include Mobile {
+            .text-input__counter {
+                right: vwm($edge);
+            }
+
+            .text-input__input-container:has(.text-input__reset) .text-input__counter {
+                right: vwm($edge + 28px);
+            }
+
+            .text-input__input-container:has(.text-input__counter) .text-input__field {
+                padding-right: vwm(map-get($text-input-paddings, $size) + $text-input-counter-room);
+            }
+
+            .text-input__input-container:has(.text-input__counter):has(.text-input__reset) .text-input__field {
+                padding-right: vwm($edge + 28px + $text-input-counter-room);
+            }
+        }
+    }
+}
+
+/*----------FOCUS-----------*/
+/* Кольцо фокуса: 2 px цвета бренда, зазор 2 px (вид самого поля в focus задан выше) */
+.text-input__field:focus-visible {
+    outline: 2px solid var(--color-main-color1-main, var(--color1-main));
+    outline-offset: 2px;
+}
+
+.text-input__reset:focus-visible {
+    outline: 2px solid var(--color-main-color1-main, var(--color1-main));
+    outline-offset: 2px;
+}
+
+/*----------STATES-----------*/
+/* error: цвет меняют набранный текст, счётчик и сообщение; заливка и обводка остаются как в focus */
+.text-input_error {
+    .text-input__field {
+        color: var(--error-dark);
+    }
+
+    .text-input__counter {
+        color: var(--error-dark);
+    }
+
+    &.text-input-style_filled .text-input__field {
+        background: var(--gray-white);
+        border-color: var(--gray-light);
+    }
+
+    &.text-input-theme_dark {
+        .text-input__field,
+        .text-input__counter,
+        .text-input__error-message {
+            color: var(--error-medium);
+        }
+
+        &.text-input-style_filled .text-input__field {
+            background: var(--gray-black);
+            border-color: var(--gray-dark);
+        }
+    }
+}
+
+/* disabled: заливка и текст по набору states/disabled */
+.text-input__field:disabled {
+    opacity: 1;
+    filter: none;
+    background: var(--disable-light);
+    color: var(--gray-medium);
+
+    &::placeholder {
+        color: var(--gray-medium);
+    }
+}
+
+.text-input-theme_dark .text-input__field:disabled {
+    background: var(--disable-dark);
+    color: var(--gray-medium);
+}
+
+.text-input-style_underline .text-input__field:disabled {
+    background: transparent;
+    border-bottom-color: var(--disable-medium);
+}
+
+.text-input_disabled {
+    .text-input__counter,
+    .text-input__reset {
+        display: none;
+    }
+}

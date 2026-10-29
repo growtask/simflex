@@ -11,6 +11,7 @@ use Simflex\Core\Models\Seo;
 use Simflex\Core\Http\Html\HtmlRequest;
 use Simflex\Core\Http\Html\HtmlResponse;
 use Simflex\Core\Http\Routing\Resolver;
+use Simflex\Core\Layout\LayoutManager;
 
 /**
  * Страница сайта: обработка запроса к сайту (не к админке).
@@ -25,6 +26,7 @@ use Simflex\Core\Http\Routing\Resolver;
 class Page
 {
     /** Выводить только содержимое компонента, без темы (ajax-запрос) */
+    protected bool $layoutReady = false;
     protected bool $contentOnly = false;
     protected string $content = '';
     /** @var array<string, list<string>> позиция => HTML модулей */
@@ -157,6 +159,13 @@ class Page
      */
     public function getMeta(): string
     {
+        // стили компонентов собираются здесь, а не при старте: в них попадают и компоненты, нарисованные темой
+        // до вывода head
+        if (!$this->layoutReady && Container::getLocation()->isWeb()) {
+            $this->layoutReady = true;
+            LayoutManager::init();
+        }
+
         $html = PageSeo::getHeadHtml() . PageAssets::getCssHtml();
         if (Container::getConfig()->devMode) {
             $html .= Container::get('debugbar')->renderHead();

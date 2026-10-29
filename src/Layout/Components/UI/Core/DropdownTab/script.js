@@ -9,6 +9,8 @@ class DropdownTab {
 
         this.handleTriggerClick = this.handleTriggerClick.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleKeydown = this.handleKeydown.bind(this);
+        this.handleLeave = this.handleLeave.bind(this);
 
         this.init();
         if (options.data) {
@@ -17,9 +19,12 @@ class DropdownTab {
     }
 
     init() {
-        this.trigger.setAttribute('aria-haspopup', 'true');
         this.trigger.setAttribute('aria-expanded', 'false');
-        this.menu.setAttribute('role', 'menu');
+
+        // Esc закрывает меню и возвращает фокус на триггер; снова открывается, когда фокус и курсор ушли
+        this.container.addEventListener('keydown', this.handleKeydown);
+        this.container.addEventListener('mouseleave', this.handleLeave);
+        this.container.addEventListener('focusout', this.handleLeave);
 
         if (this.isButton) {
             this.trigger.addEventListener('click', this.handleTriggerClick);
@@ -40,6 +45,21 @@ class DropdownTab {
             this.lock();
             this.open();
         }
+    }
+
+    handleKeydown(event) {
+        if (event.key !== 'Escape') return;
+
+        this.container.classList.add('dropdown-tab_dismissed');
+        this.unlock();
+        this.close();
+        this.trigger.focus();
+    }
+
+    handleLeave(event) {
+        if (event.type === 'focusout' && event.relatedTarget && this.container.contains(event.relatedTarget)) return;
+
+        this.container.classList.remove('dropdown-tab_dismissed');
     }
 
     handleDocumentClick(event) {
@@ -79,7 +99,6 @@ class DropdownTab {
         data.forEach(item => {
             const option = document.createElement('li');
             option.className = 'dropdown-tab__option';
-            option.setAttribute('role', 'menuitem');
 
             const link = document.createElement('a');
             link.className = 'dropdown-tab__link';
@@ -93,6 +112,9 @@ class DropdownTab {
     }
 
     destroy() {
+        this.container.removeEventListener('keydown', this.handleKeydown);
+        this.container.removeEventListener('mouseleave', this.handleLeave);
+        this.container.removeEventListener('focusout', this.handleLeave);
         if (this.isButton) {
             this.trigger.removeEventListener('click', this.handleTriggerClick);
             document.removeEventListener('click', this.handleDocumentClick);

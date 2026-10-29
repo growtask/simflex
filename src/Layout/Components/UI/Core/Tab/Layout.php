@@ -4,6 +4,11 @@ namespace Simflex\Core\Layout\Components\UI\Core\Tab;
 
 use Simflex\Core\Layout\LayoutBase;
 
+/**
+ * Вкладка (набор Figma Tabs/main). Стили filled и soft — названия Figma для primary и secondary.
+ * active отмечает текущую: у ссылки aria-current="page", у кнопки с role="tab" aria-selected.
+ * disabled: у button атрибут disabled, у ссылки aria-disabled без href и вне порядка фокуса.
+ */
 class Layout extends LayoutBase
 {
     public static function drawTab(
@@ -16,7 +21,9 @@ class Layout extends LayoutBase
         TabStyle   $style = TabStyle::Primary,
         TabSize    $size = TabSize::Medium,
         TabTheme   $theme = TabTheme::Light,
-        array      $attributes = []
+        array      $attributes = [],
+        bool       $active = false,
+        bool       $disabled = false
     ): string {
         return static::draw(
             compact(
@@ -26,6 +33,8 @@ class Layout extends LayoutBase
                 'iconLeft',
                 'iconRight',
                 'badge',
+                'active',
+                'disabled',
                 'attributes'
             ) + [
                 'style' => $style->value,

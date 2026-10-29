@@ -29,7 +29,7 @@
 
     &-size_l {
         @include icon(56px);
-        @include border-r(16px);
+        @include border-r(12px);
 
         .marker__icon {
             @include icon(24px);
@@ -59,6 +59,65 @@
 
         .marker__icon {
             @include icon(16px);
+        }
+    }
+
+    /*----------STYLES (Figma Marker/main)-----------*/
+    &-main {
+        color: var(--gray-white);
+        background: var(--color1-main);
+    }
+
+    &-gray {
+        color: var(--gray-darker);
+        background: var(--gray-lighter);
+    }
+
+    &-load {
+        color: var(--color1-main);
+        background: var(--color1-lighter);
+    }
+
+    &-success {
+        color: var(--success-dark);
+        background: var(--success-light);
+    }
+
+    &-alert {
+        color: var(--alert-dark);
+        background: var(--alert-light);
+    }
+
+    &-error {
+        color: var(--error-dark);
+        background: var(--error-light);
+    }
+
+    /*----------THEME-----------*/
+    /* В тёмной теме заливка и иконка меняются местами: плотная заливка и светлая иконка */
+    &-theme_dark {
+        &.marker-gray {
+            color: var(--gray-lighter);
+            background: var(--gray-dark);
+        }
+
+        &.marker-load {
+            background: var(--color1-darker);
+        }
+
+        &.marker-success {
+            color: var(--success-light);
+            background: var(--success-dark);
+        }
+
+        &.marker-alert {
+            color: var(--alert-light);
+            background: var(--alert-dark);
+        }
+
+        &.marker-error {
+            color: var(--error-light);
+            background: var(--error-dark);
         }
     }
 }

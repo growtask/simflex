@@ -4,17 +4,21 @@ namespace Simflex\Core\Extensions\Menu;
 
 use Simflex\Core\Admin\Fields\FieldBool;
 use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Fields\FieldString;
 use Simflex\Core\Admin\Table\FieldDefinition;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\ModuleBase;
 use Simflex\Core\Http\Menu as SiteMenu;
+use Simflex\Core\Models\Menu as MenuModel;
 
 /**
  * Модуль «Меню»: выводит меню сайта (таблица menu) списком ul/li.
  *
  * Параметры: start_id - пункт, от которого строится меню (0 - корень), max_level - сколько уровней вложенности
  * выводить (0 - только первый), is_child - вывести подпункты того пункта уровня start_id, в который входит
- * текущая страница. Ссылке текущего раздела добавляется класс active, пункту с выводимыми подпунктами - has-children.
+ * текущая страница, place - меню какого места выводить среди корневых пунктов (main - основное, footer - колонки
+ * подвала, их выводит компонент Footer). Ссылке текущего раздела добавляется класс active, пункту с выводимыми
+ * подпунктами - has-children.
  * Вёрстку меняют наследником с другими шаблонами (tpl/index.tpl, tpl/treenode.tpl)
  */
 class Menu extends ModuleBase
@@ -33,12 +37,22 @@ class Menu extends ModuleBase
             new FieldDefinition(name: 'start_id', class: FieldInt::class, label: 'Начальный пункт (id)', defaultValue: '0'),
             new FieldDefinition(name: 'max_level', class: FieldInt::class, label: 'Уровней вложенности', defaultValue: '0'),
             new FieldDefinition(name: 'is_child', class: FieldBool::class, label: 'Подпункты текущего раздела'),
+            new FieldDefinition(name: 'place', class: FieldString::class, label: 'Место (main или footer)', defaultValue: MenuModel::PLACE_MAIN),
         ];
     }
 
     protected function content(): string
     {
         $this->menu = SiteMenu::getTree();
+
+        // Корневые пункты других мест (колонки подвала) в основном меню не выводятся
+        $place = (string)($this->params['place'] ?? '') ?: MenuModel::PLACE_MAIN;
+        if (isset($this->menu[0])) {
+            $this->menu[0] = array_filter(
+                $this->menu[0],
+                fn(array $item) => ($item['place'] ?? MenuModel::PLACE_MAIN) === $place
+            );
+        }
 
         $startId = (int)($this->params['start_id'] ?? 0);
         $this->params['max_level'] = (int)($this->params['max_level'] ?? 0);

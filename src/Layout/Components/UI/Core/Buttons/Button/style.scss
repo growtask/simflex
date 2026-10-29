@@ -31,15 +31,32 @@
         display: none;
     }
 
+    /* Загрузка: спиннер вместо иконок и текста, ширина кнопки сохраняется, повторное нажатие блокируется */
     &.loading {
+        position: relative;
+        pointer-events: none;
+
         .btn__loader {
+            position: absolute;
+            inset: 0;
             display: block;
+            margin: auto;
         }
 
         .btn__text,
         .btn__icon {
-            display: none;
+            visibility: hidden;
         }
+    }
+
+    &[aria-disabled='true'] {
+        cursor: not-allowed;
+    }
+
+    /* Фокус с клавиатуры: кольцо 2 px цвета бренда, зазор 2 px, повторяет радиус кнопки */
+    &:focus-visible {
+        outline: 2px solid var(--color-main-color1-main, var(--color1-main));
+        outline-offset: 2px;
     }
 
     /*============QUICK CONFIG============*/
@@ -76,7 +93,8 @@
             background: var(--color1-dark);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
         }
@@ -96,7 +114,8 @@
             background: var(--color1-light);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -117,7 +136,8 @@
             background: var(--color2-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
         }
@@ -137,7 +157,8 @@
             background: var(--gray-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
         }
@@ -162,7 +183,8 @@
             border-color: var(--color1-dark);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -186,7 +208,8 @@
             color: var(--color1-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -209,7 +232,8 @@
             color: var(--color1-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -529,7 +553,8 @@
                 background: var(--color1-dark);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-dark);
             }
@@ -549,7 +574,8 @@
                 background: var(--color2-darker);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-dark);
             }
@@ -570,7 +596,8 @@
                 border-color: var(--gray-dark);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-dark);
@@ -591,7 +618,8 @@
                 background: var(--gray-medium);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-dark);
@@ -615,7 +643,8 @@
                 border-color: var(--color1-dark);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-dark);
@@ -638,7 +667,8 @@
                 background: var(--gray-darker);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-dark);
@@ -663,7 +693,8 @@
                 border-color: var(--gray-dark);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-dark);

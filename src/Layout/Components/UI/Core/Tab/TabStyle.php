@@ -4,6 +4,8 @@ namespace Simflex\Core\Layout\Components\UI\Core\Tab;
 
 enum TabStyle: string
 {
+    case Filled = 'filled';
+    case Soft = 'soft';
     case Primary = 'primary';
     case Secondary = 'secondary';
     case Outline = 'outline';

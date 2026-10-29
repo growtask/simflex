@@ -7,6 +7,14 @@ $separatorClasses = [
     "separator-theme_{$data['theme']}",
     $data['className'] ?? ''
 ];
+
+$attributes = $data['attributes'] ?? [];
+if ($data['decorative']) {
+    $attributes['aria-hidden'] = 'true';
+} else {
+    $attributes['role'] = 'separator';
+    $attributes['aria-orientation'] = $data['orientation'];
+}
 ?>
 
-<div class="<?= implode(' ', $separatorClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>></div>
+<div class="<?= implode(' ', $separatorClasses) ?>" <?= buildAttrs($attributes) ?>></div>

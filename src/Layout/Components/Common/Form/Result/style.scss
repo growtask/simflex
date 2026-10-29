@@ -1,0 +1,55 @@
+/*
+ * Результат отправки формы (Figma: Form/result): ширина 440, зазор между содержимым и кнопкой 20.
+ * horizontal - маркер слева, vertical - маркер сверху; кнопка на всю ширину.
+ */
+.result {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 440px;
+
+    &__content {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    &__title {
+        margin: 0;
+        color: var(--color-text-icon-gray-darker);
+        @include h5;
+    }
+
+    &__text {
+        margin: 0;
+        color: var(--color-text-icon-gray-dark);
+        @include t2;
+    }
+
+    &__button {
+        width: 100%;
+    }
+
+    &-type_vertical .result__content {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &-theme_dark {
+        .result__title {
+            color: var(--color-text-icon-gray-white);
+        }
+
+        .result__text {
+            color: var(--gray-lighter);
+        }
+    }
+}

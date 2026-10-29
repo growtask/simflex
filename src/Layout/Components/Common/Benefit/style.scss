@@ -1,0 +1,138 @@
+/*
+ * Преимущество (Figma: Base/benefit). Слои Figma и классы: benefit - .benefit, marker/число - .benefit__sign,
+ * текстовый блок - .benefit__body, title - .benefit__title, text - .benefit__text, link - .benefit__link,
+ * badge - .benefit__badge. Расстановка в сетке - css сайта.
+ */
+.benefit {
+    /*----------CORE STYLE-----------*/
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    min-width: 0;
+    list-style: none;
+    @include spacing(gap, 20px);
+    @include spacing(padding-right, 20px);
+
+    &__sign {
+        flex-shrink: 0;
+    }
+
+    &__number {
+        color: var(--color1-main);
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+        @include spacing(gap, 12px);
+    }
+
+    &__title {
+        margin: 0;
+        color: var(--gray-darker);
+    }
+
+    &__text {
+        margin: 0;
+        color: var(--gray-dark);
+    }
+
+    /*----------SIZES-----------*/
+    &-size_s {
+        .benefit__title {
+            @include h6;
+        }
+
+        .benefit__text {
+            @include t3;
+        }
+
+        .benefit__number {
+            @include h5;
+        }
+    }
+
+    &-size_m {
+        .benefit__title {
+            @include h5;
+        }
+
+        .benefit__text {
+            @include t2;
+        }
+
+        .benefit__number {
+            @include h4;
+        }
+    }
+
+    &-size_l {
+        .benefit__title {
+            @include h4;
+        }
+
+        .benefit__text {
+            @include t2;
+        }
+
+        .benefit__number {
+            @include h3;
+        }
+    }
+
+    /*----------LAYOUT-----------*/
+    /* Знак слева от текста, зазор 16 */
+    &-layout_horizontal {
+        flex-direction: row;
+        align-items: flex-start;
+        @include spacing(gap, 16px);
+    }
+
+    /*----------ALIGN-----------*/
+    /* Центрирование: блок и текст по центру, отступа справа нет */
+    &-align_center {
+        align-items: center;
+        text-align: center;
+        padding-right: 0;
+
+        .benefit__body {
+            align-items: center;
+        }
+    }
+
+    /*----------CARD-----------*/
+    &-card {
+        background: var(--gray-lighter);
+        border-radius: var(--radius-ui-large);
+        @include spacing(padding, 20px);
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        .benefit__title {
+            color: var(--gray-white);
+        }
+
+        .benefit__text {
+            color: var(--gray-lighter);
+        }
+
+        .benefit__number {
+            color: var(--color1-light);
+        }
+
+        &.benefit-card {
+            background: var(--gray-darker);
+        }
+    }
+}
+
+/* Список: ul без маркеров, колонки задаёт страница */
+.benefit-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}

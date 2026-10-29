@@ -72,3 +72,31 @@ $uniqRed: var(--uniq-red);
 $uniqOrange: var(--uniq-orange);
 $uniqGold: var(--uniq-gold);
 $uniqLight: var(--uniq-light);
+
+/*----------STATES-----------*/
+$stateDisabledDark: var(--state-disabled-dark);
+$stateDisabledMedium: var(--state-disabled-medium);
+$stateDisabledLight: var(--state-disabled-light);
+$stateClearDark: var(--state-clear-dark);
+$stateClearMedium: var(--state-clear-medium);
+$stateClearLight: var(--state-clear-light);
+
+/*----------SHADOWS-----------*/
+$shadowGrayXl: var(--shadow-gray-xl);
+$shadowGrayL: var(--shadow-gray-l);
+$shadowGrayM: var(--shadow-gray-m);
+$shadowGrayS: var(--shadow-gray-s);
+$shadowGrayXs: var(--shadow-gray-xs);
+$shadowPrimaryXl: var(--shadow-primary-xl);
+$shadowPrimaryL: var(--shadow-primary-l);
+$shadowPrimaryM: var(--shadow-primary-m);
+$shadowPrimaryS: var(--shadow-primary-s);
+$shadowPrimaryXs: var(--shadow-primary-xs);
+
+/*----------RADIUS-----------*/
+$radiusXsmall: var(--radius-ui-xsmall);
+$radiusSmall: var(--radius-ui-small);
+$radiusMedium: var(--radius-ui-medium);
+$radiusLarge: var(--radius-ui-large);
+$radiusXlarge: var(--radius-ui-xlarge);
+$radiusBlocks: var(--radius-blocks);

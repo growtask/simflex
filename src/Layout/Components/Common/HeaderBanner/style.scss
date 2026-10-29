@@ -1,0 +1,75 @@
+/* Figma: Promo/Header/static, набор static (fullhd, hd, tablet, mobile) */
+.header-banner {
+    background: var(--gradient1-main);
+    color: var(--gray-white);
+
+    &[hidden] {
+        display: none;
+    }
+
+    &__container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        @include spacing(min-height, 56px);
+        @include spacing(gap, 16px);
+        @include spacing(padding-block, 8px);
+        @include spacing(padding-inline, 16px, 16px, 16px, 16px);
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        @include spacing(gap, 16px);
+    }
+
+    &__text {
+        flex: 1;
+        margin: 0;
+        text-align: left;
+        @include h5;
+        color: var(--gray-white);
+    }
+
+    &__button,
+    &__close {
+        flex-shrink: 0;
+    }
+
+    /* Белая кнопка справа (Figma: static, buttons/main) */
+    &__button {
+        background: var(--gray-white);
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-lighter);
+            }
+        }
+
+        &:active {
+            background: var(--gray-light);
+        }
+    }
+
+    /* На tablet и mobile в макете только текст и крестик */
+    @include Tablet {
+        &__button {
+            display: none;
+        }
+    }
+
+    @include Mobile {
+        &__content {
+            justify-content: flex-start;
+        }
+
+        &__text {
+            @include t2-b;
+            text-align: left;
+        }
+    }
+}

@@ -1,0 +1,138 @@
+/*
+ * Шапка (Figma: header_market). Слои Figma: static (HeaderBanner), top, bottom, line.
+ * Поля страницы (250 / 45 / 16 / 16) задаёт css сайта, здесь - устройство самой шапки.
+ */
+.header {
+    position: relative;
+    z-index: 100;
+    background: var(--gray-white);
+    color: var(--gray-darker);
+
+    &__container {
+        width: 100%;
+        margin-inline: auto;
+        box-sizing: border-box;
+    }
+
+    &__top {
+        @include spacing(padding-block, 8px);
+    }
+
+    &__top-container {
+        display: flex;
+        align-items: center;
+        @include spacing(gap, 12px);
+    }
+
+    /* Пункты 40: сверху 4, снизу 8 (Figma: bottom 52) */
+    &__bottom {
+        @include spacing(padding-top, 4px);
+        @include spacing(padding-bottom, 8px);
+    }
+
+    &__bottom-container {
+        @include spacing(height, 40px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        @include spacing(gap, 12px);
+    }
+
+    &__geo {
+        flex-shrink: 0;
+    }
+
+    &__nav {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__right {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        @include spacing(gap, 8px);
+    }
+
+    &__socials,
+    &__contacts {
+        display: flex;
+        align-items: center;
+        @include spacing(gap, 8px);
+    }
+
+    &__line {
+        height: max(#{vw(2px)}, 2px);
+    }
+
+    /* Бургер и кнопка рядом с ним видны только на tablet и mobile */
+    &__burger,
+    &__cta_top {
+        display: none;
+    }
+
+    @include Tablet {
+        &__bottom {
+            display: none;
+        }
+
+        &__logo {
+            margin-inline-end: auto;
+        }
+
+        &__burger,
+        &__cta_top {
+            display: inline-flex;
+        }
+    }
+
+    @include Mobile {
+        &__cta_top {
+            display: none;
+        }
+    }
+
+    /*----------ЗАКРЕПЛЁННАЯ КОПИЯ-----------*/
+    /* position: fixed - вне потока, поэтому показ и скрытие не сдвигают страницу (нет CLS) */
+    &--fixed {
+        position: fixed;
+        inset: 0 0 auto;
+        transform: translateY(-100%);
+        visibility: hidden;
+        box-shadow: var(--shadow-gray-m);
+        transition: transform 0.25s var(--cubic-bezier, ease), visibility 0s linear 0.25s;
+        will-change: transform;
+
+        &.header--fixed-visible {
+            transform: translateY(0);
+            visibility: visible;
+            transition: transform 0.25s var(--cubic-bezier, ease), visibility 0s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+
+            &.header--fixed-visible {
+                transition: none;
+            }
+        }
+    }
+}
+
+/* Список пунктов меню шапки */
+.main-nav {
+    &__list {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        @include spacing(gap, 8px);
+    }
+
+    &__item {
+        margin: 0;
+        padding: 0;
+    }
+}

@@ -1,0 +1,239 @@
+<?php
+
+namespace Simflex\Core\Layout\Components\Common\Form\Callback;
+
+use Simflex\Core\Extensions\Form\FormGuard;
+use Simflex\Core\Layout\Components\Common\Form\Result\Layout as Result;
+use Simflex\Core\Layout\Components\Common\Form\Result\ResultStyle;
+use Simflex\Core\Layout\Components\Common\Form\Result\ResultTheme;
+use Simflex\Core\Layout\Components\Common\Form\Result\ResultType;
+use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonSize;
+use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonStyle;
+use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonTheme;
+use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\Layout as Button;
+use Simflex\Core\Layout\Components\UI\Core\Checkbox\CheckboxTheme;
+use Simflex\Core\Layout\Components\UI\Core\Checkbox\Layout as Checkbox;
+use Simflex\Core\Layout\Components\UI\Core\Textarea\Layout as Textarea;
+use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaState;
+use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaTheme;
+use Simflex\Core\Layout\Components\UI\Core\TextInput\Layout as TextInput;
+use Simflex\Core\Layout\Components\UI\Core\TextInput\TextInputLabelPos;
+use Simflex\Core\Layout\Components\UI\Core\TextInput\TextInputTheme;
+use Simflex\Core\Layout\LayoutBase;
+use Simflex\Core\System\Container;
+
+/**
+ * Форма «Связаться с нами» (Figma: Base/Form/callback): имя, телефон, почта, комментарий, согласие и кнопка.
+ *
+ * Форма отправляется скриптом компонента (fetch, JSON) на $action; результат показывается на месте формы
+ * компонентом Result. Клиентская проверка: обязательные поля, формат телефона и почты, согласие; фокус уходит
+ * на первое поле с ошибкой, у поля aria-invalid и текст ошибки в aria-describedby. Ответ сервера:
+ * {success: bool, errors: {поле: текст}, message: текст}. Сервер всё проверяет сам, см. FormGuard.
+ *
+ * Скрипт реагирует на кнопки результата: data-callback-action="reset" (новая форма, у формы в окне Modal -
+ * закрывает окно), "retry" (вернуться к форме с введёнными данными).
+ */
+class Layout extends LayoutBase
+{
+    /**
+     * @param string $id Идентификатор формы (префикс id полей); если пуст, создаётся автоматически
+     * @param string $action Адрес отправки
+     * @param string $form Тип формы, уходит на сервер полем form (callback, ...)
+     * @param bool $name Поле «Имя» (обязательное)
+     * @param bool $phone Поле «Телефон» (обязательное)
+     * @param bool $email Поле «Почта»
+     * @param bool $comment Поле «Комментарий»
+     * @param bool $consent Согласие на обработку данных (обязательно для отправки)
+     * @param string $policyUrl Адрес политики обработки персональных данных
+     * @param string $consentText HTML подписи согласия; пусто - стандартная со ссылкой на политику
+     * @param string $captcha HTML виджета капчи (стоит перед кнопкой), по умолчанию пусто
+     * @param bool $guard Добавить защиту от ботов (ловушка и токен, см. FormGuard)
+     * @param string $submitText Текст кнопки отправки
+     * @param array<string,string> $values Значения полей: name, phone, email, comment
+     * @param array<string,string> $errors Ошибки полей (при state=error): name, phone, email, comment, consent
+     * @param array<string,string> $texts Тексты результата: successTitle, successText, successButton, errorTitle, errorText, errorButton
+     * @param array<string,string> $hidden Дополнительные скрытые поля: имя => значение
+     * @param string $className Дополнительные CSS-классы корня
+     * @param array<string,mixed> $attributes HTML-атрибуты корня
+     */
+    public static function drawCallback(
+        string $id = '',
+        string $action = '/form/callback',
+        string $form = 'callback',
+        bool $name = true,
+        bool $phone = true,
+        bool $email = true,
+        bool $comment = true,
+        bool $consent = true,
+        string $policyUrl = '/policy/',
+        string $consentText = '',
+        string $captcha = '',
+        bool $guard = true,
+        string $submitText = 'Отправить',
+        array $values = [],
+        array $errors = [],
+        array $texts = [],
+        array $hidden = [],
+        CallbackLayout $layout = CallbackLayout::Grid,
+        CallbackState $state = CallbackState::Default,
+        CallbackTheme $theme = CallbackTheme::Light,
+        string $className = '',
+        array $attributes = []
+    ): string {
+        if ($id === '') {
+            $id = 'callback-' . substr(md5(uniqid('', true)), 0, 8);
+        }
+
+        $texts += [
+            'successTitle' => 'Заявка отправлена',
+            'successText' => 'Мы свяжемся с вами в ближайшее время',
+            'successButton' => 'OK',
+            'errorTitle' => 'Не удалось отправить',
+            'errorText' => 'Попробуйте ещё раз немного позже',
+            'errorButton' => 'Повторить',
+        ];
+
+        $dark = $theme === CallbackTheme::Dark;
+        $inputTheme = $dark ? TextInputTheme::Dark : TextInputTheme::Light;
+        $hasErrors = $state === CallbackState::Error;
+        $sending = $state === CallbackState::Sending;
+        $err = fn(string $field): string => $hasErrors ? (string)($errors[$field] ?? '') : '';
+        $fieldAttrs = fn(string $field, array $attrs): array => $attrs
+            + ($err($field) !== '' ? ['aria-invalid' => 'true'] : [])
+            + ($sending ? ['readonly' => ''] : []);
+
+        $fields = [];
+        if ($name) {
+            $fields['name'] = TextInput::drawInput(
+                className: 'callback__field callback__field_name',
+                placeholder: 'Иван',
+                labelText: 'Имя*',
+                labelPos: TextInputLabelPos::Standard,
+                theme: $inputTheme,
+                id: "$id-name",
+                attributes: $fieldAttrs('name', [
+                    'name' => 'name', 'type' => 'text', 'required' => '', 'aria-required' => 'true',
+                    'autocomplete' => 'name', 'maxlength' => '100', 'value' => (string)($values['name'] ?? ''),
+                ]),
+            );
+        }
+        if ($phone) {
+            $fields['phone'] = TextInput::drawInput(
+                className: 'callback__field callback__field_phone',
+                placeholder: '+7 999 123-45-67',
+                labelText: 'Телефон*',
+                labelPos: TextInputLabelPos::Standard,
+                theme: $inputTheme,
+                icon: 'phone',
+                id: "$id-phone",
+                attributes: $fieldAttrs('phone', [
+                    'name' => 'phone', 'type' => 'tel', 'required' => '', 'aria-required' => 'true',
+                    'autocomplete' => 'tel', 'inputmode' => 'tel', 'maxlength' => '30',
+                    'value' => (string)($values['phone'] ?? ''),
+                ]),
+            );
+        }
+        if ($email) {
+            $fields['email'] = TextInput::drawInput(
+                className: 'callback__field callback__field_email',
+                placeholder: 'name@example.com',
+                labelText: 'Почта',
+                labelPos: TextInputLabelPos::Standard,
+                theme: $inputTheme,
+                icon: 'mail',
+                id: "$id-email",
+                attributes: $fieldAttrs('email', [
+                    'name' => 'email', 'type' => 'email', 'autocomplete' => 'email', 'maxlength' => '100',
+                    'value' => (string)($values['email'] ?? ''),
+                ]),
+            );
+        }
+        if ($comment) {
+            $fields['comment'] = Textarea::drawTextarea(
+                className: 'callback__field callback__field_comment',
+                value: (string)($values['comment'] ?? ''),
+                placeholder: 'Что вас интересует?',
+                labelText: 'Комментарий',
+                maxLength: 300,
+                id: "$id-comment",
+                theme: $dark ? TextareaTheme::Dark : TextareaTheme::Light,
+                state: $err('comment') !== '' ? TextareaState::Error : TextareaState::Default,
+                attributes: ['name' => 'comment', 'rows' => '2'] + ($sending ? ['readonly' => ''] : []),
+            );
+        }
+
+        $consentHtml = '';
+        if ($consent) {
+            $policy = htmlspecialchars($policyUrl, ENT_QUOTES);
+            $consentHtml = Checkbox::drawCheckbox(
+                className: 'callback__consent',
+                text: $consentText !== ''
+                    ? $consentText
+                    : 'Я принимаю <a href="' . $policy . '" target="_blank" rel="noopener">политику обработки персональных данных</a>',
+                theme: $dark ? CheckboxTheme::Dark : CheckboxTheme::Light,
+                attributes: ['name' => 'consent', 'value' => '1', 'required' => '', 'aria-required' => 'true']
+                    + ($err('consent') !== '' ? ['aria-invalid' => 'true'] : []),
+            );
+        }
+
+        $submit = Button::drawButton(
+            className: 'callback__submit',
+            text: htmlspecialchars($submitText),
+            style: ButtonStyle::Primary,
+            size: ButtonSize::Medium,
+            theme: $dark ? ButtonTheme::Dark : ButtonTheme::Light,
+            load: $sending,
+            disabled: $sending,
+            attributes: ['type' => 'submit'],
+        );
+
+        $resultTheme = $dark ? ResultTheme::Dark : ResultTheme::Light;
+        $resultType = $layout === CallbackLayout::Stack ? ResultType::Vertical : ResultType::Horizontal;
+        $success = Result::drawResult(
+            title: $texts['successTitle'],
+            text: $texts['successText'],
+            buttonText: $texts['successButton'],
+            style: ResultStyle::Success,
+            type: $resultType,
+            theme: $resultTheme,
+            buttonAttributes: ['data-callback-action' => 'reset'],
+        );
+        $failure = Result::drawResult(
+            title: $texts['errorTitle'],
+            text: $texts['errorText'],
+            buttonText: $texts['errorButton'],
+            style: ResultStyle::Error,
+            type: $resultType,
+            theme: $resultTheme,
+            buttonAttributes: ['data-callback-action' => 'retry'],
+        );
+
+        // служебные поля: тип формы, страница, защита от ботов
+        $hiddenFields = ['form' => $form, 'page' => Container::getRequest()->getFullUrl()] + $hidden;
+        $guardHtml = $guard ? [FormGuard::TOKEN_FIELD => (new FormGuard())->issueToken()] : [];
+
+        return static::draw(
+            compact(
+                'id',
+                'action',
+                'fields',
+                'consentHtml',
+                'captcha',
+                'guard',
+                'submit',
+                'success',
+                'failure',
+                'hiddenFields',
+                'guardHtml',
+                'className',
+                'attributes',
+                'sending'
+            ) + [
+                'errorsJson' => $hasErrors ? json_encode(array_map('strval', $errors), JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT) : '',
+                'layout' => $layout->value,
+                'state' => $state->value,
+                'theme' => $theme->value,
+            ]
+        );
+    }
+}

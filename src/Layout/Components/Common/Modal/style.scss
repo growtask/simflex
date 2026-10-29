@@ -1,0 +1,208 @@
+/*
+ * Модальное окно (Figma: Base/Modal/main).
+ * Desktop: карточка по центру, кнопка закрытия снаружи справа сверху. Tablet и mobile: шторка снизу.
+ * Показ: корень получает класс is-open после снятия hidden (скрипт), закрытие ждёт конца перехода.
+ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: color-mix(in srgb, var(--gray-black) 60%, transparent);
+        opacity: 0;
+        transition: opacity .2s ease;
+    }
+
+    &__dialog {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-height: 100%;
+        background: var(--gray-white);
+        border-radius: var(--radius-blocks);
+        box-shadow: var(--shadow-gray-l);
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity .2s ease, transform .2s ease;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color1-main);
+            outline-offset: 2px;
+        }
+    }
+
+    &.is-open {
+        .modal__overlay {
+            opacity: 1;
+        }
+
+        .modal__dialog {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /* Кнопка закрытия: снаружи карточки справа сверху (отступ 12) */
+    &__close {
+        position: absolute;
+        top: 0;
+        left: calc(100% + 12px);
+        box-sizing: border-box;
+        padding-inline: 0;
+        border-radius: 50%;
+        width: 48px;
+    }
+
+    /* Прокручивается содержимое, а не карточка: кнопка закрытия остаётся на месте */
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 32px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-radius: inherit;
+    }
+
+    &__head {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-right: 0;
+    }
+
+    &__title {
+        margin: 0;
+        color: var(--color-text-icon-gray-darker);
+        @include h4;
+    }
+
+    &__text {
+        margin: 0;
+        color: var(--color-text-icon-gray-dark);
+        @include t2;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    &-size_xs .modal__dialog {
+        max-width: 480px;
+    }
+
+    &-size_s .modal__dialog {
+        max-width: 560px;
+    }
+
+    &-size_m .modal__dialog {
+        max-width: 640px;
+    }
+
+    &-size_l .modal__dialog {
+        max-width: 700px;
+    }
+
+    &-theme_dark {
+        .modal__dialog {
+            background: var(--gray-darker);
+        }
+
+        .modal__title {
+            color: var(--color-text-icon-gray-white);
+        }
+
+        .modal__text {
+            color: var(--gray-lighter);
+        }
+    }
+
+    /*
+     * Шторка (Figma: tablet, mobile): окно снизу на всю ширину. Сверху шапка 66: кнопка закрытия 48 справа
+     * и линия 2 с отступами 8; заголовок и содержимое ниже шапки.
+     */
+    @include Tablet {
+        align-items: flex-end;
+        padding: 16px 0 0;
+
+        &__dialog {
+            max-width: none;
+            border-radius: var(--radius-blocks) var(--radius-blocks) 0 0;
+            transform: translateY(100%);
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 64px;
+                right: 8px;
+                left: 8px;
+                height: 2px;
+                background: var(--gray-lighter);
+                pointer-events: none;
+            }
+        }
+
+        &-size_xs .modal__dialog,
+        &-size_s .modal__dialog,
+        &-size_m .modal__dialog,
+        &-size_l .modal__dialog {
+            max-width: none;
+        }
+
+        &__close {
+            top: 8px;
+            right: 8px;
+            left: auto;
+            z-index: 1;
+            border-radius: 12px;
+            background: var(--gray-lighter);
+            color: var(--gray-darker);
+        }
+
+        &__content {
+            padding: 86px 16px 16px;
+        }
+
+        &__head {
+            padding-right: 0;
+        }
+    }
+
+    @include Mobile {
+        &__footer {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &__overlay,
+        &__dialog {
+            transition: none;
+        }
+    }
+}
+
+/* Страница под открытым окном не прокручивается (класс ставит скрипт) */
+html.modal-open,
+html.modal-open body {
+    overflow: hidden;
+}

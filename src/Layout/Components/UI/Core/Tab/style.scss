@@ -33,6 +33,16 @@
         @include icon(24px);
     }
 
+    &[aria-disabled='true'] {
+        cursor: not-allowed;
+    }
+
+    /* Фокус с клавиатуры: кольцо 2 px цвета бренда, зазор 2 px */
+    &:focus-visible {
+        outline: 2px solid var(--color-main-color1-main, var(--color1-main));
+        outline-offset: 2px;
+    }
+
     &__badge {
         height: vw(16px);
         padding-inline: vw(4px);
@@ -56,7 +66,9 @@
     }
 
     /*----------STYLES-----------*/
-    &-primary {
+    /* filled и soft: названия стилей Figma, оформление как у primary и secondary */
+    &-primary,
+    &-filled {
         background: var(--gray-lighter);
         color: var(--gray-darker);
 
@@ -77,7 +89,8 @@
             color: var(--gray-black);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -85,7 +98,8 @@
         }
     }
 
-    &-secondary {
+    &-secondary,
+    &-soft {
         background: transparent;
         color: var(--gray-darker);
 
@@ -107,7 +121,8 @@
             color: var(--gray-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -141,7 +156,8 @@
             color: var(--gray-darker);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: var(--gray-medium);
             color: var(--gray-white);
@@ -173,7 +189,8 @@
             border-bottom-color: var(--color1-main);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: transparent;
             color: var(--gray-medium);
@@ -203,7 +220,8 @@
             color: var(--gray-black);
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled='true'] {
             cursor: not-allowed;
             background: transparent;
             color: var(--gray-medium);
@@ -292,47 +310,33 @@
     }
 
     &-size_xs {
-        height: vw(36px);
+        height: vw(32px);
         padding-inline: vw(4px);
         gap: 0;
         @include border-r(8px);
 
         @include HD {
-            height: vwh(36px);
+            height: vwh(32px);
             padding-inline: vwh(4px);
         }
         @include Tablet {
-            height: vwt(36px);
+            height: vwt(32px);
             padding-inline: vwt(4px);
         }
         @include Mobile {
-            height: vwm(36px);
+            height: vwm(32px);
             padding-inline: vwm(4px);
         }
 
         .tab__text {
             @include t3-b;
         }
-
-        .tab__icon-left, .tab__icon-right {
-            margin-inline: vw(4px);
-            @include icon(16px);
-
-            @include HD {
-                margin-inline: vwh(4px);
-            }
-            @include Tablet {
-                margin-inline: vwt(4px);
-            }
-            @include Mobile {
-                margin-inline: vwm(4px);
-            }
-        }
     }
 
     /*----------THEME-----------*/
     &-theme_dark {
-        &.tab-primary {
+        &.tab-primary,
+        &.tab-filled {
             background: var(--gray-dark);
             color: var(--gray-lighter);
 
@@ -355,7 +359,8 @@
                 color: var(--gray-lighter);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-white);
@@ -363,7 +368,8 @@
             }
         }
 
-        &.tab-secondary {
+        &.tab-secondary,
+        &.tab-soft {
             background: transparent;
             color: var(--gray-lighter);
 
@@ -386,7 +392,8 @@
                 color: var(--gray-lighter);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-white);
@@ -417,7 +424,8 @@
                 color: var(--gray-lighter);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: var(--gray-medium);
                 color: var(--gray-white);
@@ -448,7 +456,8 @@
                 border-bottom-color: var(--color1-main);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: transparent;
                 color: var(--gray-medium);
@@ -478,7 +487,8 @@
                 color: var(--gray-white);
             }
 
-            &:disabled {
+            &:disabled,
+        &[aria-disabled='true'] {
                 cursor: not-allowed;
                 background: transparent;
                 color: var(--gray-medium);

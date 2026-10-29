@@ -154,6 +154,45 @@
 
 ### Добавлено
 
+- Компонент `Logo` рисует настоящие знаки бренда из `public/assets/<тема>/images/brand` (логотип, «Создано» с флагом, «На базе», тёмные варианты); у `logo-anim` по наведению знак сменяется подписью «Главная» (CSS, `prefers-reduced-motion` отключает смену); новые параметры `caption` и `homeText`. Знак-заглушка из трёх столбиков удалён. Адрес движка в подвале по умолчанию — `https://simflexcms.ru`.
+- **Подвал сайта** — компонент `Layout\Components\Common\Footer` (`Footer::drawFooter()`): логотип, кнопка «Связаться
+  с нами» (`data-modal="callback"`), телефон, почта, соцсети, колонки меню (`Tab` flat, размер s), вертикальная линия,
+  нижняя строка («© компания год», `made-in`, `made-by`); адаптив hd / tablet / mobile по Figma `footer_market`
+  (без каталога, ecom и иконок оплаты; на tablet и mobile колонки меню и линия скрыты, как в макете). Не переданные
+  значения берутся из настроек (`phone`, `email`, `company`, `site_name`, `vk`, `tg`, `whats_app`). Нижний отступ —
+  css-переменная `--footer-indent-bottom` (задаёт css сайта). Колонки меню — `Footer::getMenuColumns()`.
+- **Меню: место вывода.** Колонка `menu.place` (`main` — основное меню, `footer` — подвал; константы
+  `Models\Menu::PLACE_MAIN`, `PLACE_FOOTER`): корневые пункты подвала — заголовки колонок, вложенные — их ссылки.
+  Модуль «Меню» получил параметр `place` (по умолчанию `main`: колонки подвала в шапке не выводятся), `Http\Menu`
+  — методы `getRoots($place)` и `getChildren($pid)`, в разделе админки «Меню» — поле «Где выводится».
+- Компонент `Common/HeaderBanner` (`drawHeaderBanner()`): строка над шапкой по `Promo/Header/static` - текст, кнопка
+  и закрытие; закрытие запоминается в `localStorage` (с `try/catch`, ключ меняется вместе с содержимым строки).
+- Компонент `Common/Header` (`drawHeader()`, `drawNav()`, `getMenuItems()`): шапка по `header_market` без каталога,
+  поиска, меню пользователя и города - `top` (логотип), `bottom` (слот `geo`, пункты `Tab`/`DropdownTab`, соцсети,
+  контакты, кнопка с `data-modal`), `line`; закреплённая копия `header--fixed` появляется при прокрутке без сдвига
+  вёрстки (`prefers-reduced-motion`); на tablet и mobile - бургер вместо `bottom`.
+- Компонент `Common/MobileMenu` (`drawMobileMenu()`): мобильное меню `role="dialog"` с ловушкой фокуса, `Esc`,
+  блокировкой прокрутки, возвратом фокуса и подменю; слот `geo`.
+- Компонент `Common/Banner` (`drawBanner()`): баннер-слайдер первого экрана по `Promo/Page/main` - слайды (картинка,
+  заголовок, описание, кнопка), стрелки, `StepIndicator`; `script.js` без библиотек: свайп, клавиши, автопрокрутка с паузой
+  (наведение, фокус, `prefers-reduced-motion`), `aria-disabled` на крайних стрелках, один слайд - без стрелок и шагов.
+- Компонент `Common/Benefit` (`drawBenefit()`, `drawBenefitList()`): преимущество по `Base/benefit` - размеры `s|m|l`,
+  `type` (иконка или число), `layout`, `align`, `card`, ссылка, бейдж; разметка `ul/li`.
+- Глобальные стили (`Layout/assetsGlobal/styles`) по токенам Figma: переменные `--state-disabled-*`, `--state-clear-*`,
+  `--color-text-icon-*`, `--backdrop-fade-*`, оттенки и новые сервисы `--socials-*`, `--delivery-*`, тени
+  `--shadow-gray-*` и `--shadow-primary-*`, скругления `--radius-ui-*` и `--radius-blocks` (режим на `:root` через
+  `data-radius`), `--font-main`, `--font-mono`; sass-алиасы и миксины `ui-*`, `code`.
+- Сверка UI `Components/UI/Core` с Figma (старые css-классы сохранены): `Button` — `iconLeft`/`iconRight`, `load`
+  (спиннер вместо содержимого, ширина сохраняется, `aria-busy`), `disabled` (у ссылки `aria-disabled` без `href`),
+  `type` не дублируется; `Tab` и `DropdownTab` — стили `filled`/`soft` (названия Figma для `primary`/`secondary`),
+  `active` (`aria-current`, `aria-selected`), `disabled`, вкладка только с иконкой, `DropdownTab` — шаблон disclosure
+  (`aria-expanded`, `aria-controls`), открытие с клавиатуры, закрытие `Esc`; `Marker` — стили `main|gray|load|success|alert|error`,
+  тема, `label` (`role="status"`); `Badge` — счётчик `99+`, бейдж только с иконкой; `Separator` — `decorative`;
+  `Checkbox` — размер `l`, `partial` (`data-indeterminate`), `error`, `disabled`, `policyUrl`; у всех кольцо фокуса
+  `:focus-visible` и `aria-disabled` как `:disabled`.
+- `TextInput`: `kind` (`TextInputKind::Phone` — `type="tel"`, маска `+7 (999) 123-45-67`, счётчик цифр `0/11`, в форму
+  уходят цифры; `Email` — проверка при потере фокуса), `error` (`aria-invalid`, `aria-describedby`), `value`
+  (состояние `filled`), `counter` и `maxLength`, `disabled`, автоматический `id`.
 - `AQ::groupBy()`, `having()`, `unionAll()`, `union()` — группировка и объединение запросов построителем;
   `AQ::insertInto($table, $columns)` — `INSERT INTO ... SELECT` выборкой построителя.
 - `FieldVirtualTable::$query` — запрос `AQ`: количество строк считается по нему же.
@@ -209,9 +248,33 @@
   и лимитом), `getRelationKey()`.
 - `DB::delete()` — удаление строк таблицы без модели (таблицы связей, кэши) по условию `Where`, пустое условие —
   исключение.
+- **Форма «Связаться с нами» и окно (UI 4.0, `Layout/Components/Common`).**
+  - `Common/Modal` (`Layout::drawModal()`, `ModalSize`, `ModalTheme`): окно `role="dialog"` с `aria-modal`, ловушкой
+    фокуса, `Esc`, закрытием по подложке и кнопке, блокировкой прокрутки, `inert` для фона и возвратом фокуса.
+    Открывается кнопкой с `data-modal="<id>"` или `window.SimflexModal.open(id)`; на tablet и mobile — шторка снизу.
+  - `Common/Form/Callback` (`Layout::drawCallback()`, `CallbackLayout` `grid|stack`, `CallbackState`
+    `default|error|sending`, `CallbackTheme`): поля имени, телефона, почты, комментария (счётчик 0/300), согласие
+    и кнопка; клиентская проверка, фокус на первое поле с ошибкой, `aria-invalid`; отправка `fetch` на `action`
+    (по умолчанию `/form/callback`), ответ `{success, errors, message}`, результат встаёт на место формы.
+  - `Common/Form/Result` (`Layout::drawResult()`, `ResultStyle` `success|error`, `ResultType`
+    `horizontal|vertical`): маркер, заголовок, текст, кнопка; `role="status"` / `role="alert"`.
+  - `Extensions\Form\FormGuard`: защита формы от ботов без внешних сервисов (поле-ловушка и подписанный токен
+    с временем показа формы).
 
 ### Изменено
 
+- Сверка главной с Figma (`pf/ph/pt/pm-index`): база mobile-размеров `vwm()` — 414 (ширина макета `pm-*`), было 375;
+  шапка `bottom` 52 (пункты 40, отступ снизу 8), контакты шапки — `Contact` `filled` размера `xs` (`xs` теперь bold);
+  `HeaderBanner`: текст слева, белая кнопка справа, на tablet и mobile кнопки нет; `Banner`: шаги высотой 16, текст
+  `700/700/480/302`, описание на tablet и mobile 16, стрелки 48 × 48 и без них на tablet и mobile; `Callback`:
+  комментарий на 2 строки (поле 96); `Modal`: кнопка закрытия 48 × 48, шапка шторки на tablet и mobile (кнопка
+  в шапке 66 с линией); `MobileMenu`: шапка и линия с отступом 8, кнопка закрытия 48, контакты по центру;
+  `Footer`: зазор `contact-us` на tablet и mobile 32.
+
+- `Badge`: цвета `primary`, `secondary`, `accent`, `gray`, `gradient-light` и капсульный радиус `xs`, `s` приведены к Figma; `Tab`,
+  `DropdownTab` размер `xs` — высота 32, иконки 24; `Marker` размер `l` — радиус 12; состояние `loading` у `Button`
+  сохраняет ширину (`visibility` вместо `display: none`); `Marker` по умолчанию рисует иконку `check` (было `true`).
+- `--bg-gradient` и `--uniq-red` приведены к Figma; миксин `hero`: 200px (на tablet и mobile 120px) вместо 340px и 200px.
 - `Str::sizeToStr()` — размер с пробелом («12 кб»), для отсутствующего файла — «0 б»; поля `FieldFile`,
   `FieldImage` показывают размер через него.
 - Запросы к базе в ядре — через модели и `AQ` (страница сайта, меню, SEO, модули, виджеты и вход в админку,

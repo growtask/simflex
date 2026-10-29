@@ -4,6 +4,7 @@ namespace Simflex\Core\Admin\Handlers;
 
 use Simflex\Core\Admin\Fields\FieldBool;
 use Simflex\Core\Admin\Fields\FieldComponentSelect;
+use Simflex\Core\Admin\Fields\FieldEnum;
 use Simflex\Core\Admin\Fields\FieldString;
 use Simflex\Core\Admin\Table\FieldDefinition;
 use Simflex\Core\Admin\Table\Presets\ActiveField;
@@ -41,6 +42,15 @@ class Menu extends Table
                 table: 'menu',
                 key: 'menu_id',
                 filter: true,
+            ),
+            new FieldDefinition(
+                name: 'place',
+                class: FieldEnum::class,
+                label: 'Где выводится',
+                defaultValue: MenuModel::PLACE_MAIN,
+                width: '140',
+                filter: true,
+                widthMob: '140',
             ),
             new FieldDefinition(
                 name: 'component',

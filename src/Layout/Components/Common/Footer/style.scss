@@ -1,0 +1,188 @@
+/*
+ * Подвал (Figma: footer_market). Соответствие слоёв Figma и классов (опечатка coloumn исправлена):
+ * contact-us - footer__contact-us, callback - footer__callback, contacts - footer__contacts, desc - footer__desc,
+ * socials-container - footer__socials-container, line - footer__line (вертикальная) и footer__bottom-line,
+ * menu-container/menu - footer__menu, coloumn - footer__column, coloumn-title - footer__column-title,
+ * tab-list - footer__tab-list, bottom-info - footer__bottom-info, copyright - footer__copyright,
+ * dev-info - footer__dev-info.
+ * Боковые поля и нижний отступ задаёт css сайта (public/assets/<тема>/css/site.css): поля 250/45/16/16 и переменная
+ * --footer-indent-bottom (по умолчанию 80).
+ */
+.footer {
+    /*----------CORE STYLE-----------*/
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    background: var(--color1-lighter);
+    padding-bottom: var(--footer-indent-bottom, #{vw(80px)});
+    @include spacing(gap, 40px, 40px, 32px, 32px);
+    @include spacing(padding-top, 40px, 40px, 20px, 20px);
+
+    /*----------CONTAINER-----------*/
+    &__container {
+        display: flex;
+        align-items: stretch;
+        @include spacing(gap, 120px, 120px, 32px, 32px);
+
+        @include Tablet {
+            flex-direction: column;
+        }
+    }
+
+    /*----------CONTACT-US-----------*/
+    &__contact-us {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        @include spacing(gap, 40px, 40px, 32px, 32px);
+        @include spacing(width, 240px, 240px, 736px, 382px);
+
+        @include Tablet {
+            width: 100%;
+        }
+    }
+
+    &__callback {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        @include spacing(gap, 20px);
+    }
+
+    &__contacts {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        @include spacing(gap, 12px);
+    }
+
+    &__phone,
+    &__mail {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    &__socials-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        @include spacing(gap, 12px);
+    }
+
+    &__socials {
+        display: flex;
+        @include spacing(gap, 8px);
+    }
+
+    &__desc {
+        color: var(--gray-medium);
+        @include t4;
+    }
+
+    /*----------MENU-----------*/
+    &__menu {
+        flex: 1;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-content: start;
+        @include spacing(column-gap, 22px);
+        @include spacing(row-gap, 20px);
+    }
+
+    &__column {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__column-title {
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--gray-darker);
+        @include t2-b;
+        @include spacing(padding-block, 12px);
+    }
+
+    &__tab-list {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__tab-item {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /*----------BOTTOM-INFO-----------*/
+    &__bottom-info {
+        display: flex;
+        align-items: flex-start;
+        @include spacing(gap, 40px, 40px, 20px, 20px);
+
+        @include Tablet {
+            flex-direction: column;
+        }
+    }
+
+    &__copyright {
+        margin: 0;
+        color: var(--gray-medium);
+        @include t3-b;
+    }
+
+    &__dev-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        @include spacing(gap, 40px);
+
+        @include Tablet {
+            flex: none;
+            justify-content: flex-start;
+        }
+    }
+
+    /*----------OVERRIDES (выше специфичность, чем у стилей вложенных компонентов)-----------*/
+    /* Кнопка «Связаться с нами» в макете чёрная (main/gray/black) */
+    .footer__button {
+        &.btn-primary {
+            background: var(--gray-black);
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--color1-main);
+                }
+            }
+        }
+
+        @include Mobile {
+            align-self: stretch;
+            width: auto;
+        }
+    }
+
+    /* Вертикальная линия тянется на высоту контейнера (у Separator height: 100% не даёт растянуться во flex) */
+    .footer__line {
+        height: auto;
+    }
+
+    /* На tablet и mobile колонки меню и вертикальная линия в макете скрыты */
+    .footer__line,
+    .footer__menu {
+        @include Tablet {
+            display: none;
+        }
+    }
+}

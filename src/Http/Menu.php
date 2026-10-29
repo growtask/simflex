@@ -46,6 +46,30 @@ class Menu
     }
 
     /**
+     * Корневые пункты места (Models\Menu::PLACE_MAIN, PLACE_FOOTER) без скрытых, в порядке npp. Для подвала это
+     * заголовки колонок
+     *
+     * @return array<int, array> id => пункт
+     */
+    public static function getRoots(string $place): array
+    {
+        return array_filter(
+            static::getTree()[0] ?? [],
+            fn(array $item) => empty($item['hidden']) && ($item['place'] ?? MenuModel::PLACE_MAIN) === $place
+        );
+    }
+
+    /**
+     * Вложенные пункты $pid без скрытых, в порядке npp
+     *
+     * @return array<int, array> id => пункт
+     */
+    public static function getChildren(int $pid): array
+    {
+        return array_filter(static::getTree()[$pid] ?? [], fn(array $item) => empty($item['hidden']));
+    }
+
+    /**
      * Пункт меню текущей страницы: ссылка пункта совпадает с путём запроса
      */
     public static function getCurrent(): ?array

@@ -1,0 +1,126 @@
+/* Figma: nav/menu (414 × 820), фрейм «Modals · Login & menu»; на tablet и mobile */
+.mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: z('modal');
+    display: flex;
+    flex-direction: column;
+    background: var(--gray-white);
+    color: var(--gray-darker);
+    opacity: 0;
+    transition: opacity 0.2s var(--cubic-bezier, ease);
+
+    &[hidden] {
+        display: none;
+    }
+
+    &--open {
+        opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+
+    &__panel {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        max-width: 768px;
+        margin-inline: auto;
+        box-sizing: border-box;
+        padding-inline: 16px;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        /* Шапка шире окна на 8 с каждой стороны (Figma: head 414, логотип с отступом 16, кнопка с отступом 8) */
+        margin-inline: -8px;
+        padding: 8px 0 8px 8px;
+    }
+
+    /* Кнопка закрытия 48 x 48 (обводка кнопки не прибавляется к ширине) */
+    &__close {
+        box-sizing: border-box;
+        padding-inline: 0;
+        width: 48px;
+    }
+
+    /* Линия под шапкой: от края до края с отступами 8 */
+    .separator {
+        margin-inline: -8px;
+    }
+
+    /* Меню длиннее экрана прокручивается внутри окна */
+    &__body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-block: 12px;
+    }
+
+    &__geo {
+        margin-bottom: 8px;
+    }
+
+    &__list,
+    &__sublist {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__sublist {
+        margin-top: 4px;
+        padding-inline-start: 12px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__item {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Пункты занимают всю ширину окна */
+    &__item > .tab,
+    &__sublist .tab,
+    &__toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    &__toggle[aria-expanded="true"] .tab__icon-right {
+        transform: rotate(180deg);
+    }
+
+    &__footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding-block: 12px 16px;
+    }
+
+    &__socials {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__cta {
+        width: 100%;
+        margin-top: 4px;
+    }
+}

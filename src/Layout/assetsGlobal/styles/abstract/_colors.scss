@@ -30,7 +30,7 @@
     /*----------BACKGROUND-----------*/
     --bg-light: #FFFFFF;
     --bg-dark: #262626;
-    --bg-gradient: linear-gradient(90deg, #D9F2FF 0%, #B6D4F2 100%);
+    --bg-gradient: linear-gradient(90deg, #F2FBFF 0%, #CEE0F2 100%);
 
     /*----------ERROR-----------*/
     --error-dark: #CC2929;
@@ -69,8 +69,81 @@
     --uniq-violet: #7D31DE;
     --uniq-purple: #C279A3;
     --uniq-pink: #F9AFCA;
-    --uniq-red: #E34530;
+    --uniq-red: #E35130;
     --uniq-orange: #E57A45;
     --uniq-gold: #D9BA21;
     --uniq-light: #D9D9D7;
+}
+
+:root {
+    /*----------STATES (Figma: disabled и clear; --disable-* выше оставлены как есть)-----------*/
+    --state-disabled-dark: #616466;
+    --state-disabled-medium: #C1C7CC;
+    --state-disabled-light: #DFE4EB;
+    --state-clear-dark: #343434;
+    --state-clear-medium: #919599;
+    --state-clear-light: #DFE4EB;
+
+    /*----------TEXT-ICON (значения совпадают с main, меняются независимо от заливок)-----------*/
+    --color-text-icon-gray-black: var(--gray-black);
+    --color-text-icon-gray-darker: var(--gray-darker);
+    --color-text-icon-gray-dark: var(--gray-dark);
+    --color-text-icon-gray-medium: var(--gray-medium);
+    --color-text-icon-gray-light: var(--gray-light);
+    --color-text-icon-gray-lighter: var(--gray-lighter);
+    --color-text-icon-gray-white: var(--gray-white);
+    --color-text-icon-color1-darker: var(--color1-darker);
+    --color-text-icon-color1-dark: var(--color1-dark);
+    --color-text-icon-color1-main: var(--color1-main);
+    --color-text-icon-color1-light: var(--color1-light);
+    --color-text-icon-color1-lighter: var(--color1-lighter);
+    --color-text-icon-color2-darker: var(--color2-darker);
+    --color-text-icon-color2-dark: var(--color2-dark);
+    --color-text-icon-color2-main: var(--color2-main);
+    --color-text-icon-color2-light: var(--color2-light);
+    --color-text-icon-color2-lighter: var(--color2-lighter);
+    --color-text-icon-gradient1-dark: var(--gradient1-dark);
+    --color-text-icon-gradient1-main: var(--gradient1-main);
+    --color-text-icon-gradient1-light: var(--gradient1-light);
+
+    /*----------FADE (маска затухания внизу прокручиваемого содержимого)-----------*/
+    --backdrop-fade-light: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);
+    --backdrop-fade-dark: linear-gradient(180deg, rgba(38, 38, 38, 0) 0%, #262626 100%);
+
+    /*----------SOCIALS: оттенки dark / light и остальные сервисы-----------*/
+    --socials-wt-dark: #299B3E;
+    --socials-wt-light: #70D783;
+    --socials-tg-dark: #0082B8;
+    --socials-tg-light: #53BBE9;
+    --socials-vk-dark: #0063CC;
+    --socials-vk-light: #3D99FF;
+    --socials-ya-dark: #C92E13;
+    --socials-ya-light: #FD7560;
+    --socials-go-dark: #3367D6;
+    --socials-go: #4285F4;
+    --socials-go-light: #78A7F7;
+    --socials-yt-dark: #CC0000;
+    --socials-yt: #F40000;
+    --socials-yt-light: #FF5964;
+    --socials-fg-dark: #007BE5;
+    --socials-fg: #0D99FF;
+    --socials-fg-light: #B2DFFF;
+    --socials-zen-dark: #121213;
+    --socials-zen: #202022;
+    --socials-zen-light: #4A4A4D;
+    --socials-ru-dark: #080226;
+    --socials-ru: #100943;
+    --socials-ru-light: #3927B4;
+    --socials-max-dark: #2B43FF;
+    --socials-max: radial-gradient(circle at 50% 50%, #9F4FDC 0%, #6C2FDE 25%, #5130E8 50%, #214EFA 75%, #43BBFC 100%);
+    --socials-max-light: radial-gradient(circle at 50% 50%, #B272E3 0%, #8959E5 25%, #7459ED 50%, #4D71FB 75%, #69C9FD 100%);
+    --socials-in-dark: radial-gradient(230.93% 230.93% at 102.01% 2.03%, #C7BE28 0%, #BE2262 36%, #A8226E 44%, #6F228E 60%, #1622C0 83%, #0022CC 88%);
+    --socials-in-light: #E01A89;
+
+    /*----------DELIVERY (службы доставки)-----------*/
+    --delivery-cdek: #00E755;
+    --delivery-russian-post: #1928DC;
+    --delivery-5post: #5EBC52;
+    --delivery-ozon: #005BFF;
+    --delivery-yandex-delivery: #FC4714;
 }
