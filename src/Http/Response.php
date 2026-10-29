@@ -24,6 +24,10 @@ abstract class Response implements \Simflex\Core\System\DI\Service
     public function redirect(string $url): static
     {
         $this->setHeader('Location', $url);
+        if ($this->statusCode < 300 || $this->statusCode > 399) {
+            $this->setStatusCode(302);
+        }
+
         return $this;
     }
 
@@ -34,6 +38,7 @@ abstract class Response implements \Simflex\Core\System\DI\Service
     public function redirectNow(string $url): never
     {
         $this->redirect($url);
+        $this->outputHeaders();
         exit;
     }
 
