@@ -15,7 +15,7 @@
         </div>
         <div class="header__right">
             <div class="header__user btn-user">
-                <img class="btn-user__img" src="/assets/meta/favicon/favicon.ico" />
+                <img class="btn-user__img" src="/assets/default/meta/favicon/favicon.ico" />
                 <div class="btn-user__name">
                     <div class="btn-user__title"><?=\Simflex\Core\System\Container::getUser()->login?></div>
                     <svg class="btn-user__icon" viewBox="0 0 24 24">
