@@ -198,6 +198,16 @@ class Field
      */
     protected function dropdown(array $vars): string
     {
+        // подпись выбранного пункта — сразу в разметке, не только после скрипта админки
+        if (!isset($vars['current'])) {
+            foreach ($vars['items'] ?? [] as [$itemValue, $itemLabel]) {
+                if ((string)$itemValue === (string)($vars['value'] ?? '')) {
+                    $vars['current'] = $itemLabel;
+                    break;
+                }
+            }
+        }
+
         return $this->render('dropdown', $vars + [
             'name' => '',
             'value' => '',
