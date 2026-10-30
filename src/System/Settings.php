@@ -67,7 +67,7 @@ class Settings
             is_bool($defaultValue) => 'bool',
             default => 'string',
         };
-        ModelSettings::insertStatic([
+        ModelSettings::insert([
             'name' => $key,
             'alias' => $key,
             'value' => is_bool($defaultValue) ? (int)$defaultValue : (string)$defaultValue,

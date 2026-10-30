@@ -293,7 +293,7 @@ class DB
      *
      * ```php
      * $orderId = DB::transaction(function () use ($cart) {
-     *     $order = Order::insertStatic([...]);
+     *     $order = Order::insert([...]);
      *     OrderItem::bulkInsert([...]);
      *     return $order->id;
      * });

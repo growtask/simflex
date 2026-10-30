@@ -143,7 +143,7 @@ class Migrator extends ConsoleBase
             $schema->reload();
 
             $dbMigration = new Migration();
-            if (!$dbMigration->insert(['file' => $migration])) {
+            if (!$dbMigration->save(['file' => $migration])) {
                 $class->down($schema);
                 if (!$schema->commit()) {
                     Log::emergency(

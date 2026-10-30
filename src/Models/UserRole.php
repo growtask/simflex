@@ -36,7 +36,7 @@ class UserRole extends ModelBase
      */
     public function addPrivilege(string $privilege): void
     {
-        UserRolePrivilege::insertStatic([
+        UserRolePrivilege::insert([
             'role_id' => $this->role_id,
             'privilege' => $privilege,
         ]);

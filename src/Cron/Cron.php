@@ -58,7 +58,7 @@ class Cron
             $result = 'failed (' . $ex->getMessage() . ')';
         }
 
-        CronLog::insertStatic([
+        CronLog::insert([
             'job' => $key,
             'datetime' => Time::mysql(time()),
             'result' => mb_substr($result, 0, 2047),

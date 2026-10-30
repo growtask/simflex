@@ -71,7 +71,7 @@ class CronRegistry
 
         foreach ($jobs as $key => $job) {
             if (!isset($existing[$key])) {
-                CronModel::insertStatic([
+                CronModel::insert([
                     'job' => $key,
                     'active' => (int)$job->active,
                     'timing' => $job->timing,

@@ -21,7 +21,7 @@ class UserAuth extends ModelBase
         $token = md5(microtime());
         $useragent = Container::getRequest()?->getUserAgent() ?? '';
         $model = new static();
-        $success = $model->insert([
+        $success = $model->save([
             'user_id' => $userId,
             'token' => $token,
             'time_expires' => new Expr("NOW() + INTERVAL $validInterval"),

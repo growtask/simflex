@@ -1099,7 +1099,7 @@ abstract class Table extends Handler
                 }
                 $set[$key] = in_array($key, $fieldNames) ? "Копия $value" : $value;
             }
-            $copy = static::getModel()::insertStatic($set);
+            $copy = static::getModel()::insert($set);
             if ($copy) {
                 Alert::success("Запись №{$row[$this->pk->name]} скопирована в №{$copy->getId()}");
             } else {
@@ -1208,7 +1208,7 @@ abstract class Table extends Handler
             $isUpdate = !$isInsert;
             // через модель: срабатывают её хуки (beforeSave() и др.) и события
             if ($isInsert) {
-                $model = static::getModel()::insertStatic($this->getInsertData());
+                $model = static::getModel()::insert($this->getInsertData());
                 $saved = $model !== null;
             } else {
                 $model = static::getModel()::findOne([$this->pk->name => (int)$this->request->post($this->pk->name)]);

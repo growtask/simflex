@@ -9,7 +9,7 @@ class Log
 {
     public static function a(string $action, string $data): void
     {
-        LogModel::insertStatic([
+        LogModel::insert([
             'action' => $action,
             'ip' => (string)Container::getRequest()?->server('REMOTE_ADDR', ''),
             'browser' => (string)Container::getRequest()?->getUserAgent(),

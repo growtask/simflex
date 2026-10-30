@@ -45,7 +45,7 @@ class Sms
             }
         }
 
-        $sms = SmsLog::insertStatic([
+        $sms = SmsLog::insert([
             'phone' => $phone,
             'text' => $text,
             'sender' => $from,

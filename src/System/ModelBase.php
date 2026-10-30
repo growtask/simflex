@@ -273,7 +273,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
 
         $result = false;
         if ($this->beforeSave()) {
-            $result = $this->id ? $this->update($data) : $this->insert($data);
+            $result = $this->id ? $this->update($data) : $this->insertRow($data);
         }
 
         $ev->dispatch(new Event(Events::PostModelSave, static::class, $this, $result));
@@ -282,12 +282,12 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Вставляет данные модели в базу
+     * Вставляет данные модели в базу (для новой модели снаружи — `save()` или статический `insert()`)
      *
      * @param array|null $data Данные взамен текущих
      * @param int $flags Флаги вставки
      */
-    public function insert(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
+    protected function insertRow(?array $data = null, int $flags = self::FLAG_SKIP_VIRTUAL): bool
     {
         if ($data) {
             $this->fill($data);
@@ -346,10 +346,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      * @return static|null Экземпляр модели или null при ошибке
      * @throws Exception
      */
-    public static function insertStatic(array $data, int $flags = self::FLAG_SKIP_VIRTUAL): ?static
+    public static function insert(array $data, int $flags = self::FLAG_SKIP_VIRTUAL): ?static
     {
         $model = new static();
-        if ($model->insert($data, $flags)) {
+        if ($model->insertRow($data, $flags)) {
             $model->reload();
             return $model;
         }
@@ -369,7 +369,7 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         $success = true;
         foreach ($items as $item) {
             $model = new static();
-            $success &= $model->insert($item, $flags);
+            $success &= $model->insertRow($item, $flags);
         }
 
         return $success;
