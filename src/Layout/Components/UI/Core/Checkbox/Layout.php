@@ -27,7 +27,7 @@ class Layout extends LayoutBase
         CheckboxTheme    $theme = CheckboxTheme::Light,
         CheckboxPosition $position = CheckboxPosition::Left,
         array            $attributes = [],
-        string           $policyUrl = '/policy/',
+        string           $policyUrl = '/policy',
         bool             $error = false
     ): string {
         return static::draw(

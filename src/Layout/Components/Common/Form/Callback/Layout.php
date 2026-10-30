@@ -65,7 +65,7 @@ class Layout extends LayoutBase
         bool $email = true,
         bool $comment = true,
         bool $consent = true,
-        string $policyUrl = '/policy/',
+        string $policyUrl = '/policy',
         string $consentText = '',
         string $captcha = '',
         bool $guard = true,

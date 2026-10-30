@@ -1252,7 +1252,7 @@ abstract class Table extends Handler
                             ->leftJoin($this->table, $pid, 't2.' . $this->pk->name, alias: 't2')
                             ->where($where)
                             ->fetchOne();
-                        $path = $row['path'] ? $row['path'] . $row['alias'] . '/' : '/' . $row['alias'] . '/';
+                        $path = rtrim((string)$row['path'], '/') . '/' . $row['alias'];
                         $path = preg_replace('@\/+@', '/', $path);
                         $row[$field_path->name] = $path;
                         static::getModel()::bulkUpdate([$field_path->name => $path], $where);
@@ -1265,7 +1265,7 @@ abstract class Table extends Handler
                                 ->where(array_merge($this->getScope(), [$pid => $cur[$this->pk->name]]))
                                 ->all();
                             foreach ($children as $child) {
-                                $path = $cur[$field_path->name] . $child[$field_alias->name] . '/';
+                                $path = rtrim($cur[$field_path->name], '/') . '/' . $child[$field_alias->name];
                                 if ($child[$field_path->name] !== $path) {
                                     static::getModel()::bulkUpdate(
                                         [$field_path->name => $path],

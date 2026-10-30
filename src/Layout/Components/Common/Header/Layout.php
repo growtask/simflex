@@ -152,7 +152,7 @@ class Layout extends LayoutBase
             }
             $link = (string)$row['link'];
             $children = $maxLevel > 0 ? static::getMenuItems($tree, (int)$id, $maxLevel - 1, $path) : [];
-            $active = ($link === '/' ? $path === '/' : ($link !== '' && str_starts_with($path, $link)))
+            $active = ($link === '/' ? $path === '/' : ($link !== '' && ($path === $link || str_starts_with($path, rtrim($link, '/') . '/'))))
                 || array_filter($children, fn(array $child) => $child['active']) !== [];
             $items[] = [
                 'text' => (string)$row['name'],

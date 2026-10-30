@@ -18,6 +18,11 @@ class Resolver
         }
 
         $request = Container::getRequest();
+        // пути без конечного «/»: адрес со слэшем — несуществующая страница
+        if (strlen($request->getPath()) > 1 && str_ends_with($request->getPath(), '/')) {
+            Container::getResponse()->redirectNow('/404');
+        }
+
         if ($route = & $routes[trim($request->getPath(), '/')]) {
             return static::makeRoute($route, trim($request->getPath(), '/'));
         }
@@ -71,7 +76,7 @@ class Resolver
             if ($part === '') {
                 continue;
             }
-            $path .= $part . '/';
+            $path .= ($path === '/' ? '' : '/') . $part;
             if (isset($this->menu[$path])) {
                 $found = ['class' => $this->menu[$path]['class'], 'path' => $path];
             }

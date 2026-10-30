@@ -101,7 +101,8 @@ class Menu extends ModuleBase
      */
     protected function isCurrent(string $link): bool
     {
-        return str_starts_with(Container::getRequest()->getPath(), $link);
+        $path = Container::getRequest()->getPath();
+        return $path === $link || str_starts_with($path, rtrim($link, '/') . '/');
     }
 
     /**
