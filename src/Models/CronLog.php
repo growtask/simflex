@@ -13,6 +13,9 @@ use Simflex\Core\System\ModelBase;
 class CronLog extends ModelBase
 {
     protected static string $table = 'cron_log';
+
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
     protected static string $primaryKeyName = 'id';
 
     /**

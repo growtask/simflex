@@ -25,5 +25,7 @@ use Simflex\Core\System\ModelBase;
 class SmsLog extends ModelBase
 {
     protected static string $table = 'sms_log';
+
+    public const ?string COLUMN_TIME_UPDATE = null;
     protected static string $primaryKeyName = 'sms_id';
 }

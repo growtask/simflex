@@ -17,6 +17,9 @@ class UserRolePrivilege extends ModelBase
     protected static string $primaryKeyName = 'id';
     protected static string $table = 'user_role_privilege';
 
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
+
     /**
      * @throws Exception
      */

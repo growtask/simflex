@@ -102,6 +102,7 @@ class Schema
     {
         $table = new Table($name);
         $fn($table);
+        $table->addTimestamps();
 
         $this->awaitingCreate[] = $table;
     }

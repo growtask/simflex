@@ -15,5 +15,8 @@ use Simflex\Core\System\ModelBase;
 class UserPrivilege extends ModelBase
 {
     protected static string $table = 'user_privilege';
+
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
     protected static string $primaryKeyName = 'privilege_id';
 }

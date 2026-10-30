@@ -32,7 +32,7 @@ abstract class ExtensionConfig
     protected array $modules = [];
 
     /** @var list<class-string<Handler>> разделы админки, как в Admin/handlers.php сайта */
-    protected array $handlers = [];
+    protected array $adminHandlers = [];
 
     /** @var list<self>|null загруженные расширения сайта */
     private static ?array $all = null;
@@ -76,9 +76,9 @@ abstract class ExtensionConfig
     /**
      * @return list<class-string<Handler>>
      */
-    public function getHandlers(): array
+    public function getAdminHandlers(): array
     {
-        return $this->handlers;
+        return $this->adminHandlers;
     }
 
     /**

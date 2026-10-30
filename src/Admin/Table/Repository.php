@@ -138,7 +138,7 @@ class Repository
 
         $extension = [];
         foreach (ExtensionConfig::getAll() as $config) {
-            $extension = array_merge($extension, $normalize($config->getHandlers()));
+            $extension = array_merge($extension, $normalize($config->getAdminHandlers()));
         }
 
         $appFile = Container::getPaths()->getRoot('Admin/handlers.php');

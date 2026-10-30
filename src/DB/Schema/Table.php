@@ -7,6 +7,9 @@ use Simflex\Core\DB\Schema\Params\TableParams;
 
 class Table extends ElementBase
 {
+    public const string COLUMN_TIME_CREATE = 'time_create';
+    public const string COLUMN_TIME_UPDATE = 'time_update';
+
     protected TableParams $params;
 
     protected TableParams $oldParams;
@@ -18,6 +21,8 @@ class Table extends ElementBase
     protected array $oldElements = [];
 
     protected bool $isExisting;
+    protected bool $hasTimeCreate = true;
+    protected bool $hasTimeUpdate = true;
     protected array $dropQueue = [];
 
     public function __construct(string $name, bool $isExisting = false)
@@ -197,6 +202,53 @@ class Table extends ElementBase
     public function timestamp(string $name): Column
     {
         return $this->addColumn($name, Column::TYPE_TIMESTAMP);
+    }
+
+    /**
+     * Таблица без колонок времени: по умолчанию в новую таблицу добавляются `time_create` и `time_update`.
+     * В модели таких таблиц константы COLUMN_TIME_CREATE и COLUMN_TIME_UPDATE переопределяются в null
+     */
+    public function noTimestamps(): static
+    {
+        $this->hasTimeCreate = false;
+        $this->hasTimeUpdate = false;
+        return $this;
+    }
+
+    /**
+     * Только `time_create` (в модели COLUMN_TIME_UPDATE = null)
+     */
+    public function timestampsOnlyTimeCreate(): static
+    {
+        $this->hasTimeCreate = true;
+        $this->hasTimeUpdate = false;
+        return $this;
+    }
+
+    /**
+     * Только `time_update` (в модели COLUMN_TIME_CREATE = null)
+     */
+    public function timestampsOnlyTimeUpdate(): static
+    {
+        $this->hasTimeCreate = false;
+        $this->hasTimeUpdate = true;
+        return $this;
+    }
+
+    /**
+     * Добавляет колонки времени в новую таблицу (вызывает Schema::createTable() после описания таблицы):
+     * `time_create` — `timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP`, `time_update` — `timestamp NULL`.
+     * Колонка, которую миграция уже описала сама, остаётся как есть
+     */
+    public function addTimestamps(): void
+    {
+        if ($this->hasTimeCreate && !isset($this->elements[static::COLUMN_TIME_CREATE])) {
+            $this->timestamp(static::COLUMN_TIME_CREATE)->setNull(false)->setDefault('CURRENT_TIMESTAMP');
+        }
+
+        if ($this->hasTimeUpdate && !isset($this->elements[static::COLUMN_TIME_UPDATE])) {
+            $this->timestamp(static::COLUMN_TIME_UPDATE)->setNull()->setDefault(null);
+        }
     }
 
     public function enum(string $name, array $items): Column

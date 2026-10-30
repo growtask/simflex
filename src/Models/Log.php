@@ -15,5 +15,8 @@ use Simflex\Core\System\ModelBase;
 class Log extends ModelBase
 {
     protected static string $table = 'log';
+
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
     protected static string $primaryKeyName = 'log_id';
 }

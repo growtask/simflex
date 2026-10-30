@@ -14,5 +14,8 @@ use Simflex\Core\System\ModelBase;
 class Migration extends ModelBase
 {
     protected static string $table = 'migration';
+
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
     protected static string $primaryKeyName = 'id';
 }

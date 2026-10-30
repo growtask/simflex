@@ -15,5 +15,6 @@
         <td><?= $value ?></td>
     </tr>
     <?php endforeach ?>
+    <?= $this->showDetailTimeRows($row) ?>
     <?= $this->showDetailExtra($row) ?>
 </table>

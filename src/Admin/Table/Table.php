@@ -1475,6 +1475,39 @@ abstract class Table extends Handler
         return '';
     }
 
+    /**
+     * Строки «Создано» и «Изменено» карточки записи: колонки времени модели (COLUMN_TIME_CREATE, COLUMN_TIME_UPDATE)
+     * выводятся только здесь; в списке и форме их нет, пока раздел не объявил их полями
+     *
+     * @param array<string, mixed> $row Запись карточки
+     */
+    protected function showDetailTimeRows(array $row): string
+    {
+        if (!isset(static::$model)) {
+            return '';
+        }
+
+        $model = static::getModel();
+        $columns = array_filter([
+            'Создано' => $model::COLUMN_TIME_CREATE,
+            'Изменено' => $model::COLUMN_TIME_UPDATE,
+        ], fn(?string $column) => $column !== null && !isset($this->fields[$column]));
+        if (!$columns || !isset($row[$this->pk->name])) {
+            return '';
+        }
+
+        $times = new AQ()->asArray()->from($this->table)->select(array_values($columns))
+            ->where([$this->pk->name => $row[$this->pk->name]])->fetchOne();
+
+        $html = '';
+        foreach ($columns as $label => $column) {
+            $html .= '<tr class="modal-info__table-row"><th>' . $label . '</th><td>'
+                . htmlspecialchars((string)($times[$column] ?? '')) . '</td></tr>';
+        }
+
+        return $html;
+    }
+
     public function showDetail(): string
     {
         $id = (int)$this->request->get('id');

@@ -28,6 +28,12 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public const FLAG_IGNORE = 1 << 0;
     public const FLAG_SKIP_VIRTUAL = 1 << 1;
 
+    /** Колонка времени создания; в модели таблицы без неё переопределяется в null */
+    public const ?string COLUMN_TIME_CREATE = 'time_create';
+
+    /** Колонка времени изменения; в модели таблицы без неё переопределяется в null */
+    public const ?string COLUMN_TIME_UPDATE = 'time_update';
+
     /**
      * @var array Для отладки. Считает вставки, удаления и обновления.
      */
@@ -81,6 +87,24 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
     public static function getTableName(bool $wrap = false): string
     {
         return $wrap ? DB::wrapName(static::$table) : static::$table;
+    }
+
+    /**
+     * Колонки default timestamps, которые ModelBase заполняет сам: COLUMN_TIME_CREATE при вставке, COLUMN_TIME_UPDATE
+     * при вставке и обновлении. Колонка, у которой константа null или значение задано явно, пропускается
+     *
+     * @param bool $create Вставка: и время создания, и время изменения; иначе только время изменения
+     * @param array<string, mixed> $given Явно заданные значения
+     * @return list<string> Колонки, которым нужно записать NOW()
+     */
+    protected static function getDefaultTimestampsColumns(bool $create, array $given): array
+    {
+        $columns = $create ? [static::COLUMN_TIME_CREATE, static::COLUMN_TIME_UPDATE] : [static::COLUMN_TIME_UPDATE];
+
+        return array_values(array_filter(
+            $columns,
+            fn(?string $column) => $column !== null && !array_key_exists($column, $given)
+        ));
     }
 
     /**
@@ -311,6 +335,11 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 $values[] = is_bool($value) ? ($value ? 1 : 0) : $value;
             }
 
+            foreach (static::getDefaultTimestampsColumns(true, $this->data) as $column) {
+                $keys[] = $column;
+                $values[] = new Expr('NOW()');
+            }
+
             // собираем запрос вставки
             $ignore = $flags & self::FLAG_IGNORE ? ' ignore ' : '';
             $query = "insert $ignore into " . static::getTableName(true) . ' (';
@@ -385,6 +414,9 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
      */
     public static function upsert(array $data, ?array $update = null): bool
     {
+        $update ??= array_keys($data);
+        // time_create и time_update при вставке, time_update при обновлении существующей записи
+        $timeColumns = static::getDefaultTimestampsColumns(true, $data);
         $placeholders = [];
         $bind = [];
         foreach ($data as $value) {
@@ -398,11 +430,18 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
         // VALUES(): работает и в MySQL, и в MariaDB
         $assign = array_map(
             fn(string $column) => DB::wrapName($column) . ' = VALUES(' . DB::wrapName($column) . ')',
-            $update ?? array_keys($data)
+            $update
         );
+        if (static::COLUMN_TIME_UPDATE !== null && in_array(static::COLUMN_TIME_UPDATE, $timeColumns, true)) {
+            $assign[] = DB::wrapName(static::COLUMN_TIME_UPDATE) . ' = NOW()';
+        }
+
+        foreach ($timeColumns as $column) {
+            $placeholders[] = 'NOW()';
+        }
 
         $query = 'insert into ' . static::getTableName(true)
-            . ' (' . implode(', ', array_map(DB::wrapName(...), array_keys($data))) . ')'
+            . ' (' . implode(', ', array_map(DB::wrapName(...), [...array_keys($data), ...$timeColumns])) . ')'
             . ' values (' . implode(', ', $placeholders) . ')'
             . ' on duplicate key update ' . implode(', ', $assign);
 
@@ -443,8 +482,18 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 unset($updateData[$key]);
             }
 
-            $query = 'update ' . static::getTableName(true) . ' set ';
-            $query .= implode(', ', array_map(fn($key) => DB::wrapName($key) . ' = ?', array_keys($updateData)));
+            // time_update: явно заданное значение сохраняется, иначе - текущее время
+            $timeColumns = static::getDefaultTimestampsColumns(false, $data ?? []);
+            if ($timeColumns) {
+                unset($updateData[static::COLUMN_TIME_UPDATE]);
+            }
+
+            $assign = array_map(fn($key) => DB::wrapName($key) . ' = ?', array_keys($updateData));
+            if ($timeColumns) {
+                $assign[] = DB::wrapName(static::COLUMN_TIME_UPDATE) . ' = NOW()';
+            }
+
+            $query = 'update ' . static::getTableName(true) . ' set ' . implode(', ', $assign);
             $query .= ' where ' . static::getPrimaryKeyName(true) . ' = ?';
 
             if ($result = $this->query($query, array_merge(array_values($updateData), [$this->id]))) {
@@ -533,6 +582,10 @@ abstract class ModelBase implements ArrayAccess, JsonSerializable
                 }
                 $assign[] = DB::wrapName(array_keys($set)[$i]) . " = :set_$i";
                 $bind["set_$i"] = $value;
+            }
+
+            if (static::getDefaultTimestampsColumns(false, $set)) {
+                $assign[] = DB::wrapName(static::COLUMN_TIME_UPDATE) . ' = NOW()';
             }
 
             $where = new Where($where);
