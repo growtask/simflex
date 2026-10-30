@@ -43,19 +43,9 @@
 
     &__label {
         color: var(--gray-medium);
-        margin-bottom: vw(2px);
+        @include spacing(margin-bottom, 2px);
         flex-shrink: 0;
         @include t4;
-
-        @include HD {
-            margin-bottom: vwh(2px);
-        }
-        @include Tablet {
-            margin-bottom: vwt(2px);
-        }
-        @include Mobile {
-            margin-bottom: vwm(2px);
-        }
     }
 
     &__field {
@@ -77,38 +67,18 @@
 
     &__error-message {
         color: var(--error-dark);
-        margin-top: vw(2px);
+        @include spacing(margin-top, 2px);
         @include t4;
-
-        @include HD {
-            margin-top: vwh(2px);
-        }
-        @include Tablet {
-            margin-top: vwt(2px);
-        }
-        @include Mobile {
-            margin-top: vwm(2px);
-        }
     }
 
     /*----------LABEL POSITION-----------*/
     &-pos_standard {
         &.text-input__label {
             display: block;
-            margin-bottom: vw(2px);
+            @include spacing(margin-bottom, 2px);
             color: var(--gray-medium);
             order: -1;
             @include t4;
-
-            @include HD {
-                margin-bottom: vwh(2px);
-            }
-            @include Tablet {
-                margin-bottom: vwt(2px);
-            }
-            @include Mobile {
-                margin-bottom: vwm(2px);
-            }
         }
 
         &.text-input__wrapper {
@@ -232,79 +202,36 @@
     /*----------SIZES-----------*/
     &-size_l {
         .text-input__icon {
-            left: vw(16px);
-
-            @include HD {
-                left: vwh(16px);
-            }
-            @include Tablet {
-                left: vwt(16px);
-            }
-            @include Mobile {
-                left: vwm(16px);
-            }
+            @include spacing(left, 16px);
         }
 
         .text-input__reset {
-            right: vw(16px);
-
-            @include HD {
-                right: vwh(16px);
-            }
-            @include Tablet {
-                right: vwt(16px);
-            }
-            @include Mobile {
-                right: vwm(16px);
-            }
+            @include spacing(right, 16px);
         }
 
         .text-input__input-container {
             &:has(.text-input__icon) .text-input__field {
-                padding-left: vw(48px);
-
-                @include HD {
-                    padding-left: vwh(48px);
-                }
-                @include Tablet {
-                    padding-left: vwt(48px);
-                }
-                @include Mobile {
-                    padding-left: vwm(48px);
-                }
+                @include spacing(padding-left, 48px);
             }
 
             &:has(.text-input__reset) .text-input__field {
-                padding-right: vw(48px);
-
-                @include HD {
-                    padding-right: vwh(48px);
-                }
-                @include Tablet {
-                    padding-right: vwt(48px);
-                }
-                @include Mobile {
-                    padding-right: vwm(48px);
-                }
+                @include spacing(padding-right, 48px);
             }
         }
 
         .text-input__field {
-            height: vw(56px);
+            @include spacing(height, 56px);
             padding: 0 vw(16px);
             @include t2;
             @include border-r(12px);
 
             @include HD {
-                height: vwh(56px);
                 padding: 0 vwh(16px);
             }
             @include Tablet {
-                height: vwt(56px);
                 padding: 0 vwt(16px);
             }
             @include Mobile {
-                height: vwm(56px);
                 padding: 0 vwm(16px);
             }
         }
@@ -312,79 +239,36 @@
 
     &-size_m {
         .text-input__icon {
-            left: vw(12px);
-
-            @include HD {
-                left: vwh(12px);
-            }
-            @include Tablet {
-                left: vwt(12px);
-            }
-            @include Mobile {
-                left: vwm(12px);
-            }
+            @include spacing(left, 12px);
         }
 
         .text-input__reset {
-            right: vw(12px);
-
-            @include HD {
-                right: vwh(12px);
-            }
-            @include Tablet {
-                right: vwt(12px);
-            }
-            @include Mobile {
-                right: vwm(12px);
-            }
+            @include spacing(right, 12px);
         }
 
         .text-input__input-container {
             &:has(.text-input__icon) .text-input__field {
-                padding-left: vw(44px);
-
-                @include HD {
-                    padding-left: vwh(44px);
-                }
-                @include Tablet {
-                    padding-left: vwt(44px);
-                }
-                @include Mobile {
-                    padding-left: vwm(44px);
-                }
+                @include spacing(padding-left, 44px);
             }
 
             &:has(.text-input__reset) .text-input__field {
-                padding-right: vw(44px);
-
-                @include HD {
-                    padding-right: vwh(44px);
-                }
-                @include Tablet {
-                    padding-right: vwt(44px);
-                }
-                @include Mobile {
-                    padding-right: vwm(44px);
-                }
+                @include spacing(padding-right, 44px);
             }
         }
 
         .text-input__field {
-            height: vw(48px);
+            @include spacing(height, 48px);
             padding: 0 vw(16px);
             @include t2;
             @include border-r(12px);
 
             @include HD {
-                height: vwh(48px);
                 padding: 0 vwh(16px);
             }
             @include Tablet {
-                height: vwt(48px);
                 padding: 0 vwt(16px);
             }
             @include Mobile {
-                height: vwm(48px);
                 padding: 0 vwm(16px);
             }
         }
@@ -392,79 +276,36 @@
 
     &-size_s {
         .text-input__icon {
-            left: vw(10px);
-
-            @include HD {
-                left: vwh(10px);
-            }
-            @include Tablet {
-                left: vwt(10px);
-            }
-            @include Mobile {
-                left: vwm(10px);
-            }
+            @include spacing(left, 10px);
         }
 
         .text-input__reset {
-            right: vw(10px);
-
-            @include HD {
-                right: vwh(10px);
-            }
-            @include Tablet {
-                right: vwt(10px);
-            }
-            @include Mobile {
-                right: vwm(10px);
-            }
+            @include spacing(right, 10px);
         }
 
         .text-input__input-container {
             &:has(.text-input__icon) .text-input__field {
-                padding-left: vw(40px);
-
-                @include HD {
-                    padding-left: vwh(40px);
-                }
-                @include Tablet {
-                    padding-left: vwt(40px);
-                }
-                @include Mobile {
-                    padding-left: vwm(40px);
-                }
+                @include spacing(padding-left, 40px);
             }
 
             &:has(.text-input__reset) .text-input__field {
-                padding-right: vw(40px);
-
-                @include HD {
-                    padding-right: vwh(40px);
-                }
-                @include Tablet {
-                    padding-right: vwt(40px);
-                }
-                @include Mobile {
-                    padding-right: vwm(40px);
-                }
+                @include spacing(padding-right, 40px);
             }
         }
 
         .text-input__field {
-            height: vw(40px);
+            @include spacing(height, 40px);
             padding: 0 vw(12px);
             @include t2;
             @include border-r(12px);
 
             @include HD {
-                height: vwh(40px);
                 padding: 0 vwh(12px);
             }
             @include Tablet {
-                height: vwt(40px);
                 padding: 0 vwt(12px);
             }
             @include Mobile {
-                height: vwm(40px);
                 padding: 0 vwm(12px);
             }
         }
@@ -472,79 +313,36 @@
 
     &-size_xs {
         .text-input__icon {
-            left: vw(8px);
-
-            @include HD {
-                left: vwh(8px);
-            }
-            @include Tablet {
-                left: vwt(8px);
-            }
-            @include Mobile {
-                left: vwm(8px);
-            }
+            @include spacing(left, 8px);
         }
 
         .text-input__reset {
-            right: vw(8px);
-
-            @include HD {
-                right: vwh(8px);
-            }
-            @include Tablet {
-                right: vwt(8px);
-            }
-            @include Mobile {
-                right: vwm(8px);
-            }
+            @include spacing(right, 8px);
         }
 
         .text-input__input-container {
             &:has(.text-input__icon) .text-input__field {
-                padding-left: vw(36px);
-
-                @include HD {
-                    padding-left: vwh(36px);
-                }
-                @include Tablet {
-                    padding-left: vwt(36px);
-                }
-                @include Mobile {
-                    padding-left: vwm(36px);
-                }
+                @include spacing(padding-left, 36px);
             }
 
             &:has(.text-input__reset) .text-input__field {
-                padding-right: vw(36px);
-
-                @include HD {
-                    padding-right: vwh(36px);
-                }
-                @include Tablet {
-                    padding-right: vwt(36px);
-                }
-                @include Mobile {
-                    padding-right: vwm(36px);
-                }
+                @include spacing(padding-right, 36px);
             }
         }
 
         .text-input__field {
-            height: vw(32px);
+            @include spacing(height, 32px);
             padding: 0 vw(12px);
             @include t3;
             @include border-r(8px);
 
             @include HD {
-                height: vwh(32px);
                 padding: 0 vwh(12px);
             }
             @include Tablet {
-                height: vwt(32px);
                 padding: 0 vwt(12px);
             }
             @include Mobile {
-                height: vwm(32px);
                 padding: 0 vwm(12px);
             }
         }

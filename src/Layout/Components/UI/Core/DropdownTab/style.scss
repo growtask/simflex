@@ -66,25 +66,12 @@
     }
 
     &__badge {
-        height: vw(16px);
-        padding-inline: vw(4px);
+        @include spacing(height, 16px);
+        @include spacing(padding-inline, 4px);
         color: var(--gray-white);
         background: var(--error-dark);
         @include t4;
         @include border-r(12px);
-
-        @include HD {
-            height: vwh(16px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(16px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(16px);
-            padding-inline: vwm(4px);
-        }
     }
 
     &__chevron {
@@ -100,12 +87,12 @@
         position: absolute;
         display: flex;
         flex-direction: column;
-        gap: vw(12px);
+        @include spacing(gap, 12px);
         top: calc(100% + #{vw(16px)});
         left: 0;
         width: max-content;
         margin: 0;
-        padding: vw(12px);
+        @include spacing(padding, 12px);
         list-style: none;
         opacity: 0;
         visibility: hidden;
@@ -123,67 +110,35 @@
         @include hide-scrollbar;
 
         @include HD {
-            gap: vwh(12px);
             top: calc(100% + #{vwh(16px)});
-            padding: vwh(12px);
         }
         @include Tablet {
-            gap: vwt(12px);
             top: calc(100% + #{vwt(16px)});
-            padding: vwt(12px);
         }
         @include Mobile {
-            gap: vwm(12px);
             top: calc(100% + #{vwm(16px)});
-            padding: vwm(12px);
         }
 
         /* Forgiveness zone */
         &::before {
             content: '';
             position: absolute;
-            top: vw(-18px);
+            @include spacing(top, -18px);
             left: 0;
             width: 100%;
-            height: vw(18px);
-
-            @include HD {
-                top: vwh(-18px);
-                height: vwh(18px);
-            }
-            @include Tablet {
-                top: vwt(-18px);
-                height: vwt(18px);
-            }
-            @include Mobile {
-                top: vwm(-18px);
-                height: vwm(18px);
-            }
+            @include spacing(height, 18px);
         }
 
         /* Top pointer */
         &::after {
             content: '';
             position: absolute;
-            top: vw(-5px);
+            @include spacing(top, -5px);
             transform: translateX(-50%) rotate(45deg);
             background: var(--gray-white);
-            border-radius: vw(5px) 0 0 0;
+            @include spacing(border-top-left-radius, 5px);
             z-index: -1;
             @include icon(10px);
-
-            @include HD {
-                border-radius: vwh(5px) 0 0 0;
-                top: vwh(-5px);
-            }
-            @include Tablet {
-                border-radius: vwt(5px) 0 0 0;
-                top: vwt(-5px);
-            }
-            @include Mobile {
-                border-radius: vwm(5px) 0 0 0;
-                top: vwm(-5px);
-            }
         }
 
         /* Top pointer position */
@@ -221,18 +176,8 @@
 
         &:nth-child(5n) {
             border-bottom: solid var(--gray-lighter);
-            padding-bottom: vw(12px);
+            @include spacing(padding-bottom, 12px);
             @include border-w(2px);
-
-            @include HD {
-                padding-bottom: vwh(12px);
-            }
-            @include Tablet {
-                padding-bottom: vwt(12px);
-            }
-            @include Mobile {
-                padding-bottom: vwm(12px);
-            }
         }
     }
 
@@ -425,26 +370,10 @@
     /*----------SIZES-----------*/
     &-size_l {
         .dropdown-tab__trigger {
-            height: vw(56px);
-            padding-inline: vw(16px);
-            gap: vw(8px);
+            @include spacing(height, 56px);
+            @include spacing(padding-inline, 16px);
+            @include spacing(gap, 8px);
             @include border-r(12px);
-
-            @include HD {
-                height: vwh(56px);
-                padding-inline: vwh(16px);
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                height: vwt(56px);
-                padding-inline: vwt(16px);
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                height: vwm(56px);
-                padding-inline: vwm(16px);
-                gap: vwm(8px);
-            }
 
             .dropdown-tab__text {
                 @include t2-b;
@@ -454,26 +383,10 @@
 
     &-size_m {
         .dropdown-tab__trigger {
-            height: vw(48px);
-            padding-inline: vw(12px);
-            gap: vw(4px);
+            @include spacing(height, 48px);
+            @include spacing(padding-inline, 12px);
+            @include spacing(gap, 4px);
             @include border-r(12px);
-
-            @include HD {
-                height: vwh(48px);
-                padding-inline: vwh(12px);
-                gap: vwh(4px);
-            }
-            @include Tablet {
-                height: vwt(48px);
-                padding-inline: vwt(12px);
-                gap: vwt(4px);
-            }
-            @include Mobile {
-                height: vwm(48px);
-                padding-inline: vwm(12px);
-                gap: vwm(4px);
-            }
 
             .dropdown-tab__text {
                 @include t2-b;
@@ -483,26 +396,10 @@
 
     &-size_s {
         .dropdown-tab__trigger {
-            height: vw(40px);
-            padding-inline: vw(8px);
-            gap: vw(4px);
+            @include spacing(height, 40px);
+            @include spacing(padding-inline, 8px);
+            @include spacing(gap, 4px);
             @include border-r(12px);
-
-            @include HD {
-                height: vwh(40px);
-                padding-inline: vwh(8px);
-                gap: vwh(4px);
-            }
-            @include Tablet {
-                height: vwt(40px);
-                padding-inline: vwt(8px);
-                gap: vwt(4px);
-            }
-            @include Mobile {
-                height: vwm(40px);
-                padding-inline: vwm(8px);
-                gap: vwm(4px);
-            }
 
             .dropdown-tab__text {
                 @include t3-b;
@@ -512,23 +409,10 @@
 
     &-size_xs {
         .dropdown-tab__trigger {
-            height: vw(32px);
-            padding-inline: vw(4px);
+            @include spacing(height, 32px);
+            @include spacing(padding-inline, 4px);
             gap: 0;
             @include border-r(8px);
-
-            @include HD {
-                height: vwh(32px);
-                padding-inline: vwh(4px);
-            }
-            @include Tablet {
-                height: vwt(32px);
-                padding-inline: vwt(4px);
-            }
-            @include Mobile {
-                height: vwm(32px);
-                padding-inline: vwm(4px);
-            }
 
             .dropdown-tab__text {
                 @include t3-b;

@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 64px;
+    @include spacing(padding, 64px);
 
     &[hidden] {
         display: none;
@@ -21,7 +21,7 @@
         inset: 0;
         background: color-mix(in srgb, var(--gray-black) 60%, transparent);
         opacity: 0;
-        transition: opacity .2s ease;
+        @include transition(opacity);
     }
 
     &__dialog {
@@ -35,7 +35,7 @@
         box-shadow: var(--shadow-gray-l);
         opacity: 0;
         transform: translateY(16px);
-        transition: opacity .2s ease, transform .2s ease;
+        @include transition((opacity, transform));
 
         &:focus {
             outline: none;
@@ -62,19 +62,23 @@
     &__close {
         position: absolute;
         top: 0;
-        left: calc(100% + 12px);
+        left: calc(100% + #{vw(12px)});
+
+        @include HD {
+            left: calc(100% + #{vwh(12px)});
+        }
         box-sizing: border-box;
         padding-inline: 0;
         border-radius: 50%;
-        width: 48px;
+        @include spacing(width, 48px);
     }
 
     /* Прокручивается содержимое, а не карточка: кнопка закрытия остаётся на месте */
     &__content {
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        padding: 32px;
+        @include spacing(gap, 20px);
+        @include spacing(padding, 32px);
         overflow-y: auto;
         overscroll-behavior: contain;
         border-radius: inherit;
@@ -83,7 +87,7 @@
     &__head {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        @include spacing(gap, 12px);
         padding-right: 0;
     }
 
@@ -102,23 +106,23 @@
     &__footer {
         display: flex;
         justify-content: flex-end;
-        gap: 12px;
+        @include spacing(gap, 12px);
     }
 
     &-size_xs .modal__dialog {
-        max-width: 480px;
+        @include spacing(max-width, 480px);
     }
 
     &-size_s .modal__dialog {
-        max-width: 560px;
+        @include spacing(max-width, 560px);
     }
 
     &-size_m .modal__dialog {
-        max-width: 640px;
+        @include spacing(max-width, 640px);
     }
 
     &-size_l .modal__dialog {
-        max-width: 700px;
+        @include spacing(max-width, 700px);
     }
 
     &-theme_dark {
@@ -141,7 +145,8 @@
      */
     @include Tablet {
         align-items: flex-end;
-        padding: 16px 0 0;
+        padding: 0;
+        @include spacing(padding-top, 16px);
 
         &__dialog {
             max-width: none;
@@ -151,10 +156,10 @@
             &::after {
                 content: '';
                 position: absolute;
-                top: 64px;
-                right: 8px;
-                left: 8px;
-                height: 2px;
+                @include spacing(top, 64px);
+                @include spacing(right, 8px);
+                @include spacing(left, 8px);
+                @include spacing(height, 2px);
                 background: var(--gray-lighter);
                 pointer-events: none;
             }
@@ -168,17 +173,19 @@
         }
 
         &__close {
-            top: 8px;
-            right: 8px;
+            @include spacing(top, 8px);
+            @include spacing(right, 8px);
             left: auto;
             z-index: 1;
-            border-radius: 12px;
+            border-radius: var(--radius-ui-medium);
             background: var(--gray-lighter);
             color: var(--gray-darker);
         }
 
         &__content {
-            padding: 86px 16px 16px;
+            @include spacing(padding-top, 86px);
+            @include spacing(padding-inline, 16px);
+            @include spacing(padding-bottom, 16px);
         }
 
         &__head {

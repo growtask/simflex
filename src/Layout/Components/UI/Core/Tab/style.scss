@@ -11,17 +11,7 @@
     @include border-w(2px);
 
     &__text {
-        margin-inline: vw(4px);
-
-        @include HD {
-            margin-inline: vwh(4px);
-        }
-        @include Tablet {
-            margin-inline: vwt(4px);
-        }
-        @include Mobile {
-            margin-inline: vwm(4px);
-        }
+        @include spacing(margin-inline, 4px);
     }
 
     &__icon-left, &__icon-right {
@@ -44,25 +34,12 @@
     }
 
     &__badge {
-        height: vw(16px);
-        padding-inline: vw(4px);
+        @include spacing(height, 16px);
+        @include spacing(padding-inline, 4px);
         color: var(--gray-white);
         background: var(--error-dark);
         @include t4;
         @include border-r(12px);
-
-        @include HD {
-            height: vwh(16px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(16px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(16px);
-            padding-inline: vwm(4px);
-        }
     }
 
     /*----------STYLES-----------*/
@@ -230,26 +207,10 @@
 
     /*----------SIZES-----------*/
     &-size_l {
-        height: vw(56px);
-        padding-inline: vw(16px);
-        gap: vw(8px);
+        @include spacing(height, 56px);
+        @include spacing(padding-inline, 16px);
+        @include spacing(gap, 8px);
         @include border-r(12px);
-
-        @include HD {
-            height: vwh(56px);
-            padding-inline: vwh(16px);
-            gap: vwh(8px);
-        }
-        @include Tablet {
-            height: vwt(56px);
-            padding-inline: vwt(16px);
-            gap: vwt(8px);
-        }
-        @include Mobile {
-            height: vwm(56px);
-            padding-inline: vwm(16px);
-            gap: vwm(8px);
-        }
 
         .tab__text {
             @include t2-b;
@@ -257,52 +218,21 @@
     }
 
     &-size_m {
-        height: vw(48px);
-        padding-inline: vw(12px);
-        gap: vw(4px);
+        @include spacing(height, 48px);
+        @include spacing(padding-inline, 12px);
+        @include spacing(gap, 4px);
         @include border-r(12px);
 
-        @include HD {
-            height: vwh(48px);
-            padding-inline: vwh(12px);
-            gap: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(48px);
-            padding-inline: vwt(12px);
-            gap: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(48px);
-            padding-inline: vwm(12px);
-            gap: vwm(4px);
-        }
         .tab__text {
             @include t2-b;
         }
     }
 
     &-size_s {
-        height: vw(40px);
-        padding-inline: vw(8px);
-        gap: vw(4px);
+        @include spacing(height, 40px);
+        @include spacing(padding-inline, 8px);
+        @include spacing(gap, 4px);
         @include border-r(12px);
-
-        @include HD {
-            height: vwh(40px);
-            padding-inline: vwh(8px);
-            gap: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(40px);
-            padding-inline: vwt(8px);
-            gap: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(40px);
-            padding-inline: vwm(8px);
-            gap: vwm(4px);
-        }
 
         .tab__text {
             @include t3-b;
@@ -310,23 +240,10 @@
     }
 
     &-size_xs {
-        height: vw(32px);
-        padding-inline: vw(4px);
+        @include spacing(height, 32px);
+        @include spacing(padding-inline, 4px);
         gap: 0;
         @include border-r(8px);
-
-        @include HD {
-            height: vwh(32px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(32px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(32px);
-            padding-inline: vwm(4px);
-        }
 
         .tab__text {
             @include t3-b;

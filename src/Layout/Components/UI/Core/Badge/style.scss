@@ -131,38 +131,22 @@
 
     /*----------SIZES-----------*/
     &-size_xl {
-        height: vw(48px);
+        @include spacing(height, 48px);
         padding: 0 vw(20px);
-        gap: vw(4px);
+        @include spacing(gap, 4px);
 
         @include HD {
-            height: vwh(48px);
             padding: 0 vwh(20px);
-            gap: vwh(4px);
         }
         @include Tablet {
-            height: vwt(48px);
             padding: 0 vwt(20px);
-            gap: vwt(4px);
         }
         @include Mobile {
-            height: vwm(48px);
             padding: 0 vwm(20px);
-            gap: vwm(4px);
         }
 
         &:has(.badge__icon) {
-            padding-left: vw(12px);
-
-            @include HD {
-                padding-left: vwh(12px);
-            }
-            @include Tablet {
-                padding-left: vwt(12px);
-            }
-            @include Mobile {
-                padding-left: vwm(12px);
-            }
+            @include spacing(padding-left, 12px);
         }
 
         .badge__icon {
@@ -171,38 +155,22 @@
     }
 
     &-size_l {
-        height: vw(40px);
+        @include spacing(height, 40px);
         padding: 0 vw(16px);
-        gap: vw(4px);
+        @include spacing(gap, 4px);
 
         @include HD {
-            height: vwh(40px);
             padding: 0 vwh(16px);
-            gap: vwh(4px);
         }
         @include Tablet {
-            height: vwt(40px);
             padding: 0 vwt(16px);
-            gap: vwt(4px);
         }
         @include Mobile {
-            height: vwm(40px);
             padding: 0 vwm(16px);
-            gap: vwm(4px);
         }
 
         &:has(.badge__icon) {
-            padding-left: vw(8px);
-
-            @include HD {
-                padding-left: vwh(8px);
-            }
-            @include Tablet {
-                padding-left: vwt(8px);
-            }
-            @include Mobile {
-                padding-left: vwm(8px);
-            }
+            @include spacing(padding-left, 8px);
         }
 
         .badge__icon {
@@ -211,38 +179,22 @@
     }
 
     &-size_m {
-        height: vw(32px);
+        @include spacing(height, 32px);
         padding: 0 vw(12px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
 
         @include HD {
-            height: vwh(32px);
             padding: 0 vwh(12px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(32px);
             padding: 0 vwt(12px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(32px);
             padding: 0 vwm(12px);
-            gap: vwm(2px);
         }
 
         &:has(.badge__icon) {
-            padding-left: vw(8px);
-
-            @include HD {
-                padding-left: vwh(8px);
-            }
-            @include Tablet {
-                padding-left: vwt(8px);
-            }
-            @include Mobile {
-                padding-left: vwm(8px);
-            }
+            @include spacing(padding-left, 8px);
         }
 
         .badge__icon {
@@ -251,38 +203,22 @@
     }
 
     &-size_s {
-        height: vw(24px);
+        @include spacing(height, 24px);
         padding: 0 vw(8px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
 
         @include HD {
-            height: vwh(24px);
             padding: 0 vwh(8px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(24px);
             padding: 0 vwt(8px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(24px);
             padding: 0 vwm(8px);
-            gap: vwm(2px);
         }
 
         &:has(.badge__icon) {
-            padding-left: vw(4px);
-
-            @include HD {
-                padding-left: vwh(4px);
-            }
-            @include Tablet {
-                padding-left: vwt(4px);
-            }
-            @include Mobile {
-                padding-left: vwm(4px);
-            }
+            @include spacing(padding-left, 4px);
         }
 
         .badge__icon {
@@ -291,38 +227,22 @@
     }
 
     &-size_xs {
-        height: vw(16px);
+        @include spacing(height, 16px);
         padding: 0 vw(4px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
 
         @include HD {
-            height: vwh(16px);
             padding: 0 vwh(4px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(16px);
             padding: 0 vwt(4px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(16px);
             padding: 0 vwm(4px);
-            gap: vwm(2px);
         }
 
         &:has(.badge__icon) {
-            padding-left: vw(1px);
-
-            @include HD {
-                padding-left: vwh(1px);
-            }
-            @include Tablet {
-                padding-left: vwt(1px);
-            }
-            @include Mobile {
-                padding-left: vwm(1px);
-            }
+            @include spacing(padding-left, 1px);
         }
 
         .badge__icon {

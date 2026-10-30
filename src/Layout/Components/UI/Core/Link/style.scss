@@ -11,7 +11,8 @@
 
     &__text {
         /* Пунктир у underline рисуется под текстом, а не под иконками */
-        border-bottom: 1px solid transparent;
+        border-bottom: solid transparent;
+        @include border-w(1px);
     }
 
     &__icon-left, &__icon-right {
@@ -22,7 +23,7 @@
     &:focus-visible {
         outline: 2px solid var(--color1-main);
         outline-offset: 2px;
-        border-radius: 4px;
+        border-radius: var(--radius-ui-xsmall);
     }
 
     /*----------STATES-----------*/
@@ -39,7 +40,8 @@
     /*----------STYLES-----------*/
     &-underline {
         .link__text {
-            border-bottom: 1px dashed currentColor;
+            border-bottom: dashed currentColor;
+            @include border-w(1px);
         }
     }
 

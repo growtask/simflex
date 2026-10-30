@@ -53,17 +53,7 @@
     &__controls-wrapper {
         display: inline-flex;
         align-items: center;
-        gap: vw(8px);
-
-        @include HD {
-            gap: vwh(8px);
-        }
-        @include Tablet {
-            gap: vwt(8px);
-        }
-        @include Mobile {
-            gap: vwm(8px);
-        }
+        @include spacing(gap, 8px);
     }
 
     &__comment {
@@ -72,25 +62,12 @@
     }
 
     &__badge {
-        height: vw(16px);
-        padding-inline: vw(4px);
+        @include spacing(height, 16px);
+        @include spacing(padding-inline, 4px);
         color: var(--gray-white);
         background: var(--error-dark);
         @include t4;
         @include border-r(12px);
-
-        @include HD {
-            height: vwh(16px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(16px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(16px);
-            padding-inline: vwm(4px);
-        }
     }
 
     &__button {
@@ -199,45 +176,15 @@
 
     /*----------SIZES-----------*/
     &-size_l {
-        padding: vw(24px);
+        @include spacing(padding, 24px);
         @include border-r(20px);
 
-        @include HD {
-            padding: vwh(24px);
-        }
-        @include Tablet {
-            padding: vwt(24px);
-        }
-        @include Mobile {
-            padding: vwm(24px);
-        }
-
         .accordion__header-wrapper {
-            gap: vw(20px);
-
-            @include HD {
-                gap: vwh(20px);
-            }
-            @include Tablet {
-                gap: vwt(20px);
-            }
-            @include Mobile {
-                gap: vwm(20px);
-            }
+            @include spacing(gap, 20px);
         }
 
         .accordion__text-wrapper {
-            gap: vw(8px);
-
-            @include HD {
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                gap: vwm(8px);
-            }
+            @include spacing(gap, 8px);
         }
 
         .accordion__title {
@@ -249,46 +196,16 @@
         }
 
         .accordion__description {
-            margin-top: vw(24px);
-
-            @include HD {
-                margin-top: vwh(24px);
-            }
-            @include Tablet {
-                margin-top: vwt(24px);
-            }
-            @include Mobile {
-                margin-top: vwm(24px);
-            }
+            @include spacing(margin-top, 24px);
         }
     }
 
     &-size_m {
-        padding: vw(20px);
+        @include spacing(padding, 20px);
         @include border-r(12px);
 
-        @include HD {
-            padding: vwh(20px);
-        }
-        @include Tablet {
-            padding: vwt(20px);
-        }
-        @include Mobile {
-            padding: vwm(20px);
-        }
-
         .accordion__header-wrapper {
-            gap: vw(20px);
-
-            @include HD {
-                gap: vwh(20px);
-            }
-            @include Tablet {
-                gap: vwt(20px);
-            }
-            @include Mobile {
-                gap: vwm(20px);
-            }
+            @include spacing(gap, 20px);
         }
 
         .accordion__text-wrapper {
@@ -304,46 +221,16 @@
         }
 
         .accordion__description {
-            margin-top: vw(20px);
-
-            @include HD {
-                margin-top: vwh(20px);
-            }
-            @include Tablet {
-                margin-top: vwt(20px);
-            }
-            @include Mobile {
-                margin-top: vwm(20px);
-            }
+            @include spacing(margin-top, 20px);
         }
     }
 
     &-size_s {
-        padding: vw(16px);
+        @include spacing(padding, 16px);
         @include border-r(12px);
 
-        @include HD {
-            padding: vwh(16px);
-        }
-        @include Tablet {
-            padding: vwt(16px);
-        }
-        @include Mobile {
-            padding: vwm(16px);
-        }
-
         .accordion__header-wrapper {
-            gap: vw(16px);
-
-            @include HD {
-                gap: vwh(16px);
-            }
-            @include Tablet {
-                gap: vwt(16px);
-            }
-            @include Mobile {
-                gap: vwm(16px);
-            }
+            @include spacing(gap, 16px);
         }
 
         .accordion__text-wrapper {
@@ -359,17 +246,7 @@
         }
 
         .accordion__description {
-            margin-top: vw(16px);
-
-            @include HD {
-                margin-top: vwh(16px);
-            }
-            @include Tablet {
-                margin-top: vwt(16px);
-            }
-            @include Mobile {
-                margin-top: vwm(16px);
-            }
+            @include spacing(margin-top, 16px);
         }
     }
 

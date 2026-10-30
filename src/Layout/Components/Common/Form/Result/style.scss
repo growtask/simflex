@@ -5,20 +5,20 @@
 .result {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    @include spacing(gap, 20px);
     width: 100%;
-    max-width: 440px;
+    @include spacing(max-width, 440px);
 
     &__content {
         display: flex;
-        gap: 12px;
+        @include spacing(gap, 12px);
         align-items: flex-start;
     }
 
     &__body {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        @include spacing(gap, 4px);
         min-width: 0;
     }
 
@@ -40,7 +40,7 @@
 
     &-type_vertical .result__content {
         flex-direction: column;
-        gap: 16px;
+        @include spacing(gap, 16px);
     }
 
     &-theme_dark {

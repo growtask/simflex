@@ -10,7 +10,7 @@
     &:focus-visible {
         outline: 2px solid var(--color1-main);
         outline-offset: 2px;
-        border-radius: 4px;
+        border-radius: var(--radius-ui-xsmall);
     }
 
     &__image {
@@ -41,7 +41,7 @@
         .logo__home {
             position: absolute;
             inset: 0;
-            transition: transform .3s ease, opacity .3s ease;
+            @include transition((transform, opacity), 0.3s);
         }
 
         .logo__brand {
@@ -91,9 +91,9 @@
     &__divider {
         flex-shrink: 0;
         align-self: stretch;
-        margin-block: 8px;
-        width: 2px;
-        border-radius: 2px;
+        @include spacing(margin-block, 8px);
+        @include spacing(width, 2px);
+        @include border-r(2px);
         background: var(--gray-lighter);
     }
 
@@ -107,7 +107,8 @@
         position: relative;
         flex-shrink: 0;
         overflow: hidden;
-        border: 1px solid var(--gray-lighter);
+        border: solid var(--gray-lighter);
+        @include border-w(1px);
         background: linear-gradient(to bottom, #fff 33.3%, #1c3578 33.3% 66.6%, #e4181c 66.6%);
         @include spacing(width, 40px);
         @include spacing(height, 40px);

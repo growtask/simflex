@@ -9,7 +9,7 @@
     &__form {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        @include spacing(gap, 20px);
 
         &[hidden] {
             display: none;
@@ -23,7 +23,7 @@
     &__fields {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
+        @include spacing(gap, 12px);
     }
 
     &__field {
@@ -43,13 +43,13 @@
     &__send {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        @include spacing(gap, 12px);
     }
 
     &__consent-wrap {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        @include spacing(gap, 2px);
 
         a {
             color: var(--color-text-icon-color1-dark);
@@ -63,7 +63,7 @@
 
     &__error {
         display: block;
-        margin-top: 2px;
+        @include spacing(margin-top, 2px);
         color: var(--error-dark);
         @include t4;
 

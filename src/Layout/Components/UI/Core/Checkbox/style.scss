@@ -5,27 +5,11 @@
     align-items: center;
     cursor: pointer;
     width: fit-content;
-    padding: vw(2px);
-    margin: vw(-2px);
-    gap: vw(10px);
+    @include spacing(padding, 2px);
+    @include spacing(margin, -2px);
+    @include spacing(gap, 10px);
     touch-action: manipulation;
     @include transition((background-color));
-
-    @include HD {
-        padding: vwh(2px);
-        margin: vwh(-2px);
-        gap: vwh(10px);
-    }
-    @include Tablet {
-        padding: vwt(2px);
-        margin: vwt(-2px);
-        gap: vwt(10px);
-    }
-    @include Mobile {
-        padding: vwm(2px);
-        margin: vwm(-2px);
-        gap: vwm(10px);
-    }
 
     &-position {
         &_left {
@@ -79,18 +63,8 @@
 
     &__policy {
         user-select: none;
-        margin-block: vw(2px);
+        @include spacing(margin-block, 2px);
         @include t3;
-
-        @include HD {
-            margin-block: vwh(2px);
-        }
-        @include Tablet {
-            margin-block: vwt(2px);
-        }
-        @include Mobile {
-            margin-block: vwm(2px);
-        }
 
         a {
             color: var(--color1-dark);

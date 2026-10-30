@@ -16,8 +16,8 @@
         position: absolute;
         top: vw(-2px);
         right: vw(-2px);
-        height: vw(16px);
-        padding-inline: vw(4px);
+        @include spacing(height, 16px);
+        @include spacing(padding-inline, 4px);
         color: var(--gray-white);
         background: var(--error-dark);
         max-width: 10ch;
@@ -28,20 +28,14 @@
         @include HD {
             top: vw(-2px);
             right: vw(-2px);
-            height: vwh(16px);
-            padding-inline: vwh(4px);
         }
         @include Tablet {
             top: vwt(-2px);
             right: vwt(-2px);
-            height: vwt(16px);
-            padding-inline: vwt(4px);
         }
         @include Mobile {
             top: vwm(-2px);
             right: vwm(-2px);
-            height: vwm(16px);
-            padding-inline: vwm(4px);
         }
     }
 
@@ -114,26 +108,20 @@
 
     /*----------SIZES-----------*/
     &-size_l {
-        height: vw(56px);
+        @include spacing(height, 56px);
         padding: 0 vw(16px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
         @include t3-b;
         @include border-r(12px);
 
         @include HD {
-            height: vwh(56px);
             padding: 0 vwh(16px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(56px);
             padding: 0 vwt(16px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(56px);
             padding: 0 vwm(16px);
-            gap: vwm(2px);
         }
 
         &:has(.btn-menu__text) {
@@ -152,26 +140,20 @@
     }
 
     &-size_m {
-        height: vw(48px);
+        @include spacing(height, 48px);
         padding: 0 vw(16px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
         @include t4-lh;
         @include border-r(12px);
 
         @include HD {
-            height: vwh(48px);
             padding: 0 vwh(16px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(48px);
             padding: 0 vwt(16px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(48px);
             padding: 0 vwm(16px);
-            gap: vwm(2px);
         }
 
         &:has(.btn-menu__text) {
@@ -190,26 +172,20 @@
     }
 
     &-size_s {
-        height: vw(40px);
+        @include spacing(height, 40px);
         padding: 0 vw(16px);
-        gap: vw(2px);
+        @include spacing(gap, 2px);
         @include t4-lh;
         @include border-r(12px);
 
         @include HD {
-            height: vwh(40px);
             padding: 0 vwh(16px);
-            gap: vwh(2px);
         }
         @include Tablet {
-            height: vwt(40px);
             padding: 0 vwt(16px);
-            gap: vwt(2px);
         }
         @include Mobile {
-            height: vwm(40px);
             padding: 0 vwm(16px);
-            gap: vwm(2px);
         }
 
         .btn-menu__text {

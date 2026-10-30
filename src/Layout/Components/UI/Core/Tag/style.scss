@@ -132,38 +132,12 @@
 
     /*----------SIZES-----------*/
     &-size_l {
-        height: vw(48px);
-        padding-inline-start: vw(16px);
-        padding-inline-end: vw(12px);
-
-        @include HD {
-            height: vwh(48px);
-            padding-inline-start: vwh(16px);
-            padding-inline-end: vwh(12px);
-        }
-        @include Tablet {
-            height: vwt(48px);
-            padding-inline-start: vwt(16px);
-            padding-inline-end: vwt(12px);
-        }
-        @include Mobile {
-            height: vwm(48px);
-            padding-inline-start: vwm(16px);
-            padding-inline-end: vwm(12px);
-        }
+        @include spacing(height, 48px);
+        @include spacing(padding-inline-start, 16px);
+        @include spacing(padding-inline-end, 12px);
 
         .tag__text {
-            margin-inline-end: vw(8px);
-
-            @include HD {
-                margin-inline-end: vwh(8px);
-            }
-            @include Tablet {
-                margin-inline-end: vwt(8px);
-            }
-            @include Mobile {
-                margin-inline-end: vwm(8px);
-            }
+            @include spacing(margin-inline-end, 8px);
         }
 
         .tag__icon {
@@ -172,38 +146,12 @@
     }
 
     &-size_m {
-        height: vw(40px);
-        padding-inline-start: vw(12px);
-        padding-inline-end: vw(8px);
-
-        @include HD {
-            height: vwh(40px);
-            padding-inline-start: vwh(12px);
-            padding-inline-end: vwh(8px);
-        }
-        @include Tablet {
-            height: vwt(40px);
-            padding-inline-start: vwt(12px);
-            padding-inline-end: vwt(8px);
-        }
-        @include Mobile {
-            height: vwm(40px);
-            padding-inline-start: vwm(12px);
-            padding-inline-end: vwm(8px);
-        }
+        @include spacing(height, 40px);
+        @include spacing(padding-inline-start, 12px);
+        @include spacing(padding-inline-end, 8px);
 
         .tag__text {
-            margin-inline-end: vw(6px);
-
-            @include HD {
-                margin-inline-end: vwh(6px);
-            }
-            @include Tablet {
-                margin-inline-end: vwt(6px);
-            }
-            @include Mobile {
-                margin-inline-end: vwm(6px);
-            }
+            @include spacing(margin-inline-end, 6px);
         }
 
         .tag__icon {
@@ -212,38 +160,12 @@
     }
 
     &-size_s {
-        height: vw(32px);
-        padding-inline-start: vw(12px);
-        padding-inline-end: vw(6px);
-
-        @include HD {
-            height: vwh(32px);
-            padding-inline-start: vwh(12px);
-            padding-inline-end: vwh(6px);
-        }
-        @include Tablet {
-            height: vwt(32px);
-            padding-inline-start: vwt(12px);
-            padding-inline-end: vwt(6px);
-        }
-        @include Mobile {
-            height: vwm(32px);
-            padding-inline-start: vwm(12px);
-            padding-inline-end: vwm(6px);
-        }
+        @include spacing(height, 32px);
+        @include spacing(padding-inline-start, 12px);
+        @include spacing(padding-inline-end, 6px);
 
         .tag__text {
-            margin-inline-end: vw(6px);
-
-            @include HD {
-                margin-inline-end: vwh(6px);
-            }
-            @include Tablet {
-                margin-inline-end: vwt(6px);
-            }
-            @include Mobile {
-                margin-inline-end: vwm(6px);
-            }
+            @include spacing(margin-inline-end, 6px);
         }
 
         .tag__icon {
@@ -252,38 +174,12 @@
     }
 
     &-size_xs {
-        height: vw(24px);
-        padding-inline-start: vw(8px);
-        padding-inline-end: vw(4px);
-
-        @include HD {
-            height: vwh(24px);
-            padding-inline-start: vwh(8px);
-            padding-inline-end: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(24px);
-            padding-inline-start: vwt(8px);
-            padding-inline-end: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(24px);
-            padding-inline-start: vwm(8px);
-            padding-inline-end: vwm(4px);
-        }
+        @include spacing(height, 24px);
+        @include spacing(padding-inline-start, 8px);
+        @include spacing(padding-inline-end, 4px);
 
         .tag__text {
-            margin-inline-end: vw(4px);
-
-            @include HD {
-                margin-inline-end: vwh(4px);
-            }
-            @include Tablet {
-                margin-inline-end: vwt(4px);
-            }
-            @include Mobile {
-                margin-inline-end: vwm(4px);
-            }
+            @include spacing(margin-inline-end, 4px);
         }
 
         .tag__icon {

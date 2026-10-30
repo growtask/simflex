@@ -76,17 +76,7 @@
     /*----------SIZES-----------*/
     &-size_l {
         .radio-option__label {
-            gap: vw(12px);
-
-            @include HD {
-                gap: vwh(12px);
-            }
-            @include Tablet {
-                gap: vwt(12px);
-            }
-            @include Mobile {
-                gap: vwm(12px);
-            }
+            @include spacing(gap, 12px);
         }
 
         .radio-option__indicator {
@@ -100,17 +90,7 @@
     }
     &-size_m {
         .radio-option__label {
-            gap: vw(8px);
-
-            @include HD {
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                gap: vwm(8px);
-            }
+            @include spacing(gap, 8px);
         }
 
         .radio-option__indicator {
@@ -125,17 +105,7 @@
 
     &-size_s {
         .radio-option__label {
-            gap: vw(8px);
-
-            @include HD {
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                gap: vwm(8px);
-            }
+            @include spacing(gap, 8px);
         }
 
         .radio-option__indicator {
