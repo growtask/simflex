@@ -7,7 +7,7 @@ Composer-пакет `growtask/simflex-core`: загрузка сайта, адм
 [simflex-template](https://github.com/growtask/simflex-template), ядро ставится в него composer:
 
 ```bash
-composer create-project -s dev growtask/simflex-template mysite
+composer create-project --no-install --ignore-platform-reqs growtask/simflex-template mysite 4.0.x-dev
 ```
 
 ```json
